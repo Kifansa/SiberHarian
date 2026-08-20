@@ -1,0 +1,848 @@
+2026-08-02 13:29:49 | INFO     | Total CVE dipublikasikan dalam 24 jam terakhir: 176
+2026-08-02 13:29:49 | INFO     | Setelah filter CVSS >= 7.0: 51 CVE (dari 176 total).
+2026-08-02 14:00:50 | INFO     | Total CVE dipublikasikan dalam 24 jam terakhir: 176
+2026-08-02 14:00:50 | INFO     | Setelah filter CVSS >= 7.0: 51 CVE (dari 176 total).
+2026-08-02 14:04:00 | INFO     | Menghitung embedding untuk 3 judul...
+2026-08-02 14:06:43 | INFO     | Menghitung embedding untuk 3 judul...
+2026-08-02 14:06:44 | INFO     | Menggabungkan 2 berita mirip: 'Kebocoran Data Sejuta Pengguna Terungkap di Forum ...' (sumber: CNN, Tempo)
+2026-08-02 14:06:44 | INFO     | Deduplikasi hybrid: 3 -> 2 entri.
+2026-08-02 14:08:22 | INFO     | Database state siap di: D:\PENTING\MAGANG\KOMINFO\NOTIFIKASI-BERITA\data\state.db
+2026-08-02 14:08:22 | INFO     | ############################################################
+2026-08-02 14:08:22 | INFO     | MEMULAI PENGUMPULAN BERITA
+2026-08-02 14:08:22 | INFO     | ############################################################
+2026-08-02 14:08:22 | INFO     | ============================================================
+2026-08-02 14:08:22 | INFO     | TAHAP 1: Mengumpulkan Judul Berita dari RSS...
+2026-08-02 14:08:22 | INFO     | ============================================================
+2026-08-02 14:08:22 | INFO     | [+] Mengambil RSS media internasional & Indonesia...
+2026-08-02 14:08:23 | INFO     | [OK] The Hacker News (http://feeds.feedburner.com/TheHackersNews) — 50 entri di feed, 50 baru (belum duplikat).
+2026-08-02 14:08:23 | INFO     | [OK] BleepingComputer (https://www.bleepingcomputer.com/feed/) — 15 entri di feed, 15 baru (belum duplikat).
+2026-08-02 14:08:24 | INFO     | [OK] Krebs on Security (https://krebsonsecurity.com/feed/) — 10 entri di feed, 10 baru (belum duplikat).
+2026-08-02 14:08:25 | INFO     | [OK] Dark Reading (https://www.darkreading.com/rss.xml) — 50 entri di feed, 50 baru (belum duplikat).
+2026-08-02 14:08:27 | INFO     | [OK] SecurityWeek (https://www.securityweek.com/feed/) — 10 entri di feed, 10 baru (belum duplikat).
+2026-08-02 14:08:27 | INFO     | [OK] CISA News (https://www.cisa.gov/news.xml) — 10 entri di feed, 10 baru (belum duplikat).
+2026-08-02 14:08:29 | INFO     | [OK] CISA News (https://www.cisa.gov/cybersecurity-advisories/all.xml) — 30 entri di feed, 30 baru (belum duplikat).
+2026-08-02 14:08:30 | INFO     | [OK] CNN Indonesia (https://www.cnnindonesia.com/teknologi/rss) — 100 entri di feed, 100 baru (belum duplikat).
+2026-08-02 14:08:30 | INFO     | [OK] CNN Indonesia (https://www.cnnindonesia.com/nasional/rss) — 100 entri di feed, 100 baru (belum duplikat).
+2026-08-02 14:08:31 | INFO     | [OK] Antara News (https://www.antaranews.com/rss/terkini) — 50 entri di feed, 50 baru (belum duplikat).
+2026-08-02 14:08:31 | INFO     | [OK] Antara News (https://www.antaranews.com/rss/hukum) — 20 entri di feed, 20 baru (belum duplikat).
+2026-08-02 14:08:31 | INFO     | [OK] Tempo.co (https://rss.tempo.co/nasional) — 50 entri di feed, 50 baru (belum duplikat).
+2026-08-02 14:08:31 | INFO     | [OK] Tempo.co (https://rss.tempo.co/tekno) — 50 entri di feed, 50 baru (belum duplikat).
+2026-08-02 14:08:33 | WARNING  | [HTTP 404] Suara.com (https://www.suara.com/rss) — kemungkinan diblokir server (anti-bot) atau URL sudah tidak aktif.
+2026-08-02 14:08:33 | INFO     | [OK] Sindonews (https://nasional.sindonews.com/rss) — 30 entri di feed, 30 baru (belum duplikat).
+2026-08-02 14:08:34 | INFO     | [OK] Sindonews (https://tekno.sindonews.com/rss) — 30 entri di feed, 30 baru (belum duplikat).
+2026-08-02 14:08:35 | INFO     | [OK] Republika (https://www.republika.co.id/rss/hukum) — 15 entri di feed, 15 baru (belum duplikat).
+2026-08-02 14:08:35 | INFO     | [OK] Republika (https://www.republika.co.id/rss/teknologi) — 13 entri di feed, 13 baru (belum duplikat).
+2026-08-02 14:08:35 | INFO     | [+] Mengambil RSS Google News...
+2026-08-02 14:08:36 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=kebocoran%20data&hl=id&gl=ID&ceid=ID:id) — 100 entri di feed, 100 baru (belum duplikat).
+2026-08-02 14:08:37 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=kebocoran%20data%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 36 entri di feed, 31 baru (belum duplikat).
+2026-08-02 14:08:37 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=hacker&hl=id&gl=ID&ceid=ID:id) — 100 entri di feed, 100 baru (belum duplikat).
+2026-08-02 14:08:38 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=hacker%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 6 entri di feed, 4 baru (belum duplikat).
+2026-08-02 14:08:38 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=ransomware&hl=id&gl=ID&ceid=ID:id) — 100 entri di feed, 99 baru (belum duplikat).
+2026-08-02 14:08:38 | WARNING  | [FEED KOSONG] Google News (https://news.google.com/rss/search?q=ransomware%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — status HTTP 200 tapi 0 entri. Alasan: tidak diketahui
+2026-08-02 14:08:39 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=phishing&hl=id&gl=ID&ceid=ID:id) — 100 entri di feed, 100 baru (belum duplikat).
+2026-08-02 14:08:39 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=phishing%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 1 entri di feed, 1 baru (belum duplikat).
+2026-08-02 14:08:40 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=diretas&hl=id&gl=ID&ceid=ID:id) — 100 entri di feed, 100 baru (belum duplikat).
+2026-08-02 14:08:40 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=diretas%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 7 entri di feed, 6 baru (belum duplikat).
+2026-08-02 14:08:41 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=judi%20online&hl=id&gl=ID&ceid=ID:id) — 100 entri di feed, 88 baru (belum duplikat).
+2026-08-02 14:08:41 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=judi%20online%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 44 entri di feed, 37 baru (belum duplikat).
+2026-08-02 14:08:42 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=peretas&hl=id&gl=ID&ceid=ID:id) — 100 entri di feed, 86 baru (belum duplikat).
+2026-08-02 14:08:42 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=peretas%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 11 entri di feed, 7 baru (belum duplikat).
+2026-08-02 14:08:43 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=dibobol&hl=id&gl=ID&ceid=ID:id) — 100 entri di feed, 95 baru (belum duplikat).
+2026-08-02 14:08:43 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=dibobol%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 18 entri di feed, 14 baru (belum duplikat).
+2026-08-02 14:08:43 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=dibajak&hl=id&gl=ID&ceid=ID:id) — 100 entri di feed, 98 baru (belum duplikat).
+2026-08-02 14:08:44 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=dibajak%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 5 entri di feed, 2 baru (belum duplikat).
+2026-08-02 14:08:45 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=serangan%20siber&hl=id&gl=ID&ceid=ID:id) — 100 entri di feed, 84 baru (belum duplikat).
+2026-08-02 14:08:45 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=serangan%20siber%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 50 entri di feed, 43 baru (belum duplikat).
+2026-08-02 14:08:45 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=pencurian%20data&hl=id&gl=ID&ceid=ID:id) — 100 entri di feed, 91 baru (belum duplikat).
+2026-08-02 14:08:46 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=pencurian%20data%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 23 entri di feed, 18 baru (belum duplikat).
+2026-08-02 14:08:46 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=malware&hl=id&gl=ID&ceid=ID:id) — 100 entri di feed, 98 baru (belum duplikat).
+2026-08-02 14:08:47 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=malware%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 4 entri di feed, 2 baru (belum duplikat).
+2026-08-02 14:08:47 | INFO     | Total entri terkumpul: 1937
+2026-08-02 14:08:47 | INFO     | Setelah filter window waktu + judul: 27 (dari 1937)
+2026-08-02 14:08:47 | INFO     | ============================================================
+2026-08-02 14:08:47 | INFO     | TAHAP 2: Ekstraksi Konten Berita...
+2026-08-02 14:08:47 | INFO     | ============================================================
+2026-08-02 14:08:47 | INFO     |   -> [1/27] Isu Pinjol Ruben Onsu Memanas, Polisi Singgung Dugaan Keboco...
+2026-08-02 14:08:49 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:08:49 | INFO     |   -> [2/27] FTC Gugat Hims and Hers atas Kebocoran Data Kesehatan ke Met...
+2026-08-02 14:08:52 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:08:52 | INFO     |   -> [3/27] Waspadai Penyalahgunaan Data Pribadi, Masyarakat Diimbau Per...
+2026-08-02 14:10:53 | INFO     |   -> [4/27] Temukan celah keamanan siber, pelajar Kotim tembus Hall of F...
+2026-08-02 14:10:59 | INFO     |   -> [5/27] Data Pribadi Anda Mungkin Sudah Bocor Tanpa Disadari! Ini Ca...
+2026-08-02 14:11:07 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:11:07 | INFO     |   -> [6/27] Polisi Manang Bongkar Dugaan Kebocoran Data BPJS Usai Isu Pi...
+2026-08-02 14:11:11 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:11:11 | INFO     |   -> [7/27] Siber Indonesia Keropos, Kenapa Data Bocor Terus? - pcplus.c...
+2026-08-02 14:11:14 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:11:14 | INFO     |   -> [8/27] Londonmaxxing: Lift House, Anti-San Francisco Hacker House d...
+2026-08-02 14:11:18 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:11:18 | INFO     |   -> [9/27] Call of Duty: Black Ops 2 Versi PlayStation Diserang Hacker ...
+2026-08-02 14:11:24 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:11:24 | INFO     |   -> [10/27] Sistem Pengolahan Air AS Ramai-ramai Diretas, Iran Dituduh J...
+2026-08-02 14:11:28 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:11:28 | INFO     |   -> [11/27] Aktor Jang Dong Ju Pilih Banting Setir Jadi BJ TikTok Live U...
+2026-08-02 14:11:32 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:11:32 | INFO     |   -> [12/27] Pemain Judi Online Sulit Menang? Begini Cara Algoritma Beker...
+2026-08-02 14:11:36 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:11:36 | INFO     |   -> [13/27] Polsek Laren Gencarkan Patroli Dialogis di Lamongan, Judi On...
+2026-08-02 14:11:40 | INFO     |   -> [14/27] Koramil 1608-03/Sape Dukung Seminar Anti Narkoba dan Judi On...
+2026-08-02 14:11:45 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:11:45 | INFO     |   -> [15/27] Polsek Laren Gencarkan Patroli Dialogis di Lamongan, Judi On...
+2026-08-02 14:11:48 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:11:48 | INFO     |   -> [16/27] Polsek Labuhanhaji Perkuat Kamtibmas Lewat Sambang Malam, Aj...
+2026-08-02 14:11:52 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:11:52 | INFO     |   -> [17/27] Perang Melawan Judi Online Dimulai Dari Birokrasi - waspada....
+2026-08-02 14:11:55 | INFO     |   -> [18/27] Pemain Judi Online Sulit Menang? Begini Cara Algoritma Beker...
+2026-08-02 14:11:57 | INFO     |   -> [19/27] Duit Kas Masjid Diembat, Pelaku Mengaku Kecanduan Narkoba da...
+2026-08-02 14:12:00 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:12:00 | INFO     |   -> [20/27] 10 Peretasan Kripto Terbesar Sejak 2025, Bybit Masih Jadi ya...
+2026-08-02 14:12:03 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:12:03 | INFO     |   -> [21/27] Peretasan Kripto Semester I 2026 Capai US$947 Juta, AI Jadi ...
+2026-08-02 14:12:05 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:12:05 | INFO     |   -> [22/27] Serangan Siber Hantam Instalasi Air Minnesota, Trump Tolak T...
+2026-08-02 14:12:08 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:12:08 | INFO     |   -> [23/27] 10 Peretasan Kripto Terbesar Sejak 2025, Bybit Masih Jadi ya...
+2026-08-02 14:12:11 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:12:11 | INFO     |   -> [24/27] Lebih dari Separuh Gen Z Pernah Jadi Korban Serangan Siber, ...
+2026-08-02 14:12:13 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:12:13 | INFO     |   -> [25/27] Serangan Siber Hantam Instalasi Air Minnesota, Trump Tolak T...
+2026-08-02 14:12:16 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:12:16 | INFO     |   -> [26/27] ​52 Persen Gen Z Pernah Jadi Korban Serangan Siber, Padahal ...
+2026-08-02 14:12:20 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:12:20 | INFO     |   -> [27/27] 50 Modus Penipuan Online Terbaru 2026 yang Wajib Diwaspadai,...
+2026-08-02 14:12:24 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:12:24 | INFO     | SELESAI: 22 artikel berhasil diekstrak & lolos filter.
+2026-08-02 14:12:24 | INFO     | Menghitung embedding untuk 22 judul...
+2026-08-02 14:12:37 | INFO     | Menggabungkan 2 berita mirip: 'Polisi Manang Bongkar Dugaan Kebocoran Data BPJS U...' (sumber: Google News)
+2026-08-02 14:12:37 | INFO     | Menggabungkan 2 berita mirip: '10 Peretasan Kripto Terbesar Sejak 2025, Bybit Mas...' (sumber: Google News)
+2026-08-02 14:12:37 | INFO     | Menggabungkan 2 berita mirip: 'Serangan Siber Hantam Instalasi Air Minnesota, Tru...' (sumber: Google News)
+2026-08-02 14:12:37 | INFO     | Deduplikasi hybrid: 22 -> 19 entri.
+2026-08-02 14:12:37 | INFO     | ############################################################
+2026-08-02 14:12:37 | INFO     | MEMULAI PENGUMPULAN CVE
+2026-08-02 14:12:37 | INFO     | ############################################################
+2026-08-02 14:12:39 | INFO     | Total CVE dipublikasikan dalam 24 jam terakhir: 176
+2026-08-02 14:12:39 | INFO     | Setelah filter CVSS >= 7.0: 51 CVE (dari 176 total).
+2026-08-02 14:12:39 | INFO     | ############################################################
+2026-08-02 14:12:39 | INFO     | RINGKASAN PIPELINE HARIAN
+2026-08-02 14:12:39 | INFO     |   Berita siap diproses  : 19
+2026-08-02 14:12:39 | INFO     |   Mode CVE hari ini     : ada_critical
+2026-08-02 14:12:39 | INFO     | ############################################################
+2026-08-02 14:27:39 | INFO     | Database state siap di: D:\PENTING\MAGANG\KOMINFO\NOTIFIKASI-BERITA\data\state.db
+2026-08-02 14:27:39 | INFO     | ############################################################
+2026-08-02 14:27:39 | INFO     | MEMULAI PENGUMPULAN BERITA
+2026-08-02 14:27:39 | INFO     | ############################################################
+2026-08-02 14:27:39 | INFO     | ============================================================
+2026-08-02 14:27:39 | INFO     | TAHAP 1: Mengumpulkan Judul Berita dari RSS...
+2026-08-02 14:27:39 | INFO     | ============================================================
+2026-08-02 14:27:39 | INFO     | [+] Mengambil RSS media internasional & Indonesia...
+2026-08-02 14:27:40 | INFO     | [OK] The Hacker News — 50 entri di feed, 
+2026-08-02 14:27:41 | INFO     | [OK] BleepingComputer — 15 entri di feed, 
+2026-08-02 14:27:41 | INFO     | [OK] Krebs on Security — 10 entri di feed, 
+2026-08-02 14:27:42 | INFO     | [OK] Dark Reading — 50 entri di feed, 
+2026-08-02 14:27:43 | INFO     | [OK] SecurityWeek — 10 entri di feed, 
+2026-08-02 14:27:43 | INFO     | [OK] CISA News — 10 entri di feed, 
+2026-08-02 14:27:45 | INFO     | [OK] CISA News — 30 entri di feed, 
+2026-08-02 14:27:45 | INFO     | [OK] CNN Indonesia — 100 entri di feed, 
+2026-08-02 14:27:45 | INFO     | [OK] CNN Indonesia — 100 entri di feed, 
+2026-08-02 14:27:48 | INFO     | [OK] Antara News — 50 entri di feed, 
+2026-08-02 14:27:48 | INFO     | [OK] Antara News — 20 entri di feed, 
+2026-08-02 14:27:49 | INFO     | [OK] Tempo.co — 50 entri di feed, 
+2026-08-02 14:27:49 | INFO     | [OK] Tempo.co — 50 entri di feed, 
+2026-08-02 14:27:50 | WARNING  | [HTTP 404] Suara.com (https://www.suara.com/rss) — kemungkinan diblokir server (anti-bot) atau URL sudah tidak aktif.
+2026-08-02 14:27:50 | INFO     | [OK] Sindonews — 30 entri di feed, 
+2026-08-02 14:27:51 | INFO     | [OK] Sindonews — 30 entri di feed, 
+2026-08-02 14:27:52 | INFO     | [OK] Republika — 15 entri di feed, 
+2026-08-02 14:27:52 | INFO     | [OK] Republika — 13 entri di feed, 
+2026-08-02 14:27:52 | INFO     | [+] Mengambil RSS Google News...
+2026-08-02 14:27:53 | INFO     | [OK] Google News — 100 entri di feed, 
+2026-08-02 14:27:54 | INFO     | [OK] Google News — 38 entri di feed, 
+2026-08-02 14:27:54 | INFO     | [OK] Google News — 100 entri di feed, 
+2026-08-02 14:27:55 | INFO     | [OK] Google News — 6 entri di feed, 
+2026-08-02 14:27:55 | INFO     | [OK] Google News — 100 entri di feed, 
+2026-08-02 14:27:55 | WARNING  | [FEED KOSONG] Google News (https://news.google.com/rss/search?q=ransomware%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — status HTTP 200 tapi 0 entri. Alasan: tidak diketahui
+2026-08-02 14:27:56 | INFO     | [OK] Google News — 100 entri di feed, 
+2026-08-02 14:27:56 | INFO     | [OK] Google News — 3 entri di feed, 
+2026-08-02 14:27:57 | INFO     | [OK] Google News — 100 entri di feed, 
+2026-08-02 14:27:57 | INFO     | [OK] Google News — 7 entri di feed, 
+2026-08-02 14:27:58 | INFO     | [OK] Google News — 100 entri di feed, 
+2026-08-02 14:27:59 | INFO     | [OK] Google News — 49 entri di feed, 
+2026-08-02 14:27:59 | INFO     | [OK] Google News — 100 entri di feed, 
+2026-08-02 14:28:00 | INFO     | [OK] Google News — 10 entri di feed, 
+2026-08-02 14:28:01 | INFO     | [OK] Google News — 100 entri di feed, 
+2026-08-02 14:28:01 | INFO     | [OK] Google News — 19 entri di feed, 
+2026-08-02 14:28:02 | INFO     | [OK] Google News — 100 entri di feed, 
+2026-08-02 14:28:02 | INFO     | [OK] Google News — 5 entri di feed, 
+2026-08-02 14:28:03 | INFO     | [OK] Google News — 100 entri di feed, 
+2026-08-02 14:28:03 | INFO     | [OK] Google News — 49 entri di feed, 
+2026-08-02 14:28:04 | INFO     | [OK] Google News — 100 entri di feed, 
+2026-08-02 14:28:04 | INFO     | [OK] Google News — 24 entri di feed, 
+2026-08-02 14:28:04 | INFO     | [OK] Google News — 100 entri di feed, 
+2026-08-02 14:28:05 | INFO     | [OK] Google News — 4 entri di feed, 
+2026-08-02 14:28:05 | INFO     | Total entri terkumpul: 1942
+2026-08-02 14:28:05 | INFO     | Setelah filter window waktu (24 jam) saja: 228 (dari 1942)
+2026-08-02 14:28:05 | INFO     | Setelah filter kata kunci pada judul: 27 (dari 228)
+2026-08-02 14:28:05 | INFO     | ============================================================
+2026-08-02 14:28:05 | INFO     | TAHAP 2: Ekstraksi Konten Berita...
+2026-08-02 14:28:05 | INFO     | ============================================================
+2026-08-02 14:28:05 | INFO     |   -> [1/27] Isu Pinjol Ruben Onsu Memanas, Polisi Singgung Dugaan Keboco...
+2026-08-02 14:28:07 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:28:07 | INFO     |   -> [2/27] FTC Gugat Hims and Hers atas Kebocoran Data Kesehatan ke Met...
+2026-08-02 14:28:11 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:28:11 | INFO     |   -> [3/27] Waspadai Penyalahgunaan Data Pribadi, Masyarakat Diimbau Per...
+2026-08-02 14:30:37 | INFO     |   -> [4/27] Temukan celah keamanan siber, pelajar Kotim tembus Hall of F...
+2026-08-02 14:30:41 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:30:41 | INFO     |   -> [5/27] Data Pribadi Anda Mungkin Sudah Bocor Tanpa Disadari! Ini Ca...
+2026-08-02 14:30:44 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:30:44 | INFO     |   -> [6/27] Polisi Manang Bongkar Dugaan Kebocoran Data BPJS Usai Isu Pi...
+2026-08-02 14:30:47 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:30:47 | INFO     |   -> [7/27] Siber Indonesia Keropos, Kenapa Data Bocor Terus? - pcplus.c...
+2026-08-02 14:30:53 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:30:53 | INFO     |   -> [8/27] Londonmaxxing: Lift House, Anti-San Francisco Hacker House d...
+2026-08-02 14:30:56 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:30:56 | INFO     |   -> [9/27] Sistem Pengolahan Air AS Ramai-ramai Diretas, Iran Dituduh J...
+2026-08-02 14:31:00 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:31:00 | INFO     |   -> [10/27] Aktor Jang Dong Ju Pilih Banting Setir Jadi BJ TikTok Live U...
+2026-08-02 14:31:03 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:31:03 | INFO     |   -> [11/27] Pemain Judi Online Sulit Menang? Begini Cara Algoritma Beker...
+2026-08-02 14:31:06 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:31:06 | INFO     |   -> [12/27] KY Sanksi 121 Hakim, Ada yang Terlibat Judi Online hingga Pe...
+2026-08-02 14:31:11 | INFO     |   -> [13/27] Polsek Labuhanhaji Perkuat Kamtibmas Lewat Sambang Malam, Aj...
+2026-08-02 14:31:15 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:31:15 | INFO     |   -> [14/27] Polsek Laren Gencarkan Patroli Dialogis di Lamongan, Judi On...
+2026-08-02 14:31:18 | INFO     |   -> [15/27] Koramil 1608-03/Sape Dukung Seminar Anti Narkoba dan Judi On...
+2026-08-02 14:31:21 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:31:21 | INFO     |   -> [16/27] Polsek Laren Gencarkan Patroli Dialogis di Lamongan, Judi On...
+2026-08-02 14:31:24 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:31:24 | INFO     |   -> [17/27] Perang Melawan Judi Online Dimulai Dari Birokrasi - waspada....
+2026-08-02 14:31:27 | INFO     |   -> [18/27] Pemain Judi Online Sulit Menang? Begini Cara Algoritma Beker...
+2026-08-02 14:31:29 | INFO     |   -> [19/27] Duit Kas Masjid Diembat, Pelaku Mengaku Kecanduan Narkoba da...
+2026-08-02 14:31:33 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:31:33 | INFO     |   -> [20/27] 944 Pasangan di Kukar Bercerai Hingga Juni 2026, Dipicu Judi...
+2026-08-02 14:31:36 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:31:36 | INFO     |   -> [21/27] 10 Peretasan Kripto Terbesar Sejak 2025, Bybit Masih Jadi ya...
+2026-08-02 14:31:40 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:31:40 | INFO     |   -> [22/27] 10 Peretasan Kripto Terbesar Sejak 2025, Bybit Masih Jadi ya...
+2026-08-02 14:31:44 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:31:44 | INFO     |   -> [23/27] Lebih dari Separuh Gen Z Pernah Jadi Korban Serangan Siber, ...
+2026-08-02 14:31:47 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:31:47 | INFO     |   -> [24/27] Serangan Siber Hantam Instalasi Air Minnesota, Trump Tolak T...
+2026-08-02 14:31:50 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:31:50 | INFO     |   -> [25/27] ​52 Persen Gen Z Pernah Jadi Korban Serangan Siber, Padahal ...
+2026-08-02 14:31:54 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:31:54 | INFO     |   -> [26/27] Kaspersky Ungkap 52 Persen Gen Z Pernah Jadi Korban Serangan...
+2026-08-02 14:31:59 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:31:59 | INFO     |   -> [27/27] 50 Modus Penipuan Online Terbaru 2026 yang Wajib Diwaspadai,...
+2026-08-02 14:32:03 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:32:03 | INFO     | SELESAI: 22 artikel berhasil diekstrak & lolos filter.
+2026-08-02 14:32:03 | INFO     | Menghitung embedding untuk 22 judul...
+2026-08-02 14:32:16 | INFO     | Menggabungkan 2 berita mirip: 'Polisi Manang Bongkar Dugaan Kebocoran Data BPJS U...' (sumber: Google News)
+2026-08-02 14:32:16 | INFO     | Menggabungkan 2 berita mirip: '10 Peretasan Kripto Terbesar Sejak 2025, Bybit Mas...' (sumber: Google News)
+2026-08-02 14:32:16 | INFO     | Menggabungkan 2 berita mirip: '​52 Persen Gen Z Pernah Jadi Korban Serangan Siber...' (sumber: Google News)
+2026-08-02 14:32:16 | INFO     | Deduplikasi hybrid: 22 -> 19 entri.
+2026-08-02 14:32:16 | INFO     | ############################################################
+2026-08-02 14:32:16 | INFO     | MEMULAI PENGUMPULAN CVE
+2026-08-02 14:32:16 | INFO     | ############################################################
+2026-08-02 14:32:18 | INFO     | Total CVE dipublikasikan dalam 24 jam terakhir: 146
+2026-08-02 14:32:18 | INFO     | Setelah filter CVSS >= 7.0: 51 CVE (dari 146 total).
+2026-08-02 14:32:18 | INFO     | ############################################################
+2026-08-02 14:32:18 | INFO     | RINGKASAN PIPELINE HARIAN
+2026-08-02 14:32:18 | INFO     |   Berita siap diproses  : 19
+2026-08-02 14:32:18 | INFO     |   Mode CVE hari ini     : ada_critical
+2026-08-02 14:32:18 | INFO     | ############################################################
+2026-08-02 14:57:13 | INFO     | Database state siap di: D:\PENTING\MAGANG\KOMINFO\NOTIFIKASI-BERITA\data\state.db
+2026-08-02 14:57:13 | INFO     | ############################################################
+2026-08-02 14:57:13 | INFO     | MEMULAI PENGUMPULAN BERITA
+2026-08-02 14:57:13 | INFO     | ############################################################
+2026-08-02 14:57:13 | INFO     | ============================================================
+2026-08-02 14:57:13 | INFO     | TAHAP 1: Mengumpulkan Judul Berita dari RSS...
+2026-08-02 14:57:13 | INFO     | ============================================================
+2026-08-02 14:57:13 | INFO     | [+] Mengambil RSS media internasional & Indonesia...
+2026-08-02 14:57:14 | INFO     | [OK] The Hacker News — 50 entri ditemukan
+2026-08-02 14:57:15 | INFO     | [OK] BleepingComputer — 15 entri ditemukan
+2026-08-02 14:57:15 | INFO     | [OK] Krebs on Security — 10 entri ditemukan
+2026-08-02 14:57:16 | INFO     | [OK] Dark Reading — 50 entri ditemukan
+2026-08-02 14:57:17 | INFO     | [OK] SecurityWeek — 10 entri ditemukan
+2026-08-02 14:57:18 | INFO     | [OK] CISA News — 10 entri ditemukan
+2026-08-02 14:57:19 | INFO     | [OK] CISA News — 30 entri ditemukan
+2026-08-02 14:57:19 | INFO     | [OK] CNN Indonesia — 100 entri ditemukan
+2026-08-02 14:57:19 | INFO     | [OK] CNN Indonesia — 100 entri ditemukan
+2026-08-02 14:57:20 | INFO     | [OK] Antara News — 50 entri ditemukan
+2026-08-02 14:57:20 | INFO     | [OK] Antara News — 20 entri ditemukan
+2026-08-02 14:57:20 | INFO     | [OK] Tempo.co — 50 entri ditemukan
+2026-08-02 14:57:20 | INFO     | [OK] Tempo.co — 50 entri ditemukan
+2026-08-02 14:57:21 | WARNING  | [HTTP 404] Suara.com (https://www.suara.com/rss) — kemungkinan diblokir server (anti-bot) atau URL sudah tidak aktif.
+2026-08-02 14:57:21 | INFO     | [OK] Sindonews — 30 entri ditemukan
+2026-08-02 14:57:22 | INFO     | [OK] Sindonews — 30 entri ditemukan
+2026-08-02 14:57:22 | INFO     | [OK] Republika — 15 entri ditemukan
+2026-08-02 14:57:23 | INFO     | [OK] Republika — 13 entri ditemukan
+2026-08-02 14:57:23 | INFO     | [+] Mengambil RSS Google News...
+2026-08-02 14:57:24 | INFO     | [OK] Google News — 100 entri ditemukan
+2026-08-02 14:57:24 | INFO     | [OK] Google News — 40 entri ditemukan
+2026-08-02 14:57:25 | INFO     | [OK] Google News — 100 entri ditemukan
+2026-08-02 14:57:25 | INFO     | [OK] Google News — 6 entri ditemukan
+2026-08-02 14:57:25 | INFO     | [OK] Google News — 100 entri ditemukan
+2026-08-02 14:57:25 | WARNING  | [FEED KOSONG] Google News (https://news.google.com/rss/search?q=ransomware%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — status HTTP 200 tapi 0 entri. Alasan: tidak diketahui
+2026-08-02 14:57:26 | INFO     | [OK] Google News — 100 entri ditemukan
+2026-08-02 14:57:26 | INFO     | [OK] Google News — 3 entri ditemukan
+2026-08-02 14:57:27 | INFO     | [OK] Google News — 100 entri ditemukan
+2026-08-02 14:57:27 | INFO     | [OK] Google News — 7 entri ditemukan
+2026-08-02 14:57:28 | INFO     | [OK] Google News — 100 entri ditemukan
+2026-08-02 14:57:28 | INFO     | [OK] Google News — 50 entri ditemukan
+2026-08-02 14:57:29 | INFO     | [OK] Google News — 100 entri ditemukan
+2026-08-02 14:57:29 | INFO     | [OK] Google News — 11 entri ditemukan
+2026-08-02 14:57:30 | INFO     | [OK] Google News — 100 entri ditemukan
+2026-08-02 14:57:30 | INFO     | [OK] Google News — 18 entri ditemukan
+2026-08-02 14:57:30 | INFO     | [OK] Google News — 100 entri ditemukan
+2026-08-02 14:57:31 | INFO     | [OK] Google News — 5 entri ditemukan
+2026-08-02 14:57:31 | INFO     | [OK] Google News — 100 entri ditemukan
+2026-08-02 14:57:32 | INFO     | [OK] Google News — 48 entri ditemukan
+2026-08-02 14:57:32 | INFO     | [OK] Google News — 100 entri ditemukan
+2026-08-02 14:57:32 | INFO     | [OK] Google News — 24 entri ditemukan
+2026-08-02 14:57:33 | INFO     | [OK] Google News — 100 entri ditemukan
+2026-08-02 14:57:33 | INFO     | [OK] Google News — 4 entri ditemukan
+2026-08-02 14:57:33 | INFO     | Total entri terkumpul: 1942
+2026-08-02 14:57:33 | INFO     | Setelah filter waktu (24 jam) saja: 221 (dari 1942)
+2026-08-02 14:57:33 | INFO     | Setelah filter kata kunci pada judul: 27 (dari 221)
+2026-08-02 14:57:33 | INFO     | ============================================================
+2026-08-02 14:57:33 | INFO     | TAHAP 2: Ekstraksi Konten Berita...
+2026-08-02 14:57:33 | INFO     | ============================================================
+2026-08-02 14:57:33 | INFO     |   -> [1/27] Isu Pinjol Ruben Onsu Memanas, Polisi Singgung Dugaan Keboco...
+2026-08-02 14:57:39 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:57:39 | INFO     |   -> [2/27] FTC Gugat Hims and Hers atas Kebocoran Data Kesehatan ke Met...
+2026-08-02 14:57:45 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 14:57:45 | INFO     |   -> [3/27] Waspadai Penyalahgunaan Data Pribadi, Masyarakat Diimbau Per...
+2026-08-02 15:00:11 | INFO     |   -> [4/27] Temukan celah keamanan siber, pelajar Kotim tembus Hall of F...
+2026-08-02 15:00:15 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:00:15 | INFO     |   -> [5/27] Data Pribadi Anda Mungkin Sudah Bocor Tanpa Disadari! Ini Ca...
+2026-08-02 15:00:19 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:00:19 | INFO     |   -> [6/27] Siber Indonesia Keropos, Kenapa Data Bocor Terus? - pcplus.c...
+2026-08-02 15:00:22 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:00:22 | INFO     |   -> [7/27] Londonmaxxing: Lift House, Anti-San Francisco Hacker House d...
+2026-08-02 15:00:26 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:00:26 | INFO     |   -> [8/27] Sistem Pengolahan Air AS Ramai-ramai Diretas, Iran Dituduh J...
+2026-08-02 15:00:30 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:00:30 | INFO     |   -> [9/27] Aktor Jang Dong Ju Pilih Banting Setir Jadi BJ TikTok Live U...
+2026-08-02 15:00:33 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:00:33 | INFO     |   -> [10/27] Pemain Judi Online Sulit Menang? Begini Cara Algoritma Beker...
+2026-08-02 15:00:38 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:00:38 | INFO     |   -> [11/27] KY Sanksi 121 Hakim, Ada yang Terlibat Judi Online hingga Pe...
+2026-08-02 15:00:42 | INFO     |   -> [12/27] Polsek Labuhanhaji Perkuat Kamtibmas Lewat Sambang Malam, Aj...
+2026-08-02 15:00:46 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:00:46 | INFO     |   -> [13/27] Polsek Laren Gencarkan Patroli Dialogis di Lamongan, Judi On...
+2026-08-02 15:00:49 | INFO     |   -> [14/27] Koramil 1608-03/Sape Dukung Seminar Anti Narkoba dan Judi On...
+2026-08-02 15:00:53 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:00:53 | INFO     |   -> [15/27] Polsek Laren Gencarkan Patroli Dialogis di Lamongan, Judi On...
+2026-08-02 15:00:59 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:00:59 | INFO     |   -> [16/27] Perang Melawan Judi Online Dimulai Dari Birokrasi - waspada....
+2026-08-02 15:01:04 | INFO     |   -> [17/27] Pemain Judi Online Sulit Menang? Begini Cara Algoritma Beker...
+2026-08-02 15:01:07 | INFO     |   -> [18/27] Duit Kas Masjid Diembat, Pelaku Mengaku Kecanduan Narkoba da...
+2026-08-02 15:01:12 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:01:12 | INFO     |   -> [19/27] 944 Pasangan di Kukar Bercerai Hingga Juni 2026, Dipicu Judi...
+2026-08-02 15:01:16 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:01:16 | INFO     |   -> [20/27] 10 Peretasan Kripto Terbesar Sejak 2025, Bybit Masih Jadi ya...
+2026-08-02 15:01:20 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:01:20 | INFO     |   -> [21/27] AS Peringatkan Serangan Siber Diduga Didukung Iran, Sistem A...
+2026-08-02 15:01:24 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:01:24 | INFO     |   -> [22/27] 10 Peretasan Kripto Terbesar Sejak 2025, Bybit Masih Jadi ya...
+2026-08-02 15:01:28 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:01:28 | INFO     |   -> [23/27] Lebih dari Separuh Gen Z Pernah Jadi Korban Serangan Siber, ...
+2026-08-02 15:01:32 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:01:32 | INFO     |   -> [24/27] Serangan Siber Hantam Instalasi Air Minnesota, Trump Tolak T...
+2026-08-02 15:01:36 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:01:36 | INFO     |   -> [25/27] ​52 Persen Gen Z Pernah Jadi Korban Serangan Siber, Padahal ...
+2026-08-02 15:01:41 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:01:41 | INFO     |   -> [26/27] Kaspersky Ungkap 52 Persen Gen Z Pernah Jadi Korban Serangan...
+2026-08-02 15:01:45 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:01:45 | INFO     |   -> [27/27] 50 Modus Penipuan Online Terbaru 2026 yang Wajib Diwaspadai,...
+2026-08-02 15:01:48 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 15:01:48 | INFO     | SELESAI: 22 artikel berhasil diekstrak & lolos filter.
+2026-08-02 15:01:48 | INFO     | Menghitung embedding untuk 22 judul...
+2026-08-02 15:02:02 | INFO     | Menggabungkan 2 berita mirip: '10 Peretasan Kripto Terbesar Sejak 2025, Bybit Mas...' (sumber: Google News)
+2026-08-02 15:02:02 | INFO     | Menggabungkan 2 berita mirip: '​52 Persen Gen Z Pernah Jadi Korban Serangan Siber...' (sumber: Google News)
+2026-08-02 15:02:02 | INFO     | Deduplikasi hybrid: 22 -> 20 entri.
+2026-08-02 15:02:02 | INFO     | ############################################################
+2026-08-02 15:02:02 | INFO     | MEMULAI PENGUMPULAN CVE
+2026-08-02 15:02:02 | INFO     | ############################################################
+2026-08-02 15:02:03 | INFO     | Total CVE dipublikasikan dalam 24 jam terakhir: 146
+2026-08-02 15:02:03 | INFO     | Setelah filter CVSS >= 7.0: 51 CVE (dari 146 total).
+2026-08-02 15:02:03 | INFO     | ############################################################
+2026-08-02 15:02:03 | INFO     | RINGKASAN PIPELINE HARIAN
+2026-08-02 15:02:03 | INFO     |   Berita siap diproses  : 20
+2026-08-02 15:02:03 | INFO     |   Mode CVE hari ini     : ada_critical
+2026-08-02 15:02:03 | INFO     | ############################################################
+2026-08-02 16:44:56 | INFO     | Database state siap di: D:\PENTING\MAGANG\KOMINFO\NOTIFIKASI-BERITA\data\state.db
+2026-08-02 16:44:56 | INFO     | ############################################################
+2026-08-02 16:44:56 | INFO     | MEMULAI PENGUMPULAN BERITA
+2026-08-02 16:44:56 | INFO     | ############################################################
+2026-08-02 16:44:56 | INFO     | ============================================================
+2026-08-02 16:44:56 | INFO     | TAHAP 1: Mengumpulkan Judul Berita dari RSS...
+2026-08-02 16:44:56 | INFO     | ============================================================
+2026-08-02 16:44:56 | INFO     | [+] Mengambil RSS media internasional & Indonesia...
+2026-08-02 16:44:57 | INFO     | [OK] The Hacker News (http://feeds.feedburner.com/TheHackersNews) — 50 entri, 50 baru.
+2026-08-02 16:44:58 | INFO     | [OK] BleepingComputer (https://www.bleepingcomputer.com/feed/) — 15 entri, 15 baru.
+2026-08-02 16:44:59 | INFO     | [OK] Krebs on Security (https://krebsonsecurity.com/feed/) — 10 entri, 10 baru.
+2026-08-02 16:45:00 | INFO     | [OK] Dark Reading (https://www.darkreading.com/rss.xml) — 50 entri, 50 baru.
+2026-08-02 16:45:02 | INFO     | [OK] SecurityWeek (https://www.securityweek.com/feed/) — 10 entri, 10 baru.
+2026-08-02 16:45:02 | INFO     | [OK] CISA News (https://www.cisa.gov/news.xml) — 10 entri, 10 baru.
+2026-08-02 16:45:03 | INFO     | [OK] CISA News (https://www.cisa.gov/cybersecurity-advisories/all.xml) — 30 entri, 30 baru.
+2026-08-02 16:45:04 | INFO     | [OK] CNN Indonesia (https://www.cnnindonesia.com/teknologi/rss) — 100 entri, 100 baru.
+2026-08-02 16:45:04 | INFO     | [OK] CNN Indonesia (https://www.cnnindonesia.com/nasional/rss) — 100 entri, 100 baru.
+2026-08-02 16:45:06 | INFO     | [OK] Antara News (https://www.antaranews.com/rss/terkini) — 50 entri, 50 baru.
+2026-08-02 16:45:07 | INFO     | [OK] Antara News (https://www.antaranews.com/rss/hukum) — 20 entri, 20 baru.
+2026-08-02 16:45:08 | INFO     | [OK] Tempo.co (https://rss.tempo.co/nasional) — 50 entri, 50 baru.
+2026-08-02 16:45:08 | INFO     | [OK] Tempo.co (https://rss.tempo.co/tekno) — 50 entri, 50 baru.
+2026-08-02 16:45:09 | WARNING  | [HTTP 404] Suara.com (https://www.suara.com/rss)
+2026-08-02 16:45:09 | INFO     | [OK] Sindonews (https://nasional.sindonews.com/rss) — 30 entri, 30 baru.
+2026-08-02 16:45:10 | INFO     | [OK] Sindonews (https://tekno.sindonews.com/rss) — 30 entri, 30 baru.
+2026-08-02 16:45:11 | INFO     | [OK] Republika (https://www.republika.co.id/rss/hukum) — 15 entri, 15 baru.
+2026-08-02 16:45:13 | INFO     | [OK] Republika (https://www.republika.co.id/rss/teknologi) — 13 entri, 13 baru.
+2026-08-02 16:45:13 | INFO     | [+] Mengambil RSS Google News...
+2026-08-02 16:45:14 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=kebocoran%20data&hl=id&gl=ID&ceid=ID:id) — 100 entri, 100 baru.
+2026-08-02 16:45:15 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=kebocoran%20data%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 41 entri, 36 baru.
+2026-08-02 16:45:15 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=hacker&hl=id&gl=ID&ceid=ID:id) — 100 entri, 100 baru.
+2026-08-02 16:45:16 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=hacker%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 7 entri, 5 baru.
+2026-08-02 16:45:16 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=ransomware&hl=id&gl=ID&ceid=ID:id) — 100 entri, 99 baru.
+2026-08-02 16:45:17 | WARNING  | [FEED KOSONG] Google News (https://news.google.com/rss/search?q=ransomware%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — tidak diketahui
+2026-08-02 16:45:17 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=phishing&hl=id&gl=ID&ceid=ID:id) — 100 entri, 100 baru.
+2026-08-02 16:45:18 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=phishing%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 3 entri, 3 baru.
+2026-08-02 16:45:18 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=diretas&hl=id&gl=ID&ceid=ID:id) — 100 entri, 100 baru.
+2026-08-02 16:45:19 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=diretas%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 9 entri, 9 baru.
+2026-08-02 16:45:20 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=judi%20online&hl=id&gl=ID&ceid=ID:id) — 100 entri, 88 baru.
+2026-08-02 16:45:20 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=judi%20online%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 49 entri, 42 baru.
+2026-08-02 16:45:21 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=peretas&hl=id&gl=ID&ceid=ID:id) — 100 entri, 85 baru.
+2026-08-02 16:45:21 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=peretas%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 12 entri, 9 baru.
+2026-08-02 16:45:22 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=dibobol&hl=id&gl=ID&ceid=ID:id) — 100 entri, 96 baru.
+2026-08-02 16:45:22 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=dibobol%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 18 entri, 15 baru.
+2026-08-02 16:45:23 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=dibajak&hl=id&gl=ID&ceid=ID:id) — 100 entri, 98 baru.
+2026-08-02 16:45:23 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=dibajak%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 5 entri, 3 baru.
+2026-08-02 16:45:24 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=serangan%20siber&hl=id&gl=ID&ceid=ID:id) — 100 entri, 83 baru.
+2026-08-02 16:45:24 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=serangan%20siber%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 50 entri, 41 baru.
+2026-08-02 16:45:25 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=pencurian%20data&hl=id&gl=ID&ceid=ID:id) — 100 entri, 91 baru.
+2026-08-02 16:45:26 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=pencurian%20data%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 19 entri, 16 baru.
+2026-08-02 16:45:26 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=malware&hl=id&gl=ID&ceid=ID:id) — 100 entri, 97 baru.
+2026-08-02 16:45:26 | INFO     | [OK] Google News (https://news.google.com/rss/search?q=malware%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — 4 entri, 2 baru.
+2026-08-02 16:45:26 | INFO     | Total entri terkumpul: 1951
+2026-08-02 16:45:27 | INFO     | Setelah filter window waktu (24 jam) saja: 234 (dari 1951)
+2026-08-02 16:45:27 | INFO     | Setelah filter kata kunci (media trusted_cyber dilewatkan): 26 (dari 234)
+2026-08-02 16:45:27 | INFO     | ============================================================
+2026-08-02 16:45:27 | INFO     | TAHAP 2: Ekstraksi Konten Berita...
+2026-08-02 16:45:27 | INFO     | ============================================================
+2026-08-02 16:45:27 | INFO     |   -> [1/26] Coldcard Hardware Wallet Flaw Linked to $70 Million Bitcoin ...
+2026-08-02 16:45:30 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:45:30 | INFO     |   -> [2/26] Isu Pinjol Ruben Onsu Memanas, Polisi Singgung Dugaan Keboco...
+2026-08-02 16:45:33 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:45:33 | INFO     |   -> [3/26] FTC Gugat Hims and Hers atas Kebocoran Data Kesehatan ke Met...
+2026-08-02 16:45:36 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:45:36 | INFO     |   -> [4/26] Waspadai Penyalahgunaan Data Pribadi, Masyarakat Diimbau Per...
+2026-08-02 16:48:01 | INFO     |   -> [5/26] Temukan celah keamanan siber, pelajar Kotim tembus Hall of F...
+2026-08-02 16:48:05 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:48:05 | INFO     |   -> [6/26] Data Pribadi Anda Mungkin Sudah Bocor Tanpa Disadari! Ini Ca...
+2026-08-02 16:48:12 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:48:12 | INFO     |   -> [7/26] Siber Indonesia Keropos, Kenapa Data Bocor Terus? - pcplus.c...
+2026-08-02 16:48:21 | INFO     |   -> [8/26] Londonmaxxing: Lift House, Anti-San Francisco Hacker House d...
+2026-08-02 16:48:24 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:48:24 | INFO     |   -> [9/26] Wow! Hacker Asal Perawang Riau Ini Terima Penghargaan dari N...
+2026-08-02 16:48:27 | INFO     |   -> [10/26] Sistem Pengolahan Air AS Ramai-ramai Diretas, Iran Dituduh J...
+2026-08-02 16:48:30 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:48:30 | INFO     |   -> [11/26] Sistem Pengolahan Air AS Ramai-ramai Diretas, Iran Dituduh J...
+2026-08-02 16:48:34 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:48:34 | INFO     |   -> [12/26] Foto : Sistem Pengolahan Air AS Ramai-ramai Diretas, Iran Di...
+2026-08-02 16:48:37 | INFO     |   -> [13/26] Aktor Jang Dong Ju Pilih Banting Setir Jadi BJ TikTok Live U...
+2026-08-02 16:48:39 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:48:39 | INFO     |   -> [14/26] Sistem Air di 7 Negara Bagian AS Diretas, Kota-Kota Kecil Di...
+2026-08-02 16:48:43 | INFO     |   -> [15/26] 10 Peretasan Kripto Terbesar Sejak 2025, Bybit Masih Jadi ya...
+2026-08-02 16:48:46 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:48:46 | INFO     |   -> [16/26] AS Peringatkan Serangan Siber Diduga Didukung Iran, Sistem A...
+2026-08-02 16:48:49 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:48:49 | INFO     |   -> [17/26] Serangan Siber Hantam Instalasi Air Minnesota, Trump Tolak T...
+2026-08-02 16:48:53 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:48:53 | INFO     |   -> [18/26] Heropanti 2: Jenius Peretas yang Berkhianat, Kembali Menumpa...
+2026-08-02 16:48:56 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:48:56 | INFO     |   -> [19/26] 10 Peretasan Kripto Terbesar Sejak 2025, Bybit Masih Jadi ya...
+2026-08-02 16:49:01 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:49:01 | INFO     |   -> [20/26] Serangan Siber Iran ke 30 Sistem Air di AS? Trump Salahkan G...
+2026-08-02 16:49:06 | INFO     |   -> [21/26] Sistem Air di 7 Negara Bagian Terganggu, AS Tuding Iran Lanc...
+2026-08-02 16:49:09 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:49:09 | INFO     |   -> [22/26] Lebih dari Separuh Gen Z Pernah Jadi Korban Serangan Siber, ...
+2026-08-02 16:49:12 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:49:12 | INFO     |   -> [23/26] Serangan Siber Hantam Instalasi Air Minnesota, Trump Tolak T...
+2026-08-02 16:49:15 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:49:15 | INFO     |   -> [24/26] ​52 Persen Gen Z Pernah Jadi Korban Serangan Siber, Padahal ...
+2026-08-02 16:49:18 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:49:18 | INFO     |   -> [25/26] Kaspersky Ungkap 52 Persen Gen Z Pernah Jadi Korban Serangan...
+2026-08-02 16:49:21 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:49:21 | INFO     |   -> [26/26] 50 Modus Penipuan Online Terbaru 2026 yang Wajib Diwaspadai,...
+2026-08-02 16:49:24 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 16:49:24 | INFO     | SELESAI: 20 artikel berhasil diekstrak & lolos filter.
+2026-08-02 16:49:24 | INFO     | Menghitung embedding untuk 20 judul...
+2026-08-02 16:49:38 | INFO     | Menggabungkan 2 berita mirip: 'Sistem Pengolahan Air AS Ramai-ramai Diretas, Iran...' (sumber: Google News)
+2026-08-02 16:49:38 | INFO     | Menggabungkan 2 berita mirip: '10 Peretasan Kripto Terbesar Sejak 2025, Bybit Mas...' (sumber: Google News)
+2026-08-02 16:49:38 | INFO     | Menggabungkan 2 berita mirip: 'Serangan Siber Hantam Instalasi Air Minnesota, Tru...' (sumber: Google News)
+2026-08-02 16:49:38 | INFO     | Menggabungkan 2 berita mirip: '​52 Persen Gen Z Pernah Jadi Korban Serangan Siber...' (sumber: Google News)
+2026-08-02 16:49:38 | INFO     | Deduplikasi hybrid: 20 -> 16 entri.
+2026-08-02 16:49:38 | INFO     | ############################################################
+2026-08-02 16:49:38 | INFO     | MEMULAI PENGUMPULAN CVE
+2026-08-02 16:49:38 | INFO     | ############################################################
+2026-08-02 16:49:40 | INFO     | Total CVE dipublikasikan dalam 24 jam terakhir: 112
+2026-08-02 16:49:40 | INFO     | Setelah filter CVSS >= 7.0: 45 CVE (dari 112 total).
+2026-08-02 16:49:40 | INFO     | ############################################################
+2026-08-02 16:49:40 | INFO     | RINGKASAN PIPELINE HARIAN
+2026-08-02 16:49:40 | INFO     |   Berita siap diproses  : 16
+2026-08-02 16:49:40 | INFO     |   Mode CVE hari ini     : ada_critical
+2026-08-02 16:49:40 | INFO     | ############################################################
+2026-08-02 17:00:51 | INFO     | Database state siap di: D:\PENTING\MAGANG\KOMINFO\NOTIFIKASI-BERITA\data\state.db
+2026-08-02 17:00:51 | INFO     | ############################################################
+2026-08-02 17:00:51 | INFO     | MEMULAI PENGUMPULAN BERITA
+2026-08-02 17:00:51 | INFO     | ############################################################
+2026-08-02 17:00:51 | INFO     | ============================================================
+2026-08-02 17:00:51 | INFO     | TAHAP 1: Mengumpulkan Judul Berita dari RSS...
+2026-08-02 17:00:51 | INFO     | ============================================================
+2026-08-02 17:00:51 | INFO     | [+] Mengambil RSS media internasional & Indonesia...
+2026-08-02 17:00:52 | INFO     | [OK] The Hacker News — 50 entri.
+2026-08-02 17:00:53 | INFO     | [OK] BleepingComputer — 15 entri.
+2026-08-02 17:00:53 | INFO     | [OK] Krebs on Security — 10 entri.
+2026-08-02 17:00:54 | INFO     | [OK] Dark Reading — 50 entri.
+2026-08-02 17:00:55 | INFO     | [OK] SecurityWeek — 10 entri.
+2026-08-02 17:00:56 | INFO     | [OK] CISA News — 10 entri.
+2026-08-02 17:00:57 | INFO     | [OK] CISA News — 30 entri.
+2026-08-02 17:00:57 | INFO     | [OK] CNN Indonesia — 100 entri.
+2026-08-02 17:00:57 | INFO     | [OK] CNN Indonesia — 100 entri.
+2026-08-02 17:00:57 | INFO     | [OK] Antara News — 50 entri.
+2026-08-02 17:00:58 | INFO     | [OK] Antara News — 20 entri.
+2026-08-02 17:00:58 | INFO     | [OK] Tempo.co — 50 entri.
+2026-08-02 17:00:58 | INFO     | [OK] Tempo.co — 50 entri.
+2026-08-02 17:00:58 | WARNING  | [HTTP 404] Suara.com (https://www.suara.com/rss)
+2026-08-02 17:00:59 | INFO     | [OK] Sindonews — 30 entri.
+2026-08-02 17:01:00 | INFO     | [OK] Sindonews — 30 entri.
+2026-08-02 17:01:01 | INFO     | [OK] Republika — 15 entri.
+2026-08-02 17:01:01 | INFO     | [OK] Republika — 13 entri.
+2026-08-02 17:01:01 | INFO     | [+] Mengambil RSS Google News...
+2026-08-02 17:01:02 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 17:01:02 | INFO     | [OK] Google News — 42 entri.
+2026-08-02 17:01:03 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 17:01:03 | INFO     | [OK] Google News — 8 entri.
+2026-08-02 17:01:04 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 17:01:04 | WARNING  | [FEED KOSONG] Google News (https://news.google.com/rss/search?q=ransomware%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — tidak diketahui
+2026-08-02 17:01:04 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 17:01:04 | INFO     | [OK] Google News — 3 entri.
+2026-08-02 17:01:05 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 17:01:05 | INFO     | [OK] Google News — 9 entri.
+2026-08-02 17:01:06 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 17:01:06 | INFO     | [OK] Google News — 48 entri.
+2026-08-02 17:01:07 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 17:01:07 | INFO     | [OK] Google News — 11 entri.
+2026-08-02 17:01:07 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 17:01:08 | INFO     | [OK] Google News — 18 entri.
+2026-08-02 17:01:08 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 17:01:09 | INFO     | [OK] Google News — 5 entri.
+2026-08-02 17:01:09 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 17:01:10 | INFO     | [OK] Google News — 49 entri.
+2026-08-02 17:01:10 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 17:01:10 | INFO     | [OK] Google News — 19 entri.
+2026-08-02 17:01:11 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 17:01:11 | INFO     | [OK] Google News — 5 entri.
+2026-08-02 17:01:11 | INFO     | Total entri terkumpul: 1952
+2026-08-02 17:01:11 | INFO     | Setelah filter window waktu (24 jam) saja: 233 (dari 1952)
+2026-08-02 17:01:11 | INFO     | Setelah filter kata kunci (media trusted_cyber dilewatkan): 25 (dari 233)
+2026-08-02 17:01:11 | INFO     | --- Breakdown per sumber (awal -> lolos window -> lolos kandidat) ---
+2026-08-02 17:01:11 | INFO     |   The Hacker News: 50 -> 1 -> 1
+2026-08-02 17:01:11 | INFO     |   BleepingComputer: 15 -> 0 -> 0
+2026-08-02 17:01:11 | INFO     |   Krebs on Security: 10 -> 0 -> 0
+2026-08-02 17:01:11 | INFO     |   Dark Reading: 50 -> 0 -> 0
+2026-08-02 17:01:11 | INFO     |   SecurityWeek: 10 -> 0 -> 0
+2026-08-02 17:01:11 | INFO     |   CISA News: 40 -> 0 -> 0
+2026-08-02 17:01:11 | INFO     |   CNN Indonesia: 200 -> 29 -> 0
+2026-08-02 17:01:11 | INFO     |   Antara News: 70 -> 50 -> 0
+2026-08-02 17:01:11 | INFO     |   Tempo.co: 100 -> 10 -> 0
+2026-08-02 17:01:11 | INFO     |   Sindonews: 60 -> 21 -> 0
+2026-08-02 17:01:11 | INFO     |   Republika: 28 -> 0 -> 0
+2026-08-02 17:01:11 | INFO     |   Google News: 1319 -> 122 -> 24
+2026-08-02 17:01:11 | INFO     | ============================================================
+2026-08-02 17:01:11 | INFO     | TAHAP 2: Ekstraksi Konten Berita...
+2026-08-02 17:01:11 | INFO     | ============================================================
+2026-08-02 17:01:11 | INFO     |   -> [1/25] Coldcard Hardware Wallet Flaw Linked to $70 Million Bitcoin ...
+2026-08-02 17:01:14 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:01:14 | INFO     |   -> [2/25] Isu Pinjol Ruben Onsu Memanas, Polisi Singgung Dugaan Keboco...
+2026-08-02 17:01:18 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:01:18 | INFO     |   -> [3/25] FTC Gugat Hims and Hers atas Kebocoran Data Kesehatan ke Met...
+2026-08-02 17:01:21 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:01:21 | INFO     |   -> [4/25] Waspadai Penyalahgunaan Data Pribadi, Masyarakat Diimbau Per...
+2026-08-02 17:03:47 | INFO     |   -> [5/25] Temukan celah keamanan siber, pelajar Kotim tembus Hall of F...
+2026-08-02 17:03:50 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:03:50 | INFO     |   -> [6/25] Data Pribadi Anda Mungkin Sudah Bocor Tanpa Disadari! Ini Ca...
+2026-08-02 17:03:54 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:03:54 | INFO     |   -> [7/25] Siber Indonesia Keropos, Kenapa Data Bocor Terus? - pcplus.c...
+2026-08-02 17:03:57 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:03:57 | INFO     |   -> [8/25] Londonmaxxing: Lift House, Anti-San Francisco Hacker House d...
+2026-08-02 17:04:01 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:04:01 | INFO     |   -> [9/25] Wow! Hacker Asal Perawang Riau Ini Terima Penghargaan dari N...
+2026-08-02 17:04:05 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:04:05 | INFO     |   -> [10/25] Sistem Pengolahan Air AS Ramai-ramai Diretas, Iran Dituduh J...
+2026-08-02 17:04:08 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:04:08 | INFO     |   -> [11/25] Sistem Pengolahan Air AS Ramai-ramai Diretas, Iran Dituduh J...
+2026-08-02 17:04:12 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:04:12 | INFO     |   -> [12/25] Foto : Sistem Pengolahan Air AS Ramai-ramai Diretas, Iran Di...
+2026-08-02 17:04:16 | INFO     |   -> [13/25] Aktor Jang Dong Ju Pilih Banting Setir Jadi BJ TikTok Live U...
+2026-08-02 17:04:19 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:04:19 | INFO     |   -> [14/25] Sistem Air di 7 Negara Bagian AS Diretas, Kota-Kota Kecil Di...
+2026-08-02 17:04:22 | INFO     |   -> [15/25] 10 Peretasan Kripto Terbesar Sejak 2025, Bybit Masih Jadi ya...
+2026-08-02 17:04:27 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:04:27 | INFO     |   -> [16/25] AS Peringatkan Serangan Siber Diduga Didukung Iran, Sistem A...
+2026-08-02 17:04:31 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:04:31 | INFO     |   -> [17/25] Heropanti 2: Jenius Peretas yang Berkhianat, Kembali Menumpa...
+2026-08-02 17:04:35 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:04:35 | INFO     |   -> [18/25] 10 Peretasan Kripto Terbesar Sejak 2025, Bybit Masih Jadi ya...
+2026-08-02 17:04:38 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:04:38 | INFO     |   -> [19/25] Serangan Siber Iran ke 30 Sistem Air di AS? Trump Salahkan G...
+2026-08-02 17:04:43 | INFO     |   -> [20/25] Sistem Air di 7 Negara Bagian Terganggu, AS Tuding Iran Lanc...
+2026-08-02 17:04:48 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:04:48 | INFO     |   -> [21/25] Lebih dari Separuh Gen Z Pernah Jadi Korban Serangan Siber, ...
+2026-08-02 17:04:52 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:04:52 | INFO     |   -> [22/25] ​52 Persen Gen Z Pernah Jadi Korban Serangan Siber, Padahal ...
+2026-08-02 17:04:56 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:04:56 | INFO     |   -> [23/25] Kaspersky Ungkap 52 Persen Gen Z Pernah Jadi Korban Serangan...
+2026-08-02 17:05:00 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:05:00 | INFO     |   -> [24/25] 50 Modus Penipuan Online Terbaru 2026 yang Wajib Diwaspadai,...
+2026-08-02 17:05:04 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:05:04 | INFO     |   -> [25/25] Serangan phishing dan peretasan dompet kripto s... - Pluang...
+2026-08-02 17:05:07 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 17:05:07 | INFO     | SELESAI: 21 artikel berhasil diekstrak & lolos filter.
+2026-08-02 17:05:07 | INFO     | Gagal ekstraksi konten per sumber: {'Google News': 4}
+2026-08-02 17:05:07 | INFO     | Gagal re-validasi window (tanggal final) per sumber: {}
+2026-08-02 17:05:08 | INFO     | Menghitung embedding untuk 21 judul...
+2026-08-02 17:05:20 | INFO     | Menggabungkan 2 berita mirip: 'Sistem Pengolahan Air AS Ramai-ramai Diretas, Iran...' (sumber: Google News)
+2026-08-02 17:05:20 | INFO     | Menggabungkan 2 berita mirip: '10 Peretasan Kripto Terbesar Sejak 2025, Bybit Mas...' (sumber: Google News)
+2026-08-02 17:05:20 | INFO     | Menggabungkan 2 berita mirip: '​52 Persen Gen Z Pernah Jadi Korban Serangan Siber...' (sumber: Google News)
+2026-08-02 17:05:20 | INFO     | Deduplikasi hybrid: 21 -> 18 entri.
+2026-08-02 17:05:20 | INFO     | ############################################################
+2026-08-02 17:05:20 | INFO     | MEMULAI PENGUMPULAN CVE
+2026-08-02 17:05:20 | INFO     | ############################################################
+2026-08-02 17:05:22 | INFO     | Total CVE dipublikasikan dalam 24 jam terakhir: 112
+2026-08-02 17:05:22 | INFO     | Setelah filter CVSS >= 7.0: 45 CVE (dari 112 total).
+2026-08-02 17:05:22 | INFO     | ############################################################
+2026-08-02 17:05:22 | INFO     | RINGKASAN PIPELINE HARIAN
+2026-08-02 17:05:22 | INFO     |   Berita siap diproses  : 18
+2026-08-02 17:05:22 | INFO     |   Mode CVE hari ini     : ada_critical
+2026-08-02 17:05:22 | INFO     | ############################################################
+2026-08-02 22:11:47 | INFO     | Database state siap di: D:\PENTING\MAGANG\KOMINFO\NOTIFIKASI-BERITA\data\state.db
+2026-08-02 22:11:47 | INFO     | ############################################################
+2026-08-02 22:11:47 | INFO     | MEMULAI PENGUMPULAN BERITA
+2026-08-02 22:11:47 | INFO     | ############################################################
+2026-08-02 22:11:47 | INFO     | ============================================================
+2026-08-02 22:11:47 | INFO     | TAHAP 1: Mengumpulkan Judul Berita dari RSS...
+2026-08-02 22:11:47 | INFO     | ============================================================
+2026-08-02 22:11:47 | INFO     | [+] Mengambil RSS media internasional & Indonesia...
+2026-08-02 22:11:48 | INFO     | [OK] The Hacker News — 50 entri.
+2026-08-02 22:11:49 | INFO     | [OK] BleepingComputer — 15 entri.
+2026-08-02 22:11:49 | INFO     | [OK] Krebs on Security — 10 entri.
+2026-08-02 22:11:51 | INFO     | [OK] Dark Reading — 50 entri.
+2026-08-02 22:11:52 | INFO     | [OK] SecurityWeek — 10 entri.
+2026-08-02 22:11:52 | INFO     | [OK] CISA News — 10 entri.
+2026-08-02 22:11:53 | INFO     | [OK] CISA News — 30 entri.
+2026-08-02 22:11:54 | INFO     | [OK] CNN Indonesia — 100 entri.
+2026-08-02 22:11:54 | INFO     | [OK] CNN Indonesia — 100 entri.
+2026-08-02 22:11:54 | INFO     | [OK] Antara News — 50 entri.
+2026-08-02 22:11:54 | INFO     | [OK] Antara News — 20 entri.
+2026-08-02 22:11:54 | INFO     | [OK] Tempo.co — 50 entri.
+2026-08-02 22:11:55 | INFO     | [OK] Tempo.co — 50 entri.
+2026-08-02 22:11:55 | WARNING  | [HTTP 404] Suara.com (https://www.suara.com/rss)
+2026-08-02 22:11:56 | INFO     | [OK] Sindonews — 30 entri.
+2026-08-02 22:11:56 | INFO     | [OK] Sindonews — 30 entri.
+2026-08-02 22:11:57 | INFO     | [OK] Republika — 15 entri.
+2026-08-02 22:11:57 | INFO     | [OK] Republika — 13 entri.
+2026-08-02 22:11:57 | INFO     | [+] Mengambil RSS Google News...
+2026-08-02 22:11:58 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:11:58 | INFO     | [OK] Google News — 37 entri.
+2026-08-02 22:11:59 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:11:59 | INFO     | [OK] Google News — 8 entri.
+2026-08-02 22:12:00 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:12:00 | WARNING  | [FEED KOSONG] Google News (https://news.google.com/rss/search?q=ransomware%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — tidak diketahui
+2026-08-02 22:12:00 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:12:00 | INFO     | [OK] Google News — 3 entri.
+2026-08-02 22:12:01 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:12:01 | INFO     | [OK] Google News — 9 entri.
+2026-08-02 22:12:02 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:12:02 | INFO     | [OK] Google News — 46 entri.
+2026-08-02 22:12:03 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:12:03 | INFO     | [OK] Google News — 16 entri.
+2026-08-02 22:12:04 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:12:04 | INFO     | [OK] Google News — 17 entri.
+2026-08-02 22:12:05 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:12:05 | INFO     | [OK] Google News — 6 entri.
+2026-08-02 22:12:05 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:12:06 | INFO     | [OK] Google News — 54 entri.
+2026-08-02 22:12:06 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:12:07 | INFO     | [OK] Google News — 20 entri.
+2026-08-02 22:12:07 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:12:08 | INFO     | [OK] Google News — 7 entri.
+2026-08-02 22:12:08 | INFO     | Total entri terkumpul: 1950
+2026-08-02 22:12:08 | INFO     | Setelah filter window waktu (24 jam) saja: 317 (dari 1950)
+2026-08-02 22:12:08 | INFO     | Setelah filter kata kunci (media trusted_cyber dilewatkan): 43 (dari 317)
+2026-08-02 22:12:08 | INFO     | --- Breakdown per sumber (awal -> lolos window -> lolos kandidat) ---
+2026-08-02 22:12:08 | INFO     |   The Hacker News: 50 -> 1 -> 1
+2026-08-02 22:12:08 | INFO     |   BleepingComputer: 15 -> 1 -> 1
+2026-08-02 22:12:08 | INFO     |   Krebs on Security: 10 -> 0 -> 0
+2026-08-02 22:12:08 | INFO     |   Dark Reading: 50 -> 0 -> 0
+2026-08-02 22:12:08 | INFO     |   SecurityWeek: 10 -> 0 -> 0
+2026-08-02 22:12:08 | INFO     |   CISA News: 40 -> 0 -> 0
+2026-08-02 22:12:08 | INFO     |   CNN Indonesia: 200 -> 30 -> 0
+2026-08-02 22:12:08 | INFO     |   Antara News: 70 -> 50 -> 0
+2026-08-02 22:12:08 | INFO     |   Tempo.co: 100 -> 6 -> 0
+2026-08-02 22:12:08 | INFO     |   Sindonews: 60 -> 19 -> 0
+2026-08-02 22:12:08 | INFO     |   Republika: 28 -> 0 -> 0
+2026-08-02 22:12:08 | INFO     |   Google News: 1317 -> 210 -> 41
+2026-08-02 22:12:08 | INFO     | ============================================================
+2026-08-02 22:12:08 | INFO     | TAHAP 2: Ekstraksi Konten Berita...
+2026-08-02 22:12:08 | INFO     | ============================================================
+2026-08-02 22:12:08 | INFO     |   -> [1/43] Coldcard Hardware Wallet Flaw Linked to $70 Million Bitcoin ...
+2026-08-02 22:12:10 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 22:12:10 | INFO     |   -> [2/43] Google Chrome may soon block New Tab hijacker extensions by ...
+2026-08-02 22:12:13 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 22:12:13 | INFO     |   -> [3/43] Audit Mendalam Sistem Proteksi Wild Bounty Menyoroti Celah P...
+2026-08-02 22:12:16 | INFO     |   -> [4/43] Isu Pinjol Ruben Onsu Memanas, Polisi Singgung Dugaan Keboco...
+2026-08-02 22:19:31 | INFO     | Database state siap di: D:\PENTING\MAGANG\KOMINFO\NOTIFIKASI-BERITA\data\state.db
+2026-08-02 22:19:31 | INFO     | ############################################################
+2026-08-02 22:19:31 | INFO     | MEMULAI PENGUMPULAN BERITA
+2026-08-02 22:19:31 | INFO     | ############################################################
+2026-08-02 22:19:31 | INFO     | ============================================================
+2026-08-02 22:19:31 | INFO     | TAHAP 1: Mengumpulkan Judul Berita dari RSS...
+2026-08-02 22:19:31 | INFO     | ============================================================
+2026-08-02 22:19:31 | INFO     | [+] Mengambil RSS media internasional & Indonesia...
+2026-08-02 22:19:31 | INFO     | [OK] The Hacker News — 50 entri.
+2026-08-02 22:19:32 | INFO     | [OK] BleepingComputer — 15 entri.
+2026-08-02 22:19:34 | INFO     | [OK] Krebs on Security — 10 entri.
+2026-08-02 22:19:35 | INFO     | [OK] Dark Reading — 50 entri.
+2026-08-02 22:19:37 | INFO     | [OK] SecurityWeek — 10 entri.
+2026-08-02 22:19:38 | INFO     | [OK] CISA News — 10 entri.
+2026-08-02 22:19:39 | INFO     | [OK] CISA News — 30 entri.
+2026-08-02 22:19:39 | INFO     | [OK] CNN Indonesia — 100 entri.
+2026-08-02 22:19:39 | INFO     | [OK] CNN Indonesia — 100 entri.
+2026-08-02 22:19:40 | INFO     | [OK] Antara News — 50 entri.
+2026-08-02 22:19:40 | INFO     | [OK] Antara News — 20 entri.
+2026-08-02 22:19:40 | INFO     | [OK] Tempo.co — 50 entri.
+2026-08-02 22:19:40 | INFO     | [OK] Tempo.co — 50 entri.
+2026-08-02 22:19:42 | WARNING  | [HTTP 404] Suara.com (https://www.suara.com/rss)
+2026-08-02 22:19:42 | INFO     | [OK] Sindonews — 30 entri.
+2026-08-02 22:19:43 | INFO     | [OK] Sindonews — 30 entri.
+2026-08-02 22:19:44 | INFO     | [OK] Republika — 15 entri.
+2026-08-02 22:19:45 | INFO     | [OK] Republika — 13 entri.
+2026-08-02 22:19:45 | INFO     | [+] Mengambil RSS Google News...
+2026-08-02 22:19:46 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:19:46 | INFO     | [OK] Google News — 37 entri.
+2026-08-02 22:19:47 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:19:47 | INFO     | [OK] Google News — 7 entri.
+2026-08-02 22:19:48 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:19:48 | WARNING  | [FEED KOSONG] Google News (https://news.google.com/rss/search?q=ransomware%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — tidak diketahui
+2026-08-02 22:19:48 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:19:49 | INFO     | [OK] Google News — 3 entri.
+2026-08-02 22:19:49 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:19:49 | INFO     | [OK] Google News — 9 entri.
+2026-08-02 22:19:50 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:19:50 | INFO     | [OK] Google News — 47 entri.
+2026-08-02 22:19:51 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:19:51 | INFO     | [OK] Google News — 15 entri.
+2026-08-02 22:19:51 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:19:52 | INFO     | [OK] Google News — 17 entri.
+2026-08-02 22:19:52 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:19:52 | INFO     | [OK] Google News — 6 entri.
+2026-08-02 22:19:53 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:19:53 | INFO     | [OK] Google News — 54 entri.
+2026-08-02 22:19:54 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:19:54 | INFO     | [OK] Google News — 21 entri.
+2026-08-02 22:19:55 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:19:55 | INFO     | [OK] Google News — 7 entri.
+2026-08-02 22:19:55 | INFO     | Total entri terkumpul: 1951
+2026-08-02 22:19:55 | INFO     | Setelah filter window waktu (24 jam) saja: 318 (dari 1951)
+2026-08-02 22:19:55 | INFO     | Setelah filter kata kunci (media trusted_cyber dilewatkan): 41 (dari 318)
+2026-08-02 22:19:55 | INFO     | --- Breakdown per sumber (awal -> lolos window -> lolos kandidat) ---
+2026-08-02 22:19:55 | INFO     |   The Hacker News: 50 -> 1 -> 1
+2026-08-02 22:19:55 | INFO     |   BleepingComputer: 15 -> 1 -> 1
+2026-08-02 22:19:55 | INFO     |   Krebs on Security: 10 -> 0 -> 0
+2026-08-02 22:19:55 | INFO     |   Dark Reading: 50 -> 0 -> 0
+2026-08-02 22:19:55 | INFO     |   SecurityWeek: 10 -> 0 -> 0
+2026-08-02 22:19:55 | INFO     |   CISA News: 40 -> 0 -> 0
+2026-08-02 22:19:55 | INFO     |   CNN Indonesia: 200 -> 30 -> 0
+2026-08-02 22:19:55 | INFO     |   Antara News: 70 -> 50 -> 0
+2026-08-02 22:19:55 | INFO     |   Tempo.co: 100 -> 6 -> 0
+2026-08-02 22:19:55 | INFO     |   Sindonews: 60 -> 19 -> 0
+2026-08-02 22:19:55 | INFO     |   Republika: 28 -> 0 -> 0
+2026-08-02 22:19:55 | INFO     |   Google News: 1318 -> 211 -> 39
+2026-08-02 22:19:55 | INFO     | ============================================================
+2026-08-02 22:19:55 | INFO     | TAHAP 2: Ekstraksi Konten Berita...
+2026-08-02 22:19:55 | INFO     | ============================================================
+2026-08-02 22:19:55 | INFO     |   -> [1/41] Coldcard Hardware Wallet Flaw Linked to $70 Million Bitcoin ...
+2026-08-02 22:19:57 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 22:19:57 | INFO     |   -> [2/41] Google Chrome may soon block New Tab hijacker extensions by ...
+2026-08-02 22:24:50 | INFO     | Database state siap di: D:\PENTING\MAGANG\KOMINFO\NOTIFIKASI-BERITA\data\state.db
+2026-08-02 22:24:50 | INFO     | ############################################################
+2026-08-02 22:24:50 | INFO     | MEMULAI PENGUMPULAN BERITA
+2026-08-02 22:24:50 | INFO     | ############################################################
+2026-08-02 22:24:50 | INFO     | ============================================================
+2026-08-02 22:24:50 | INFO     | TAHAP 1: Mengumpulkan Judul Berita dari RSS...
+2026-08-02 22:24:50 | INFO     | ============================================================
+2026-08-02 22:24:50 | INFO     | [+] Mengambil RSS media internasional & Indonesia...
+2026-08-02 22:24:51 | INFO     | [OK] The Hacker News — 50 entri.
+2026-08-02 22:24:51 | INFO     | [OK] BleepingComputer — 15 entri.
+2026-08-02 22:24:54 | INFO     | [OK] Krebs on Security — 10 entri.
+2026-08-02 22:24:56 | INFO     | [OK] Dark Reading — 50 entri.
+2026-08-02 22:24:57 | INFO     | [OK] SecurityWeek — 10 entri.
+2026-08-02 22:24:57 | INFO     | [OK] CISA News — 10 entri.
+2026-08-02 22:24:59 | INFO     | [OK] CISA News — 30 entri.
+2026-08-02 22:24:59 | INFO     | [OK] CNN Indonesia — 100 entri.
+2026-08-02 22:24:59 | INFO     | [OK] CNN Indonesia — 100 entri.
+2026-08-02 22:25:00 | INFO     | [OK] Antara News — 50 entri.
+2026-08-02 22:25:00 | INFO     | [OK] Antara News — 20 entri.
+2026-08-02 22:25:00 | INFO     | [OK] Tempo.co — 50 entri.
+2026-08-02 22:25:00 | INFO     | [OK] Tempo.co — 50 entri.
+2026-08-02 22:25:01 | WARNING  | [HTTP 404] Suara.com (https://www.suara.com/rss)
+2026-08-02 22:25:02 | INFO     | [OK] Sindonews — 30 entri.
+2026-08-02 22:25:02 | INFO     | [OK] Sindonews — 30 entri.
+2026-08-02 22:25:03 | INFO     | [OK] Republika — 15 entri.
+2026-08-02 22:25:03 | INFO     | [OK] Republika — 13 entri.
+2026-08-02 22:25:03 | INFO     | [+] Mengambil RSS Google News...
+2026-08-02 22:25:04 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:25:04 | INFO     | [OK] Google News — 37 entri.
+2026-08-02 22:25:05 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:25:05 | INFO     | [OK] Google News — 7 entri.
+2026-08-02 22:25:06 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:25:06 | WARNING  | [FEED KOSONG] Google News (https://news.google.com/rss/search?q=ransomware%20when%3A1d&hl=id&gl=ID&ceid=ID:id) — tidak diketahui
+2026-08-02 22:25:06 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:25:07 | INFO     | [OK] Google News — 3 entri.
+2026-08-02 22:25:07 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:25:07 | INFO     | [OK] Google News — 9 entri.
+2026-08-02 22:25:08 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:25:08 | INFO     | [OK] Google News — 48 entri.
+2026-08-02 22:25:09 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:25:09 | INFO     | [OK] Google News — 14 entri.
+2026-08-02 22:25:09 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:25:10 | INFO     | [OK] Google News — 16 entri.
+2026-08-02 22:25:10 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:25:10 | INFO     | [OK] Google News — 6 entri.
+2026-08-02 22:25:11 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:25:11 | INFO     | [OK] Google News — 54 entri.
+2026-08-02 22:25:12 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:25:12 | INFO     | [OK] Google News — 20 entri.
+2026-08-02 22:25:13 | INFO     | [OK] Google News — 100 entri.
+2026-08-02 22:25:13 | INFO     | [OK] Google News — 7 entri.
+2026-08-02 22:25:13 | INFO     | Total entri terkumpul: 1950
+2026-08-02 22:25:13 | INFO     | Setelah filter window waktu (24 jam) saja: 316 (dari 1950)
+2026-08-02 22:25:13 | INFO     | Setelah filter kata kunci (media trusted_cyber dilewatkan): 41 (dari 316)
+2026-08-02 22:25:13 | INFO     | --- Breakdown per sumber (awal -> lolos window -> lolos kandidat) ---
+2026-08-02 22:25:13 | INFO     |   The Hacker News: 50 -> 1 -> 1
+2026-08-02 22:25:13 | INFO     |   BleepingComputer: 15 -> 1 -> 1
+2026-08-02 22:25:13 | INFO     |   Krebs on Security: 10 -> 0 -> 0
+2026-08-02 22:25:13 | INFO     |   Dark Reading: 50 -> 0 -> 0
+2026-08-02 22:25:13 | INFO     |   SecurityWeek: 10 -> 0 -> 0
+2026-08-02 22:25:13 | INFO     |   CISA News: 40 -> 0 -> 0
+2026-08-02 22:25:13 | INFO     |   CNN Indonesia: 200 -> 30 -> 0
+2026-08-02 22:25:13 | INFO     |   Antara News: 70 -> 50 -> 0
+2026-08-02 22:25:13 | INFO     |   Tempo.co: 100 -> 6 -> 0
+2026-08-02 22:25:13 | INFO     |   Sindonews: 60 -> 19 -> 0
+2026-08-02 22:25:13 | INFO     |   Republika: 28 -> 0 -> 0
+2026-08-02 22:25:13 | INFO     |   Google News: 1317 -> 209 -> 39
+2026-08-02 22:25:13 | INFO     | ============================================================
+2026-08-02 22:25:13 | INFO     | TAHAP 2: Ekstraksi Konten Berita...
+2026-08-02 22:25:13 | INFO     | ============================================================
+2026-08-02 22:25:13 | INFO     |   -> [1/41] Coldcard Hardware Wallet Flaw Linked to $70 Million Bitcoin ...
+2026-08-02 22:25:15 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-02 22:25:15 | INFO     |   -> [2/41] Google Chrome may soon block New Tab hijacker extensions by ...

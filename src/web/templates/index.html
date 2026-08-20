@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="light" lang="id">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>SiberHarian - Rangkuman &amp; Tren Insiden Siber</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+  <!-- Tailwind Configuration -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-fixed-dim": "#dec29a",
+            "surface-container-high": "#eae7e9",
+            "error": "#ba1a1a",
+            "primary": "#000000",
+            "on-secondary-fixed": "#001e2c",
+            "tertiary": "#000000",
+            "surface-bright": "#fcf8fa",
+            "secondary-container": "#40c2fd",
+            "on-primary-fixed": "#131b2e",
+            "secondary": "#00668a",
+            "inverse-on-surface": "#f3f0f2",
+            "surface-tint": "#565e74",
+            "surface-container-highest": "#e4e2e4",
+            "on-background": "#1b1b1d",
+            "on-primary-fixed-variant": "#3f465c",
+            "background": "#fcf8fa",
+            "surface-dim": "#dcd9db",
+            "tertiary-fixed": "#fcdeb5",
+            "on-error-container": "#93000a",
+            "outline": "#76777d",
+            "on-tertiary-fixed": "#271901",
+            "on-tertiary": "#ffffff",
+            "inverse-surface": "#303032",
+            "on-tertiary-fixed-variant": "#574425",
+            "primary-fixed": "#dae2fd",
+            "on-surface-variant": "#45464d",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "on-secondary-fixed-variant": "#004c69",
+            "primary-fixed-dim": "#bec6e0",
+            "outline-variant": "#c6c6cd",
+            "surface-variant": "#e4e2e4",
+            "on-secondary-container": "#004d6a",
+            "secondary-fixed": "#c4e7ff",
+            "surface-container": "#f0edef",
+            "on-primary": "#ffffff",
+            "surface-container-low": "#f6f3f5",
+            "surface": "#fcf8fa",
+            "surface-container-lowest": "#ffffff",
+            "primary-container": "#131b2e",
+            "inverse-primary": "#bec6e0",
+            "tertiary-container": "#271901",
+            "secondary-fixed-dim": "#7bd0ff",
+            "on-primary-container": "#7c839b",
+            "on-tertiary-container": "#98805d",
+            "on-surface": "#1b1b1d",
+            "on-secondary": "#ffffff"
+          },
+          "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+          "spacing": { "gutter": "24px", "lg": "24px", "xs": "4px", "sm": "8px", "container-max": "1120px", "md": "16px", "xl": "40px", "base": "4px" },
+          "fontFamily": {
+            "body-lg": ["Inter"], "display": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"],
+            "caption": ["Inter"], "headline-lg-mobile": ["Inter"], "body-md": ["Inter"], "label-sm": ["JetBrains Mono"]
+          },
+          "fontSize": {
+            "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "caption": ["13px", { "lineHeight": "1.4", "fontWeight": "500" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+            "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "label-sm": ["12px", { "lineHeight": "1.5", "letterSpacing": "0.05em", "fontWeight": "500" }]
+          }
+        },
+      },
+    }
+  </script>
+  <style>
+    body { background-color: #FAFAFA; color: #1b1b1d; scroll-behavior: smooth; }
+    .log-gradient { background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%); }
+    .custom-shadow { box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03); }
+    .custom-shadow:hover { box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); }
+    #btn-cancel { display: none; }
+    #btn-cancel.visible { display: flex; }
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+
+<body class="font-body-md text-body-md" x-data="{ tabAktif: 'beranda' }">
+  <!-- TopNavBar -->
+  <header class="w-full sticky top-0 z-50 bg-surface border-b border-outline-variant">
+    <div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto">
+      <div class="font-headline-md text-headline-md font-bold text-primary">SiberHarian</div>
+      <nav class="hidden md:flex items-center space-x-8">
+        <a href="#" @click.prevent="tabAktif = 'beranda'"
+          class="font-body-md text-body-md pb-1 transition-all duration-200 ease-in-out"
+          :class="tabAktif === 'beranda' ? 'text-primary border-b-2 border-primary' : 'text-on-surface-variant hover:text-primary'">
+          Dashboard
+        </a>
+        <a href="#" @click.prevent="tabAktif = 'arsip'; muatTabArsip()"
+          class="font-body-md text-body-md pb-1 transition-all duration-200 ease-in-out"
+          :class="tabAktif === 'arsip' ? 'text-primary border-b-2 border-primary' : 'text-on-surface-variant hover:text-primary'">
+          Arsip
+        </a>
+        <a href="#" @click.prevent="tabAktif = 'tren'; muatTabTren()"
+          class="font-body-md text-body-md pb-1 transition-all duration-200 ease-in-out"
+          :class="tabAktif === 'tren' ? 'text-primary border-b-2 border-primary' : 'text-on-surface-variant hover:text-primary'">
+          Tren Siber
+        </a>
+      </nav>
+      <div class="flex items-center gap-4">
+        <div class="relative hidden sm:block">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+          <input class="pl-10 pr-4 py-2 rounded-lg bg-surface-container-low border border-outline-variant focus:border-secondary outline-none text-body-md transition-all"
+            placeholder="Cari insiden..." type="text" />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-container-max mx-auto px-gutter">
+    <!-- Hero + Pipeline Runner (global, tidak terikat tab) -->
+    <section class="pt-xl pb-20 text-center">
+      <h1 class="font-display text-display text-primary mb-md max-w-3xl mx-auto">
+        Rangkuman &amp; Tren Insiden Siber
+      </h1>
+      <p class="font-body-lg text-body-lg text-on-surface-variant mb-xl max-w-2xl mx-auto">
+        Pipeline monitoring, ringkasan berita, dan analisis tren keamanan siber otomatis.
+      </p>
+      <div class="flex flex-col items-center gap-xl">
+        <div class="flex items-center justify-center gap-4 flex-wrap">
+          <button
+            class="bg-primary text-white px-10 py-4 rounded-lg font-bold text-lg hover:opacity-90 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            id="btn-run" onclick="mulaiPipeline()">
+            <span class="material-symbols-outlined" id="run-icon">play_arrow</span>
+            <span id="btn-run-text">Jalankan Pipeline</span>
+          </button>
+          <button
+            class="bg-white text-primary border border-outline-variant px-8 py-4 rounded-lg font-bold text-lg hover:bg-surface-container-low transition-all active:scale-95 items-center gap-2"
+            id="btn-cancel" onclick="batalkanPipeline()">
+            <span class="material-symbols-outlined">stop_circle</span>
+            Batalkan Pipeline
+          </button>
+        </div>
+        <div class="w-full max-w-3xl log-gradient rounded-xl p-6 text-left border border-slate-700 custom-shadow overflow-hidden relative">
+          <div class="flex items-center justify-between gap-2 mb-4 border-b border-slate-700/50 pb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full bg-red-500"></div>
+              <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+              <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+              <span class="ml-2 font-label-sm text-label-sm text-slate-400">Terminal - Pipeline Monitor</span>
+            </div>
+            <span class="font-label-sm text-label-sm text-slate-400" id="console-status">— idle —</span>
+          </div>
+          <div class="font-label-sm text-label-sm text-secondary-container h-48 overflow-y-auto space-y-2 leading-relaxed" id="console-body">
+            <div class="flex gap-2 text-slate-500">
+              <span>Menunggu pipeline dijalankan…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab: Beranda -->
+    <section x-show="tabAktif === 'beranda'" x-cloak>
+      {% include "partials/_beranda.html" %}
+    </section>
+
+    <!-- Tab: Arsip -->
+    <section x-show="tabAktif === 'arsip'" x-cloak>
+      {% include "partials/_arsip.html" %}
+    </section>
+
+    <!-- Tab: Tren Siber -->
+    <section x-show="tabAktif === 'tren'" x-cloak>
+      {% include "partials/_tren.html" %}
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full mt-xl bg-surface-container-low border-t border-outline-variant">
+    <div class="flex flex-col md:flex-row justify-between items-center py-md px-gutter max-w-container-max mx-auto gap-md">
+      <div class="flex flex-col gap-2">
+        <div class="font-headline-sm text-headline-sm font-bold text-primary">SiberHarian</div>
+        <p class="font-caption text-caption text-on-surface-variant opacity-90">© 2026 Rangkuman &amp; Tren Insiden Siber. Seluruh hak cipta dilindungi.</p>
+      </div>
+      <div class="flex gap-6">
+        <a class="font-caption text-caption text-on-surface-variant hover:underline decoration-primary transition-opacity" href="#">Privasi</a>
+        <a class="font-caption text-caption text-on-surface-variant hover:underline decoration-primary transition-opacity" href="#">Ketentuan</a>
+        <a class="font-caption text-caption text-on-surface-variant hover:underline decoration-primary transition-opacity" href="#">Kontak</a>
+        <a class="font-caption text-caption text-on-surface-variant hover:underline decoration-primary transition-opacity" href="#">API</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal Ringkasan Lengkap -->
+  <div class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center p-4" id="modal-overlay" onclick="tutupModalJikaLuar(event)">
+    <div class="bg-white rounded-xl max-w-xl w-full max-h-[80vh] overflow-y-auto p-gutter relative" id="modal-box">
+      <button class="absolute top-4 right-4 text-on-surface-variant hover:text-primary" onclick="tutupModal()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <div class="flex items-center gap-2 mb-3">
+        <span class="px-2 py-0.5 rounded font-label-sm text-label-sm" id="modal-pill"></span>
+        <span class="font-caption text-caption text-on-surface-variant" id="modal-sumber"></span>
+      </div>
+      <h3 class="font-headline-md text-headline-md text-primary mb-4" id="modal-judul"></h3>
+      <p class="text-on-surface-variant font-body-md text-body-md whitespace-pre-line" id="modal-teks"></p>
+      <div class="mt-6 pt-4 border-t border-outline-variant">
+        <a class="text-primary font-bold hover:underline underline-offset-4 flex items-center gap-1 w-fit" id="modal-link" href="#" target="_blank" rel="noopener">
+          Baca sumber asli <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/static/js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+2026-08-18 07:44:45 | INFO     | Database state siap di: D:\PENTING\MAGANG\KOMINFO\NOTIFIKASI-BERITA\data\state.db
+2026-08-18 08:56:11 | INFO     | Database state siap di: D:\PENTING\MAGANG\KOMINFO\NOTIFIKASI-BERITA\data\state.db
+2026-08-18 08:56:11 | INFO     | MEMULAI PENGUMPULAN BERITA
+2026-08-18 08:56:11 | INFO     | ============================================================
+2026-08-18 08:56:11 | INFO     | TAHAP 1: Mengumpulkan Judul Berita dari RSS...
+2026-08-18 08:56:11 | INFO     | ============================================================
+2026-08-18 08:56:11 | INFO     | [+] Mengambil RSS media internasional & Indonesia...
+2026-08-18 08:56:12 | INFO     | [OK] The Hacker News — 50 entri.
+2026-08-18 08:56:13 | INFO     | [OK] BleepingComputer — 15 entri.
+2026-08-18 08:56:16 | INFO     | [OK] Krebs on Security — 10 entri.
+2026-08-18 08:56:17 | INFO     | [OK] Dark Reading — 50 entri.
+2026-08-18 08:56:19 | INFO     | [OK] SecurityWeek — 10 entri.
+2026-08-18 08:56:20 | INFO     | [OK] CISA News — 10 entri.
+2026-08-18 08:56:21 | INFO     | [OK] CISA News — 30 entri.
+2026-08-18 08:56:22 | INFO     | [OK] CNN Indonesia — 100 entri.
+2026-08-18 08:56:22 | INFO     | [OK] CNN Indonesia — 100 entri.
+2026-08-18 08:56:24 | INFO     | [OK] Antara News — 50 entri.
+2026-08-18 08:56:24 | INFO     | [OK] Antara News — 20 entri.
+2026-08-18 08:56:25 | INFO     | [OK] Tempo.co — 50 entri.
+2026-08-18 08:56:26 | INFO     | [OK] Tempo.co — 50 entri.
+2026-08-18 08:56:26 | WARNING  | [HTTP 404] Suara.com (https://www.suara.com/rss)
+2026-08-18 08:56:27 | INFO     | [OK] Sindonews — 30 entri.
+2026-08-18 08:56:28 | INFO     | [OK] Sindonews — 30 entri.
+2026-08-18 08:56:29 | INFO     | [OK] Republika — 15 entri.
+2026-08-18 08:56:29 | INFO     | [OK] Republika — 13 entri.
+2026-08-18 08:56:29 | INFO     | [+] Mengambil RSS Google News...
+2026-08-18 08:56:31 | INFO     | [OK] Google News — 100 entri.
+2026-08-18 08:56:32 | INFO     | [OK] Google News — 62 entri.
+2026-08-18 08:56:33 | INFO     | [OK] Google News — 100 entri.
+2026-08-18 08:56:33 | INFO     | [OK] Google News — 62 entri.
+2026-08-18 08:56:33 | INFO     | [OK] Google News — 100 entri.
+2026-08-18 08:56:34 | INFO     | [OK] Google News — 30 entri.
+2026-08-18 08:56:34 | INFO     | [OK] Google News — 100 entri.
+2026-08-18 08:56:35 | INFO     | [OK] Google News — 56 entri.
+2026-08-18 08:56:35 | INFO     | [OK] Google News — 100 entri.
+2026-08-18 08:56:36 | INFO     | [OK] Google News — 53 entri.
+2026-08-18 08:56:36 | INFO     | [OK] Google News — 100 entri.
+2026-08-18 08:56:37 | INFO     | [OK] Google News — 100 entri.
+2026-08-18 08:56:37 | INFO     | [OK] Google News — 100 entri.
+2026-08-18 08:56:38 | INFO     | [OK] Google News — 69 entri.
+2026-08-18 08:56:38 | INFO     | [OK] Google News — 100 entri.
+2026-08-18 08:56:39 | INFO     | [OK] Google News — 51 entri.
+2026-08-18 08:56:40 | INFO     | [OK] Google News — 100 entri.
+2026-08-18 08:56:40 | INFO     | [OK] Google News — 38 entri.
+2026-08-18 08:56:41 | INFO     | [OK] Google News — 100 entri.
+2026-08-18 08:56:42 | INFO     | [OK] Google News — 100 entri.
+2026-08-18 08:56:42 | INFO     | [OK] Google News — 100 entri.
+2026-08-18 08:56:43 | INFO     | [OK] Google News — 66 entri.
+2026-08-18 08:56:43 | INFO     | [OK] Google News — 100 entri.
+2026-08-18 08:56:44 | INFO     | [OK] Google News — 58 entri.
+2026-08-18 08:56:44 | INFO     | Total entri terkumpul: 2178
+2026-08-18 08:56:44 | INFO     | Setelah filter window waktu (168 jam) saja: 1093 (dari 2178)
+2026-08-18 08:56:44 | INFO     | Setelah filter kata kunci (media trusted_cyber dilewatkan): 361 (dari 1093)
+2026-08-18 08:56:44 | INFO     | ============================================================
+2026-08-18 08:56:44 | INFO     | TAHAP 2: Ekstraksi Konten Berita...
+2026-08-18 08:56:44 | INFO     | ============================================================
+2026-08-18 08:56:44 | INFO     |   -> [1/361] Critical GitLab GraphQL Flaw Could Let Unauthenticated Attac...
+2026-08-18 08:56:47 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-18 08:56:47 | INFO     |   -> [2/361] Snowflake GitHub Actions Flaw Lets Crafted Issues Trigger Co...
+2026-08-18 08:56:49 | INFO     |      [+] SUKSES EKSTRAK!
+2026-08-18 08:56:49 | INFO     |   -> [3/361] Forminator WordPress Flaw Can Enable Unauthenticated RCE via...

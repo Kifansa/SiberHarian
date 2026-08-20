@@ -1,0 +1,236 @@
+pipeline:
+  window_hours: 72
+  request_delay_seconds: 1
+  request_timeout: 15
+  max_retry: 3
+  backoff_factor: 1.5
+
+# MEDIA CYBERSECURITY INTERNASIONAL
+rss_sources_international:
+  - nama: "The Hacker News"
+    feeds: ["http://feeds.feedburner.com/TheHackersNews"]
+  - nama: "BleepingComputer"
+    feeds: ["https://www.bleepingcomputer.com/feed/"]
+  - nama: "Krebs on Security"
+    feeds: ["https://krebsonsecurity.com/feed/"]
+  - nama: "Dark Reading"
+    feeds: ["https://www.darkreading.com/rss.xml"]
+  - nama: "SecurityWeek"
+    feeds: ["https://www.securityweek.com/feed/"]
+  - nama: "CISA News"
+    feeds:
+      - "https://www.cisa.gov/news.xml"
+      - "https://www.cisa.gov/cybersecurity-advisories/all.xml" 
+
+# MEDIA NASIONAL INDONESIA
+rss_sources_indonesia:
+  - nama: "CNN Indonesia"
+    feeds:
+      - "https://www.cnnindonesia.com/teknologi/rss"
+      - "https://www.cnnindonesia.com/nasional/rss"
+  - nama: "Antara News"
+    feeds:
+      - "https://www.antaranews.com/rss/terkini"
+      - "https://www.antaranews.com/rss/hukum"
+  - nama: "Tempo.co"
+    feeds:
+      - "https://rss.tempo.co/nasional"
+      - "https://rss.tempo.co/tekno"
+  - nama: "Sindonews"
+    feeds:
+      - "https://nasional.sindonews.com/rss"
+      - "https://tekno.sindonews.com/rss"
+  - nama: "Republika"
+    feeds:
+      - "https://www.republika.co.id/rss/hukum"
+      - "https://www.republika.co.id/rss/teknologi"
+
+google_news:
+  hl: "id"
+  gl: "ID"
+  ceid: "ID:id"
+  query_keywords:
+    - "kebocoran data"
+    - "hacker"
+    - "ransomware"
+    - "phishing"
+    - "diretas"
+    - "judi online"
+    - "peretas"
+    - "dibobol"
+    - "dibajak"
+    - "serangan siber"
+    - "pencurian data"
+    - "malware"
+
+cve_source:
+  nama: "NVD (National Vulnerability Database)"
+  base_url: "https://services.nvd.nist.gov/rest/json/cves/2.0"
+  min_cvss_score: 7.0
+  request_timeout: 30
+
+# FILTER KATA KUNCI
+keywords:
+  # Bahasa Inggris
+  english:
+    - "data breach"
+    - "ransomware"
+    - "phishing"
+    - "hacked"
+    - "cyberattack"
+    - "cyber attack"
+    - "vulnerability"
+    - "exploit"
+    - "malware"
+    - "zero-day"
+    - "data leak"
+    - "ddos"
+    - "spyware"
+    - "trojan"
+
+  # Bahasa Indonesia: kata kunci insiden mandiri
+  indonesia_mandiri:
+    - "kebocoran data"
+    - "data bocor"
+    - "kebocoran data pribadi"
+    - "pencurian data"
+    - "data dicuri"
+    - "data diperjualbelikan"
+    - "data dijual"
+    - "dark web"
+    - "peretasan"
+    - "hacker"
+    - "peretas"
+    - "diretas"
+    - "situs diretas"
+    - "website diretas"
+    - "sistem diretas"
+    - "bobol sistem"
+    - "pembobolan sistem"
+    - "pembobolan akun"
+    - "pembobolan rekening"
+    - "akun dibajak"
+    - "celah keamanan"
+    - "kerentanan sistem"
+    - "eksploitasi celah"
+    - "phishing"
+    - "penipuan online"
+    - "penipuan digital"
+    - "situs palsu"
+    - "website palsu"
+    - "social engineering"
+    - "rekayasa sosial"
+    - "skimming"
+    - "carding"
+    - "defacement"
+    - "deface"
+    - "ddos"
+    - "ransomware"
+    - "malware"
+    - "spyware"
+    - "trojan"
+    - "keylogger"
+    - "spoofing"
+    - "sql injection"
+    - "brute force"
+    - "cyber attack"
+    - "serangan siber"
+    - "serangan hacker"
+
+  # Objek data sensitif
+  objek_data_sensitif:
+    - "ktp"
+    - "nik"
+    - "data pribadi"
+    - "kartu keluarga"
+    - "npwp"
+    - "paspor"
+    - "data nasabah"
+    - "data pelanggan"
+    - "data pengguna"
+    - "data karyawan"
+
+  # Objek aset digital
+  objek_aset_digital:
+    - "sistem"
+    - "akun"
+    - "rekening"
+    - "website"
+    - "situs"
+    - "server"
+    - "database"
+    - "aplikasi"
+    - "jaringan"
+
+  # Indikator insiden
+  indikator_insiden:
+    - "bocor"
+    - "tersebar"
+    - "dicuri"
+    - "dijual"
+    - "diperjualbelikan"
+    - "disalahgunakan"
+    - "diretas"
+    - "dibobol"
+    - "dibajak"
+    - "diduga bocor"
+  
+  # Ambigu tapi butuh konteks
+  ambigu_butuh_konteks:
+    - "judi online"
+    - "judol"
+    - "situs judi"
+
+# CVE Vendor
+known_vendors:
+  - Microsoft
+  - Apple
+  - Google
+  - Cisco
+  - Oracle
+  - Adobe
+  - WordPress
+  - Linux
+  - VMware
+  - Fortinet
+  - SonicWall
+  - Ivanti
+  - SAP
+  - IBM
+  - Juniper
+  - Palo Alto
+  - Citrix
+  - Zoom
+  - Atlassian
+  - GitLab
+  - Jenkins
+  - Docker
+  - Kubernetes
+  - Android
+  - Samsung
+  - Huawei
+  - Dell
+  - Zimbra
+  - MySQL
+  - PostgreSQL
+  - MongoDB
+  - Redis
+  - Apache
+  - Nginx
+  - WooCommerce
+  - Joomla
+  - Drupal
+  - Magento
+  - Salesforce
+  - ServiceNow
+  - Symantec
+  - McAfee
+  - Trend Micro
+  - Sophos
+  - Check Point
+  - F5
+  - Netgear
+  - TP-Link
+  - D-Link
+  - QNAP
+  - Synology
