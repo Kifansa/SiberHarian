@@ -19,63 +19,61 @@ MAKS_KARAKTER_UNTUK_KLASIFIKASI = 1500  # cukup baca beberapa paragraf awal, tid
 
 KATEGORI_VALID = {"insiden_spesifik", "analisis_relevan", "tidak_relevan"}
 
-SYSTEM_PROMPT_KLASIFIKASI = """Kamu adalah classifier yang menentukan apakah sebuah artikel berita
-layak masuk ke digest keamanan siber harian untuk tim security perusahaan.
+SYSTEM_PROMPT_KLASIFIKASI = """Kamu adalah analis intelijen keamanan siber. Klasifikasikan artikel berita ke dalam SALAH SATU dari 3 kategori berikut:
 
-SYARAT UTAMA: Topik artikel harus tentang KEAMANAN SIBER (peretasan, kebocoran data, malware,
-penipuan online, kerentanan sistem, dll). Artikel soal AI/teknologi/bisnis pada umumnya yang
-TIDAK menyinggung keamanan siber harus dianggap tidak_relevan, walau berasal dari media
-keamanan siber (media seperti BleepingComputer/Dark Reading juga publish berita AI, produk, atau
-bisnis umum yang tidak ada hubungannya dengan security).
+1. analisis_relevan:
+   Khusus ARTIKEL EDUKASI / TIPS / PANDUAN PENCEGAHAN (EVERGREEN CONTENT), yaitu:
+   - Tips keamanan password, panduan 2FA, kebiasaan pengguna, cara mencegah akun diretas/dibajak (misal: "Kebiasaan yang membuat akun mudah diretas", "Tips mengamankan WhatsApp").
+   - Cara mengenali modus penipuan, phishing, smishing, dan panduan perlindungan diri bagi pengguna umum.
+   - Panduan best practice keamanan siber umum yang BUKAN berita pelaporan serangan aktual di lapangan.
 
-Setelah dipastikan topiknya keamanan siber, klasifikasikan ke SALAH SATU dari 3 kategori:
+2. insiden_spesifik:
+   Khusus BERITA KEJADIAN / PERISTIWA PENYERANGAN & ANCAMAN SIBER AKTUAL, yaitu:
+   - Laporan peretasan, kebocoran data, serangan ransomware, defacement, pencurian dana / aset kripto pada korban/perusahaan/instansi.
+   - Operasi serangan aktif, penyebaran malware nyata, aktivitas kelompok hacker/APT (misal: SilverFox, Storm-1175, Mr Spongebob), peretasan ribuan situs WordPress, atau kampanye phishing aktif.
+   - Laporan lonjakan serangan terkini di lapangan dan penangkapan pelaku kejahatan siber.
 
-1. insiden_spesifik - Melaporkan insiden siber NYATA & SPESIFIK dengan korban/kejadian konkret:
-   organisasi/sistem/individu tertentu mengalami kebocoran data, serangan ransomware, peretasan.
-   Contoh: "Peretas Curi Data Pasien Perusahaan Farmasi Amgen" -> insiden_spesifik.
-   BUKAN untuk artikel tips/edukasi/panduan umum, meski soal siber - itu masuk analisis_relevan.
-   PENTING: Jika sebuah artikel politik/kriminal/hukum DIPICU OLEH kebocoran/pencurian data
-   (data itu jadi sebab-akibat inti cerita, bukan cuma disinggung sepintas), tetap klasifikasikan
-   sebagai insiden_spesifik. Contoh: "Kebocoran Data Internal Picu Kasus Pemerasan Bupati" ->
-   insiden_spesifik (kebocoran data adalah akar masalahnya, bukan sekadar disinggung).
+3. tidak_relevan:
+   Artikel yang SAMA SEKALI BUKAN tentang topik keamanan siber (berita AI produktivitas umum tanpa isu keamanan, gadget biasa, meme/hiburan, politik non-siber).
 
-2. analisis_relevan - Pembahasan berbasis DATA/RISET/TREN soal ancaman siber (walau tanpa satu
-   insiden spesifik), ATAU artikel edukasi/panduan/tips seputar keamanan siber.
-   Contoh: "Riset Kaspersky: 52% Gen Z Pernah Jadi Korban Serangan Siber" -> analisis_relevan.
-   Contoh: "5 Tanda Phishing yang Wajib Diwaspadai" -> analisis_relevan.
+PANDUAN PENALARAN:
+- Jika artikel memberikan saran, tips, panduan, edukasi pencegahan, tutorial, atau cara agar tidak diretas -> WAJIB 'analisis_relevan'.
+- Jika artikel memberitakan kejadian peretasan riil, serangan malware aktif, atau aksi kelompok hacker/APT -> WAJIB 'insiden_spesifik'.
+- Jika artikel bukan tentang keamanan siber -> WAJIB 'tidak_relevan'.
 
-3. tidak_relevan - Artikel yang TIDAK tentang keamanan siber, meski mengandung kata seperti
-   "hacker"/"diretas"/"judi online" secara kebetulan/kiasan/konteks lain, ATAU artikel dari media
-   security yang topiknya sebenarnya AI/produk/bisnis umum (bukan soal keamanan).
-   Contoh: "OpenAI teases Astra, its next major AI model" -> tidak_relevan.
-   Contoh: "8 Meme Anime tentang Peretas" -> tidak_relevan (hiburan).
-   Contoh: "Lift House, Anti-San Francisco Hacker House di London" -> tidak_relevan.
-
-PENTING - PRINSIP KEHATI-HATIAN: Melewatkan insiden siber penting jauh lebih berbahaya daripada
-menampilkan artikel yang ternyata kurang relevan (pembaca masih bisa melewati artikel yang
-kurang penting saat membaca digest). Karena itu:
-- Jika kamu RAGU antara tidak_relevan dan analisis_relevan/insiden_spesifik, PILIH
-  analisis_relevan (jangan tidak_relevan).
-- tidak_relevan HANYA untuk kasus yang JELAS dan MERUPAKAN KEPASTIAN tinggi tidak ada
-  hubungannya dengan keamanan siber (meme, gosip selebriti, kata "hacker" dalam konteks lain
-  yang jelas, berita AI/bisnis/produk yang jelas tidak menyinggung security sama sekali).
-
-Jawab HANYA dengan satu kata persis salah satu dari: insiden_spesifik, analisis_relevan, tidak_relevan
-JANGAN menjawab dengan kalimat, penjelasan, atau tanda baca tambahan apa pun.
-"""
+Format outputmu:
+Alasan: [1 kalimat singkat]
+Kategori: [insiden_spesifik / analisis_relevan / tidak_relevan]"""
 
 
 def _ekstrak_label(respons_mentah: str) -> Optional[str]:
     """
-    Mem-parsing output LLM jadi salah satu label valid. Model kadang
-    tetap menambahkan embel-embel meski sudah dilarang (mis. titik di
-    akhir, atau kalimat pembuka) - fungsi ini toleran terhadap noise
-    kecil semacam itu.
+    Mem-parsing output LLM jadi salah satu label valid (insiden_spesifik,
+    analisis_relevan, tidak_relevan) dari format CoT / alasan + kategori.
     """
+    if not respons_mentah:
+        return None
+
+    # 1. Cari baris yang mengandung 'kategori'
+    for baris in respons_mentah.splitlines():
+        baris_lower = baris.strip().lower()
+        if "kategori" in baris_lower or "category" in baris_lower:
+            for label in ("insiden_spesifik", "analisis_relevan", "tidak_relevan"):
+                if label in baris_lower:
+                    return label
+
+    # 2. Periksa baris terakhir
+    baris_terakhir = respons_mentah.strip().splitlines()[-1].lower()
+    for label in ("insiden_spesifik", "analisis_relevan", "tidak_relevan"):
+        if label in baris_terakhir:
+            return label
+
+    # 3. Fallback pencarian teks menyeluruh
     teks = respons_mentah.strip().lower()
-    for label in KATEGORI_VALID:
+    for label in ("insiden_spesifik", "tidak_relevan", "analisis_relevan"):
         if label in teks:
             return label
+
     return None
 
 

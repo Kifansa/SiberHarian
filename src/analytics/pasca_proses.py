@@ -50,6 +50,10 @@ def _susun_item_arsip_berita(df_berita_ringkas) -> List[Dict]:
     ]
 
 
+import re
+from src.scraper.cve_fetcher import _ATURAN_EKOSISTEM_VENDOR
+
+
 def _susun_item_arsip_cve(cve_struktur: Dict) -> List[Dict]:
     """Meratakan struktur CVE (sudah ada 'narasi') jadi list dict siap disimpan."""
     if cve_struktur.get("mode") != "ada_critical":
@@ -57,6 +61,18 @@ def _susun_item_arsip_cve(cve_struktur: Dict) -> List[Dict]:
     hasil = []
     for grup in cve_struktur["grup_critical"]:
         for cve in grup["cve_list"]:
+            vendor = grup.get("vendor", "")
+            narasi = cve.get("narasi", "")
+            produk = cve.get("produk", "")
+
+            # Fallback cerdas: jika vendor masih belum teridentifikasi, cek dari narasi LLM
+            if not vendor or vendor == "Lainnya / Belum Teridentifikasi":
+                teks_cari = f"{produk} {narasi}"
+                for pola, vendor_name in _ATURAN_EKOSISTEM_VENDOR:
+                    if re.search(pola, teks_cari, re.IGNORECASE):
+                        vendor = vendor_name
+                        break
+
             hasil.append({
                 "kategori": "cve",
                 "identifier": cve["cve_id"],
@@ -65,11 +81,12 @@ def _susun_item_arsip_cve(cve_struktur: Dict) -> List[Dict]:
                 "kata_kunci": "",
                 "kategori_relevansi": "",
                 "severity": cve.get("severity", ""),
-                "vendor": grup["vendor"],
+                "vendor": vendor if vendor else "Lainnya / Belum Teridentifikasi",
                 "tanggal_publish": cve.get("tanggal_publish", ""),
-                "ringkasan_atau_narasi": cve.get("narasi", ""),
+                "ringkasan_atau_narasi": narasi,
                 "link": cve["link"],
                 "skor_cvss": cve.get("skor_cvss"),
+                "produk": produk,
             })
     return hasil
 

@@ -14,6 +14,7 @@ window.mulaiPipeline = mulaiPipeline;
 window.batalkanPipeline = batalkanPipeline;
 window.muatTabArsip = muatTabArsip;
 window.muatTabTren = muatTabTren;
+window.muatUlangTabTren = muatUlangTabTren;
 
 // Saat pipeline selesai jalan, cache tab Arsip & Tren (kalau sudah sempat
 // dimuat sebelumnya) di-invalidate supaya kekinian data sinkron dengan

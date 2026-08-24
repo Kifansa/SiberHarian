@@ -16,12 +16,12 @@ function renderTombolTanggal() {
     tombolContainer.innerHTML = daftarHari.map(hari => {
         const aktif = hari.tanggal === tanggalTerpilih;
         const kelasAktif = aktif
-            ? 'bg-primary text-white border-primary'
-            : 'bg-white text-primary border-outline-variant hover:bg-surface-container-low';
+            ? 'bg-primary text-white border-primary shadow-sm font-semibold'
+            : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50 hover:text-slate-900 font-medium';
         const jumlahTotal = hari.berita.length + hari.cve.length;
         return `
-      <button class="px-4 py-2 rounded-lg border font-label-sm text-label-sm transition-all ${kelasAktif}" data-tanggal="${hari.tanggal}">
-        ${formatTanggalIndonesia(hari.tanggal)} <span class="opacity-70">(${jumlahTotal})</span>
+      <button class="px-3.5 py-1.5 rounded-lg border font-mono text-xs transition-all cursor-pointer ${kelasAktif}" data-tanggal="${hari.tanggal}">
+        ${formatTanggalIndonesia(hari.tanggal)} <span class="opacity-75 font-normal">(${jumlahTotal})</span>
       </button>`;
     }).join('');
 
@@ -45,7 +45,7 @@ function renderCardUntukTanggalTerpilih() {
     const analisis = hari.berita.filter(b => b.kategori !== 'insiden_spesifik');
     let html = '';
     html += buatSection('🚨 Insiden Spesifik', insiden.map(buatCardBerita).join(''), insiden.length);
-    html += buatSection('📊 Analisis &amp; Tren', analisis.map(buatCardBerita).join(''), analisis.length);
+    html += buatSection('📚 Edukasi / Evergreen', analisis.map(buatCardBerita).join(''), analisis.length);
     html += buatSection('🔴 CVE Critical', hari.cve.map(buatCardCve).join(''), hari.cve.length);
     cardContainer.innerHTML = html || '<p class="text-on-surface-variant py-10 text-center">Tidak ada berita/CVE pada tanggal ini.</p>';
 }

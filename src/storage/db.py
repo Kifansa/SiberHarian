@@ -72,6 +72,7 @@ def init_db(db_path: Path = DEFAULT_DB_PATH) -> None:
         _tambah_kolom_jika_belum_ada(conn, "riwayat_tren", "ringkasan_atau_narasi", "TEXT")
         _tambah_kolom_jika_belum_ada(conn, "riwayat_tren", "link", "TEXT")
         _tambah_kolom_jika_belum_ada(conn, "riwayat_tren", "skor_cvss", "REAL")
+        _tambah_kolom_jika_belum_ada(conn, "riwayat_tren", "produk", "TEXT")
     logger.info(f"Database state siap di: {db_path}")
 
 def ambil_identifier_terkirim(kategori: str, db_path: Path = DEFAULT_DB_PATH) -> set:
@@ -133,35 +134,40 @@ def catat_untuk_tren(items: List[dict], db_path: Path = DEFAULT_DB_PATH) -> None
                 """
                 INSERT INTO riwayat_tren
                 (kategori, identifier, judul, sumber, kata_kunci, kategori_relevansi,
-                 severity, vendor, tanggal_publish, tanggal_dicatat, ringkasan_atau_narasi, link, skor_cvss)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 severity, vendor, tanggal_publish, tanggal_dicatat, ringkasan_atau_narasi, link, skor_cvss, produk)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (item["kategori"], item["identifier"], item.get("judul", ""), item.get("sumber", ""),
                  item.get("kata_kunci", ""), item.get("kategori_relevansi", ""),
                  item.get("severity", ""), item.get("vendor", ""),
                  item.get("tanggal_publish", ""), tanggal_dicatat,
                  item.get("ringkasan_atau_narasi", ""), item.get("link", ""),
-                 item.get("skor_cvss")),
+                 item.get("skor_cvss"), item.get("produk", "")),
             )
     logger.info(f"Mencatat {len(items)} item ke riwayat_tren (termasuk ringkasan untuk Arsip).")
 
 
 def ambil_riwayat_tren(hari: int = 7, db_path: Path = DEFAULT_DB_PATH) -> "pd.DataFrame":
-    """Mengambil seluruh riwayat dalam N hari terakhir untuk dianalisis trennya."""
+    """Mengambil riwayat dalam N tanggal unik publikasi terakhir untuk dianalisis trennya."""
     import pandas as pd
     with _koneksi(db_path) as conn:
-        return pd.read_sql_query(
-            f"SELECT * FROM riwayat_tren WHERE tanggal_dicatat >= datetime('now', '-{hari} days')",
+        df = pd.read_sql_query(
+            "SELECT * FROM riwayat_tren ORDER BY tanggal_publish DESC",
             conn,
         )
+        if df.empty:
+            return df
+        df_temp_tgl = df["tanggal_publish"].fillna("").astype(str).str.slice(0, 10)
+        tanggal_unik_terbaru = df_temp_tgl[df_temp_tgl.str.match(r"^\d{4}-\d{2}-\d{2}$")].unique()[:hari]
+        return df[df_temp_tgl.isin(tanggal_unik_terbaru)].copy()
 
 
-def bersihkan_riwayat_tren_lama(hari_retensi: int = 7, db_path: Path = DEFAULT_DB_PATH) -> None:
-    """Membuang data tren yang lebih tua dari window (default 7 hari).
+def bersihkan_riwayat_tren_lama(hari_retensi: int = 14, db_path: Path = DEFAULT_DB_PATH) -> None:
+    """Membuang data tren yang lebih tua dari window retensi berdasarkan tanggal_publish.
     Dipanggil TIAP RUN (bukan mingguan), supaya window tren selalu 'bergeser' harian."""
     with _koneksi(db_path) as conn:
         cursor = conn.execute(
-            f"DELETE FROM riwayat_tren WHERE tanggal_dicatat < datetime('now', '-{hari_retensi} days')"
+            f"DELETE FROM riwayat_tren WHERE tanggal_publish < datetime('now', '-{hari_retensi} days')"
         )
         logger.info(f"Membersihkan {cursor.rowcount} baris riwayat_tren yang lebih tua dari {hari_retensi} hari.")
 
@@ -189,9 +195,8 @@ def ambil_riwayat_dikelompokkan_per_hari(hari: int = 7, db_path: Path = DEFAULT_
     with _koneksi(db_path) as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.execute(
-            f"""
+            """
             SELECT * FROM riwayat_tren
-            WHERE tanggal_publish >= datetime('now', '-{hari} days')
             ORDER BY tanggal_publish DESC
             """
         )
@@ -224,6 +229,7 @@ def ambil_riwayat_dikelompokkan_per_hari(hari: int = 7, db_path: Path = DEFAULT_
                 "link": item["link"],
             })
 
+    hasil = OrderedDict(list(hasil.items())[:hari])
     return hasil
 
 def simpan_prediksi_tren(prediksi_berita: str, prediksi_cve: str, db_path: Path = DEFAULT_DB_PATH) -> None:
@@ -251,3 +257,30 @@ def ambil_prediksi_tren_terakhir(db_path: Path = DEFAULT_DB_PATH) -> Optional[di
         cursor = conn.execute("SELECT * FROM prediksi_tren_terakhir WHERE id = 1")
         row = cursor.fetchone()
         return dict(row) if row else None
+
+def ambil_data_terbaru_per_kategori(hari: int = 7, db_path: Path = DEFAULT_DB_PATH) -> dict:
+    """
+    Data untuk Beranda, tanggal terbaru DIPISAH per kategori (bukan
+    dipaksa 1 tanggal yang sama) - karena rangkaian waktu publikasi
+    berita & CVE independen (CVE dari NVD kadang 'tanggal publish'-nya
+    tidak secepat berita yang terus update tiap jam). Kalau dipaksa 1
+    tanggal gabungan, salah satu kategori bisa tampil kosong padahal
+    datanya ada di tanggal yang sedikit berbeda.
+    """
+    grup_per_tanggal = ambil_riwayat_dikelompokkan_per_hari(hari, db_path)  # sudah urut terbaru -> terlama
+
+    tanggal_berita, daftar_berita = None, []
+    tanggal_cve, daftar_cve = None, []
+
+    for tanggal, isi in grup_per_tanggal.items():
+        if tanggal_berita is None and isi["berita"]:
+            tanggal_berita, daftar_berita = tanggal, isi["berita"]
+        if tanggal_cve is None and isi["cve"]:
+            tanggal_cve, daftar_cve = tanggal, isi["cve"]
+        if tanggal_berita is not None and tanggal_cve is not None:
+            break
+
+    return {
+        "tanggal_berita": tanggal_berita, "berita": daftar_berita,
+        "tanggal_cve": tanggal_cve, "cve": daftar_cve,
+    }

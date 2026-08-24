@@ -1,17 +1,21 @@
-<div class="py-xl">
-  <div class="flex justify-between items-end mb-xl">
+<div class="py-6 space-y-6">
+  <div class="flex justify-between items-end border-b border-slate-200 pb-5">
     <div>
-      <h2 class="font-headline-lg text-headline-lg text-primary mb-xs">Hasil Terbaru</h2>
-      <p class="text-on-surface-variant" id="results-desc">Klik "Jalankan Pipeline" untuk memulai pengumpulan &amp; ringkasan berita terbaru.</p>
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Hasil Terbaru</h2>
+      <p class="text-sm text-slate-600 mt-1" id="results-desc">Klik "Jalankan Pipeline" untuk memulai pengumpulan &amp; ringkasan berita terbaru.</p>
     </div>
     <div class="flex gap-2">
-      <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 font-label-sm text-label-sm border border-emerald-100">Live Updates</span>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Feed
+      </span>
     </div>
   </div>
-  <div class="text-center py-20 text-on-surface-variant" id="empty-state">
-    <span class="material-symbols-outlined text-[40px] text-outline mb-2 block">inbox</span>
-    <h3 class="font-headline-md text-headline-md text-primary mb-1">Belum ada hasil</h3>
-    <p class="text-body-md">Hasil akan muncul di sini setelah pipeline selesai berjalan.</p>
+  <div class="text-center py-16 bg-white rounded-xl border border-slate-200 shadow-xs" id="empty-state">
+    <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3 text-slate-400">
+      <span class="material-symbols-outlined text-[26px]">inbox</span>
+    </div>
+    <h3 class="text-base font-bold text-slate-900 mb-1">Belum ada hasil</h3>
+    <p class="text-slate-500 text-xs">Hasil ringkasan berita dan CVE akan muncul di sini setelah pipeline selesai berjalan.</p>
   </div>
   <div id="card-container"></div>
 </div>

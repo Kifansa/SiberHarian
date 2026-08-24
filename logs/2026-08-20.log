@@ -3471,3 +3471,283 @@
 2026-08-20 12:31:57 | INFO     | Menyusun prediksi tren CVE...
 2026-08-20 12:32:15 | INFO     | Prediksi tren terakhir disimpan ke database.
 2026-08-20 12:32:15 | INFO     | SELESAI MENCATAT ARSIP & MENGHITUNG TREN.
+2026-08-20 13:52:34 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 13:52:34 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 13:52:34 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 13:53:37 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 13:53:37 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 13:53:37 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 13:53:54 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 13:53:54 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 13:53:54 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 13:56:46 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 13:56:46 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 13:56:46 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 13:59:21 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 13:59:21 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 13:59:22 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:01:47 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:01:47 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:01:47 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:03:46 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:03:46 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:03:46 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:04:44 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:04:44 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:04:44 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:04:52 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:04:52 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:04:52 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:05:22 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:05:22 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:05:22 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:13:38 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:13:39 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:13:39 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:24:04 | INFO     | Database state siap di: D:\PENTING\MAGANG\KOMINFO\NOTIFIKASI-BERITA\data\state.db
+2026-08-20 14:24:05 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:24:05 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:24:05 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:24:05 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:24:05 | INFO     | Menyusun prediksi tren berita...
+2026-08-20 14:25:01 | INFO     | Menyusun prediksi tren CVE...
+2026-08-20 14:26:32 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:26:32 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:26:32 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:26:32 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:26:35 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:26:35 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:26:35 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:26:35 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:32:45 | INFO     | Database state siap di: D:\PENTING\MAGANG\KOMINFO\NOTIFIKASI-BERITA\data\state.db
+2026-08-20 14:32:45 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:32:45 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:32:45 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:32:45 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:32:45 | INFO     | Menyusun prediksi tren berita...
+2026-08-20 14:33:40 | INFO     | Menyusun prediksi tren CVE...
+2026-08-20 14:34:18 | INFO     | Prediksi tren terakhir disimpan ke database.
+2026-08-20 14:35:35 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:35:35 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:35:35 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:35:35 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:37:12 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:37:13 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:37:13 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:37:13 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:37:51 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:37:51 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:37:51 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:37:51 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:59:36 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:59:36 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:59:36 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:59:36 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 14:59:58 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:59:59 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:59:59 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 14:59:59 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:01 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:01 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:01 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:01 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:03 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:03 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:03 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:03 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:03 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:04 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:04 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:04 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:04 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:04 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:05 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:05 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:05 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:05 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:05 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:05 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:05 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:06 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:06 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:06 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:06 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:06 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:06 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:06 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:07 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:07 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:07 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:07 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:07 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:07 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:08 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:08 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:08 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:08 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:08 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:08 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:09 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:09 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:09 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:09 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:09 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:09 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:09 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:10 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:10 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:10 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:10 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:10 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:10 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:11 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:11 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:11 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:39 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:40 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:40 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:40 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:40 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:40 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:40 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:40 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:41 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:41 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:41 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:41 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:41 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:41 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:42 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:42 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:42 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:42 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:42 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:42 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:43 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:43 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:43 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:43 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:43 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:43 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:44 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:44 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:44 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:44 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:44 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:44 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:44 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:45 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:45 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:45 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:45 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:45 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:46 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:46 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:46 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:46 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:46 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:46 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:46 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:47 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:47 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:47 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:47 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:47 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:47 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:47 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:48 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:48 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:48 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:48 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:00:55 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:55 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:55 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:00:55 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:08 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:08 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:08 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:08 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:09 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:09 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:09 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:09 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:09 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:10 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:10 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:10 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:10 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:10 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:10 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:11 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:11 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:11 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:11 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:11 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:11 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:12 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:12 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:12 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:12 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:12 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:12 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:12 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:13 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:13 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:13 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:13 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:13 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:13 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:14 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:14 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:14 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:14 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:14 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:14 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:15 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:15 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:15 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:15 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:15 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:15 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:16 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:16 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:16 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:16 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:16 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:16 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:16 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:17 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:17 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:17 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:17 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:17 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:17 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:17 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:18 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:18 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:18 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:18 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:18 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:18 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:19 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:19 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:19 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:19 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:19 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:19 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:20 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:20 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:20 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:20 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:20 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:20 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:20 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:21 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:21 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:21 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:21 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:21 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.
+2026-08-20 15:01:21 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:22 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:22 | INFO     | Dedup ringan untuk tren: 144 -> 105 artikel unik (follow-up insiden yang sama dalam 7 hari digabung).
+2026-08-20 15:01:22 | INFO     | Statistik tren tersusun: 8 kata kunci naik, 8 vendor CVE naik.

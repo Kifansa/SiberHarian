@@ -1,5 +1,5 @@
 pipeline:
-  window_hours: 72
+  window_hours: 24
   request_delay_seconds: 1
   request_timeout: 15
   max_retry: 3
@@ -181,56 +181,173 @@ keywords:
     - "judol"
     - "situs judi"
 
-# CVE Vendor
+# CVE Vendor (Kamus Vendor & Software Dikenal)
 known_vendors:
+  # Big Tech & OS
   - Microsoft
   - Apple
   - Google
-  - Cisco
-  - Oracle
-  - Adobe
-  - WordPress
   - Linux
-  - VMware
-  - Fortinet
-  - SonicWall
-  - Ivanti
-  - SAP
-  - IBM
-  - Juniper
-  - Palo Alto
-  - Citrix
-  - Zoom
-  - Atlassian
-  - GitLab
-  - Jenkins
-  - Docker
-  - Kubernetes
   - Android
   - Samsung
   - Huawei
   - Dell
-  - Zimbra
-  - MySQL
-  - PostgreSQL
-  - MongoDB
-  - Redis
+  - HP
+  - Lenovo
+  - Asus
+  - Xiaomi
+
+  # Enterprise Software & Cloud
+  - Oracle
+  - IBM
+  - SAP
+  - VMware
+  - Citrix
+  - Salesforce
+  - ServiceNow
+  - Atlassian
+  - JetBrains
+  - Zoom
+  - Adobe
+
+  # Network, Security & IoT Hardware
+  - Cisco
+  - Fortinet
+  - Palo Alto
+  - SonicWall
+  - Ivanti
+  - Check Point
+  - F5
+  - Juniper
+  - MikroTik
+  - Ubiquiti
+  - Zyxel
+  - TP-Link
+  - D-Link
+  - Netgear
+  - Tenda
+  - Wavlink
+  - TRENDnet
+  - ipTIME
+  - Dahua
+  - Hikvision
+  - Trueview
+  - Zebra
+  - DJI
+  - Baylan
+
+  # Storage, Cloud & DevOps
+  - Kubernetes
+  - Submariner
+  - StackGres
+  - Docker
+  - QNAP
+  - Synology
+  - OSNEXUS
+  - Incus
+  - OpenStack
+  - Proxmox
+  - TrueNAS
+  - OpenWrt
+  - pfSense
+  - OpenVPN
+  - WireGuard
+  - GitLab
+  - GitHub
+  - Jenkins
+
+  # Databases & Web Servers
   - Apache
   - Nginx
+  - PostgreSQL
+  - MySQL
+  - MongoDB
+  - Redis
+  - ArcadeDB
+  - Datiphy
+  - Elastic
+  - Splunk
+  - Grafana
+  - SolarWinds
+  - Logsign
+  - Zimbra
+
+  # CMS, Portals & Web Frameworks
+  - WordPress
   - WooCommerce
+  - CleanTalk
   - Joomla
   - Drupal
   - Magento
-  - Salesforce
-  - ServiceNow
-  - Symantec
-  - McAfee
-  - Trend Micro
-  - Sophos
-  - Check Point
-  - F5
-  - Netgear
-  - TP-Link
-  - D-Link
-  - QNAP
-  - Synology
+  - Grav CMS
+  - Craft CMS
+  - Strapi
+  - Ghost
+  - Directus
+  - Qcms
+  - siYuan
+  - Halo
+  - Mahara
+  - Moodle
+  - Chamilo
+  - Stud.IP
+  - MyBB
+  - phpBB
+  - Discourse
+  - vBulletin
+  - Roundcube
+  - Nextcloud
+  - ownCloud
+  - OpnForm
+  - vsDesk
+  - SPIP
+  - EverShop
+  - Jet Admin
+
+  # Dev Libraries & Open Source Tools
+  - Mozilla
+  - OpenSSL
+  - FreeIPA
+  - Kerberos
+  - authentik
+  - Bastillion
+  - SpiderFoot
+  - AzuraCast
+  - JeecgBoot
+  - xdocreport
+  - OSSRS
+  - Brainformatik
+  - Frappe / ERPNext
+  - DataHub
+  - Lemur
+  - S2OPC
+  - GAPTEQ
+  - Squirro
+  - T-Systems
+  - SteelSeries
+  - Node.js
+  - exceljs
+  - Python
+  - JustHTML
+  - unstructured
+  - PHP
+  - ADOdb
+  - Rust
+  - Golang
+  - JSONata
+  - PTC
+  - Mongoose
+  - libevent
+  - libre
+  - Nezha
+  - Paperclip
+  - Omnigent
+  - Xinference
+  - Onyx AI
+  - MemOS
+  - CodeWhale
+  - FUXA
+  - GBIF
+  - Capella
+  - openHiTLS
+  - samly

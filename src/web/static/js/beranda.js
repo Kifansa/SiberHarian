@@ -1,5 +1,5 @@
 import { ambilBeranda, mulaiPipelineRequest, batalkanPipelineRequest, bukaStreamLog } from './api.js';
-import { escapeHtml, formatWaktuSekarang, formatTanggalIndonesia } from './utils.js';
+import { escapeHtml, formatWaktuSekarang } from './utils.js';
 import { buatCardBerita, buatCardCve, buatSection } from './cards.js';
 import { resetDataLengkap } from './modal.js';
 
@@ -51,7 +51,7 @@ export async function tampilkanBeranda() {
     const cve = data.cve || [];
     const insiden = berita.filter(b => b.kategori === 'insiden_spesifik');
     const analisis = berita.filter(b => b.kategori !== 'insiden_spesifik');
-    resultsDesc.textContent = `Berita tanggal ${formatTanggalIndonesia(data.tanggal)} · diperbarui ${formatWaktuSekarang()}`;
+    resultsDesc.textContent = `Diperbarui pada ${formatWaktuSekarang()}`;
 
     if (berita.length === 0 && cve.length === 0) {
         emptyState.style.display = 'block';
@@ -64,7 +64,7 @@ export async function tampilkanBeranda() {
     emptyState.style.display = 'none';
     let html = '';
     html += buatSection('🚨 Insiden Spesifik', insiden.map(buatCardBerita).join(''), insiden.length);
-    html += buatSection('📊 Analisis &amp; Tren', analisis.map(buatCardBerita).join(''), analisis.length);
+    html += buatSection('📚 Edukasi / Evergreen', analisis.map(buatCardBerita).join(''), analisis.length);
     html += buatSection('🔴 CVE Critical', cve.map(buatCardCve).join(''), cve.length);
     cardContainer.innerHTML = html;
 }

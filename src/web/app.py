@@ -11,6 +11,7 @@ import json
 import logging
 import queue
 import threading
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -19,8 +20,18 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from src.analytics.pasca_proses import proses_arsip_dan_tren
+from src.analytics.trend_analyzer import susun_ringkasan_statistik_tren
 from src.pipeline_harian import jalankan_pipeline_harian
-from src.storage.db import ambil_prediksi_tren_terakhir, ambil_riwayat_dikelompokkan_per_hari
+from src.storage.db import (
+    ambil_prediksi_tren_terakhir,
+    ambil_riwayat_dikelompokkan_per_hari,
+    ambil_riwayat_tren,
+)
+from src.storage.db import (
+    ambil_data_terbaru_per_kategori,
+    ambil_prediksi_tren_terakhir,
+    ambil_riwayat_dikelompokkan_per_hari,
+)
 from src.summarizer.llm_summarizer import proses_summarization_harian
 
 BASE_DIR = Path(__file__).parent
@@ -113,14 +124,16 @@ async def batalkan_pipeline():
 
 @app.get("/api/beranda")
 async def ambil_beranda():
-    """Tab Beranda: hanya grup tanggal PUBLIKASI paling baru dari riwayat_tren."""
-    grup_per_tanggal = ambil_riwayat_dikelompokkan_per_hari(hari=7)
-    if not grup_per_tanggal:
-        return {"status": "kosong", "tanggal": None, "berita": [], "cve": []}
-
-    tanggal_terbaru = next(iter(grup_per_tanggal))
-    isi = grup_per_tanggal[tanggal_terbaru]
-    return {"status": "ok", "tanggal": tanggal_terbaru, "berita": isi["berita"], "cve": isi["cve"]}
+    """Tab Beranda: berita & CVE, MASING-MASING dari tanggal terbarunya sendiri."""
+    data = ambil_data_terbaru_per_kategori(hari=7)
+    ada_data = bool(data["berita"]) or bool(data["cve"])
+    return {
+        "status": "ok" if ada_data else "kosong",
+        "tanggal_berita": data["tanggal_berita"],
+        "tanggal_cve": data["tanggal_cve"],
+        "berita": data["berita"],
+        "cve": data["cve"],
+    }
 
 
 @app.get("/api/arsip")
@@ -134,17 +147,165 @@ async def ambil_arsip():
     return {"status": "ok" if daftar_hari else "kosong", "hari": daftar_hari}
 
 
+# Klasifikasi sumber berita: Internasional vs Nasional (sisanya = Nasional)
+_SUMBER_INTERNASIONAL = {
+    "The Hacker News", "BleepingComputer", "Krebs on Security",
+    "Dark Reading", "SecurityWeek", "CISA News",
+}
+
+# Pemetaan kata kunci ke 6 kategori vektor serangan untuk radar chart
+_VEKTOR_MAP = {
+    "Ransomware": {"ransomware"},
+    "Phishing": {
+        "phishing", "penipuan online", "penipuan digital",
+        "social engineering", "rekayasa sosial", "situs palsu",
+        "website palsu", "spoofing",
+    },
+    "Kebocoran Data": {
+        "kebocoran data", "data bocor", "pencurian data", "data dicuri",
+        "data dijual", "data diperjualbelikan", "bocor", "dicuri",
+        "tersebar", "dijual", "data pribadi", "data nasabah",
+        "dark web", "data breach", "data leak", "kebocoran data pribadi",
+    },
+    "Malware": {"malware", "spyware", "trojan", "keylogger"},
+    "Peretasan": {
+        "peretas", "peretasan", "hacker", "diretas", "celah keamanan",
+        "kerentanan sistem", "eksploitasi celah", "sql injection",
+        "brute force", "serangan siber", "serangan hacker",
+        "cyberattack", "cyber attack", "vulnerability", "exploit",
+        "hacked", "zero-day",
+    },
+    "Pembajakan Aset": {
+        "akun dibajak", "dibobol", "pembobolan sistem", "pembobolan akun",
+        "pembobolan rekening", "defacement", "deface", "bobol sistem",
+        "skimming", "carding", "ddos",
+    },
+}
+
+_STATISTIK_KOSONG = {
+    "total_berita": 0, "total_cve": 0, "avg_cvss": 0,
+    "kata_kunci_naik": [], "vendor_naik": [], "sampel_judul_insiden": [],
+    "tren_kategori": {}, "severity_breakdown": {}, "harian": [],
+    "distribusi_cvss": [], "distribusi_sumber": [],
+    "nasional_vs_internasional": {"nasional": 0, "internasional": 0},
+    "komposisi_jenis": {}, "harian_sumber": [], "vektor_serangan": [],
+}
+
+
+def _susun_statistik_dashboard_tren() -> dict:
+    """Menyusun agregat statistik tren untuk visualisasi dashboard."""
+    try:
+        df = ambil_riwayat_tren(hari=7)
+        if df.empty:
+            return dict(_STATISTIK_KOSONG)
+
+        statistik = susun_ringkasan_statistik_tren(df)
+
+        df_berita = df[df["kategori"] == "berita"]
+        df_cve = df[df["kategori"] == "cve"]
+
+        total_berita = len(df_berita)
+        total_cve = len(df_cve)
+        avg_cvss = round(float(df_cve["skor_cvss"].dropna().mean()), 1) if not df_cve.empty and df_cve["skor_cvss"].notna().any() else 0.0
+
+        severity_counts = df_cve["severity"].dropna().value_counts().to_dict() if not df_cve.empty else {}
+
+        df_temp = df.copy()
+        df_temp["tgl"] = df_temp["tanggal_publish"].fillna("").astype(str).str.slice(0, 10)
+
+        # Ambil 7 tanggal unik terbaru yang ada di data (persis seperti tab Arsip)
+        tanggal_unik_terbaru = df_temp[df_temp["tgl"].str.match(r"^\d{4}-\d{2}-\d{2}$")]["tgl"].unique()[:7]
+        tanggal_urut = sorted(tanggal_unik_terbaru)
+
+        # --- Chart Harian (Berita vs CVE) ---
+        harian_list = []
+        for tgl in tanggal_urut:
+            df_tgl = df_temp[df_temp["tgl"] == tgl]
+            harian_list.append({
+                "tanggal": tgl,
+                "berita": int((df_tgl["kategori"] == "berita").sum()),
+                "cve": int((df_tgl["kategori"] == "cve").sum()),
+            })
+
+        # --- Chart 1: Distribusi CVSS Score (bins) ---
+        cvss_bins = []
+        if not df_cve.empty:
+            cvss_vals = df_cve["skor_cvss"].dropna()
+            cvss_bins = [
+                {"label": "10.0 (Sempurna)", "jumlah": int((cvss_vals == 10.0).sum())},
+                {"label": "9.5 - 9.9", "jumlah": int(((cvss_vals >= 9.5) & (cvss_vals < 10.0)).sum())},
+                {"label": "9.0 - 9.4", "jumlah": int(((cvss_vals >= 9.0) & (cvss_vals < 9.5)).sum())},
+            ]
+
+        # --- Chart 2: Distribusi Sumber Berita ---
+        sumber_counts = df_berita["sumber"].value_counts().to_dict() if not df_berita.empty else {}
+        distribusi_sumber = [{"sumber": s, "jumlah": int(c)} for s, c in sorted(sumber_counts.items(), key=lambda x: -x[1])]
+
+        # --- Chart 3: Nasional vs Internasional ---
+        nasional_count = sum(int(c) for s, c in sumber_counts.items() if s not in _SUMBER_INTERNASIONAL)
+        internasional_count = sum(int(c) for s, c in sumber_counts.items() if s in _SUMBER_INTERNASIONAL)
+
+        # --- Chart 4: Komposisi Jenis Berita ---
+        jenis_raw = df_berita["kategori_relevansi"].value_counts().to_dict() if not df_berita.empty else {}
+        komposisi_jenis = {k: int(v) for k, v in jenis_raw.items()}
+
+        # --- Chart 5: Harian Sumber (Nasional vs Internasional per hari) ---
+        harian_sumber = []
+        for tgl in tanggal_urut:
+            df_tgl_b = df_temp[(df_temp["tgl"] == tgl) & (df_temp["kategori"] == "berita")]
+            nas = int((~df_tgl_b["sumber"].isin(_SUMBER_INTERNASIONAL)).sum())
+            intl = int(df_tgl_b["sumber"].isin(_SUMBER_INTERNASIONAL).sum())
+            harian_sumber.append({"tanggal": tgl, "nasional": nas, "internasional": intl})
+
+        # --- Chart 6: Vektor Serangan (radar) ---
+        vektor_counts = {v: 0 for v in _VEKTOR_MAP}
+        if not df_berita.empty:
+            for kw_str in df_berita["kata_kunci"].dropna():
+                kw_list = [k.strip().lower() for k in str(kw_str).split(",") if k.strip()]
+                for vektor, keywords in _VEKTOR_MAP.items():
+                    if any(kw in keywords for kw in kw_list):
+                        vektor_counts[vektor] += 1
+        vektor_serangan = [{"vektor": v, "jumlah": c} for v, c in vektor_counts.items()]
+
+        return {
+            "total_berita": total_berita,
+            "total_cve": total_cve,
+            "avg_cvss": avg_cvss,
+            "kata_kunci_naik": statistik.get("berita", {}).get("kata_kunci_naik", []),
+            "vendor_naik": statistik.get("cve", {}).get("vendor_naik", []),
+            "sampel_judul_insiden": statistik.get("berita", {}).get("sampel_judul_insiden", []),
+            "tren_kategori": statistik.get("berita", {}).get("tren_kategori", {}),
+            "threat_posture": statistik.get("threat_posture", {"skor": 1.0, "level": "RENDAH", "level_label": "RENDAH (Low)", "warna": "green"}),
+            "sektor_target": statistik.get("sektor_target", []),
+            "vektor_serangan_kategori": statistik.get("vektor_serangan", []),
+            "severity_breakdown": severity_counts,
+            "harian": harian_list,
+            "distribusi_cvss": cvss_bins,
+            "distribusi_sumber": distribusi_sumber,
+            "nasional_vs_internasional": {"nasional": nasional_count, "internasional": internasional_count},
+            "komposisi_jenis": komposisi_jenis,
+            "harian_sumber": harian_sumber,
+            "vektor_serangan": vektor_serangan,
+        }
+    except Exception as e:
+        logging.getLogger().error(f"Gagal menyusun statistik dashboard tren: {e}")
+        return dict(_STATISTIK_KOSONG)
+
+
 @app.get("/api/tren")
 async def ambil_tren():
-    """Tab Tren Siber: prediksi tren dari run pipeline terakhir."""
+    """Tab Tren Siber: prediksi tren dan agregat statistik dari run pipeline terakhir."""
     prediksi = ambil_prediksi_tren_terakhir()
     if not prediksi:
-        return {"status": "kosong", "prediksi_berita": "", "prediksi_cve": "", "tanggal_dihitung": None}
+        return {"status": "kosong", "prediksi_berita": "", "prediksi_cve": "", "tanggal_dihitung": None, "statistik": None}
+    
+    statistik = _susun_statistik_dashboard_tren()
     return {
         "status": "ok",
         "prediksi_berita": prediksi["prediksi_berita"],
         "prediksi_cve": prediksi["prediksi_cve"],
         "tanggal_dihitung": prediksi["tanggal_dihitung"],
+        "statistik": statistik,
     }
 
 
