@@ -183,7 +183,7 @@ _VEKTOR_MAP = {
 }
 
 _STATISTIK_KOSONG = {
-    "total_berita": 0, "total_cve": 0, "avg_cvss": 0,
+    "total_berita": 0, "total_cve": 0, "total_vendor_cve": 0, "avg_cvss": 0,
     "kata_kunci_naik": [], "vendor_naik": [], "sampel_judul_insiden": [],
     "tren_kategori": {}, "severity_breakdown": {}, "harian": [],
     "distribusi_cvss": [], "distribusi_sumber": [],
@@ -206,6 +206,7 @@ def _susun_statistik_dashboard_tren() -> dict:
 
         total_berita = len(df_berita)
         total_cve = len(df_cve)
+        total_vendor_cve = len(df_cve["vendor"].dropna().unique()) if not df_cve.empty and "vendor" in df_cve.columns else 0
         avg_cvss = round(float(df_cve["skor_cvss"].dropna().mean()), 1) if not df_cve.empty and df_cve["skor_cvss"].notna().any() else 0.0
 
         severity_counts = df_cve["severity"].dropna().value_counts().to_dict() if not df_cve.empty else {}
@@ -270,6 +271,7 @@ def _susun_statistik_dashboard_tren() -> dict:
         return {
             "total_berita": total_berita,
             "total_cve": total_cve,
+            "total_vendor_cve": total_vendor_cve,
             "avg_cvss": avg_cvss,
             "kata_kunci_naik": statistik.get("berita", {}).get("kata_kunci_naik", []),
             "vendor_naik": statistik.get("cve", {}).get("vendor_naik", []),

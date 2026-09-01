@@ -51,7 +51,7 @@ def _susun_item_arsip_berita(df_berita_ringkas) -> List[Dict]:
 
 
 import re
-from src.scraper.cve_fetcher import _ATURAN_EKOSISTEM_VENDOR
+from src.scraper.cve_fetcher import _ATURAN_EKOSISTEM_VENDOR, ekstrak_produk_cve
 
 
 def _susun_item_arsip_cve(cve_struktur: Dict) -> List[Dict]:
@@ -72,6 +72,10 @@ def _susun_item_arsip_cve(cve_struktur: Dict) -> List[Dict]:
                     if re.search(pola, teks_cari, re.IGNORECASE):
                         vendor = vendor_name
                         break
+
+            # Fallback produk jika masih kosong atau (lihat deskripsi) / -
+            if not produk or produk in ["-", "(lihat deskripsi)", "Lainnya / Belum Teridentifikasi"]:
+                produk = ekstrak_produk_cve(narasi_id=narasi, vendor=vendor)
 
             hasil.append({
                 "kategori": "cve",

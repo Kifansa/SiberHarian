@@ -31,16 +31,18 @@ Format analisismu dalam 4 bagian terstruktur:
 2. 🎯 VEKTOR SERANGAN (TTPs) & SEKTOR TERPAPAR
    Jelaskan taktik utama penyerang (misal malware infostealer, phishing bertema AI/pajak, eksploitasi RCE) dan sektor/vertikal industri yang paling banyak dibidik.
 
-3. 🔗 KORELASI INTELIJEN SILANG
+3. 🔗 HUBUNGAN KERENTANAN & ANCAMAN
    Jelaskan hubungan antara insiden ancaman di lapangan dengan eksposur kerentanan sistem atau teknologi yang diserang.
 
-4. 🛡️ MATRIKS MITIGASI BERTINGKAT
-   - Prioritas 1 (Kritis < 24-48 Jam): Langkah teknis darurat (misal: blokir IoC/domain phishing, audit akses privilege, isolasi endpoint terindikasi).
-   - Prioritas 2 (Taktis & Kebijakan): Langkah mitigasi preventif (misal: audit dependency code, simulasi phishing karyawan, review backup).
+4. 🛡️ REKOMENDASI MITIGASI BERTINGKAT
+   - Prioritas: Langkah teknis darurat (misal: blokir IoC/domain phishing, audit akses privilege, isolasi endpoint terindikasi).
+   - Tindak Lanjut Jangka Panjang: Langkah mitigasi preventif (misal: audit dependency code, simulasi phishing karyawan, review backup).
 
 ATURAN KETAT:
 - HANYA gunakan fakta dari data dan sampel judul yang diberikan. JANGAN mengarang nama korban, instansi, CVE, atau angka di luar data.
 - Gunakan gaya bahasa profesional Cyber Threat Intelligence, padat, lugas, dan bernilai strategis bagi tim security/CISO.
+- WAJIB gunakan format list (bullet points). DILARANG KERAS menggunakan format tabel (markdown table).
+- JANGAN menambahkan catatan tambahan, penjelasan skor, atau kesimpulan apa pun di akhir analisis.
 - Langsung tulis isi analisisnya tanpa kalimat pembuka seperti "Berikut laporannya:".
 """
 

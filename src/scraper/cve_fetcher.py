@@ -239,6 +239,102 @@ def _ekstrak_vendor_dari_deskripsi(deskripsi: str, daftar_vendor_dikenal: List[s
     return None
 
 
+def bersihkan_nama_produk(nama: str) -> str:
+    """Membersihkan nama produk dari kata-kata noise dan tanda baca."""
+    if not nama:
+        return ""
+    # Hapus trailing noise
+    pola_noise = r'\s+(yang|terdampak|memiliki|adalah|sebelum|versi|dengan|untuk|pada|di|dalam|tanpa|oleh|terkena|menggunakan|berjalan|sebagai|ke|dan|atau|hook|bazaar|sebelumnya|saat|ketika|karena|pro|\d+[\.\d]*)$'
+    for _ in range(3):
+        nama = re.sub(pola_noise, '', nama, flags=re.IGNORECASE).strip()
+    
+    # Hapus prefix noise
+    pola_prefix = r'^(sistem|produk|plugin|ekstensi|modul|aplikasi|library|software|yang\s+menggunakan)\s+'
+    for _ in range(2):
+        nama = re.sub(pola_prefix, '', nama, flags=re.IGNORECASE).strip()
+
+    # Potong jika ada titik / koma / newline / kata Jenis
+    if '\n' in nama:
+        nama = nama.split('\n')[0].strip()
+    if 'Jenis' in nama:
+        nama = nama.split('Jenis')[0].strip()
+    if '.' in nama:
+        nama = nama.split('.')[0].strip()
+    if ',' in nama:
+        nama = nama.split(',')[0].strip()
+
+    nama = nama.strip(" .,-:/")
+    if nama.upper() in ["AWS S3", "AMAZON S3"]:
+        return "Amazon S3"
+    if nama.startswith("Golang ") and len(nama) > 7:
+        nama = nama[7:].strip()
+    if re.search(r'\bT16000M\s+\d+', nama):
+        nama = re.sub(r'\s+\d+$', '', nama).strip()
+
+    return nama
+
+
+def ekstrak_produk_cve(deskripsi_en: str = "", narasi_id: str = "", vendor: str = "") -> str:
+    """
+    Ekstrak nama produk spesifik yang bersih dan bermakna dari deskripsi NVD atau narasi LLM.
+    Tidak akan pernah mengembalikan '(lihat deskripsi)' atau '-'.
+    """
+    teks_gabung = f"{deskripsi_en or ''} {narasi_id or ''}".strip()
+    if not teks_gabung:
+        return vendor.split('/')[0].strip() if vendor and vendor not in ["-", "(lihat deskripsi)", "Lainnya / Belum Teridentifikasi"] else "-"
+
+    # 1. Cek aturan ekosistem & pola regex khusus
+    for pola, v_name in _ATURAN_EKOSISTEM_VENDOR:
+        m = re.search(pola, teks_gabung, re.IGNORECASE)
+        if m:
+            matched = m.group(0).strip()
+            m_full = re.search(rf'\b({re.escape(matched)}(?:\s+[A-Z0-9][a-zA-Z0-9_\-\.]+){{1,3}})\b', teks_gabung)
+            cand = m_full.group(1) if m_full else matched
+            cand_clean = bersihkan_nama_produk(cand)
+            if cand_clean and len(cand_clean) >= 2 and cand_clean.lower() not in ['wordpress', 'php', 'python', 'rust', 'golang', 'node.js', 'microsoft', 'adobe', 'google', 'apple', 'apache', 'linux']:
+                return cand_clean
+
+    # 2. Cek pola deskripsi NVD umum (English)
+    if deskripsi_en:
+        m_in = re.search(r'\bIn\s+([A-Z0-9][a-zA-Z0-9_\-\.\s]{2,30}?)\s+(?:before|prior|version|versions|through|up to|\d)', deskripsi_en, re.IGNORECASE)
+        if m_in:
+            cand = bersihkan_nama_produk(m_in.group(1))
+            if cand and cand.lower() not in ['all', 'some', 'the', 'this', 'certain', 'various']:
+                return cand
+
+        m_pkg = re.search(r'\b([A-Za-z0-9_\-\.]{2,30})\s+\((?:npm|pypi|crate|gem|package|wordpress plugin)\)', deskripsi_en, re.IGNORECASE)
+        if m_pkg:
+            cand = bersihkan_nama_produk(m_pkg.group(1))
+            if cand:
+                return cand
+
+        m_start = re.search(r'^([A-Z0-9][a-zA-Z0-9_\-\.\s]{2,30}?)\s+(?:versions?|prior to|before|contains?|allows?|is affected)\b', deskripsi_en, re.IGNORECASE)
+        if m_start:
+            cand = bersihkan_nama_produk(m_start.group(1))
+            if cand and not cand.startswith("CVE-") and cand.lower() not in ['the', 'this', 'an', 'all']:
+                return cand
+
+    # 3. Cek pola narasi LLM (Bahasa Indonesia)
+    if narasi_id:
+        m_nar = re.search(r'Produk\s+(?:yang\s+)?(?:sistem\s+)?terdampak\s+adalah\s+(?:sistem\s+|plugin\s+|ekstensi\s+|aplikasi\s+|software\s+)?([A-Z0-9][A-Za-z0-9_\-\.\s]{2,30}?)(?:\s+versi|\s+dengan|\s+yang|\s+pada|\s+untuk|\.|\,)', narasi_id, re.IGNORECASE)
+        if m_nar:
+            cand = bersihkan_nama_produk(m_nar.group(1))
+            if cand and cand.lower() not in ['sistem', 'aplikasi', 'perangkat lunak', 'plugin', 'server', 'komponen']:
+                return cand
+
+        m_wp = re.search(r'plugin\s+([A-Z0-9][A-Za-z0-9_\-\.\s]{2,30}?)\s+(?:untuk|pada|di)\s+WordPress', narasi_id, re.IGNORECASE)
+        if m_wp:
+            cand = bersihkan_nama_produk(m_wp.group(1))
+            if cand:
+                return cand
+
+    # 4. Fallback ke vendor
+    if vendor and vendor not in ["-", "(lihat deskripsi)", "Lainnya / Belum Teridentifikasi"]:
+        return vendor.split('/')[0].strip()
+
+    return "-"
+
+
 def _ekstrak_vendor_produk(cve: dict, daftar_vendor_dikenal: List[str]) -> tuple:
     """
     Prioritas penentuan vendor & produk:
@@ -259,7 +355,8 @@ def _ekstrak_vendor_produk(cve: dict, daftar_vendor_dikenal: List[str]) -> tuple
     deskripsi_en = next((d["value"] for d in deskripsi_list if d.get("lang") == "en"), "")
     vendor_dari_teks = _ekstrak_vendor_dari_deskripsi(deskripsi_en, daftar_vendor_dikenal)
     if vendor_dari_teks:
-        return vendor_dari_teks, "(lihat deskripsi)"
+        produk_ekstrak = ekstrak_produk_cve(deskripsi_en=deskripsi_en, vendor=vendor_dari_teks)
+        return vendor_dari_teks, produk_ekstrak
 
     return "Lainnya / Belum Teridentifikasi", "-"
 

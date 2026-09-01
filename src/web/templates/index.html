@@ -1,99 +1,98 @@
 <!DOCTYPE html>
 <html class="light" lang="id">
-
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>SiberHarian - Rangkuman &amp; Tren Insiden Siber</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
-    rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Tailwind Configuration (Google Blue Material Palette) -->
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
       theme: {
         extend: {
           colors: {
-            "primary": "#1a73e8",
-            "primary-hover": "#1557b0",
-            "primary-light": "#e8f0fe",
+            "primary": "#2563eb",
+            "primary-hover": "#1d4ed8",
+            "primary-light": "#eff6ff",
+            "primary-dark": "#1e40af",
             "on-primary": "#ffffff",
-            "secondary": "#5f6368",
+            "secondary": "#64748b",
             "on-secondary": "#ffffff",
-            "background": "#f8fafd",
+            "background": "#f8fafc",
             "surface": "#ffffff",
-            "surface-container-low": "#f1f3f4",
-            "surface-container-lowest": "#ffffff",
-            "outline": "#dadce0",
-            "outline-variant": "#e8eaed",
-            "on-surface": "#202124",
-            "on-surface-variant": "#5f6368",
-            "google-blue": "#1a73e8",
-            "google-red": "#d93025",
-            "google-yellow": "#f9ab00",
-            "google-green": "#1e8e3e",
+            "surface-dim": "#f1f5f9",
+            "on-surface": "#0f172a",
+            "on-surface-variant": "#64748b",
+            "outline": "#e2e8f0",
+            "outline-variant": "#f1f5f9",
+            "google-blue": "#2563eb",
+            "google-red": "#dc2626",
+            "google-yellow": "#d97706",
+            "google-green": "#059669",
           },
-          borderRadius: { "DEFAULT": "0.375rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
-          spacing: { "gutter": "24px", "container-max": "1160px", "xl": "36px" },
+          borderRadius: { "DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.25rem", "full": "9999px" },
+          spacing: { "gutter": "24px", "container-max": "1200px", "xl": "36px" },
           fontFamily: {
             "sans": ["Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
             "mono": ["JetBrains Mono", "monospace"],
+          },
+          boxShadow: {
+            'glass': '0 4px 30px rgba(0, 0, 0, 0.05)',
+            'card': '0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06)',
+            'card-hover': '0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04)',
+            'elevated': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+            'glow-blue': '0 0 20px rgba(37, 99, 235, 0.15)',
           },
         },
       },
     }
   </script>
   <style>
-    body { background-color: #f8fafd; color: #202124; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; scroll-behavior: smooth; }
-    .google-shadow-sm { box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.08), 0 1px 3px 1px rgba(60, 64, 67, 0.04); }
-    .google-shadow { box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.12), 0 4px 8px 3px rgba(60, 64, 67, 0.06); }
-    .custom-shadow { box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.08), 0 2px 6px 2px rgba(60, 64, 67, 0.04); }
-    .custom-shadow:hover { box-shadow: 0 2px 6px 0 rgba(60, 64, 67, 0.12), 0 6px 12px 3px rgba(60, 64, 67, 0.08); }
-    .terminal-gradient { background: #1e293b; }
+    body { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e8f0fe 100%); background-attachment: fixed; color: #0f172a; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; scroll-behavior: smooth; }
+    .glass-header { background: rgba(255,255,255,0.98); border-bottom: 1px solid rgba(226,232,240,0.6); }
+    .terminal-gradient { background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%); }
+    .terminal-glow { box-shadow: 0 0 40px rgba(37,99,235,0.1), inset 0 1px 0 rgba(255,255,255,0.05); }
+    .hero-gradient { background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%); }
+    .card-hover-lift { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .card-hover-lift:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.04); }
+    .tab-active { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%); color: white; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
     #btn-cancel { display: none; }
     #btn-cancel.visible { display: inline-flex; }
     [x-cloak] { display: none !important; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
   </style>
 </head>
-
 <body class="text-sm antialiased" x-data="{ tabAktif: 'beranda' }">
-  <!-- TopNavBar -->
-  <header class="w-full sticky top-0 z-50 bg-white border-b border-slate-200 google-shadow-sm">
+  <header class="w-full sticky top-0 z-50 glass-header">
     <div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto">
-      <div class="font-bold text-lg text-slate-900 tracking-tight">
-        SiberHarian
+      <div class="flex items-center gap-3">
+        <span class="font-bold text-lg text-slate-900 tracking-tight">SiberHarian</span>
       </div>
-
-      <!-- Center Navigation Tabs -->
-      <nav class="hidden md:flex items-center space-x-1 sm:space-x-2">
+      <nav class="hidden md:flex items-center bg-slate-100/80 p-1 rounded-xl">
         <a href="#" @click.prevent="tabAktif = 'beranda'"
-          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-150 flex items-center gap-2"
-          :class="tabAktif === 'beranda' ? 'bg-primary-light text-primary font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'">
+          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2"
+          :class="tabAktif === 'beranda' ? 'tab-active' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'">
           <span class="material-symbols-outlined text-[18px]">dashboard</span> Dashboard
         </a>
         <a href="#" @click.prevent="tabAktif = 'arsip'; muatTabArsip()"
-          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-150 flex items-center gap-2"
-          :class="tabAktif === 'arsip' ? 'bg-primary-light text-primary font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'">
+          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2"
+          :class="tabAktif === 'arsip' ? 'tab-active' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'">
           <span class="material-symbols-outlined text-[18px]">inventory_2</span> Arsip
         </a>
         <a href="#" @click.prevent="tabAktif = 'tren'; muatTabTren()"
-          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-150 flex items-center gap-2"
-          :class="tabAktif === 'tren' ? 'bg-primary-light text-primary font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'">
+          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2"
+          :class="tabAktif === 'tren' ? 'tab-active' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'">
           <span class="material-symbols-outlined text-[18px]">insights</span> Tren Siber
         </a>
       </nav>
-
-      <!-- Search Box (Google Material Pill) -->
       <div class="flex items-center gap-3">
         <div class="relative hidden sm:block">
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
-          <input class="pl-9 pr-4 py-1.5 rounded-full bg-slate-100 border border-transparent focus:border-primary focus:bg-white outline-none text-xs w-48 focus:w-64 transition-all duration-200 placeholder:text-slate-400"
+          <input class="pl-9 pr-4 py-2 rounded-xl bg-slate-100/80 border border-transparent focus:border-primary/30 focus:bg-white focus:shadow-glow-blue outline-none text-xs w-48 focus:w-64 transition-all duration-300 placeholder:text-slate-400"
             placeholder="Cari insiden..." type="text" />
         </div>
       </div>
@@ -101,51 +100,52 @@
   </header>
 
   <main class="max-w-container-max mx-auto px-gutter py-6">
-    <!-- Tab: Beranda (Dashboard) -->
     <section x-show="tabAktif === 'beranda'" x-cloak
       x-transition:enter="transition ease-out duration-300 transform"
       x-transition:enter-start="opacity-0 translate-y-2"
       x-transition:enter-end="opacity-100 translate-y-0">
-      
-      <!-- Hero + Pipeline Runner -->
       <section class="pt-6 pb-12 text-center">
-        <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-3 max-w-3xl mx-auto">
-          Rangkuman &amp; Tren Insiden Siber
-        </h1>
-        <p class="text-slate-600 text-base mb-8 max-w-2xl mx-auto leading-relaxed">
-          Pipeline monitoring, ekstraksi intelijen berita, dan analisis tren kerentanan siber otomatis.
-        </p>
+        <div class="relative mb-10">
+          <div class="absolute inset-0 hero-gradient opacity-5 rounded-3xl blur-3xl"></div>
+          <div class="relative">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4 max-w-3xl mx-auto leading-[1.15]">
+              Rangkuman &amp; Tren <span class="text-primary">Insiden Siber</span>
+            </h1>
+            <p class="text-slate-500 text-base mb-10 max-w-2xl mx-auto leading-relaxed">
+              Pipeline monitoring, ekstraksi intelijen berita, dan analisis tren kerentanan siber otomatis.
+            </p>
+          </div>
+        </div>
 
         <div class="flex flex-col items-center gap-6">
           <div class="flex items-center justify-center gap-3 flex-wrap">
             <button
-              class="bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-lg font-medium text-sm shadow-sm hover:shadow transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              class="hero-gradient text-white px-6 py-2.5 rounded-xl font-semibold text-sm shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               id="btn-run" onclick="mulaiPipeline()">
               <span class="material-symbols-outlined text-[20px]" id="run-icon">play_arrow</span>
               <span id="btn-run-text">Jalankan Pipeline</span>
             </button>
             <button
-              class="bg-white text-google-red border border-slate-300 hover:bg-red-50 px-5 py-2.5 rounded-lg font-medium text-sm transition-all active:scale-95 items-center gap-2 cursor-pointer"
+              class="bg-white text-google-red border border-slate-200 hover:bg-red-50 hover:border-red-200 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all active:scale-95 items-center gap-2 cursor-pointer"
               id="btn-cancel" onclick="batalkanPipeline()">
               <span class="material-symbols-outlined text-[20px]">stop_circle</span>
               Batalkan Pipeline
             </button>
           </div>
 
-          <!-- Terminal Shell (Cloud Shell Look) -->
-          <div class="w-full max-w-3xl terminal-gradient rounded-xl p-5 text-left border border-slate-700 shadow-md overflow-hidden relative">
-            <div class="flex items-center justify-between gap-2 mb-3 border-b border-slate-700/60 pb-2.5">
+          <div class="w-full max-w-3xl terminal-gradient rounded-2xl p-5 text-left border border-slate-700/50 terminal-glow overflow-hidden relative">
+            <div class="flex items-center justify-between gap-2 mb-3 border-b border-slate-700/40 pb-2.5">
               <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-[#ea4335]"></div>
-                <div class="w-3 h-3 rounded-full bg-[#fbbc05]"></div>
-                <div class="w-3 h-3 rounded-full bg-[#34a853]"></div>
+                <div class="w-3 h-3 rounded-full bg-[#ea4335] shadow-[0_0_6px_rgba(234,67,53,0.4)]"></div>
+                <div class="w-3 h-3 rounded-full bg-[#fbbc05] shadow-[0_0_6px_rgba(251,188,5,0.4)]"></div>
+                <div class="w-3 h-3 rounded-full bg-[#34a853] shadow-[0_0_6px_rgba(52,168,83,0.4)]"></div>
                 <span class="ml-2 font-mono text-xs text-slate-400 font-medium">Cloud Shell - Pipeline Monitor</span>
               </div>
-              <span class="font-mono text-xs text-slate-400 font-medium" id="console-status">— idle —</span>
+              <span class="font-mono text-xs text-slate-500 font-medium" id="console-status">idle</span>
             </div>
             <div class="font-mono text-xs text-slate-300 h-44 overflow-y-auto space-y-1.5 leading-relaxed" id="console-body">
               <div class="flex gap-2 text-slate-500">
-                <span>Menunggu pipeline dijalankan…</span>
+                <span>Menunggu pipeline dijalankan...</span>
               </div>
             </div>
           </div>
@@ -155,7 +155,6 @@
       {% include "partials/_beranda.html" %}
     </section>
 
-    <!-- Tab: Arsip -->
     <section x-show="tabAktif === 'arsip'" x-cloak
       x-transition:enter="transition ease-out duration-300 transform"
       x-transition:enter-start="opacity-0 translate-y-2"
@@ -163,7 +162,6 @@
       {% include "partials/_arsip.html" %}
     </section>
 
-    <!-- Tab: Tren Siber -->
     <section x-show="tabAktif === 'tren'" x-cloak
       x-transition:enter="transition ease-out duration-300 transform"
       x-transition:enter-start="opacity-0 translate-y-2"
@@ -172,15 +170,14 @@
     </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="w-full mt-16 bg-white border-t border-slate-200">
+  <footer class="w-full mt-16 border-t border-slate-200/60">
     <div class="flex flex-col md:flex-row justify-between items-center py-6 px-gutter max-w-container-max mx-auto gap-4">
-      <div class="flex items-center gap-2 text-slate-600 text-xs">
-        <span class="font-bold text-slate-800 text-sm">SiberHarian</span>
-        <span>•</span>
-        <span>© 2026 Rangkuman &amp; Tren Insiden Siber.</span>
+      <div class="flex items-center gap-2 text-slate-500 text-xs">
+        <span class="font-semibold text-slate-700">SiberHarian</span>
+        <span class="text-slate-300">&bull;</span>
+        <span>&copy; 2026 Rangkuman &amp; Tren Insiden Siber.</span>
       </div>
-      <div class="flex gap-6 text-xs text-slate-500 font-medium">
+      <div class="flex gap-6 text-xs text-slate-400 font-medium">
         <a class="hover:text-primary transition-colors" href="#">Dokumentasi</a>
         <a class="hover:text-primary transition-colors" href="#">Status API</a>
         <a class="hover:text-primary transition-colors" href="#">Privasi</a>
@@ -189,8 +186,7 @@
     </div>
   </footer>
 
-  <!-- Modal Ringkasan Lengkap (Frosted Glass Blur + Animation) -->
-  <div class="fixed inset-0 bg-slate-950/40 backdrop-blur-md z-[100] hidden items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-200 ease-out" id="modal-overlay" onclick="tutupModalJikaLuar(event)">
+  <div class="fixed inset-0 bg-slate-950/50 backdrop-blur-md z-[100] hidden items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-200 ease-out" id="modal-overlay" onclick="tutupModalJikaLuar(event)">
     <div class="bg-white rounded-2xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-7 relative border border-slate-200/90 shadow-2xl transform scale-95 opacity-0 translate-y-4 transition-all duration-200 ease-out" id="modal-box">
       <button class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer" onclick="tutupModal()" title="Tutup (Esc)">
         <span class="material-symbols-outlined text-[20px]">close</span>
@@ -200,9 +196,9 @@
         <span class="text-xs text-slate-500 font-medium" id="modal-sumber"></span>
       </div>
       <h3 class="text-xl font-bold text-slate-900 mb-3 leading-snug" id="modal-judul"></h3>
-      <p class="text-slate-700 text-sm leading-relaxed whitespace-pre-line bg-slate-50/90 p-5 rounded-xl border border-slate-200/80" id="modal-teks"></p>
-      <div class="mt-6 pt-4 border-t border-slate-200">
-        <a class="text-slate-900 font-bold text-sm flex items-center gap-1.5 w-fit hover:text-primary transition-colors hover:underline underline-offset-4" id="modal-link" href="#" target="_blank" rel="noopener">
+      <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line bg-slate-50/90 p-5 rounded-xl border border-slate-100" id="modal-teks"></p>
+      <div class="mt-6 pt-4 border-t border-slate-100">
+        <a class="text-primary font-semibold text-sm flex items-center gap-1.5 w-fit hover:text-primary-hover transition-colors hover:underline underline-offset-4" id="modal-link" href="#" target="_blank" rel="noopener">
           Buka tautan sumber <span class="material-symbols-outlined text-[16px]">open_in_new</span>
         </a>
       </div>
@@ -211,5 +207,4 @@
 
   <script type="module" src="/static/js/main.js"></script>
 </body>
-
 </html>

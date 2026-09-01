@@ -28,7 +28,7 @@ export function bukaModal(idx) {
 
   if (pill) {
     pill.textContent = item.pillLabel;
-    pill.className = 'px-2.5 py-0.5 rounded-md font-mono text-xs font-semibold ' + item.pillClass;
+    pill.className = 'px-2.5 py-0.5 rounded-lg font-mono text-xs font-semibold ' + item.pillClass;
   }
   if (sumber) sumber.textContent = item.sumber;
   if (judul) judul.textContent = item.judul;

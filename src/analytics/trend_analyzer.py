@@ -199,6 +199,19 @@ def hitung_tren_vendor_cve(df_riwayat: pd.DataFrame, top_n: int = 8, top_produk_
     if df_cve.empty:
         return []
 
+    # Pastikan setiap row memiliki nama produk yang bersih & valid
+    from src.scraper.cve_fetcher import ekstrak_produk_cve
+
+    produk_list = []
+    for _, row in df_cve.iterrows():
+        p = str(row.get("produk", "")).strip()
+        if not p or p in ["-", "(lihat deskripsi)", "None", "nan", "Lainnya / Belum Teridentifikasi"]:
+            narasi = str(row.get("ringkasan_atau_narasi", ""))
+            vendor = str(row.get("vendor", ""))
+            p = ekstrak_produk_cve(narasi_id=narasi, vendor=vendor)
+        produk_list.append(p)
+    df_cve["produk"] = produk_list
+
     df_terkini, df_baseline = _split_periode(df_cve)
     hitung_terkini = df_terkini.groupby("vendor").size().to_dict()
     hitung_baseline = df_baseline.groupby("vendor").size().to_dict()
@@ -212,10 +225,15 @@ def hitung_tren_vendor_cve(df_riwayat: pd.DataFrame, top_n: int = 8, top_produk_
         jumlah_baseline = hitung_baseline.get(vendor, 0)
         df_vendor_terkini = df_terkini[df_terkini["vendor"] == vendor]
 
-        # Breakdown produk spesifik yang terdampak - supaya rekomendasi
-        # bisa konkret ("prioritaskan produk X"), bukan cuma nama vendor.
-        hitung_produk = df_vendor_terkini["produk"].value_counts().head(top_produk_per_vendor)
-        top_produk = [{"produk": p, "jumlah": int(j)} for p, j in hitung_produk.items()]
+        # Breakdown produk spesifik yang terdampak (filter keluar nilai invalid)
+        produk_valid = df_vendor_terkini["produk"].dropna()
+        produk_valid = produk_valid[~produk_valid.isin(["-", "(lihat deskripsi)", "None", "nan", "Lainnya / Belum Teridentifikasi", ""])]
+
+        if produk_valid.empty:
+            top_produk = [{"produk": vendor.split('/')[0].strip(), "jumlah": int(jumlah_terkini)}]
+        else:
+            hitung_produk = produk_valid.value_counts().head(top_produk_per_vendor)
+            top_produk = [{"produk": p, "jumlah": int(j)} for p, j in hitung_produk.items()]
 
         hasil.append({
             "vendor": vendor,

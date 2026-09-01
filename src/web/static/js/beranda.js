@@ -63,9 +63,12 @@ export async function tampilkanBeranda() {
 
     emptyState.style.display = 'none';
     let html = '';
-    html += buatSection('🚨 Insiden Spesifik', insiden.map(buatCardBerita).join(''), insiden.length);
-    html += buatSection('📚 Edukasi / Evergreen', analisis.map(buatCardBerita).join(''), analisis.length);
-    html += buatSection('🔴 CVE Critical', cve.map(buatCardCve).join(''), cve.length);
+    html += buatSection('Insiden Spesifik', insiden.map(buatCardBerita).join(''), insiden.length,
+        { ikon: 'local_fire_department', kelas: 'bg-red-50 text-google-red border border-red-100/60' });
+    html += buatSection('Edukasi / Evergreen', analisis.map(buatCardBerita).join(''), analisis.length,
+        { ikon: 'school', kelas: 'bg-blue-50 text-primary border border-blue-100/60' });
+    html += buatSection('CVE Critical', cve.map(buatCardCve).join(''), cve.length,
+        { ikon: 'bug_report', kelas: 'bg-amber-50 text-amber-700 border border-amber-100/60' });
     cardContainer.innerHTML = html;
 }
 

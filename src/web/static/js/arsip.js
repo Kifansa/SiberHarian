@@ -16,11 +16,11 @@ function renderTombolTanggal() {
     tombolContainer.innerHTML = daftarHari.map(hari => {
         const aktif = hari.tanggal === tanggalTerpilih;
         const kelasAktif = aktif
-            ? 'bg-primary text-white border-primary shadow-sm font-semibold'
-            : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50 hover:text-slate-900 font-medium';
+            ? 'tab-active shadow-sm font-semibold'
+            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900 font-medium';
         const jumlahTotal = hari.berita.length + hari.cve.length;
         return `
-      <button class="px-3.5 py-1.5 rounded-lg border font-mono text-xs transition-all cursor-pointer ${kelasAktif}" data-tanggal="${hari.tanggal}">
+      <button class="px-3.5 py-1.5 rounded-xl border font-mono text-xs transition-all cursor-pointer ${kelasAktif}" data-tanggal="${hari.tanggal}">
         ${formatTanggalIndonesia(hari.tanggal)} <span class="opacity-75 font-normal">(${jumlahTotal})</span>
       </button>`;
     }).join('');
@@ -44,9 +44,12 @@ function renderCardUntukTanggalTerpilih() {
     const insiden = hari.berita.filter(b => b.kategori === 'insiden_spesifik');
     const analisis = hari.berita.filter(b => b.kategori !== 'insiden_spesifik');
     let html = '';
-    html += buatSection('🚨 Insiden Spesifik', insiden.map(buatCardBerita).join(''), insiden.length);
-    html += buatSection('📚 Edukasi / Evergreen', analisis.map(buatCardBerita).join(''), analisis.length);
-    html += buatSection('🔴 CVE Critical', hari.cve.map(buatCardCve).join(''), hari.cve.length);
+    html += buatSection('Insiden Spesifik', insiden.map(buatCardBerita).join(''), insiden.length,
+        { ikon: 'local_fire_department', kelas: 'bg-red-50 text-google-red border border-red-100/60' });
+    html += buatSection('Edukasi / Evergreen', analisis.map(buatCardBerita).join(''), analisis.length,
+        { ikon: 'school', kelas: 'bg-blue-50 text-primary border border-blue-100/60' });
+    html += buatSection('CVE Critical', hari.cve.map(buatCardCve).join(''), hari.cve.length,
+        { ikon: 'bug_report', kelas: 'bg-amber-50 text-amber-700 border border-amber-100/60' });
     cardContainer.innerHTML = html || '<p class="text-on-surface-variant py-10 text-center">Tidak ada berita/CVE pada tanggal ini.</p>';
 }
 

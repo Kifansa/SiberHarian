@@ -69,8 +69,8 @@ export function tampilkanToast(pesan, tipe = 'sukses') {
 
   const toast = document.createElement('div');
   const bg = tipe === 'sukses' 
-    ? 'bg-slate-900/95 text-white border border-slate-700 shadow-2xl' 
-    : 'bg-rose-900/95 text-white border border-rose-700 shadow-2xl';
+    ? 'bg-slate-900/95 text-white border border-slate-700/50 shadow-2xl' 
+    : 'bg-rose-900/95 text-white border border-rose-700/50 shadow-2xl';
   const icon = tipe === 'sukses' ? 'check_circle' : 'error';
   const iconColor = tipe === 'sukses' ? 'text-emerald-400' : 'text-rose-400';
 

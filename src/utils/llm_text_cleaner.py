@@ -50,7 +50,7 @@ def bersihkan_output_llm(teks: Optional[str], judul_atau_id: str = "") -> Option
             break
         teks = teks_baru
 
-    teks = re.sub(r"\n{2,}", "\n", teks).strip()
+    teks = re.sub(r"\n{3,}", "\n\n", teks).strip()
 
     if judul_atau_id:
         panjang_sama = _panjang_prefix_sama(teks, judul_atau_id)

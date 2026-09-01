@@ -27,13 +27,13 @@ window.tampilAiTab = function (tab) {
   if (tab === 'berita') {
     boxBerita.classList.remove('hidden');
     boxCve.classList.add('hidden');
-    btnBerita.className = 'px-3 py-1 rounded-md text-xs font-semibold transition-all bg-primary text-white shadow-xs cursor-pointer';
-    btnCve.className = 'px-3 py-1 rounded-md text-xs font-semibold transition-all text-slate-600 hover:text-slate-900 cursor-pointer';
+    btnBerita.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all tab-active shadow-sm cursor-pointer';
+    btnCve.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-900 cursor-pointer';
   } else {
     boxBerita.classList.add('hidden');
     boxCve.classList.remove('hidden');
-    btnCve.className = 'px-3 py-1 rounded-md text-xs font-semibold transition-all bg-google-red text-white shadow-xs cursor-pointer';
-    btnBerita.className = 'px-3 py-1 rounded-md text-xs font-semibold transition-all text-slate-600 hover:text-slate-900 cursor-pointer';
+    btnCve.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-google-red text-white shadow-sm cursor-pointer';
+    btnBerita.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-900 cursor-pointer';
   }
 };
 
@@ -214,13 +214,13 @@ function renderLaporanCards(container, rawText, defaultType = 'berita') {
       .replace(/^#+/, '')
       .trim();
 
-    if (/^prioritas\s*(?:1|2|patching)/i.test(clean) || /^mitigasi\s*sementara/i.test(clean) || /^workaround/i.test(clean)) {
+    if (/^prioritas\b/i.test(clean) || /^mitigasi\s*sementara/i.test(clean) || /^workaround/i.test(clean)) {
       return { isHeader: false, cleanTitle: '' };
     }
 
     const mainKeywords = [
       'LANSKAP', 'POLA ANCAMAN', 'VEKTOR SERANGAN', 'SEKTOR TERPAPAR',
-      'KORELASI', 'MATRIKS MITIGASI', 'REKOMENDASI ANTISIPASI',
+      'KORELASI', 'HUBUNGAN', 'MATRIKS MITIGASI', 'REKOMENDASI MITIGASI', 'REKOMENDASI ANTISIPASI',
       'VENDOR & PRODUK', 'VENDOR', 'ANALISIS VEKTOR', 'EKSPLOITASI & DAMPAK',
       'PANDUAN PATCHING', 'PRIORITAS PATCHING & MITIGASI'
     ];
@@ -265,63 +265,123 @@ function renderLaporanCards(container, rawText, defaultType = 'berita') {
   function getSectionMeta(title) {
     const t = title.toLowerCase();
     if (t.includes('lanskap') || t.includes('pola')) {
-      return { icon: 'public', border: 'border-blue-200', badgeBg: 'bg-blue-100 text-blue-800' };
+      return { icon: 'public', border: 'border-blue-200/60', badgeBg: 'bg-blue-100 text-blue-800' };
     }
     if (t.includes('vektor') || t.includes('sektor') || t.includes('ttp')) {
-      return { icon: 'track_changes', border: 'border-amber-200', badgeBg: 'bg-amber-100 text-amber-900' };
+      return { icon: 'track_changes', border: 'border-amber-200/60', badgeBg: 'bg-amber-100 text-amber-900' };
     }
-    if (t.includes('korelasi')) {
-      return { icon: 'hub', border: 'border-indigo-200', badgeBg: 'bg-indigo-100 text-indigo-900' };
+    if (t.includes('korelasi') || t.includes('hubungan')) {
+      return { icon: 'hub', border: 'border-indigo-200/60', badgeBg: 'bg-indigo-100 text-indigo-900' };
     }
     if (t.includes('mitigasi') || t.includes('rekomendasi') || t.includes('matriks')) {
-      return { icon: 'security', border: 'border-emerald-200', badgeBg: 'bg-emerald-100 text-emerald-900' };
+      return { icon: 'security', border: 'border-emerald-200/60', badgeBg: 'bg-emerald-100 text-emerald-900' };
     }
     if (t.includes('vendor') || t.includes('produk')) {
-      return { icon: 'verified_user', border: 'border-red-200', badgeBg: 'bg-red-100 text-google-red' };
+      return { icon: 'verified_user', border: 'border-red-200/60', badgeBg: 'bg-red-100 text-google-red' };
     }
     if (t.includes('eksploitasi') || t.includes('dampak')) {
-      return { icon: 'bolt', border: 'border-amber-200', badgeBg: 'bg-amber-100 text-amber-900' };
+      return { icon: 'bolt', border: 'border-amber-200/60', badgeBg: 'bg-amber-100 text-amber-900' };
     }
     if (t.includes('patching') || t.includes('panduan')) {
-      return { icon: 'build_circle', border: 'border-emerald-200', badgeBg: 'bg-emerald-100 text-emerald-900' };
+      return { icon: 'build_circle', border: 'border-emerald-200/60', badgeBg: 'bg-emerald-100 text-emerald-900' };
     }
-    return { icon: 'article', border: 'border-slate-200', badgeBg: 'bg-slate-100 text-slate-800' };
+    return { icon: 'article', border: 'border-slate-200/60', badgeBg: 'bg-slate-100 text-slate-800' };
   }
 
   function formatBodyHtml(linesArr) {
     let html = '';
     let inList = false;
+    let inTable = false;
 
     for (let i = 0; i < linesArr.length; i++) {
       const raw = linesArr[i];
       const trimmed = raw.trim();
+      
       if (!trimmed) {
         if (inList) { html += '</ul>'; inList = false; }
+        if (inTable) { html += '</tbody></table></div>'; inTable = false; }
         continue;
       }
 
-      if (/^prioritas\s*1/i.test(trimmed) || /^\*\s*prioritas\s*1/i.test(trimmed) || /^\*\*prioritas\s*1/i.test(trimmed)) {
+      // --- Table Parsing ---
+      if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
         if (inList) { html += '</ul>'; inList = false; }
-        const cleanP = trimmed.replace(/^[\*\s\-]+|[\*\s\-]+$/g, '').replace(/:$/, '');
-        html += `<div class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-red-50 text-google-red border border-red-200 mt-3 mb-2 w-fit"><span class="material-symbols-outlined text-[14px]">local_fire_department</span> ${cleanP}</div>`;
+        
+        if (!inTable) {
+            html += '<div class="overflow-x-auto mt-3 mb-4 rounded-xl border border-slate-200/60 shadow-sm"><table class="w-full text-left border-collapse">';
+            inTable = true;
+            
+            const cells = trimmed.split('|').slice(1, -1).map(s => s.trim());
+            html += '<thead><tr class="bg-slate-50 border-b border-slate-200/60">';
+            for (const cell of cells) {
+                html += `<th class="py-2.5 px-3.5 text-[11px] font-bold text-slate-500 uppercase tracking-wider">${cell}</th>`;
+            }
+            html += '</tr></thead><tbody class="divide-y divide-slate-100">';
+            continue;
+        }
+        
+        if (/^[\|\-\s:]+$/.test(trimmed)) {
+            continue;
+        }
+        
+        const cells = trimmed.split('|').slice(1, -1).map(s => s.trim());
+        html += '<tr class="hover:bg-slate-50 transition-colors">';
+        for (const cell of cells) {
+            const cellContent = cell.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>');
+            html += `<td class="py-2.5 px-3.5 text-sm text-slate-600 align-top">${cellContent}</td>`;
+        }
+        html += '</tr>';
+        continue;
+      } else {
+        if (inTable) {
+            html += '</tbody></table></div>';
+            inTable = false;
+        }
+      }
+      // ----------------------
+
+      if (/^[\-\*\•]?\s*\*?prioritas\s*patching/i.test(trimmed)) {
+        if (inList) { html += '</ul>'; inList = false; }
+        const parts = trimmed.replace(/^[\*\-\•\s]+/, '').split(':');
+        const badgeText = parts[0].replace(/\*\*(.*?)\*\*/g, '$1').trim();
+        const bodyText = parts.slice(1).join(':').trim();
+        html += `<div class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-red-50 text-google-red border border-red-200/60 mt-3 mb-2 w-fit"><span class="material-symbols-outlined text-[14px]">bolt</span> ${badgeText}</div>`;
+        if (bodyText) {
+            html += `<p class="text-slate-700 text-sm leading-relaxed mb-2">${bodyText.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>')}</p>`;
+        }
         continue;
       }
-      if (/^prioritas\s*2/i.test(trimmed) || /^\*\s*prioritas\s*2/i.test(trimmed) || /^\*\*prioritas\s*2/i.test(trimmed)) {
+      if (/^[\-\*\•]?\s*\*?(prioritas\s*2|tindak\s*lanjut\s*jangka\s*panjang)/i.test(trimmed)) {
         if (inList) { html += '</ul>'; inList = false; }
-        const cleanP = trimmed.replace(/^[\*\s\-]+|[\*\s\-]+$/g, '').replace(/:$/, '');
-        html += `<div class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-blue-50 text-primary border border-blue-200 mt-4 mb-2 w-fit"><span class="material-symbols-outlined text-[14px]">shield</span> ${cleanP}</div>`;
+        const parts = trimmed.replace(/^[\*\-\•\s]+/, '').split(':');
+        const badgeText = parts[0].replace(/\*\*(.*?)\*\*/g, '$1').trim();
+        const bodyText = parts.slice(1).join(':').trim();
+        html += `<div class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-blue-50 text-primary border border-blue-200/60 mt-4 mb-2 w-fit"><span class="material-symbols-outlined text-[14px]">shield</span> ${badgeText}</div>`;
+        if (bodyText) {
+            html += `<p class="text-slate-700 text-sm leading-relaxed mb-2">${bodyText.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>')}</p>`;
+        }
         continue;
       }
-      if (/prioritas\s*patching/i.test(trimmed) && !trimmed.includes(':')) {
+      if (/^[\-\*\•]?\s*\*?prioritas(?:\s*1|\b)/i.test(trimmed)) {
         if (inList) { html += '</ul>'; inList = false; }
-        const cleanP = trimmed.replace(/^[\*\s\-]+|[\*\s\-]+$/g, '');
-        html += `<div class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-red-50 text-google-red border border-red-200 mt-3 mb-2 w-fit"><span class="material-symbols-outlined text-[14px]">bolt</span> ${cleanP}</div>`;
+        const parts = trimmed.replace(/^[\*\-\•\s]+/, '').split(':');
+        const badgeText = parts[0].replace(/\*\*(.*?)\*\*/g, '$1').trim();
+        const bodyText = parts.slice(1).join(':').trim();
+        html += `<div class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-red-50 text-google-red border border-red-200/60 mt-3 mb-2 w-fit"><span class="material-symbols-outlined text-[14px]">local_fire_department</span> ${badgeText}</div>`;
+        if (bodyText) {
+            html += `<p class="text-slate-700 text-sm leading-relaxed mb-2">${bodyText.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>')}</p>`;
+        }
         continue;
       }
-      if (/mitigasi\s*sementara/i.test(trimmed) || /workaround/i.test(trimmed)) {
+      if (/^[\-\*\•]?\s*\*?(mitigasi\s*sementara|workaround)/i.test(trimmed)) {
         if (inList) { html += '</ul>'; inList = false; }
-        const cleanP = trimmed.replace(/^[\*\s\-]+|[\*\s\-]+$/g, '');
-        html += `<div class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 mt-4 mb-2 w-fit"><span class="material-symbols-outlined text-[14px]">tune</span> ${cleanP}</div>`;
+        const parts = trimmed.replace(/^[\*\-\•\s]+/, '').split(':');
+        const badgeText = parts[0].replace(/\*\*(.*?)\*\*/g, '$1').trim();
+        const bodyText = parts.slice(1).join(':').trim();
+        html += `<div class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/60 mt-4 mb-2 w-fit"><span class="material-symbols-outlined text-[14px]">tune</span> ${badgeText}</div>`;
+        if (bodyText) {
+            html += `<p class="text-slate-700 text-sm leading-relaxed mb-2">${bodyText.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>')}</p>`;
+        }
         continue;
       }
 
@@ -347,6 +407,7 @@ function renderLaporanCards(container, rawText, defaultType = 'berita') {
     }
 
     if (inList) { html += '</ul>'; }
+    if (inTable) { html += '</tbody></table></div>'; }
     return html;
   }
 
@@ -355,7 +416,7 @@ function renderLaporanCards(container, rawText, defaultType = 'berita') {
     const bodyHtml = formatBodyHtml(sec.lines);
 
     return `
-      <div class="bg-white border ${meta.border} rounded-xl p-5 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between">
+      <div class="bg-white border ${meta.border}/60 rounded-2xl p-5 shadow-card card-hover-lift flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-2 mb-3.5 pb-2.5 border-b border-slate-100">
             <span class="p-1.5 rounded-lg ${meta.badgeBg} flex items-center justify-center">
@@ -377,9 +438,9 @@ function renderLaporanCards(container, rawText, defaultType = 'berita') {
 function flashUpdatedCards() {
   const cards = document.querySelectorAll('.kpi-card, .chart-card');
   cards.forEach(card => {
-    card.classList.add('ring-2', 'ring-blue-400/40', 'ring-offset-1');
+    card.classList.add('ring-2', 'ring-primary/30', 'ring-offset-1');
     setTimeout(() => {
-      card.classList.remove('ring-2', 'ring-blue-400/40', 'ring-offset-1');
+      card.classList.remove('ring-2', 'ring-primary/30', 'ring-offset-1');
     }, 800);
   });
 }
@@ -404,7 +465,7 @@ function renderKpiCards(stat, isAnimated = false) {
 
   // KPI 2: Total CVE
   const kpiCve = document.getElementById('kpi-total-cve');
-  const kpiCveCrit = document.getElementById('kpi-cve-critical');
+  const kpiCveVendor = document.getElementById('kpi-cve-vendor');
   const totalCve = stat.total_cve ?? 0;
   if (kpiCve) {
     if (isAnimated) {
@@ -414,8 +475,8 @@ function renderKpiCards(stat, isAnimated = false) {
     }
   }
   
-  const critCount = stat.severity_breakdown?.CRITICAL ?? 0;
-  if (kpiCveCrit) kpiCveCrit.textContent = `${critCount} Critical`;
+  const vendorCount = stat.total_vendor_cve ?? 0;
+  if (kpiCveVendor) kpiCveVendor.textContent = `${vendorCount} Vendor`;
 
   // KPI 3: CVSS Score
   const kpiCvss = document.getElementById('kpi-avg-cvss');
@@ -431,13 +492,13 @@ function renderKpiCards(stat, isAnimated = false) {
   if (kpiCvssLevel) {
     if (avgScore >= 9.0) {
       kpiCvssLevel.textContent = 'CRITICAL';
-      kpiCvssLevel.className = 'text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-google-red border border-red-200';
+      kpiCvssLevel.className = 'text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-google-red border border-red-200/60';
     } else if (avgScore >= 7.0) {
       kpiCvssLevel.textContent = 'HIGH';
-      kpiCvssLevel.className = 'text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200';
+      kpiCvssLevel.className = 'text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/60';
     } else {
       kpiCvssLevel.textContent = 'MEDIUM';
-      kpiCvssLevel.className = 'text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-primary border border-blue-200';
+      kpiCvssLevel.className = 'text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-primary border border-blue-200/60';
     }
   }
 
@@ -554,13 +615,13 @@ function renderCharts(stat) {
         plugins: {
           legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } },
           tooltip: {
-            backgroundColor: '#202124',
+            backgroundColor: '#0f172a',
             padding: 10,
             cornerRadius: 8,
           }
         },
         scales: {
-          x: { grid: { color: '#f1f3f4' }, ticks: { precision: 0 } },
+          x: { grid: { color: '#f1f5f9' }, ticks: { precision: 0 } },
           y: { grid: { display: false } }
         }
       }
@@ -572,7 +633,7 @@ function renderCharts(stat) {
   if (elVendor) {
     const labels = (stat.vendor_naik || []).map(item => item.vendor);
     const counts = (stat.vendor_naik || []).map(item => item.jumlah_terkini);
-    const colors = ['#1a73e8', '#d93025', '#f9ab00', '#1e8e3e', '#8430ce', '#129eaf', '#e8710a', '#174ea6'];
+    const colors = ['#2563eb', '#dc2626', '#d97706', '#059669', '#7c3aed', '#0891b2', '#ea580c', '#1d4ed8'];
 
     chartVendorCve = new Chart(elVendor, {
       type: 'doughnut',
@@ -592,7 +653,7 @@ function renderCharts(stat) {
         plugins: {
           legend: { position: 'right', labels: { boxWidth: 10, font: { size: 11 } } },
           tooltip: {
-            backgroundColor: '#202124',
+            backgroundColor: '#0f172a',
             padding: 10,
             cornerRadius: 8,
             callbacks: {
@@ -620,8 +681,8 @@ function renderCharts(stat) {
           {
             label: 'Berita',
             data: dataBerita,
-            borderColor: '#1a73e8',
-            backgroundColor: 'rgba(26, 115, 232, 0.08)',
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37, 99, 235, 0.08)',
             fill: true,
             tension: 0.3,
             pointRadius: 4,
@@ -630,8 +691,8 @@ function renderCharts(stat) {
           {
             label: 'CVE',
             data: dataCve,
-            borderColor: '#d93025',
-            backgroundColor: 'rgba(217, 48, 37, 0.08)',
+            borderColor: '#dc2626',
+            backgroundColor: 'rgba(220, 38, 38, 0.08)',
             fill: true,
             tension: 0.3,
             pointRadius: 4,
@@ -645,7 +706,7 @@ function renderCharts(stat) {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#202124',
+            backgroundColor: '#0f172a',
             padding: 10,
             cornerRadius: 8,
             callbacks: {
@@ -658,7 +719,7 @@ function renderCharts(stat) {
         },
         scales: {
           x: { grid: { color: '#f8fafc' } },
-          y: { grid: { color: '#f1f3f4' }, beginAtZero: true, ticks: { precision: 0 } }
+          y: { grid: { color: '#f1f5f9' }, beginAtZero: true, ticks: { precision: 0 } }
         }
       }
     });
@@ -680,7 +741,7 @@ function renderCharts(stat) {
           {
             label: 'Nasional',
             data: hsNas,
-            backgroundColor: '#1e8e3e',
+            backgroundColor: '#059669',
             borderRadius: 4,
           },
           {
@@ -697,7 +758,7 @@ function renderCharts(stat) {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#202124',
+            backgroundColor: '#0f172a',
             padding: 10,
             cornerRadius: 8,
             callbacks: {
@@ -711,7 +772,7 @@ function renderCharts(stat) {
         },
         scales: {
           x: { stacked: true, grid: { color: '#f8fafc' } },
-          y: { stacked: true, grid: { color: '#f1f3f4' }, beginAtZero: true, ticks: { precision: 0 } }
+          y: { stacked: true, grid: { color: '#f1f5f9' }, beginAtZero: true, ticks: { precision: 0 } }
         }
       }
     });
@@ -730,10 +791,10 @@ function renderCharts(stat) {
         datasets: [{
           label: 'Jumlah Insiden',
           data: radarData,
-          backgroundColor: 'rgba(26, 115, 232, 0.12)',
-          borderColor: '#1a73e8',
+          backgroundColor: 'rgba(37, 99, 235, 0.12)',
+          borderColor: '#2563eb',
           borderWidth: 2.5,
-          pointBackgroundColor: '#1a73e8',
+          pointBackgroundColor: '#2563eb',
           pointBorderColor: '#ffffff',
           pointBorderWidth: 2,
           pointRadius: 4.5,
@@ -754,7 +815,7 @@ function renderCharts(stat) {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#202124',
+            backgroundColor: '#0f172a',
             titleFont: { size: 12, weight: 'bold' },
             bodyFont: { size: 12 },
             padding: 10,
@@ -771,13 +832,13 @@ function renderCharts(stat) {
               precision: 0,
               font: { size: 10 },
               backdropColor: 'transparent',
-              color: '#5f6368'
+              color: '#64748b'
             },
-            grid: { color: '#e8eaed' },
-            angleLines: { color: '#e8eaed' },
+            grid: { color: '#e2e8f0' },
+            angleLines: { color: '#e2e8f0' },
             pointLabels: {
               font: { size: 12, weight: 'bold', family: 'Inter, system-ui, sans-serif' },
-              color: '#202124',
+              color: '#0f172a',
               padding: 12
             }
           }
@@ -811,7 +872,7 @@ function renderCharts(stat) {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#202124',
+            backgroundColor: '#0f172a',
             padding: 10,
             cornerRadius: 8,
             callbacks: {
@@ -820,7 +881,7 @@ function renderCharts(stat) {
           }
         },
         scales: {
-          x: { grid: { color: '#f1f3f4' }, ticks: { precision: 0 } },
+          x: { grid: { color: '#f1f5f9' }, ticks: { precision: 0 } },
           y: { grid: { display: false }, ticks: { font: { weight: '600' } } }
         }
       }
@@ -832,7 +893,7 @@ function renderCharts(stat) {
   if (elSumber && stat.distribusi_sumber?.length) {
     const sumberLabels = stat.distribusi_sumber.map(d => d.sumber);
     const sumberData = stat.distribusi_sumber.map(d => d.jumlah);
-    const sumberColors = ['#1a73e8', '#1e8e3e', '#f9ab00', '#d93025', '#8430ce', '#129eaf', '#e8710a', '#174ea6', '#c5221f', '#137333'];
+    const sumberColors = ['#2563eb', '#059669', '#d97706', '#dc2626', '#7c3aed', '#0891b2', '#ea580c', '#1d4ed8', '#be123c', '#047857'];
 
     chartSumber = new Chart(elSumber, {
       type: 'bar',
@@ -852,7 +913,7 @@ function renderCharts(stat) {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#202124',
+            backgroundColor: '#0f172a',
             padding: 10,
             cornerRadius: 8,
             callbacks: {
@@ -861,7 +922,7 @@ function renderCharts(stat) {
           }
         },
         scales: {
-          x: { grid: { color: '#f1f3f4' }, ticks: { precision: 0 } },
+          x: { grid: { color: '#f1f5f9' }, ticks: { precision: 0 } },
           y: { grid: { display: false }, ticks: { font: { weight: '600' } } }
         }
       }
@@ -878,7 +939,7 @@ function renderCharts(stat) {
         labels: ['Nasional', 'Internasional'],
         datasets: [{
           data: [nasData.nasional, nasData.internasional],
-          backgroundColor: ['#1e8e3e', '#1a73e8'],
+          backgroundColor: ['#059669', '#2563eb'],
           borderWidth: 2,
           borderColor: '#ffffff',
         }]
@@ -890,7 +951,7 @@ function renderCharts(stat) {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#202124',
+            backgroundColor: '#0f172a',
             padding: 10,
             cornerRadius: 8,
             callbacks: {
@@ -919,7 +980,7 @@ function renderCharts(stat) {
         labels: ['Insiden Riil', 'Edukasi / Evergreen'],
         datasets: [{
           data: [insiden, analisis],
-          backgroundColor: ['#d93025', '#1a73e8'],
+          backgroundColor: ['#dc2626', '#2563eb'],
           borderWidth: 2,
           borderColor: '#ffffff',
         }]
@@ -931,7 +992,7 @@ function renderCharts(stat) {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#202124',
+            backgroundColor: '#0f172a',
             padding: 10,
             cornerRadius: 8,
             callbacks: {
@@ -960,7 +1021,7 @@ function renderCharts(stat) {
         labels: cvssLabels,
         datasets: [{
           data: cvssData,
-          backgroundColor: ['#d93025', '#f9ab00', '#1a73e8'],
+          backgroundColor: ['#dc2626', '#d97706', '#2563eb'],
           borderRadius: 4,
         }]
       },
@@ -971,7 +1032,7 @@ function renderCharts(stat) {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#202124',
+            backgroundColor: '#0f172a',
             padding: 10,
             cornerRadius: 8,
             callbacks: {
@@ -980,7 +1041,7 @@ function renderCharts(stat) {
           }
         },
         scales: {
-          x: { grid: { color: '#f1f3f4' }, ticks: { precision: 0 } },
+          x: { grid: { color: '#f1f5f9' }, ticks: { precision: 0 } },
           y: { grid: { display: false }, ticks: { font: { weight: '600' } } }
         }
       }
@@ -1005,9 +1066,9 @@ function renderTables(stat) {
             <span class="w-2 h-2 rounded-full bg-primary"></span> ${escapeHtml(item.kata_kunci)}
           </td>
           <td class="py-3 px-3.5 text-center font-extrabold text-slate-900">${item.jumlah_terkini}</td>
-          <td class="py-3 px-3.5 text-center text-slate-500 font-medium">${item.jumlah_baseline}</td>
+          <td class="py-3 px-3.5 text-center text-slate-400 font-medium">${item.jumlah_baseline}</td>
           <td class="py-3 px-3.5 text-right">
-            <span class="px-2.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono font-bold text-xs">
+            <span class="px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200/60 font-mono font-bold text-xs">
               +${item.growth_persen}%
             </span>
           </td>
@@ -1026,21 +1087,34 @@ function renderTables(stat) {
       tbodyVendor.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-slate-400 text-sm">Tidak ada vendor naik.</td></tr>';
     } else {
       vendors.forEach(v => {
-        const topProdukList = v.top_produk || [];
-        const topProdukText = topProdukList.length > 0 
-          ? topProdukList.map(p => `${escapeHtml(p.produk)} (${p.jumlah}x)`).join(', ')
-          : 'Lainnya / Tidak Teridentifikasi';
+        const topProdukList = (v.top_produk || []).filter(p => p.produk && p.produk !== '-' && p.produk !== '(lihat deskripsi)' && p.produk !== 'Lainnya / Belum Teridentifikasi');
+        const fallbackVendor = v.vendor ? v.vendor.split('/')[0].trim() : 'Lainnya';
+        
+        const topProdukHtml = topProdukList.length > 0
+          ? `<div class="flex flex-wrap items-center gap-1.5 py-0.5">` +
+              topProdukList.map(p => `
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-50 text-slate-700 text-xs font-medium border border-slate-200/80">
+                  <span class="font-semibold text-slate-800">${escapeHtml(p.produk)}</span>
+                  <span class="text-[10px] text-slate-500 font-bold">(${p.jumlah}x)</span>
+                </span>
+              `).join('') + `</div>`
+          : `<span class="text-slate-500 text-xs sm:text-sm font-medium">${escapeHtml(fallbackVendor)}</span>`;
 
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-50/80 transition-colors';
         tr.innerHTML = `
-          <td class="py-3 px-3.5 font-bold text-slate-900 flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-google-red"></span> ${escapeHtml(v.vendor)}
+          <td class="py-3 px-3.5 font-bold text-slate-900 align-middle">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-google-red shrink-0"></span>
+              <span>${escapeHtml(v.vendor)}</span>
+            </div>
           </td>
-          <td class="py-3 px-3.5 text-center font-extrabold text-slate-900">${v.jumlah_terkini}</td>
-          <td class="py-3 px-3.5 text-slate-600 max-w-[220px] truncate font-medium text-xs sm:text-sm" title="${topProdukText}">${topProdukText}</td>
-          <td class="py-3 px-3.5 text-right">
-            <span class="px-2.5 py-0.5 rounded bg-red-50 text-google-red border border-red-200 font-mono font-bold text-xs">
+          <td class="py-3 px-3.5 text-center font-extrabold text-slate-900 align-middle">${v.jumlah_terkini}</td>
+          <td class="py-3 px-3.5 align-middle whitespace-normal break-words leading-relaxed max-w-[320px] sm:max-w-[400px]">
+            ${topProdukHtml}
+          </td>
+          <td class="py-3 px-3.5 text-right align-middle">
+            <span class="px-2.5 py-0.5 rounded-lg bg-red-50 text-google-red border border-red-200/60 font-mono font-bold text-xs inline-block">
               +${v.growth_persen}%
             </span>
           </td>
