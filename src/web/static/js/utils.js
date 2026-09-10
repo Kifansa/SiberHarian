@@ -7,6 +7,27 @@ export function escapeHtml(teks) {
   return div.innerHTML;
 }
 
+export function sanitizeUrl(url) {
+  if (!url || typeof url !== 'string') return '#';
+  const trimmed = url.trim();
+  if (trimmed.startsWith('https://') || trimmed.startsWith('http://')) {
+    return trimmed;
+  }
+  return '#';
+}
+
+export function debounce(func, wait = 150) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
 export function formatTanggalIndonesia(tanggalIso) {
   // tanggalIso format 'YYYY-MM-DD' (bucket tanggal publikasi dari backend)
   if (!tanggalIso || tanggalIso === 'tanggal_tidak_diketahui') return 'Tanggal tidak diketahui';
@@ -28,6 +49,25 @@ export function formatTanggalSingkat(tanggalIso) {
 
 export function formatWaktuSekarang() {
   return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+}
+
+export function formatWaktuScraping(waktuStr) {
+  if (!waktuStr) return 'Belum ada riwayat pembaruan';
+  const parts = String(waktuStr).trim().split(/[- :T]/);
+  if (parts.length >= 5) {
+    const tahun = parts[0];
+    const bulan = parseInt(parts[1], 10);
+    const tgl = parseInt(parts[2], 10);
+    const jam = parts[3].padStart(2, '0');
+    const menit = parts[4].padStart(2, '0');
+    const namaBulan = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    const bulanNama = namaBulan[bulan - 1] || parts[1];
+    return `${tgl} ${bulanNama} ${tahun}, ${jam}:${menit} WIB`;
+  }
+  return waktuStr;
 }
 
 /**
@@ -68,15 +108,27 @@ export function tampilkanToast(pesan, tipe = 'sukses') {
   }
 
   const toast = document.createElement('div');
-  const bg = tipe === 'sukses' 
-    ? 'bg-slate-900/95 text-white border border-slate-700/50 shadow-2xl' 
-    : 'bg-rose-900/95 text-white border border-rose-700/50 shadow-2xl';
-  const icon = tipe === 'sukses' ? 'check_circle' : 'error';
-  const iconColor = tipe === 'sukses' ? 'text-emerald-400' : 'text-rose-400';
+  let bg = 'bg-slate-900/95 text-white border border-slate-700/50 shadow-2xl';
+  let icon = 'check_circle';
+  let iconColor = 'text-emerald-400';
+
+  if (tipe === 'error') {
+    bg = 'bg-rose-950/95 text-white border border-rose-800/60 shadow-2xl';
+    icon = 'error';
+    iconColor = 'text-rose-400';
+  } else if (tipe === 'warning') {
+    bg = 'bg-amber-950/95 text-white border border-amber-800/60 shadow-2xl';
+    icon = 'warning';
+    iconColor = 'text-amber-400';
+  } else if (tipe === 'info') {
+    bg = 'bg-blue-950/95 text-white border border-blue-800/60 shadow-2xl';
+    icon = 'info';
+    iconColor = 'text-blue-400';
+  }
 
   toast.className = `flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold backdrop-blur transition-all duration-300 transform translate-y-3 opacity-0 pointer-events-auto ${bg}`;
   toast.innerHTML = `
-    <span class="material-symbols-outlined text-[18px] ${iconColor}">${icon}</span>
+    <span class="material-symbols-outlined text-lg ${iconColor}" aria-hidden="true">${icon}</span>
     <span>${escapeHtml(pesan)}</span>
   `;
 

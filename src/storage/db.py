@@ -66,6 +66,12 @@ def init_db(db_path: Path = DEFAULT_DB_PATH) -> None:
                 tanggal_dihitung TEXT NOT NULL
             )
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS metadata_sistem (
+                kunci TEXT PRIMARY KEY,
+                nilai TEXT NOT NULL
+            )
+        """)
         # Migrasi ringan: kolom baru untuk kebutuhan tab Arsip (ringkasan
         # lengkap & link) - ditambahkan belakangan setelah tabel riwayat_tren
         # sudah ada sebelumnya untuk kebutuhan tren saja.
@@ -147,7 +153,7 @@ def catat_untuk_tren(items: List[dict], db_path: Path = DEFAULT_DB_PATH) -> None
     logger.info(f"Mencatat {len(items)} item ke riwayat_tren (termasuk ringkasan untuk Arsip).")
 
 
-def ambil_riwayat_tren(hari: int = 7, db_path: Path = DEFAULT_DB_PATH) -> "pd.DataFrame":
+def ambil_riwayat_tren(hari: int = 14, db_path: Path = DEFAULT_DB_PATH) -> "pd.DataFrame":
     """Mengambil riwayat dalam N tanggal unik publikasi terakhir untuk dianalisis trennya."""
     import pandas as pd
     with _koneksi(db_path) as conn:
@@ -179,7 +185,7 @@ def _tambah_kolom_jika_belum_ada(conn: sqlite3.Connection, tabel: str, kolom: st
     if kolom not in kolom_ada:
         conn.execute(f"ALTER TABLE {tabel} ADD COLUMN {kolom} {definisi_tipe}")
 
-def ambil_riwayat_dikelompokkan_per_hari(hari: int = 7, db_path: Path = DEFAULT_DB_PATH) -> "OrderedDict":
+def ambil_riwayat_dikelompokkan_per_hari(hari: int = 14, db_path: Path = DEFAULT_DB_PATH) -> "OrderedDict":
     """
     Mengambil riwayat_tren dan mengelompokkannya PER TANGGAL PUBLIKASI
     artikel (bukan tanggal pipeline dijalankan), dipisah lagi per kategori
@@ -258,6 +264,47 @@ def ambil_prediksi_tren_terakhir(db_path: Path = DEFAULT_DB_PATH) -> Optional[di
         row = cursor.fetchone()
         return dict(row) if row else None
 
+def simpan_metadata(kunci: str, nilai: str, db_path: Path = DEFAULT_DB_PATH) -> None:
+    """Menyimpan atau memperbarui pasangan key-value metadata sistem."""
+    with _koneksi(db_path) as conn:
+        conn.execute(
+            """
+            INSERT INTO metadata_sistem (kunci, nilai)
+            VALUES (?, ?)
+            ON CONFLICT(kunci) DO UPDATE SET nilai = excluded.nilai
+            """,
+            (kunci, nilai),
+        )
+
+
+def ambil_metadata(kunci: str, db_path: Path = DEFAULT_DB_PATH) -> Optional[str]:
+    """Mengambil nilai metadata sistem berdasarkan kunci."""
+    with _koneksi(db_path) as conn:
+        cursor = conn.execute("SELECT nilai FROM metadata_sistem WHERE kunci = ?", (kunci,))
+        row = cursor.fetchone()
+        return row[0] if row else None
+
+
+def ambil_waktu_terakhir_scraping(db_path: Path = DEFAULT_DB_PATH) -> Optional[str]:
+    """
+    Mengambil timestamp terakhir kali scraping / pipeline dijalankan.
+    Mengecek metadata_sistem terlebih dahulu, kemudian fallback ke riwayat_tren / konten_terkirim.
+    """
+    meta = ambil_metadata("waktu_terakhir_scraping", db_path)
+    if meta:
+        return meta
+    with _koneksi(db_path) as conn:
+        cursor = conn.execute("SELECT MAX(tanggal_dicatat) FROM riwayat_tren")
+        row = cursor.fetchone()
+        if row and row[0]:
+            return row[0]
+        cursor = conn.execute("SELECT MAX(tanggal_kirim) FROM konten_terkirim")
+        row = cursor.fetchone()
+        if row and row[0]:
+            return row[0]
+    return None
+
+
 def ambil_data_terbaru_per_kategori(hari: int = 7, db_path: Path = DEFAULT_DB_PATH) -> dict:
     """
     Data untuk Beranda, tanggal terbaru DIPISAH per kategori (bukan
@@ -280,7 +327,10 @@ def ambil_data_terbaru_per_kategori(hari: int = 7, db_path: Path = DEFAULT_DB_PA
         if tanggal_berita is not None and tanggal_cve is not None:
             break
 
+    waktu_scraping = ambil_waktu_terakhir_scraping(db_path)
+
     return {
         "tanggal_berita": tanggal_berita, "berita": daftar_berita,
         "tanggal_cve": tanggal_cve, "cve": daftar_cve,
+        "waktu_terakhir_scraping": waktu_scraping,
     }

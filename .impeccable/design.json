@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-01T14:30:00+07:00",
+  "title": "Design System: SiberHarian",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Cobalt Sentinel",
+        "canonical": "#2563eb",
+        "tonalRamp": ["#1e3a8a", "#1e40af", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#eff6ff"]
+      },
+      "critical": {
+        "role": "critical",
+        "displayName": "Critical Crimson",
+        "canonical": "#dc2626",
+        "tonalRamp": ["#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fca5a5", "#fef2f2"]
+      },
+      "warning": {
+        "role": "warning",
+        "displayName": "Warning Amber",
+        "canonical": "#d97706",
+        "tonalRamp": ["#78350f", "#92400e", "#b45309", "#d97706", "#f59e0b", "#fbbf24", "#fde68a", "#fffbeb"]
+      },
+      "success": {
+        "role": "success",
+        "displayName": "Shield Green",
+        "canonical": "#059669",
+        "tonalRamp": ["#064e3b", "#065f46", "#047857", "#059669", "#10b981", "#34d399", "#a7f3d0", "#ecfdf5"]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Slate Canvas",
+        "canonical": "#f8fafc",
+        "tonalRamp": ["#0f172a", "#1e293b", "#334155", "#64748b", "#94a3b8", "#cbd5e1", "#e2e8f0", "#f8fafc"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headlines and main dashboard titles."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headers and modal dialog titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card titles and metric subheadings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Incident summaries and analytic reports."
+      },
+      "label": {
+        "displayName": "Label / Technical",
+        "purpose": "CVSS scores, CVE IDs, growth percentages, and log output."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card",
+        "value": "0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06)",
+        "purpose": "Base resting elevation for cards."
+      },
+      {
+        "name": "card-hover",
+        "value": "0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04)",
+        "purpose": "Hover lift state for interactive cards."
+      },
+      {
+        "name": "glow-blue",
+        "value": "0 0 20px rgba(37, 99, 235, 0.15)",
+        "purpose": "Focus glow on inputs and search fields."
+      },
+      {
+        "name": "terminal-glow",
+        "value": "0 0 40px rgba(37, 99, 235, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+        "purpose": "Subtle ambient backlight for terminal monitor."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Standard easing for card hover lift and modal transitions."
+      },
+      {
+        "name": "duration-fast",
+        "value": "200ms",
+        "purpose": "Button and tab active state transitions."
+      },
+      {
+        "name": "duration-normal",
+        "value": "300ms",
+        "purpose": "Section transitions and card elevation lift."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Tombol aksi utama untuk menjalankan pipeline monitoring siber.",
+      "html": "<button class=\"ds-btn-primary\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M8 5v14l11-7z\"/></svg><span>Jalankan Pipeline</span></button>",
+      "css": ".ds-btn-primary { display: inline-flex; items-center: center; gap: 8px; background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%); color: #ffffff; padding: 10px 24px; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.25); transition: transform 0.2s, box-shadow 0.2s; } .ds-btn-primary:hover { box-shadow: 0 6px 20px rgba(37,99,235,0.35); transform: translateY(-1px); } .ds-btn-primary:active { transform: scale(0.97); } .ds-icon { width: 18px; height: 18px; fill: currentColor; }"
+    },
+    {
+      "name": "Secondary Action Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Tombol sekunder atau pembatalan proses pipeline.",
+      "html": "<button class=\"ds-btn-secondary\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z\"/></svg><span>Batalkan Pipeline</span></button>",
+      "css": ".ds-btn-secondary { display: inline-flex; items-center: center; gap: 8px; background: #ffffff; color: #dc2626; padding: 10px 20px; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; border: 1px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: background 0.2s, border-color 0.2s; } .ds-btn-secondary:hover { background: #fef2f2; border-color: #fecaca; } .ds-btn-secondary:active { transform: scale(0.97); } .ds-icon { width: 18px; height: 18px; fill: currentColor; }"
+    },
+    {
+      "name": "Threat Article Card",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "Kartu ringkasan insiden siber harian dengan badge klasifikasi dan tautan modal.",
+      "html": "<article class=\"ds-article-card\"><div class=\"ds-card-header\"><span class=\"ds-pill-critical\">Insiden</span><span class=\"ds-source\">Yellow.co</span></div><h3 class=\"ds-card-title\">Peretasan Fogo Ungkap Cacat Kritis, $3 Juta Raib</h3><p class=\"ds-card-desc\">Eksploitasi celah otorisasi privilese pada smart contract menyebabkan kerugian aset kripto sebesar $3 juta.</p><div class=\"ds-card-footer\"><button class=\"ds-link-more\">Selengkapnya</button><a class=\"ds-link-source\" href=\"#\">Baca sumber asli &rarr;</a></div></article>",
+      "css": ".ds-article-card { background: #ffffff; border: 1px solid rgba(226,232,240,0.6); border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; font-family: Inter, sans-serif; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1); } .ds-article-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); } .ds-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; } .ds-pill-critical { background: #fef2f2; color: #dc2626; border: 1px solid rgba(220,38,38,0.2); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; padding: 2px 8px; } .ds-source { font-size: 12px; color: #94a3b8; font-weight: 500; } .ds-card-title { font-size: 17px; font-weight: 700; color: #0f172a; margin: 0 0 10px 0; line-height: 1.35; } .ds-card-desc { font-size: 13.5px; color: #64748b; margin: 0 0 16px 0; line-height: 1.6; } .ds-card-footer { border-top: 1px solid #f1f5f9; padding-top: 14px; display: flex; justify-content: space-between; align-items: center; } .ds-link-more { background: none; border: none; color: #2563eb; font-weight: 600; font-size: 13.5px; cursor: pointer; padding: 0; } .ds-link-more:hover { text-decoration: underline; } .ds-link-source { color: #64748b; font-size: 13px; font-weight: 600; text-decoration: none; } .ds-link-source:hover { color: #2563eb; }"
+    },
+    {
+      "name": "KPI Metric Card",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "Kartu indikator metrik utama (Total Insiden, CVE, Skor CVSS) dengan status lonjakan 7 hari.",
+      "html": "<div class=\"ds-kpi-card\"><div class=\"ds-kpi-header\"><span class=\"ds-kpi-label\">Total Insiden Berita</span><div class=\"ds-kpi-icon-wrap\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z\"/></svg></div></div><div class=\"ds-kpi-body\"><div class=\"ds-kpi-val-group\"><span class=\"ds-kpi-val\">48</span><span class=\"ds-kpi-growth\">+24%</span></div><p class=\"ds-kpi-sub\">Artikel insiden (7 hari)</p></div></div>",
+      "css": ".ds-kpi-card { background: #ffffff; border: 1px solid rgba(226,232,240,0.6); border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); font-family: Inter, sans-serif; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.3s, box-shadow 0.3s; } .ds-kpi-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); } .ds-kpi-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; } .ds-kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; } .ds-kpi-icon-wrap { width: 38px; height: 38px; border-radius: 10px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(37,99,235,0.15); } .ds-kpi-val-group { display: flex; align-items: baseline; gap: 10px; } .ds-kpi-val { font-size: 36px; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; line-height: 1; } .ds-kpi-growth { font-size: 11px; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid rgba(5,150,105,0.2); border-radius: 9999px; padding: 2px 8px; font-family: 'JetBrains Mono', monospace; } .ds-kpi-sub { font-size: 12px; color: #94a3b8; margin: 6px 0 0 0; }"
+    },
+    {
+      "name": "Navigation Pill",
+      "kind": "nav",
+      "refersTo": "nav-pill",
+      "description": "Item navigasi tab (Dashboard, Arsip, Tren Siber).",
+      "html": "<nav class=\"ds-nav-wrap\"><button class=\"ds-nav-btn active\">Dashboard</button><button class=\"ds-nav-btn\">Arsip</button><button class=\"ds-nav-btn\">Tren Siber</button></nav>",
+      "css": ".ds-nav-wrap { display: inline-flex; align-items: center; background: rgba(241,245,249,0.8); padding: 4px; border-radius: 12px; font-family: Inter, sans-serif; gap: 4px; } .ds-nav-btn { padding: 8px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: #64748b; background: transparent; border: none; cursor: pointer; transition: all 0.2s; } .ds-nav-btn:hover { color: #0f172a; background: rgba(255,255,255,0.6); } .ds-nav-btn.active { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%); color: #ffffff; font-weight: 600; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Guardian Terminal",
+    "overview": "SiberHarian menggabungkan ketelitian ruang kendali intelijen ancaman siber (Cyber Threat Intelligence Command Center) dengan kenyamanan antarmuka web modern kelas enterprise. Desain ini dirancang khusus untuk analis keamanan siber dan tim CSIRT yang membutuhkan kejelasan informasi dalam hitungan detik: mengidentifikasi lonjakan kerentanan, membedakan insiden nyata dari edukasi umum, dan mengeksekusi rekomendasi mitigasi preventif sebelum insiden meluas.\n\nAntarmuka ini menganut estetika Layered & Soft Ambient: kanvas abu-abu dingin yang tenang (#f8fafc), kartu data putih bersih (#ffffff) dengan kontur batas tipis (border-slate-200/60), konsol monitoring gelap bergradien untuk log real-time, serta badge keparahan berdaya kontras tinggi. Setiap komponen bernilai fungsional murni tanpa ornamen berlebih yang mengalihkan perhatian dari postur ancaman riil.",
+    "keyCharacteristics": [
+      "Presisi Berbasis Data: Informasi disajikan dalam hirarki visual terukur, memanfaatkan kombinasi Inter untuk teks analitis dan JetBrains Mono untuk metrik teknis (skor CVSS, CVE ID, persentase lonjakan).",
+      "Sinyal Risiko Tegas: Penggunaan kode warna semantik (Merah Kritis, Amber Peringatan, Biru Informasi, Hijau Aman) yang langsung terbaca tanpa keraguan.",
+      "Interaktivitas Taktis: Transisi elevasi lembut (card-hover-lift) dan efek glow aksen biru (glow-blue) memberikan respons taktil yang meyakinkan pada setiap aksi pengguna."
+    ],
+    "rules": [
+      {
+        "name": "The Severity Signal Rule",
+        "body": "Warna merah (#dc2626) dilarang digunakan untuk dekorasi umum. Warna ini hanya boleh muncul sebagai penanda bahaya kritis nyata (insiden aktif, kerentanan kritis, atau aksi destruktif).",
+        "section": "colors"
+      },
+      {
+        "name": "The Tonal Restraint Rule",
+        "body": "Latar belakang kartu selalu putih solid (#ffffff) dengan batas kontur border-slate-200/60. Hindari kartu berwarna pekat di area konten utama agar mata analis tidak cepat lelah saat pemantauan jangka panjang.",
+        "section": "colors"
+      },
+      {
+        "name": "The Technical Clarity Rule",
+        "body": "Setiap angka metrik, persentase statistik, skor CVSS, dan kode CVE ID wajib dirender menggunakan font monospace (font-mono / JetBrains Mono) untuk menegaskan sifat presisi data teknis.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-at-Rest Rule",
+        "body": "Seluruh kartu berada dalam kondisi elevasi minimal saat diam (shadow-card). Elevasi penuh (card-hover-lift) hanya muncul sebagai respons interaksi kursor pengguna.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Gunakan font JetBrains Mono (font-mono) untuk seluruh nilai metrik, angka pertumbuhan persentase, ID CVE, dan skor CVSS.",
+      "Berikan border kontur halus border-slate-200/60 pada setiap kartu putih agar kontras tetap terjaga di berbagai tingkat kecerahan layar.",
+      "Batasi panjang ringkasan artikel di grid dengan line-clamp-2 untuk judul dan line-clamp-3 untuk isi ringkasan, sediakan modal dialog untuk bacaan lengkap.",
+      "Gunakan animasi denyut (animate-pulse) secara eksklusif pada indikator status sistem aktif / real-time live feed."
+    ],
+    "donts": [
+      "Menggunakan format tabel markdown di dalam laporan narasi analitik LLM; wajib gunakan format kartu terstruktur atau daftar poin (bullet list).",
+      "Menggunakan warna merah kritis (#dc2626) untuk elemen grafis murni atau tombol non-destruktif.",
+      "Membuat bayangan pekat gelap yang kaku; selalu gunakan shadow lembut multi-layer dengan opasitas rendah (rgba(0, 0, 0, 0.04-0.08)).",
+      "Menghilangkan status visual saat tombol sedang memproses (wajib tampilkan ikon loading berputar dan status disabled)."
+    ]
+  }
+}

@@ -29,9 +29,9 @@ Intelijen keamanan siber lokal dan mandiri tanpa dependensi cloud pihak ketiga: 
 
 - **Agregasi Multi-Sumber**: Mengambil berita keamanan siber dari berbagai RSS/feed media nasional & internasional, serta API NVD NIST untuk CVE skor 9.0–10.0.
 - **LLM Lokal On-Premise**: Inferensi AI menggunakan Ollama (model Qwen2.5-Coder / Qwen2.5:7b) untuk memastikan privasi data dan kedaulatan informasi tanpa ketergantungan API cloud eksternal.
-- **Analitik & Deteksi Tren 7 Hari**: Menghitung lonjakan kata kunci ancaman (growth %) dan sebaran vendor CVE terdampak, membandingkan 3 hari terkini vs 4 hari baseline.
+- **Analitik & Deteksi Tren 14 Hari**: Menghitung lonjakan kata kunci ancaman (growth %) dan sebaran vendor CVE terdampak, membandingkan 7 hari terkini vs 7 hari baseline.
 - **Prediksi Intelijen & Mitigasi**: LLM memetakan TTPs penyerang, sektor terpapar, korelasi ancaman, serta rekomendasi mitigasi bertingkat (Prioritas teknis & Tindak lanjut jangka panjang).
-- **Arsip & Pencarian Riwayat**: Penyimpanan SQLite terstruktur (`data/state.db`) dengan kemampuan filter tanggal 7 hari ke belakang, filter kategori (Insiden Spesifik vs Edukasi/Evergreen), dan pencarian instan.
+- **Arsip & Pencarian Riwayat**: Penyimpanan SQLite terstruktur (`data/state.db`) dengan kemampuan filter tanggal 14 hari ke belakang, filter kategori (Insiden Spesifik vs Edukasi/Evergreen), dan pencarian instan.
 - **Distribusi Notifikasi**: Pengiriman otomatis format intelijen ringkas ke kanal Telegram dan visualisasi interaktif di dashboard Web Flask.
 
 ## Brand Commitments

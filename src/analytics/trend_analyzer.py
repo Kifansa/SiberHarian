@@ -1,14 +1,13 @@
 """
-Analisis tren statistik dari riwayat_tren (7 hari terakhir). Modul ini
+Analisis tren statistik dari riwayat_tren (14 hari terakhir). Modul ini
 MURNI perhitungan Python (tanpa LLM) - tugasnya menghasilkan angka yang
 pasti dan bisa diverifikasi, sebagai dasar objektif sebelum dinarasikan
 oleh LLM di modul trend_predictor.py.
 
-Prinsip pembagian periode: window 7 hari dibagi jadi
-- periode TERKINI: 3 hari terakhir
-- periode BASELINE: 4 hari sebelumnya
-Growth dihitung dari rata-rata HARIAN (bukan total mentah), karena
-panjang kedua periode berbeda (3 vs 4 hari).
+Prinsip pembagian periode: window 14 hari dibagi jadi
+- periode TERKINI: 7 hari terakhir
+- periode BASELINE: 7 hari sebelumnya
+Growth dihitung dari rata-rata HARIAN (bukan total mentah).
 """
 from rapidfuzz import fuzz
 from datetime import datetime, timedelta
@@ -20,13 +19,13 @@ from src.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
-HARI_PERIODE_TERKINI = 3
+HARI_PERIODE_TERKINI = 7
 THRESHOLD_DEDUP_TREN = 88  
-HARI_PERIODE_BASELINE = 4  # total window tetap 7 hari (3 + 4)
+HARI_PERIODE_BASELINE = 7  # total window 14 hari (7 terkini + 7 baseline)
 
 
 def _split_periode(df: pd.DataFrame, kolom_tanggal: str = "tanggal_publish") -> tuple:
-    """Membagi df jadi 2 subset: periode terkini (3 tanggal unik terbaru) vs baseline (4 tanggal unik sebelumnya)."""
+    """Membagi df jadi 2 subset: periode terkini (7 tanggal unik terbaru) vs baseline (7 tanggal unik sebelumnya)."""
     if df.empty:
         return df, df
 
@@ -174,7 +173,7 @@ def hitung_tren_kategori_berita(df_riwayat: pd.DataFrame) -> Dict:
 def ambil_sampel_judul_insiden(df_riwayat: pd.DataFrame, maks: int = 15) -> List[Dict]:
     """
     Mengambil sampel judul artikel insiden_spesifik dari periode TERKINI
-    (3 hari terakhir), sudah di-dedup ringan supaya 1 insiden yang
+    (7 hari terakhir), sudah di-dedup ringan supaya 1 insiden yang
     di-follow-up berkali-kali tidak mendominasi sampel. Dipakai sebagai
     konteks KONKRET untuk LLM mengenali JENIS pola insiden - bukan cuma
     angka kata kunci abstrak.

@@ -131,6 +131,7 @@ async def ambil_beranda():
         "status": "ok" if ada_data else "kosong",
         "tanggal_berita": data["tanggal_berita"],
         "tanggal_cve": data["tanggal_cve"],
+        "waktu_terakhir_scraping": data.get("waktu_terakhir_scraping"),
         "berita": data["berita"],
         "cve": data["cve"],
     }
@@ -138,7 +139,7 @@ async def ambil_beranda():
 
 @app.get("/api/arsip")
 async def ambil_arsip():
-    """Tab Arsip: seluruh grup tanggal (maks 7 hari terakhir), terurut terbaru -> terlama."""
+    """Tab Arsip: seluruh grup tanggal (7 hari terakhir), terurut terbaru -> terlama."""
     grup_per_tanggal = ambil_riwayat_dikelompokkan_per_hari(hari=7)
     daftar_hari = [
         {"tanggal": tanggal, "berita": isi["berita"], "cve": isi["cve"]}
@@ -195,14 +196,22 @@ _STATISTIK_KOSONG = {
 def _susun_statistik_dashboard_tren() -> dict:
     """Menyusun agregat statistik tren untuk visualisasi dashboard."""
     try:
-        df = ambil_riwayat_tren(hari=7)
-        if df.empty:
+        # 1. Ambil 14 hari penuh untuk komputasi analitik tren & perbandingan baseline
+        df_14 = ambil_riwayat_tren(hari=14)
+        if df_14.empty:
             return dict(_STATISTIK_KOSONG)
 
-        statistik = susun_ringkasan_statistik_tren(df)
+        statistik = susun_ringkasan_statistik_tren(df_14)
 
-        df_berita = df[df["kategori"] == "berita"]
-        df_cve = df[df["kategori"] == "cve"]
+        # 2. Untuk visualisasi dashboard (KPI, grafik, distribusi): HANYA gunakan 7 hari terkini
+        df_temp = df_14.copy()
+        df_temp["tgl"] = df_temp["tanggal_publish"].fillna("").astype(str).str.slice(0, 10)
+        tanggal_unik_terbaru = sorted(df_temp[df_temp["tgl"].str.match(r"^\d{4}-\d{2}-\d{2}$")]["tgl"].unique(), reverse=True)[:7]
+        tanggal_urut = sorted(tanggal_unik_terbaru)
+
+        df_7 = df_temp[df_temp["tgl"].isin(tanggal_unik_terbaru)].copy()
+        df_berita = df_7[df_7["kategori"] == "berita"]
+        df_cve = df_7[df_7["kategori"] == "cve"]
 
         total_berita = len(df_berita)
         total_cve = len(df_cve)
@@ -211,54 +220,47 @@ def _susun_statistik_dashboard_tren() -> dict:
 
         severity_counts = df_cve["severity"].dropna().value_counts().to_dict() if not df_cve.empty else {}
 
-        df_temp = df.copy()
-        df_temp["tgl"] = df_temp["tanggal_publish"].fillna("").astype(str).str.slice(0, 10)
-
-        # Ambil 7 tanggal unik terbaru yang ada di data (persis seperti tab Arsip)
-        tanggal_unik_terbaru = df_temp[df_temp["tgl"].str.match(r"^\d{4}-\d{2}-\d{2}$")]["tgl"].unique()[:7]
-        tanggal_urut = sorted(tanggal_unik_terbaru)
-
-        # --- Chart Harian (Berita vs CVE) ---
+        # --- Chart Harian (7 Hari Terkini) ---
         harian_list = []
         for tgl in tanggal_urut:
-            df_tgl = df_temp[df_temp["tgl"] == tgl]
+            df_tgl = df_7[df_7["tgl"] == tgl]
             harian_list.append({
                 "tanggal": tgl,
                 "berita": int((df_tgl["kategori"] == "berita").sum()),
                 "cve": int((df_tgl["kategori"] == "cve").sum()),
             })
 
-        # --- Chart 1: Distribusi CVSS Score (bins) ---
+        # --- Chart 1: Distribusi CVSS Score (7 Hari Terkini) ---
         cvss_bins = []
         if not df_cve.empty:
             cvss_vals = df_cve["skor_cvss"].dropna()
             cvss_bins = [
-                {"label": "10.0 (Sempurna)", "jumlah": int((cvss_vals == 10.0).sum())},
+                {"label": "10.0", "jumlah": int((cvss_vals == 10.0).sum())},
                 {"label": "9.5 - 9.9", "jumlah": int(((cvss_vals >= 9.5) & (cvss_vals < 10.0)).sum())},
                 {"label": "9.0 - 9.4", "jumlah": int(((cvss_vals >= 9.0) & (cvss_vals < 9.5)).sum())},
             ]
 
-        # --- Chart 2: Distribusi Sumber Berita ---
+        # --- Chart 2: Distribusi Sumber Berita (7 Hari Terkini) ---
         sumber_counts = df_berita["sumber"].value_counts().to_dict() if not df_berita.empty else {}
         distribusi_sumber = [{"sumber": s, "jumlah": int(c)} for s, c in sorted(sumber_counts.items(), key=lambda x: -x[1])]
 
-        # --- Chart 3: Nasional vs Internasional ---
+        # --- Chart 3: Nasional vs Internasional (7 Hari Terkini) ---
         nasional_count = sum(int(c) for s, c in sumber_counts.items() if s not in _SUMBER_INTERNASIONAL)
         internasional_count = sum(int(c) for s, c in sumber_counts.items() if s in _SUMBER_INTERNASIONAL)
 
-        # --- Chart 4: Komposisi Jenis Berita ---
+        # --- Chart 4: Komposisi Jenis Berita (7 Hari Terkini) ---
         jenis_raw = df_berita["kategori_relevansi"].value_counts().to_dict() if not df_berita.empty else {}
         komposisi_jenis = {k: int(v) for k, v in jenis_raw.items()}
 
-        # --- Chart 5: Harian Sumber (Nasional vs Internasional per hari) ---
+        # --- Chart 5: Harian Sumber (7 Hari Terkini) ---
         harian_sumber = []
         for tgl in tanggal_urut:
-            df_tgl_b = df_temp[(df_temp["tgl"] == tgl) & (df_temp["kategori"] == "berita")]
+            df_tgl_b = df_7[(df_7["tgl"] == tgl) & (df_7["kategori"] == "berita")]
             nas = int((~df_tgl_b["sumber"].isin(_SUMBER_INTERNASIONAL)).sum())
             intl = int(df_tgl_b["sumber"].isin(_SUMBER_INTERNASIONAL).sum())
             harian_sumber.append({"tanggal": tgl, "nasional": nas, "internasional": intl})
 
-        # --- Chart 6: Vektor Serangan (radar) ---
+        # --- Chart 6: Vektor Serangan (7 Hari Terkini) ---
         vektor_counts = {v: 0 for v in _VEKTOR_MAP}
         if not df_berita.empty:
             for kw_str in df_berita["kata_kunci"].dropna():

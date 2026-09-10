@@ -5,6 +5,7 @@ dari LLM) ke riwayat_tren untuk 2 kebutuhan sekaligus - tab Arsip (riwayat
 selesai, BUKAN di dalam pipeline_harian.py atau llm_summarizer.py, supaya
 kedua modul itu tetap fokus di tanggung jawabnya masing-masing.
 """
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
 
@@ -14,15 +15,9 @@ from src.storage.db import (
     DEFAULT_DB_PATH,
     ambil_riwayat_tren,
     bersihkan_riwayat_tren_lama,
-    catat_untuk_tren,
-    simpan_prediksi_tren,
-)
-from src.storage.db import (
-    DEFAULT_DB_PATH,
-    ambil_riwayat_tren,
-    bersihkan_riwayat_tren_lama,
     catat_terkirim,
     catat_untuk_tren,
+    simpan_metadata,
     simpan_prediksi_tren,
 )
 from src.utils.logger import setup_logger
@@ -112,9 +107,9 @@ def proses_arsip_dan_tren(hasil_ringkas: Dict, db_path: Path = DEFAULT_DB_PATH) 
         + _susun_item_arsip_cve(hasil_ringkas["cve_struktur"])
     )
 
-    # Bersihkan data > 7 hari DULU, baru catat data hari ini - supaya window
+    # Bersihkan data > 14 hari DULU, baru catat data hari ini - supaya window
     # arsip & tren selalu "bergeser" (rolling), bukan menumpuk selamanya.
-    bersihkan_riwayat_tren_lama(hari_retensi=7, db_path=db_path)
+    bersihkan_riwayat_tren_lama(hari_retensi=14, db_path=db_path)
 
     if item_arsip:
         catat_untuk_tren(item_arsip, db_path)
@@ -139,12 +134,15 @@ def proses_arsip_dan_tren(hasil_ringkas: Dict, db_path: Path = DEFAULT_DB_PATH) 
             kategori="cve", db_path=db_path,
         )
 
-    df_riwayat = ambil_riwayat_tren(hari=7, db_path=db_path)
+    df_riwayat = ambil_riwayat_tren(hari=14, db_path=db_path)
     statistik_tren = susun_ringkasan_statistik_tren(df_riwayat)
     prediksi_tren = proses_prediksi_tren(statistik_tren)
 
     simpan_prediksi_tren(
         prediksi_tren["prediksi_berita"], prediksi_tren["prediksi_cve"], db_path
+    )
+    simpan_metadata(
+        "waktu_terakhir_scraping", datetime.now().strftime("%Y-%m-%d %H:%M:%S"), db_path
     )
 
     logger.info("SELESAI MENCATAT ARSIP & MENGHITUNG TREN.")

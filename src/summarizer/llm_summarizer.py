@@ -38,7 +38,10 @@ dibaca oleh tim keamanan siber sebuah perusahaan. Tulis ringkasan dalam Bahasa I
 SYSTEM_PROMPT_CVE = """Kamu adalah asisten yang menjelaskan kerentanan keamanan (CVE) untuk tim
 keamanan siber perusahaan. Tulis penjelasan dalam Bahasa Indonesia yang:
 - 2-3 kalimat, jelas dan mudah dipahami (hindari jargon berlebihan).
-- Jelaskan: produk/sistem apa yang terdampak, jenis kerentanannya apa, dan risiko konkret jika dieksploitasi.
+- Sebutkan nama Vendor/Pengembang dan nama Produk/Komponen spesifik yang terdampak secara jelas pada kalimat pertama (contoh: "Kerentanan ditemukan pada produk [Produk] dari [Vendor]...").
+- Jika baris Produk/Vendor berlabel "Lainnya / Belum Teridentifikasi", cobalah identifikasi nama pembuat/vendor dan produk dari teks deskripsi bahasa Inggris.
+- PENTING: Jika nama vendor benar-benar TIDAK DITEMUKAN atau tidak disebutkan dalam deskripsi, kamu WAJIB tetap mencantumkan "Lainnya / Belum Teridentifikasi" pada nama vendornya (contoh: "Kerentanan pada vendor Lainnya / Belum Teridentifikasi yang mempengaruhi..."). JANGAN menggantinya dengan istilah samar seperti "sebuah sistem", "aplikasi pihak ketiga", atau menebak-nebak vendor tanpa bukti, agar tim keamanan tetap dapat memantau entri yang belum terpetakan.
+- Jelaskan: jenis kerentanannya apa secara teknis, dan risiko konkret jika dieksploitasi.
 - HANYA jelaskan risiko/dampak yang SECARA EKSPLISIT disebutkan atau bisa disimpulkan LANGSUNG dari
   teks deskripsi yang diberikan. JANGAN menambahkan skenario serangan spesifik (misal: "bisa untuk
   phishing", "bisa untuk pencurian identitas") kecuali itu disebutkan eksplisit di deskripsi asli.
@@ -81,14 +84,21 @@ def ringkas_berita(judul: str, teks_asli: str, model: str = MODEL_SUMMARIZER) ->
 
 def narasikan_cve(cve: dict, model: str = MODEL_SUMMARIZER) -> Optional[str]:
     """Menarasikan satu CVE (CRITICAL atau HIGH) jadi penjelasan 2-3 kalimat Bahasa Indonesia."""
+    vendor = cve.get("vendor", "")
+    produk = cve.get("produk", "")
+    if not vendor or "Lainnya" in vendor or "Belum" in vendor:
+        vendor_produk_baris = "Lainnya / Belum Teridentifikasi (Coba cari vendor & produk di deskripsi. Jika tidak ditemukan, tetap gunakan 'Lainnya / Belum Teridentifikasi')"
+    else:
+        vendor_produk_baris = f"{vendor} - {produk or '-'}"
+
     user_prompt = (
-        f"CVE ID: {cve['cve_id']}\n"
-        f"Skor CVSS: {cve['skor_cvss']} ({cve['severity']})\n"
-        f"Produk/Vendor: {cve['vendor']} - {cve['produk']}\n"
-        f"Deskripsi asli (Inggris): {cve['deskripsi']}"
+        f"CVE ID: {cve.get('cve_id', '')}\n"
+        f"Skor CVSS: {cve.get('skor_cvss', '')} ({cve.get('severity', '')})\n"
+        f"Produk/Vendor: {vendor_produk_baris}\n"
+        f"Deskripsi asli (Inggris): {cve.get('deskripsi', '')}"
     )
     hasil = _panggil_llm(SYSTEM_PROMPT_CVE, user_prompt, model)
-    return bersihkan_output_llm(hasil, judul_atau_id=cve["cve_id"])
+    return bersihkan_output_llm(hasil, judul_atau_id=cve.get("cve_id", ""))
 
 
 def ringkas_semua_berita(df_berita: pd.DataFrame, model: str = MODEL_SUMMARIZER) -> pd.DataFrame:

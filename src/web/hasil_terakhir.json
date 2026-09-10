@@ -204,164 +204,184 @@
   ],
   "cve": [
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "Tranquil IT",
       "cve_id": "CVE-2026-33591",
       "severity": "CRITICAL",
       "skor_cvss": 10.0,
       "narasi": "Produk/sistem yang terdampak adalah sistem Wapt Server sebelum versi 2.6.1.17813. Kerentanan jenisnya adalah bypass keamanan akun melalui penggunaan paket khusus untuk mendapatkan token session yang sah. Jika dieksploitasi, risiko konkretnya adalah penyerang dapat mengakses dan mengontrol akun korban tanpa perlu autentikasi.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-33591"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-33591",
+      "produk": "WAPT Server"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "siYuan",
       "cve_id": "CVE-2026-69085",
       "severity": "CRITICAL",
       "skor_cvss": 9.9,
       "narasi": "Produk yang terdampak adalah sistem siYuan. Jenis kerentanan adalah SQL injection. Risiko konkret jika dieksploitasi adalah penyerang dapat membaca dan mengubah isi database notebook di seluruh instance, karena SQLite handle digunakan tanpa enkripsi.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-69085"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-69085",
+      "produk": "siYuan"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "siYuan",
       "cve_id": "CVE-2026-69084",
       "severity": "CRITICAL",
       "skor_cvss": 9.9,
       "narasi": "Produk/Vendor yang terdampak adalah produk SiYuan yang versi kurang dari atau sama dengan v3.7.2. Kerentanan ini berupa kerentanan SQL Injection, jenisnya adalah \"Stored Cross-Site Scripting (XSS)\" karena penyerang dapat membaca dan mengubah konten di seluruh buku catatan yang terbuka (kecuali buku catatan yang enkripsi per-box).",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-69084"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-69084",
+      "produk": "siYuan"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "siYuan",
       "cve_id": "CVE-2026-69083",
       "severity": "CRITICAL",
       "skor_cvss": 9.9,
       "narasi": "Produk terdampak adalah sistem siYuan dengan versi sebelum v3.7.3. Jenis kerentanannya adalah SQL injection yang memungkinkan penyerang untuk melakukan operasi SQL arbitrar pada database asset-content read-write tanpa autentikasi, sehingga dapat membaca, mengubah, atau menghapus data di notebook yang berbeda.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-69083"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-69083",
+      "produk": "siYuan"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "Perl",
       "cve_id": "CVE-2026-18108",
       "severity": "CRITICAL",
       "skor_cvss": 9.8,
       "narasi": "Produk terdampak adalah sistem SAML2 yang menggunakan Net::SAML2 versi sebelum 0.86 untuk Perl. Jenis kerentanannya adalah kelemahan dalam penggunaan _verify_encrypted_assertion, yaitu kemungkinan penolakan tanda tangan (signature) dan pengecekan anchor kepercayaan yang tidak dilakukan jika EncryptedAssertion tidak memiliki tanda tangan.\nRisiko konkret jika dieksploitasi adalah bahwa penyerang dapat mengakses identitas pengguna secara tidak sah tanpa perlu mengetahui kata sandi, karena _verify_encrypted_assertion akan menerima EncryptedAssertion yang tidak memiliki tanda tangan dan kemudian memulihkan konten yang dienkripsi tanpa melakukan pengecekan signature.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-18108"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-18108",
+      "produk": "Net::SAML2"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "Menulux",
       "cve_id": "CVE-2026-2346",
       "severity": "CRITICAL",
       "skor_cvss": 9.8,
       "narasi": "Produk terdampak adalah aplikasi ponsel dari perusahaan Menulux Software Inc. Kerentanan ini berupa kebocoran otorisasi melalui kerugian kontrol key yang dikendalikan oleh pengguna, sehingga penyerang dapat melakukan serangan kekuatan integritas software.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-2346"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-2346",
+      "produk": "Menulux App"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "osTicket",
       "cve_id": "CVE-2026-38447",
       "severity": "CRITICAL",
       "skor_cvss": 9.8,
       "narasi": "Produk yang terdampak adalah osTicket versi 1.18.3. Kerentanan ini termasuk jenis kerentanan keamanan yang disebut \"Brute Force\" karena penyerang dapat menggunakan algoritma MD5 dan informasi yang diketahui untuk menebak kunci API dengan akurasi tinggi. Risiko konkret jika dieksploitasi adalah kemungkinan penyerang berhasil menebak kunci API, sehingga mengakses sistem secara tidak sah.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-38447"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-38447",
+      "produk": "osTicket"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "OpenEMR",
       "cve_id": "CVE-2026-39932",
       "severity": "CRITICAL",
       "skor_cvss": 9.4,
       "narasi": "Produk yang terdampak adalah OpenEMR dengan versi 8.2.0 atau lebih baru. Jenis kerentanan adalah remote code execution (RCE) melalui inject PHP payloads ke database categories. Risiko konkret jika dieksploitasi adalah penyerangan komando pada server web, karena attacker dapat mengakses dan menjalankan perintah sistem sebagai pengguna web server, sehingga dapat melakukan akses tidak sah ke data atau sistem lainnya.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-39932"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-39932",
+      "produk": "OpenEMR"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "Bouncy Castle",
       "cve_id": "CVE-2026-58062",
       "severity": "CRITICAL",
       "skor_cvss": 9.3,
       "narasi": "Produk yang terdampak adalah Bouncy Castle untuk Java, dengan versi sebelum 1.85 dan 2.73.12 LTS, serta BC-FJA sebelum bc-fips 2.0.2 dan 2.1.3. Jenis kerentanan ini adalah kerentanan pada pengolahan OCSP (Online Certificate Status Protocol) yang tidak memeriksa kaitannya dengan sertifikat yang dipercaya. Risiko konkret jika dieksploitasi adalah penyerangan yang dapat mengakses informasi tentang sertifikat secara tidak sah tanpa peringatan OCSP.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-58062"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-58062",
+      "produk": "Bouncy Castle Java"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "Wavlink",
       "cve_id": "CVE-2026-18588",
       "severity": "CRITICAL",
       "skor_cvss": 9.3,
       "narasi": "Produk yang terdampak adalah Wavlink WL-NU516U1 708c073-mt7628. Jenis kerentanannya adalah stack-based buffer overflow akibat manipulasi argumen CONTENT_LENGTH di file nas.cgi. Risiko konkret jika dieksploitasi adalah penyerangan remote yang dapat menyerang sistem ini dengan cara memanipulasi argumen tersebut, sehingga dapat menyebabkan kebocoran data atau akses tidak sah ke sistem.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-18588"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-18588",
+      "produk": "WL-NU516U1"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "Telenia Software",
       "cve_id": "CVE-2026-64827",
       "severity": "CRITICAL",
       "skor_cvss": 9.3,
       "narasi": "Produk/Vendor yang terdampak adalah Telenia Software TVox, dengan versi 26.x dan sebelumnya, serta versi 24.x dan sebelumnya. Jenis kerentanan yang terjadi adalah authentication bypass melalui penggunaan PHP_SELF untuk mendapatkan nama halaman saat ini dan mengabaikan autentikasi ketika nilai tersebut sama dengan 'login_admin.php'. Risiko konkret jika dieksploitasi adalah penyerang dapat menjangkau akses tidak terbatas ke semua skrip PHP di bawah direktori HTML manager, tanpa harus melalui proses autentikasi.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-64827"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-64827",
+      "produk": "TVox"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "Krayin",
       "cve_id": "CVE-2026-41452",
       "severity": "CRITICAL",
       "skor_cvss": 9.3,
       "narasi": "Produk yang terdampak adalah Krayin CRM 2.2.4. Kerentanan ini berupa kelemahan autentikasi pada middleware penginstalan yang memungkinkan penyerang untuk mengubah akun administrator utama secara tidak terkendali dengan mengirimkan permintaan HTTP POST yang diprogram secara khusus dengan header X-Requested-With: XMLHttpRequest, sehingga dapat melompati periksaan CanInstall.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-41452"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-41452",
+      "produk": "Krayin CRM"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "Tenable",
       "cve_id": "CVE-2026-18667",
       "severity": "CRITICAL",
       "skor_cvss": 9.3,
       "narasi": "CVE-2026-18667 memiliki dampak yang sangat serius karena mengandung kerentanan yang memungkinkan penyerang untuk menjalankan kode dengan privelihih tinggi, sehingga dapat merusak sistem secara signifikan. Kerentanan ini terkait dengan Tenable Sensor Proxy dan jenis kerentannya adalah \"Remote Code Execution\" (RCE).",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-18667"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-18667",
+      "produk": "Sensor Proxy"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "Misskey",
       "cve_id": "CVE-2026-46713",
       "severity": "CRITICAL",
       "skor_cvss": 9.2,
       "narasi": "Produk yang terdampak adalah platform sosial media Misskey dengan versi 12.37.0 hingga sebelum 2026.5.4. Jenis kerentanan ini adalah pengecekan dan pengompresi tanda tangan JSON-LD yang tidak aman, sehingga memungkinkan aktivitas palsu untuk diakui sebagai sah. Jika dieksploitasi, risiko konkretnya adalah keamanan platform dapat dipengaruhi, menyebabkan potensi penyalahgunaan atau kebocoran data.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-46713"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-46713",
+      "produk": "Misskey"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "siYuan",
       "cve_id": "CVE-2026-68584",
       "severity": "CRITICAL",
       "skor_cvss": 9.2,
       "narasi": "Produk/sistem yang terdampak adalah siYuan, sistem manajemen konten yang dikembangkan oleh perusahaan asal Cina ini. Jenis kerentanannya adalah authentication bypass, yaitu penipuan untuk mendapatkan akses tanpa memerlukan password. Risiko konkret jika dieksploitasi adalah penyerang dapat mengakses isi dokumen yang dilindungi dengan password secara langsung, karena dapat mendapatkan internal block ID dari endpoint yang hanya diakses oleh pembaca dan menggunakan itu untuk mengakses endpoint konten lainnya tanpa perlu memasukkan password.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-68584"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-68584",
+      "produk": "siYuan"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "siYuan",
       "cve_id": "CVE-2026-68587",
       "severity": "CRITICAL",
       "skor_cvss": 9.2,
       "narasi": "Produk terdampak adalah sistem SiYuan versi sebelum v3.7.3. Kerentanan ini berupa keamanan informasi (information disclosure) yang memungkinkan pembaca anonim atau pengguna dengan hak akses tertentu untuk membaca konten penuh dokumen yang diblokir.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-68587"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-68587",
+      "produk": "siYuan"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "Perl",
       "cve_id": "CVE-2026-9390",
       "severity": "CRITICAL",
       "skor_cvss": 9.1,
       "narasi": "Produk/sistem yang terdampak adalah produk Perl yang menggunakan XML::Sig versi sebelum 0.71. Jenis kerentanannya adalah XPath injection dalam ID lookup. Risiko konkret jika dieksploitasi adalah penyerangan yang dapat memanfaatkan URI yang mengandung tanda kutip single quote untuk menutup string literal dan menambahkan operator XPath arbitrar, sehingga memungkinkan penyerang untuk memilih node yang diinginkan untuk verifikasi digest.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-9390"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-9390",
+      "produk": "XML::Sig"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "Perl",
       "cve_id": "CVE-2026-9487",
       "severity": "CRITICAL",
       "skor_cvss": 9.1,
       "narasi": "Produk yang terdampak adalah sistem yang menggunakan XML::Sig versi sebelum 0.71 untuk Perl. Jenis kerentanannya adalah pengecekan ID duplikat pada dokumen XML, yang memungkinkan penyerang mengontrol konten dokumen melalui elemen duplikat. Risiko konkret jika dieksploitasi adalah keamanan SAML2 yang dapat diabaikan, sehingga penyerang dapat mengontrol isi Assertion.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-9487"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-9487",
+      "produk": "XML::Sig"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "Fastify",
       "cve_id": "CVE-2026-18248",
       "severity": "CRITICAL",
       "skor_cvss": 9.1,
       "narasi": "Produk yang terdampak adalah sistem yang menggunakan @fastify/aws-lambda versi 6.4.0. Jenis kerentanan ini adalah penyerangan pada penggunaan HTTP header, dimana penyerang dapat mengatur satu header untuk menipu sistem dan mengubah konteks penggunaan Lambda. Risiko konkret jika dieksploitasi adalah kebocoran autentikasi dan otorisasi penuh, yang memungkinkan penyerang mendapatkan akses privilège yang tidak diinginkan.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-18248"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-18248",
+      "produk": "@fastify/aws-lambda"
     },
     {
-      "vendor": "Lainnya / Belum Teridentifikasi",
+      "vendor": "Emlog",
       "cve_id": "CVE-2026-67598",
       "severity": "CRITICAL",
       "skor_cvss": 9.1,
       "narasi": "Produk Emlog Pro terdampak oleh kerentanan ini, jenis kerentanannya adalah pengecualian validasi sertifikat TLS yang diaktifkan secara tidak bisa diaktifkan. Risiko konkret jika dieksploitasi adalah penyerang dapat melakukan man-in-the-middle interception untuk mendapatkan kunci API Bearer dan menginject respons AI yang diproses oleh pipeline eksekusi tool-call, termasuk query_database dan update_config.",
-      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-67598"
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-67598",
+      "produk": "Emlog Pro"
     },
     {
       "vendor": "Adobe",

@@ -115,6 +115,21 @@ def ekstrak_teks_hybrid(
     return teks_ekstraksi, tanggal_mentah
 
 
+TZINFOS_ID = {
+    "WIB": 7 * 3600,
+    "WITA": 8 * 3600,
+    "WIT": 9 * 3600,
+}
+
+BULAN_INDONESIA_KE_INGGRIS = {
+    "Januari": "January", "Februari": "February", "Maret": "March",
+    "April": "April", "Mei": "May", "Juni": "June",
+    "Juli": "July", "Agustus": "August", "September": "September",
+    "Oktober": "October", "November": "November", "Desember": "December",
+    "Agt": "Aug", "Okt": "Oct", "Des": "Dec",
+}
+
+
 def normalisasi_tanggal(tanggal_mentah: Optional[str]) -> Optional[str]:
     """
     Menormalkan tanggal dari berbagai format & zona waktu (RFC 822
@@ -129,7 +144,12 @@ def normalisasi_tanggal(tanggal_mentah: Optional[str]) -> Optional[str]:
     if not tanggal_mentah:
         return None
     try:
-        parsed = date_parser.parse(tanggal_mentah)
+        teks_tgl = str(tanggal_mentah).strip()
+        for id_b, en_b in BULAN_INDONESIA_KE_INGGRIS.items():
+            if id_b in teks_tgl:
+                teks_tgl = re.sub(rf"\b{id_b}\b", en_b, teks_tgl, flags=re.IGNORECASE)
+
+        parsed = date_parser.parse(teks_tgl, tzinfos=TZINFOS_ID, fuzzy=True)
         if parsed.tzinfo is None:
             # Tidak ada info zona waktu eksplisit di string - asumsikan
             # UTC (aman untuk sumber internasional; untuk sumber lokal

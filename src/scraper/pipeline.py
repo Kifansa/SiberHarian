@@ -8,6 +8,7 @@ Catatan: sumber CVE (NVD API) TIDAK melalui pipeline ini karena
 formatnya API/JSON, bukan RSS. Lihat src/scraper/cve_fetcher.py
 (langkah berikutnya) untuk itu.
 """
+import re
 import time as time_module
 from datetime import datetime, timedelta, timezone
 from typing import List
@@ -33,6 +34,12 @@ from src.utils.http_client import buat_session_retry
 from src.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
+
+# Pola judul noise (podcast, audio, webinar marketing, event promo) yang langsung diabaikan
+POLA_NOISE_JUDUL = re.compile(
+    r"\b(podcast|stormcast|webinar|virtual event|whitepaper|download guide|cfp tracker|squid blogging)\b",
+    re.IGNORECASE,
+)
 
 
 def parse_rss_feeds(
@@ -145,9 +152,10 @@ def jalankan_pipeline_berita(config: dict = None) -> pd.DataFrame:
 
     entri_kandidat = [
         e for e in lolos_window
-        if e["kategori"] == "trusted_cyber" or filter_kk.relevan(e["judul"])
+        if not POLA_NOISE_JUDUL.search(e["judul"])
+        and (e["kategori"] == "trusted_cyber" or filter_kk.relevan(e["judul"]))
     ]
-    logger.info(f"Setelah filter kata kunci (media trusted_cyber dilewatkan): {len(entri_kandidat)} (dari {len(lolos_window)})")
+    logger.info(f"Setelah filter kata kunci & anti-noise (media trusted_cyber dilewatkan): {len(entri_kandidat)} (dari {len(lolos_window)})")
 
     # --- TAHAP 3: Ekstraksi konten lengkap ---
     logger.info("=" * 60)

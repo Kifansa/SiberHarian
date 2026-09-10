@@ -17,10 +17,46 @@ rss_sources_international:
     feeds: ["https://www.darkreading.com/rss.xml"]
   - nama: "SecurityWeek"
     feeds: ["https://www.securityweek.com/feed/"]
+  - nama: "The Record"
+    feeds: ["https://therecord.media/feed"]
+  - nama: "CyberScoop"
+    feeds: ["https://cyberscoop.com/feed/"]
+  - nama: "Infosecurity Magazine"
+    feeds: ["https://www.infosecurity-magazine.com/rss/news/"]
+  - nama: "The Register Security"
+    feeds: ["https://www.theregister.com/security/headlines.atom"]
+  - nama: "Security Affairs"
+    feeds: ["https://securityaffairs.com/feed"]
+  - nama: "Help Net Security"
+    feeds: ["https://www.helpnetsecurity.com/feed/"]
+  - nama: "SANS ISC"
+    feeds: ["https://isc.sans.edu/rssfeed.xml"]
   - nama: "CISA News"
     feeds:
       - "https://www.cisa.gov/news.xml"
       - "https://www.cisa.gov/cybersecurity-advisories/all.xml" 
+  - nama: "Unit 42"
+    feeds: ["https://unit42.paloaltonetworks.com/feed/"]
+  - nama: "Trend Micro ZDI"
+    feeds: ["https://www.zerodayinitiative.com/blog?format=rss"]
+  - nama: "Microsoft Security"
+    feeds: ["https://www.microsoft.com/en-us/security/blog/feed/"]
+  - nama: "Cisco Talos"
+    feeds: ["https://blog.talosintelligence.com/rss/"]
+  - nama: "WeLiveSecurity"
+    feeds: ["https://www.welivesecurity.com/feed/"]
+  - nama: "Malwarebytes Labs"
+    feeds: ["https://www.malwarebytes.com/blog/feed/index.xml"]
+  - nama: "Kaspersky Securelist"
+    feeds: ["https://securelist.com/feed/"]
+  - nama: "Wired Security"
+    feeds: ["https://www.wired.com/feed/category/security/latest/rss"]
+  - nama: "Red Canary"
+    feeds: ["https://redcanary.com/blog/feed/"]
+  - nama: "Tenable Blog"
+    feeds: ["https://www.tenable.com/blog/feed"]
+  - nama: "Qualys Blog"
+    feeds: ["https://blog.qualys.com/feed"]
 
 # MEDIA NASIONAL INDONESIA
 rss_sources_indonesia:
@@ -28,22 +64,43 @@ rss_sources_indonesia:
     feeds:
       - "https://www.cnnindonesia.com/teknologi/rss"
       - "https://www.cnnindonesia.com/nasional/rss"
+  - nama: "CNBC Indonesia"
+    feeds:
+      - "https://www.cnbcindonesia.com/tech/rss"
+      - "https://www.cnbcindonesia.com/news/rss"
+  - nama: "Detikcom"
+    feeds:
+      - "https://inet.detik.com/rss"
   - nama: "Antara News"
     feeds:
       - "https://www.antaranews.com/rss/terkini"
       - "https://www.antaranews.com/rss/hukum"
+      - "https://www.antaranews.com/rss/tekno.xml"
+      - "https://www.antaranews.com/rss/ekonomi.xml"
   - nama: "Tempo.co"
     feeds:
+      - "https://rss.tempo.co/"
       - "https://rss.tempo.co/nasional"
       - "https://rss.tempo.co/tekno"
+      - "https://rss.tempo.co/bisnis"
+  - nama: "Katadata"
+    feeds:
+      - "https://katadata.co.id/rss/digital"
+      - "https://katadata.co.id/rss"
+  - nama: "Liputan6"
+    feeds:
+      - "https://feed.liputan6.com/rss/tekno"
   - nama: "Sindonews"
     feeds:
       - "https://nasional.sindonews.com/rss"
       - "https://tekno.sindonews.com/rss"
   - nama: "Republika"
     feeds:
-      - "https://www.republika.co.id/rss/hukum"
-      - "https://www.republika.co.id/rss/teknologi"
+      - "https://www.republika.co.id/rss"
+  - nama: "Media Indonesia"
+    feeds:
+      - "https://mediaindonesia.com/feed"
+
 
 google_news:
   hl: "id"
@@ -136,6 +193,18 @@ keywords:
     - "cyber attack"
     - "serangan siber"
     - "serangan hacker"
+    - "apk bodong"
+    - "undangan pernikahan apk"
+    - "surat tilang apk"
+    - "file apk"
+    - "pencurian otp"
+    - "sniffing"
+    - "pusat data nasional"
+    - "pdns"
+    - "uu pdp"
+    - "pelindungan data pribadi"
+    - "breachforums"
+    - "bjorka"
 
   # Objek data sensitif
   objek_data_sensitif:
@@ -149,6 +218,9 @@ keywords:
     - "data pelanggan"
     - "data pengguna"
     - "data karyawan"
+    - "dukcapil"
+    - "bpjs"
+    - "kpu"
 
   # Objek aset digital
   objek_aset_digital:
@@ -161,6 +233,8 @@ keywords:
     - "database"
     - "aplikasi"
     - "jaringan"
+    - "pusat data nasional"
+    - "pdns"
 
   # Indikator insiden
   indikator_insiden:
@@ -235,6 +309,29 @@ known_vendors:
   - Zebra
   - DJI
   - Baylan
+  - WatchGuard
+  - TOTOLINK
+  - LB-link
+  - Ebyte
+  - Zbtlink
+  - Aruba
+  - Rockwell Automation
+  - Phison
+  - QVidium
+  - Xiiaozet
+  - NetStaX
+  - OpenRISC
+  - Colorful
+  - DENX
+  - Shinobi
+  - ASE2000
+  - ZTE
+  - Sauter Controls
+  - Team Password Manager
+  - Funiture
+  - Cyrus IMAP
+  - Enterprise ERP
+  - Veeam
 
   # Storage, Cloud & DevOps
   - Kubernetes
@@ -255,6 +352,22 @@ known_vendors:
   - GitLab
   - GitHub
   - Jenkins
+  - Kyverno
+  - Wazuh
+  - Ceph
+  - LibreNMS
+  - Argo
+  - JFrog
+  - Redpanda
+  - NebulaGraph
+  - Liman
+  - Liderahenk
+  - super-diamond
+  - disconf
+  - JetLinks
+  - DWSurvey
+  - Zyplayer
+  - Hulumi
 
   # Databases & Web Servers
   - Apache
@@ -303,10 +416,47 @@ known_vendors:
   - SPIP
   - EverShop
   - Jet Admin
+  - BookStack
+  - Plone
+  - SOY CMS
+  - AVideo
+  - Trilium
+  - Cloud Commander
+  - Slim Framework
+  - TARS
+  - Dassault Systemes
+  - Eclipse
+  - Talassoft
+  - Teracity
+  - TRtek
+  - Klemsan
+  - Epayco
+  - Flowintel
+  - Fluent Boards
+
+  # AI, LLM & Agent Platforms
+  - Cohere
+  - FastGPT
+  - BerriAI
+  - gpt-researcher
+  - Kotaemon
+  - Hermes Agent
+  - Yu AI
+  - 23blocks
+  - MCP
+  - Onyx AI
+  - MemOS
+  - CodeWhale
+  - Omnigent
+  - Xinference
 
   # Dev Libraries & Open Source Tools
   - Mozilla
   - OpenSSL
+  - Bouncy Castle
+  - better-auth
+  - Rodauth
+  - EFence
   - FreeIPA
   - Kerberos
   - authentik
@@ -327,7 +477,9 @@ known_vendors:
   - SteelSeries
   - Node.js
   - exceljs
+  - Nodemailer
   - Python
+  - PyAthena
   - JustHTML
   - unstructured
   - PHP
@@ -341,13 +493,83 @@ known_vendors:
   - libre
   - Nezha
   - Paperclip
-  - Omnigent
-  - Xinference
-  - Onyx AI
-  - MemOS
-  - CodeWhale
   - FUXA
   - GBIF
   - Capella
   - openHiTLS
   - samly
+  - OpenRGB
+  - qTox
+  - NUMail
+  - Pocket
+  - Siemens
+  - NEC
+  - Hitachi
+  - ConnectWise
+  - Commvault
+  - N-able
+  - Auth0
+  - DeepSeek
+  - Traefik Labs
+  - Netis
+  - Voltronic Power
+  - MBS-Solutions
+  - SmartIT
+  - Next4Biz
+  - XenForo
+  - WCFM
+  - GeoDirectory
+  - VikAppointments
+  - Bricksforge
+  - Snipe-IT
+  - Coolify
+  - Webstudio
+  - Lara Dashboard
+  - OpenPanel
+  - Nango
+  - Fastify
+  - OCS
+  - Authorizer
+  - FIDO Alliance
+  - Joro
+  - Prevail
+  - MapLibre
+  - PowerJob
+  - FreeIPMI
+  - DocsGPT
+  - MISP
+  - IXON
+  - MOOS-IvP
+  - Taipy
+  - CPTrans
+  - FastChat
+  - SadTalker
+  - TEN Framework
+  - AimStack
+  - zerox
+  - xiaobei
+  - sift.js
+  - SQL Chat
+  - Cua
+  - MicroXR
+  - Hawtio
+  - curl
+  - FreeType
+  - MojoX
+  - Digital-Infrastructure
+  - Movie_Recommend
+  - BiHayat
+  - knowns
+  - OpenIDC
+  - OpenMAIC
+  - Tranquil IT
+  - WAPT
+  - Perl
+  - Menulux
+  - osTicket
+  - OpenEMR
+  - Telenia Software
+  - Krayin
+  - Tenable
+  - Misskey
+  - Emlog

@@ -1,151 +1,375 @@
 <!DOCTYPE html>
-<html class="light" lang="id">
+<html lang="id">
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>SiberHarian - Rangkuman &amp; Tren Insiden Siber</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <title>SiberHarian | Diskominfo Jatim</title>
+  <link rel="icon" type="image/png" href="/static/img/Logo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script id="tailwind-config">
     tailwind.config = {
-      darkMode: "class",
       theme: {
         extend: {
           colors: {
+            "enterprise-bg": "#f8fafc",
+            "enterprise-surface": "#ffffff",
+            "enterprise-card": "#ffffff",
+            "enterprise-border": "#e2e8f0",
+            "enterprise-border-light": "#cbd5e1",
             "primary": "#2563eb",
             "primary-hover": "#1d4ed8",
-            "primary-light": "#eff6ff",
-            "primary-dark": "#1e40af",
-            "on-primary": "#ffffff",
-            "secondary": "#64748b",
-            "on-secondary": "#ffffff",
-            "background": "#f8fafc",
-            "surface": "#ffffff",
-            "surface-dim": "#f1f5f9",
-            "on-surface": "#0f172a",
-            "on-surface-variant": "#64748b",
-            "outline": "#e2e8f0",
-            "outline-variant": "#f1f5f9",
+            "primary-light": "#3b82f6",
             "google-blue": "#2563eb",
             "google-red": "#dc2626",
             "google-yellow": "#d97706",
             "google-green": "#059669",
           },
           borderRadius: { "DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.25rem", "full": "9999px" },
-          spacing: { "gutter": "24px", "container-max": "1200px", "xl": "36px" },
+          spacing: { "gutter": "24px", "container-max": "1240px", "xl": "36px" },
           fontFamily: {
             "sans": ["Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
             "mono": ["JetBrains Mono", "monospace"],
-          },
-          boxShadow: {
-            'glass': '0 4px 30px rgba(0, 0, 0, 0.05)',
-            'card': '0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06)',
-            'card-hover': '0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04)',
-            'elevated': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
-            'glow-blue': '0 0 20px rgba(37, 99, 235, 0.15)',
           },
         },
       },
     }
   </script>
   <style>
-    body { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e8f0fe 100%); background-attachment: fixed; color: #0f172a; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; scroll-behavior: smooth; }
-    .glass-header { background: rgba(255,255,255,0.98); border-bottom: 1px solid rgba(226,232,240,0.6); }
-    .terminal-gradient { background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%); }
-    .terminal-glow { box-shadow: 0 0 40px rgba(37,99,235,0.1), inset 0 1px 0 rgba(255,255,255,0.05); }
-    .hero-gradient { background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%); }
-    .card-hover-lift { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .card-hover-lift:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.04); }
-    .tab-active { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%); color: white; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
+    [x-cloak] { display: none !important; }
+    .site-header {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .card-enterprise {
+      transition: all 0.2s ease-in-out;
+    }
+    .card-enterprise:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    }
+    .tab-nav-active {
+      background-color: #ffffff;
+      color: #1e293b;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
+      font-weight: 600;
+    }
     #btn-cancel { display: none; }
     #btn-cancel.visible { display: inline-flex; }
-    [x-cloak] { display: none !important; }
-    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    @keyframes indeterminate {
+      0% { transform: translateX(-100%); }
+      50% { transform: translateX(30%); }
+      100% { transform: translateX(200%); }
+    }
+    .animate-indeterminate {
+      animation: indeterminate 1.4s ease-in-out infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html, body { scroll-behavior: auto !important; }
+      *, ::before, ::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+      .card-enterprise:hover { transform: none !important; }
+      .animate-pulse, .animate-spin, .animate-indeterminate { animation: none !important; }
+    }
+    /* Modal Popup Loader (Muncul Sebelum Halaman Utama) */
+    #page-loader-overlay {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 999999 !important;
+      background: rgba(15, 23, 42, 0.55) !important;
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 16px !important;
+      transition: opacity 0.35s ease, visibility 0.35s ease !important;
+    }
+    #page-loader-overlay.fade-out {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+    #page-loader-modal {
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 24px !important;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3) !important;
+      padding: 32px 28px !important;
+      width: 100% !important;
+      max-width: 320px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      text-align: center !important;
+      transform: scale(1) !important;
+      transition: transform 0.35s ease, opacity 0.35s ease !important;
+    }
+    #page-loader-overlay.fade-out #page-loader-modal {
+      transform: scale(0.92) !important;
+      opacity: 0 !important;
+    }
   </style>
+  <noscript><style>#page-loader-overlay{display:none!important}#app-wrapper{opacity:1!important}</style></noscript>
 </head>
-<body class="text-sm antialiased" x-data="{ tabAktif: 'beranda' }">
-  <header class="w-full sticky top-0 z-50 glass-header">
+<body class="text-sm antialiased pb-20 md:pb-6 bg-[#f8fafc] text-slate-700" x-data="{ tabAktif: 'beranda', terminalTerbuka: true }">
+
+  <!-- Modal Popup Loader (Tampil di Tengah Sebelum Halaman Utama Muncul) -->
+  <div id="page-loader-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:999999;background:rgba(15,23,42,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px;">
+    <div id="page-loader-modal" role="dialog" aria-modal="true" aria-label="Memuat sistem intelijen siber..." style="background:#ffffff;border:1px solid #e2e8f0;border-radius:24px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);padding:32px 28px;width:100%;max-width:320px;display:flex;flex-direction:column;align-items:center;text-align:center;">
+      
+      <!-- Brand Logo Badge -->
+      <div style="margin-bottom:18px;position:relative;">
+        <div style="width:52px;height:52px;border-radius:16px;background:#ffffff;border:1px solid #e2e8f0;padding:8px;box-shadow:0 2px 6px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;">
+          <img src="/static/img/Logo.png" alt="Logo SiberHarian" style="width:100%;height:100%;object-fit:contain;" />
+        </div>
+        <div class="animate-pulse" style="position:absolute;inset:-4px;border-radius:20px;background:rgba(37,99,235,0.15);filter:blur(6px);z-index:-1;"></div>
+      </div>
+
+      <!-- Circular Progress Ring (Lingkaran Berputar & Presentase) -->
+      <div style="position:relative;width:112px;height:112px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
+        <!-- Outer rotating dashed radar ring -->
+        <svg class="animate-spin" style="position:absolute;inset:0;width:100%;height:100%;animation:spin 4s linear infinite;color:#93c5fd;" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="5 7" />
+        </svg>
+
+        <!-- Main Progress SVG (circumference 238.76 for r=38) -->
+        <svg style="width:100%;height:100%;transform:rotate(-90deg);" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="38" fill="none" stroke="#e2e8f0" stroke-width="5" />
+          <circle id="preloader-circle" cx="50" cy="50" r="38" fill="none" stroke="#2563eb" stroke-width="5" stroke-linecap="round"
+            stroke-dasharray="238.76" stroke-dashoffset="238.76" style="transition:stroke-dashoffset 0.18s ease-out, stroke 0.3s ease;" />
+        </svg>
+
+        <!-- Center Counter Content -->
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <span id="preloader-percent" style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:800;color:#0f172a;letter-spacing:-0.025em;">0%</span>
+        </div>
+      </div>
+
+      <!-- Brand Info & Dynamic Status -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:center;margin-bottom:4px;">
+          <span style="font-family:Inter,sans-serif;font-weight:700;font-size:15px;color:#0f172a;">SiberHarian</span>
+        </div>
+        <p style="font-family:Inter,sans-serif;font-size:12px;color:#64748b;margin:0;display:flex;align-items:center;justify-content:center;gap:6px;">
+          <span class="animate-pulse" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#2563eb;"></span>
+          <span id="preloader-status-desc">Memuat data intelijen siber...</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var currentPercent = 0;
+      var targetPercent = 20;
+      var isReady = false;
+      var circle = document.getElementById('preloader-circle');
+      var text = document.getElementById('preloader-percent');
+      var statusDesc = document.getElementById('preloader-status-desc');
+      var overlay = document.getElementById('page-loader-overlay');
+      var wrapper = document.getElementById('app-wrapper');
+      var circumference = 238.76;
+
+      function updateUI(p) {
+        currentPercent = Math.min(100, Math.max(0, p));
+        if (text) text.textContent = Math.round(currentPercent) + '%';
+        if (circle) {
+          var offset = circumference - (circumference * currentPercent) / 100;
+          circle.style.strokeDashoffset = offset;
+          if (currentPercent >= 100) {
+            circle.style.stroke = '#059669';
+          }
+        }
+        if (statusDesc) {
+          if (currentPercent < 35) {
+            statusDesc.textContent = 'Menyiapkan sistem intelijen...';
+          } else if (currentPercent < 70) {
+            statusDesc.textContent = 'Menghubungkan data CTI...';
+          } else if (currentPercent < 95) {
+            statusDesc.textContent = 'Menyusun analitik & postur...';
+          } else {
+            statusDesc.textContent = 'Sistem siap!';
+          }
+        }
+      }
+
+      var ticker = setInterval(function() {
+        if (isReady) {
+          targetPercent = 100;
+        } else if (targetPercent < 90) {
+          targetPercent += Math.random() * 6 + 3;
+          if (targetPercent > 88) targetPercent = 88;
+        }
+
+        var diff = targetPercent - currentPercent;
+        if (diff > 0) {
+          var step = isReady ? Math.max(4, diff * 0.4) : Math.max(0.6, diff * 0.16);
+          updateUI(currentPercent + step);
+        }
+
+        if (currentPercent >= 99.5 && isReady) {
+          clearInterval(ticker);
+          updateUI(100);
+          setTimeout(function() {
+            var elWrapper = document.getElementById('app-wrapper');
+            if (elWrapper) {
+              elWrapper.style.opacity = '1';
+            }
+            if (overlay) {
+              overlay.classList.add('fade-out');
+              setTimeout(function() {
+                overlay.style.display = 'none';
+              }, 380);
+            }
+          }, 150);
+        }
+      }, 25);
+
+      window.selesaikanPreloader = function() {
+        isReady = true;
+        targetPercent = 100;
+      };
+
+      // Fallback safety timeout: buka halaman utama maksimal 3.5 detik
+      setTimeout(function() {
+        if (window.selesaikanPreloader) window.selesaikanPreloader();
+        var elWrapper = document.getElementById('app-wrapper');
+        if (elWrapper) elWrapper.style.opacity = '1';
+      }, 3500);
+    })();
+  </script>
+
+  <!-- Halaman Utama (Awalnya opacity:0, Muncul Halus Setelah Popup Selesai) -->
+  <div id="app-wrapper" style="opacity:0;transition:opacity 0.35s ease;">
+  <!-- Enterprise Header -->
+  <header class="w-full sticky top-0 z-50 site-header">
     <div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto">
       <div class="flex items-center gap-3">
-        <span class="font-bold text-lg text-slate-900 tracking-tight">SiberHarian</span>
+        <img src="/static/img/Logo.png" alt="Logo SiberHarian" class="w-9 h-9 object-contain rounded-xl" />
+        <div>
+          <span class="font-bold text-base text-slate-900 tracking-tight block leading-tight">SiberHarian</span>
+        </div>
       </div>
-      <nav class="hidden md:flex items-center bg-slate-100/80 p-1 rounded-xl">
-        <a href="#" @click.prevent="tabAktif = 'beranda'"
-          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2"
-          :class="tabAktif === 'beranda' ? 'tab-active' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'">
-          <span class="material-symbols-outlined text-[18px]">dashboard</span> Dashboard
+      
+      <!-- Desktop Navigation Tabs -->
+      <nav class="hidden md:flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200" role="tablist" aria-label="Navigasi Utama">
+        <a href="#beranda" @click.prevent="tabAktif = 'beranda'" role="tab" :aria-selected="tabAktif === 'beranda'"
+          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+          :class="tabAktif === 'beranda' ? 'tab-nav-active' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'">
+          <span class="material-symbols-outlined text-lg" aria-hidden="true">dashboard</span> <span>Dashboard</span>
         </a>
-        <a href="#" @click.prevent="tabAktif = 'arsip'; muatTabArsip()"
-          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2"
-          :class="tabAktif === 'arsip' ? 'tab-active' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'">
-          <span class="material-symbols-outlined text-[18px]">inventory_2</span> Arsip
+        <a href="#arsip" @click.prevent="tabAktif = 'arsip'; muatTabArsip()" role="tab" :aria-selected="tabAktif === 'arsip'"
+          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+          :class="tabAktif === 'arsip' ? 'tab-nav-active' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'">
+          <span class="material-symbols-outlined text-lg" aria-hidden="true">inventory_2</span> <span>Arsip</span>
         </a>
-        <a href="#" @click.prevent="tabAktif = 'tren'; muatTabTren()"
-          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2"
-          :class="tabAktif === 'tren' ? 'tab-active' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'">
-          <span class="material-symbols-outlined text-[18px]">insights</span> Tren Siber
+        <a href="#tren" @click.prevent="tabAktif = 'tren'; muatTabTren()" role="tab" :aria-selected="tabAktif === 'tren'"
+          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+          :class="tabAktif === 'tren' ? 'tab-nav-active' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'">
+          <span class="material-symbols-outlined text-lg" aria-hidden="true">insights</span> <span>Tren</span>
         </a>
       </nav>
+
+      <!-- Global Search -->
       <div class="flex items-center gap-3">
-        <div class="relative hidden sm:block">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
-          <input class="pl-9 pr-4 py-2 rounded-xl bg-slate-100/80 border border-transparent focus:border-primary/30 focus:bg-white focus:shadow-glow-blue outline-none text-xs w-48 focus:w-64 transition-all duration-300 placeholder:text-slate-400"
-            placeholder="Cari insiden..." type="text" />
+        <div class="relative flex items-center">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none" aria-hidden="true">search</span>
+          <input id="global-search-input"
+            class="pl-9 pr-12 py-2 rounded-xl bg-slate-100 border border-slate-200 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 outline-none text-xs w-44 sm:w-56 focus:w-64 transition-all duration-200 placeholder:text-slate-400 text-slate-800 shadow-xs"
+            placeholder="Cari insiden atau CVE..." type="text" aria-label="Cari insiden atau CVE" />
+          <kbd class="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-block font-mono text-[11px] text-slate-500 bg-slate-200/80 px-1.5 py-0.5 rounded border border-slate-300 pointer-events-none">/</kbd>
+          <button id="global-search-clear" style="display:none;" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-slate-200 hover:bg-slate-300 items-center justify-center text-slate-600 text-xs cursor-pointer focus-visible:outline-none" title="Bersihkan pencarian" aria-label="Bersihkan pencarian">
+            <span class="material-symbols-outlined text-xs" aria-hidden="true">close</span>
+          </button>
         </div>
       </div>
     </div>
   </header>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-2 flex justify-around items-center shadow-lg" role="tablist" aria-label="Navigasi Mobile">
+    <button @click="tabAktif = 'beranda'" role="tab" :aria-selected="tabAktif === 'beranda'"
+      class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all cursor-pointer"
+      :class="tabAktif === 'beranda' ? 'text-blue-600 font-bold' : 'text-slate-500 font-medium'">
+      <span class="material-symbols-outlined text-xl" aria-hidden="true">dashboard</span>
+      <span class="text-xs">Dashboard</span>
+    </button>
+    <button @click="tabAktif = 'arsip'; muatTabArsip()" role="tab" :aria-selected="tabAktif === 'arsip'"
+      class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all cursor-pointer"
+      :class="tabAktif === 'arsip' ? 'text-blue-600 font-bold' : 'text-slate-500 font-medium'">
+      <span class="material-symbols-outlined text-xl" aria-hidden="true">inventory_2</span>
+      <span class="text-xs">Arsip</span>
+    </button>
+    <button @click="tabAktif = 'tren'; muatTabTren()" role="tab" :aria-selected="tabAktif === 'tren'"
+      class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all cursor-pointer"
+      :class="tabAktif === 'tren' ? 'text-blue-600 font-bold' : 'text-slate-500 font-medium'">
+      <span class="material-symbols-outlined text-xl" aria-hidden="true">insights</span>
+      <span class="text-xs">Tren</span>
+    </button>
+  </nav>
 
   <main class="max-w-container-max mx-auto px-gutter py-6">
     <section x-show="tabAktif === 'beranda'" x-cloak
       x-transition:enter="transition ease-out duration-300 transform"
       x-transition:enter-start="opacity-0 translate-y-2"
       x-transition:enter-end="opacity-100 translate-y-0">
-      <section class="pt-6 pb-12 text-center">
-        <div class="relative mb-10">
-          <div class="absolute inset-0 hero-gradient opacity-5 rounded-3xl blur-3xl"></div>
-          <div class="relative">
-            <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4 max-w-3xl mx-auto leading-[1.15]">
-              Rangkuman &amp; Tren <span class="text-primary">Insiden Siber</span>
-            </h1>
-            <p class="text-slate-500 text-base mb-10 max-w-2xl mx-auto leading-relaxed">
-              Pipeline monitoring, ekstraksi intelijen berita, dan analisis tren kerentanan siber otomatis.
-            </p>
-          </div>
+      
+      <!-- Executive Hero & Terminal Section -->
+      <section class="pt-4 pb-8 text-center">
+        <div class="relative mb-6">
+          <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-3 max-w-3xl mx-auto leading-[1.15]">
+            Pemantauan Keamanan Siber
+          </h1>
+          <p class="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+            Platform Cyber Threat Intelligence &amp; Vulnerability Analytics On-Premise Diskominfo Provinsi Jawa Timur.
+          </p>
         </div>
 
-        <div class="flex flex-col items-center gap-6">
+        <div class="flex flex-col items-center gap-5">
           <div class="flex items-center justify-center gap-3 flex-wrap">
             <button
-              class="hero-gradient text-white px-6 py-2.5 rounded-xl font-semibold text-sm shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-              id="btn-run" onclick="mulaiPipeline()">
-              <span class="material-symbols-outlined text-[20px]" id="run-icon">play_arrow</span>
+              class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all duration-200 active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+              id="btn-run" onclick="mulaiPipeline()" aria-label="Jalankan pipeline pengumpulan intelijen">
+              <span class="material-symbols-outlined text-xl" id="run-icon" aria-hidden="true">play_arrow</span>
               <span id="btn-run-text">Jalankan Pipeline</span>
             </button>
             <button
-              class="bg-white text-google-red border border-slate-200 hover:bg-red-50 hover:border-red-200 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all active:scale-95 items-center gap-2 cursor-pointer"
-              id="btn-cancel" onclick="batalkanPipeline()">
-              <span class="material-symbols-outlined text-[20px]">stop_circle</span>
-              Batalkan Pipeline
+              class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl font-semibold text-xs shadow-sm transition-all active:scale-95 items-center gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none"
+              id="btn-cancel" onclick="batalkanPipeline()" aria-label="Batalkan eksekusi pipeline">
+              <span class="material-symbols-outlined text-base" aria-hidden="true">stop_circle</span>
+              Batalkan
+            </button>
+            <button @click="terminalTerbuka = !terminalTerbuka"
+              class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer shadow-xs focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+              :title="terminalTerbuka ? 'Sembunyikan konsol log' : 'Tampilkan konsol log'">
+              <span class="material-symbols-outlined text-base" aria-hidden="true">terminal</span>
+              <span x-text="terminalTerbuka ? 'Tutup Monitor' : 'Buka Monitor'">Tutup Monitor</span>
             </button>
           </div>
 
-          <div class="w-full max-w-3xl terminal-gradient rounded-2xl p-5 text-left border border-slate-700/50 terminal-glow overflow-hidden relative">
-            <div class="flex items-center justify-between gap-2 mb-3 border-b border-slate-700/40 pb-2.5">
+          <!-- Log Console (High-Contrast Dark Terminal) -->
+          <div x-show="terminalTerbuka" x-collapse
+            class="w-full max-w-3xl bg-slate-900 rounded-2xl p-5 text-left border border-slate-800 overflow-hidden relative transition-all duration-300 shadow-lg">
+            <div class="flex items-center justify-between gap-2 mb-3 border-b border-slate-800 pb-2.5">
               <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-[#ea4335] shadow-[0_0_6px_rgba(234,67,53,0.4)]"></div>
-                <div class="w-3 h-3 rounded-full bg-[#fbbc05] shadow-[0_0_6px_rgba(251,188,5,0.4)]"></div>
-                <div class="w-3 h-3 rounded-full bg-[#34a853] shadow-[0_0_6px_rgba(52,168,83,0.4)]"></div>
-                <span class="ml-2 font-mono text-xs text-slate-400 font-medium">Cloud Shell - Pipeline Monitor</span>
+                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+                <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+                <span class="ml-2 font-mono text-xs text-slate-200 font-medium tracking-wide">Terminal</span>
               </div>
-              <span class="font-mono text-xs text-slate-500 font-medium" id="console-status">idle</span>
+              <span class="font-mono text-xs text-slate-400 font-medium" id="console-status">— standby —</span>
             </div>
-            <div class="font-mono text-xs text-slate-300 h-44 overflow-y-auto space-y-1.5 leading-relaxed" id="console-body">
+            <div class="font-mono text-xs text-slate-300 h-36 overflow-y-auto space-y-1.5 leading-relaxed" id="console-body">
               <div class="flex gap-2 text-slate-500">
-                <span>Menunggu pipeline dijalankan...</span>
+                <span>[SYSTEM] Menunggu instruksi pipeline dimulai...</span>
               </div>
             </div>
           </div>
@@ -170,41 +394,36 @@
     </section>
   </main>
 
-  <footer class="w-full mt-16 border-t border-slate-200/60">
-    <div class="flex flex-col md:flex-row justify-between items-center py-6 px-gutter max-w-container-max mx-auto gap-4">
-      <div class="flex items-center gap-2 text-slate-500 text-xs">
-        <span class="font-semibold text-slate-700">SiberHarian</span>
-        <span class="text-slate-300">&bull;</span>
-        <span>&copy; 2026 Rangkuman &amp; Tren Insiden Siber.</span>
-      </div>
-      <div class="flex gap-6 text-xs text-slate-400 font-medium">
-        <a class="hover:text-primary transition-colors" href="#">Dokumentasi</a>
-        <a class="hover:text-primary transition-colors" href="#">Status API</a>
-        <a class="hover:text-primary transition-colors" href="#">Privasi</a>
-        <a class="hover:text-primary transition-colors" href="#">Ketentuan</a>
-      </div>
-    </div>
-  </footer>
-
-  <div class="fixed inset-0 bg-slate-950/50 backdrop-blur-md z-[100] hidden items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-200 ease-out" id="modal-overlay" onclick="tutupModalJikaLuar(event)">
-    <div class="bg-white rounded-2xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-7 relative border border-slate-200/90 shadow-2xl transform scale-95 opacity-0 translate-y-4 transition-all duration-200 ease-out" id="modal-box">
-      <button class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer" onclick="tutupModal()" title="Tutup (Esc)">
-        <span class="material-symbols-outlined text-[20px]">close</span>
+  <!-- Clean Enterprise Light Modal Dialog -->
+  <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[100] hidden items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-200 ease-out"
+    id="modal-overlay" onclick="tutupModalJikaLuar(event)" aria-hidden="true">
+    <div class="bg-white rounded-2xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-7 relative border border-slate-200 shadow-2xl transform scale-95 opacity-0 translate-y-4 transition-all duration-200 ease-out"
+      id="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-judul">
+      <button class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+        onclick="tutupModal()" title="Tutup dialog (Esc)" aria-label="Tutup dialog">
+        <span class="material-symbols-outlined text-xl" aria-hidden="true">close</span>
       </button>
       <div class="flex items-center gap-2 mb-3">
-        <span class="px-2.5 py-0.5 rounded-md font-mono text-xs font-bold" id="modal-pill"></span>
+        <span class="px-2.5 py-0.5 rounded-lg text-xs font-semibold" id="modal-pill"></span>
         <span class="text-xs text-slate-500 font-medium" id="modal-sumber"></span>
       </div>
       <h3 class="text-xl font-bold text-slate-900 mb-3 leading-snug" id="modal-judul"></h3>
-      <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line bg-slate-50/90 p-5 rounded-xl border border-slate-100" id="modal-teks"></p>
-      <div class="mt-6 pt-4 border-t border-slate-100">
-        <a class="text-primary font-semibold text-sm flex items-center gap-1.5 w-fit hover:text-primary-hover transition-colors hover:underline underline-offset-4" id="modal-link" href="#" target="_blank" rel="noopener">
-          Buka tautan sumber <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+      <div class="text-slate-700 text-sm leading-relaxed whitespace-pre-line bg-slate-50 p-5 rounded-xl border border-slate-200 font-sans" id="modal-teks"></div>
+      <div class="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between gap-3 flex-wrap">
+        <button id="modal-btn-copy" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none">
+          <span class="material-symbols-outlined text-base" aria-hidden="true">content_copy</span>
+          <span>Salin Rangkuman</span>
+        </button>
+        <a class="text-blue-600 font-semibold text-xs flex items-center gap-1.5 w-fit hover:text-blue-700 transition-colors hover:underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none" id="modal-link" href="#" target="_blank" rel="noopener noreferrer">
+          Buka tautan sumber <span class="material-symbols-outlined text-base" aria-hidden="true">open_in_new</span>
         </a>
       </div>
     </div>
   </div>
+  <!-- /modal-overlay -->
+  </div>
+  <!-- /app-wrapper -->
 
-  <script type="module" src="/static/js/main.js"></script>
+  <script type="module" src="/static/js/main.js?v=3.2"></script>
 </body>
 </html>

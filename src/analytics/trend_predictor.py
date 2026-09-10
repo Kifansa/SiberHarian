@@ -41,6 +41,7 @@ Format analisismu dalam 4 bagian terstruktur:
 ATURAN KETAT:
 - HANYA gunakan fakta dari data dan sampel judul yang diberikan. JANGAN mengarang nama korban, instansi, CVE, atau angka di luar data.
 - Gunakan gaya bahasa profesional Cyber Threat Intelligence, padat, lugas, dan bernilai strategis bagi tim security/CISO.
+- WAJIB buat seluruh 4 bagian di atas secara berurutan dan lengkap (Bagian 1 sampai 4). JANGAN menggabungkan atau melewatkan bagian mana pun, terutama Bagian 2 (VEKTOR SERANGAN (TTPs) & SEKTOR TERPAPAR).
 - WAJIB gunakan format list (bullet points). DILARANG KERAS menggunakan format tabel (markdown table).
 - JANGAN menambahkan catatan tambahan, penjelasan skor, atau kesimpulan apa pun di akhir analisis.
 - Langsung tulis isi analisisnya tanpa kalimat pembuka seperti "Berikut laporannya:".
@@ -97,8 +98,8 @@ def _filter_naik_signifikan(items: List[Dict]) -> List[Dict]:
 
 def _format_kata_kunci_untuk_prompt(daftar_kk: List[Dict]) -> str:
     baris = [
-        f"- '{kk['kata_kunci']}': muncul {kk['jumlah_terkini']}x dalam 3 hari terakhir "
-        f"(sebelumnya {kk['jumlah_baseline']}x dalam 4 hari), growth {kk['growth_persen']}%"
+        f"- '{kk['kata_kunci']}': muncul {kk['jumlah_terkini']}x dalam 7 hari terakhir "
+        f"(sebelumnya {kk['jumlah_baseline']}x dalam 7 hari baseline), growth {kk['growth_persen']}%"
         for kk in daftar_kk
     ]
     return "\n".join(baris)
@@ -112,8 +113,8 @@ def _format_vendor_untuk_prompt(daftar_vendor: List[Dict]) -> str:
             if v["top_produk"] else "produk tidak teridentifikasi"
         )
         baris.append(
-            f"- {v['vendor']}: {v['jumlah_terkini']} CVE CRITICAL dalam 3 hari terakhir "
-            f"(sebelumnya {v['jumlah_baseline']} dalam 4 hari), growth {v['growth_persen']}%. "
+            f"- {v['vendor']}: {v['jumlah_terkini']} CVE CRITICAL dalam 7 hari terakhir "
+            f"(sebelumnya {v['jumlah_baseline']} dalam 7 hari baseline), growth {v['growth_persen']}%. "
             f"Produk terdampak: {produk_teks}"
         )
     return "\n".join(baris)
@@ -133,7 +134,7 @@ def prediksi_tren_berita(statistik_tren: Dict, model: str = MODEL_PREDIKTOR) -> 
         logger.info("Tidak ada kata kunci berita dengan tren naik signifikan, skip pemanggilan LLM.")
         return (
             "Belum terdeteksi pola tren yang signifikan pada topik berita insiden siber "
-            "dalam 7 hari terakhir. Data masih relatif stabil dibanding periode sebelumnya."
+            "dalam 14 hari terakhir. Data masih relatif stabil dibanding periode baseline."
         )
 
     tren_kategori = statistik_berita.get("tren_kategori", {})
@@ -154,10 +155,10 @@ def prediksi_tren_berita(statistik_tren: Dict, model: str = MODEL_PREDIKTOR) -> 
         f"Status Posture Risiko: {level_risiko} (Skor Risiko: {skor_risiko}/10)\n"
         f"Vektor Serangan Dominan Teratas: {vektor_str}\n"
         f"Sektor / Vertikal Target Teratas: {sektor_str}\n\n"
-        f"Kata kunci insiden dengan tren naik signifikan (3 hari terakhir vs 4 hari sebelumnya):\n"
+        f"Kata kunci insiden dengan tren naik signifikan (7 hari terakhir vs 7 hari baseline):\n"
         f"{_format_kata_kunci_untuk_prompt(kk_signifikan)}\n\n"
-        f"Jumlah artikel insiden aktual: {insiden_info.get('jumlah_terkini', 0)} dalam 3 hari terakhir "
-        f"(sebelumnya {insiden_info.get('jumlah_baseline', 0)} dalam 4 hari), "
+        f"Jumlah artikel insiden aktual: {insiden_info.get('jumlah_terkini', 0)} dalam 7 hari terakhir "
+        f"(sebelumnya {insiden_info.get('jumlah_baseline', 0)} dalam 7 hari baseline), "
         f"growth {insiden_info.get('growth_persen', 0)}%.\n\n"
         f"Sampel judul artikel insiden siber aktual terkini:\n"
         f"{_format_sampel_judul_untuk_prompt(sampel_judul[:8])}"
@@ -176,12 +177,12 @@ def prediksi_tren_cve(statistik_cve: Dict, model: str = MODEL_PREDIKTOR) -> str:
     if not vendor_signifikan:
         logger.info("Tidak ada vendor CVE dengan tren naik signifikan, skip pemanggilan LLM.")
         return (
-            "Belum terdeteksi vendor dengan lonjakan CVE yang signifikan dalam 7 hari terakhir. "
-            "Volume kerentanan relatif stabil dibanding periode sebelumnya."
+            "Belum terdeteksi vendor dengan lonjakan CVE yang signifikan dalam 14 hari terakhir. "
+            "Volume kerentanan relatif stabil dibanding periode baseline."
         )
 
     user_prompt = (
-        f"Vendor dengan tren jumlah CVE CRITICAL naik signifikan (3 hari terakhir vs 4 hari sebelumnya):\n"
+        f"Vendor dengan tren jumlah CVE CRITICAL naik signifikan (7 hari terakhir vs 7 hari baseline):\n"
         f"{_format_vendor_untuk_prompt(vendor_signifikan)}"
     )
 
@@ -211,7 +212,7 @@ if __name__ == "__main__":
     from src.analytics.trend_analyzer import susun_ringkasan_statistik_tren
     from src.storage.db import ambil_riwayat_tren
 
-    df = ambil_riwayat_tren(hari=7)
+    df = ambil_riwayat_tren(hari=14)
     statistik = susun_ringkasan_statistik_tren(df)
     hasil = proses_prediksi_tren(statistik)
 

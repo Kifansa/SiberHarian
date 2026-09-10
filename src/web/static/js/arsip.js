@@ -1,5 +1,5 @@
 import { ambilArsip } from './api.js';
-import { formatTanggalIndonesia } from './utils.js';
+import { formatTanggalIndonesia, escapeHtml } from './utils.js';
 import { buatCardBerita, buatCardCve, buatSection } from './cards.js';
 import { resetDataLengkap } from './modal.js';
 
@@ -8,7 +8,7 @@ const cardContainer = document.getElementById('arsip-card-container');
 const emptyState = document.getElementById('arsip-empty-state');
 const arsipDesc = document.getElementById('arsip-desc');
 
-let daftarHari = [];      // cache hasil /api/arsip - supaya klik tombol tanggal tidak fetch ulang
+let daftarHari = [];      // cache hasil /api/arsip
 let tanggalTerpilih = null;
 let sudahDimuat = false;  // hanya fetch sekali per kunjungan, sampai di-invalidate manual
 
@@ -16,11 +16,11 @@ function renderTombolTanggal() {
     tombolContainer.innerHTML = daftarHari.map(hari => {
         const aktif = hari.tanggal === tanggalTerpilih;
         const kelasAktif = aktif
-            ? 'tab-active shadow-sm font-semibold'
-            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900 font-medium';
+            ? 'bg-blue-600 text-white border-blue-600 shadow-xs font-semibold'
+            : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50 font-medium shadow-xs';
         const jumlahTotal = hari.berita.length + hari.cve.length;
         return `
-      <button class="px-3.5 py-1.5 rounded-xl border font-mono text-xs transition-all cursor-pointer ${kelasAktif}" data-tanggal="${hari.tanggal}">
+      <button class="px-3.5 py-1.5 rounded-xl border text-xs transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none ${kelasAktif}" data-tanggal="${hari.tanggal}" aria-label="Arsip tanggal ${formatTanggalIndonesia(hari.tanggal)}, ${jumlahTotal} insiden">
         ${formatTanggalIndonesia(hari.tanggal)} <span class="opacity-75 font-normal">(${jumlahTotal})</span>
       </button>`;
     }).join('');
@@ -45,22 +45,83 @@ function renderCardUntukTanggalTerpilih() {
     const analisis = hari.berita.filter(b => b.kategori !== 'insiden_spesifik');
     let html = '';
     html += buatSection('Insiden Spesifik', insiden.map(buatCardBerita).join(''), insiden.length,
-        { ikon: 'local_fire_department', kelas: 'bg-red-50 text-google-red border border-red-100/60' });
+        { ikon: 'local_fire_department', kelas: 'bg-red-600 text-white' });
     html += buatSection('Edukasi / Evergreen', analisis.map(buatCardBerita).join(''), analisis.length,
-        { ikon: 'school', kelas: 'bg-blue-50 text-primary border border-blue-100/60' });
+        { ikon: 'school', kelas: 'bg-blue-600 text-white' });
     html += buatSection('CVE Critical', hari.cve.map(buatCardCve).join(''), hari.cve.length,
-        { ikon: 'bug_report', kelas: 'bg-amber-50 text-amber-700 border border-amber-100/60' });
-    cardContainer.innerHTML = html || '<p class="text-on-surface-variant py-10 text-center">Tidak ada berita/CVE pada tanggal ini.</p>';
+        { ikon: 'bug_report', kelas: 'bg-amber-500 text-white' });
+    cardContainer.innerHTML = html || '<p class="text-slate-500 py-10 text-center">Tidak ada berita/CVE pada tanggal ini.</p>';
+}
+
+export function filterArsipCards(query) {
+    const q = (query || '').trim().toLowerCase();
+    const sections = cardContainer.querySelectorAll('.section-wrapper');
+    let totalVisible = 0;
+
+    sections.forEach(sec => {
+        const cards = sec.querySelectorAll('article[data-search-text]');
+        let countInSec = 0;
+        cards.forEach(card => {
+            const text = card.getAttribute('data-search-text') || '';
+            if (!q || text.includes(q)) {
+                card.style.display = 'flex';
+                countInSec++;
+                totalVisible++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        const badge = sec.querySelector('.count-badge');
+        if (badge) badge.textContent = countInSec;
+        sec.style.display = countInSec > 0 ? 'block' : 'none';
+    });
+
+    let searchEmptyNotice = document.getElementById('arsip-search-empty-notice');
+    if (totalVisible === 0 && q) {
+        if (!searchEmptyNotice) {
+            searchEmptyNotice = document.createElement('div');
+            searchEmptyNotice.id = 'arsip-search-empty-notice';
+            searchEmptyNotice.className = 'text-center py-12 bg-white rounded-2xl border border-slate-200 p-6 shadow-xs';
+            searchEmptyNotice.innerHTML = `
+                <span class="material-symbols-outlined text-3xl text-slate-400 mb-2" aria-hidden="true">search_off</span>
+                <h4 class="text-base font-bold text-slate-900 mb-1">Tidak ada hasil pencarian arsip</h4>
+                <p class="text-xs text-slate-500">Tidak ada artikel atau CVE pada tanggal ini yang cocok dengan "<strong>${escapeHtml(q)}</strong>".</p>
+            `;
+            cardContainer.appendChild(searchEmptyNotice);
+        } else {
+            searchEmptyNotice.style.display = 'block';
+            searchEmptyNotice.querySelector('strong').textContent = q;
+        }
+    } else if (searchEmptyNotice) {
+        searchEmptyNotice.style.display = 'none';
+    }
 }
 
 export async function muatTabArsip() {
     if (sudahDimuat) return;
     const data = await ambilArsip();
+
+    if (data.status === 'error') {
+        emptyState.classList.add('hidden');
+        cardContainer.innerHTML = `
+            <div class="text-center py-12 bg-red-50 rounded-2xl border border-red-200 p-6 shadow-xs my-4">
+                <span class="material-symbols-outlined text-3xl text-red-600 mb-2" aria-hidden="true">cloud_off</span>
+                <h3 class="text-base font-bold text-slate-900 mb-1">Gagal Memuat Data Arsip</h3>
+                <p class="text-xs text-slate-600 mb-4 max-w-md mx-auto">Terjadi kendala saat mengambil riwayat arsip (${escapeHtml(data.message || 'Koneksi terputus')}).</p>
+                <button onclick="window.muatUlangTabArsip()" class="px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-xl border border-slate-200 transition-all cursor-pointer inline-flex items-center gap-1.5 shadow-xs focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none">
+                    <span class="material-symbols-outlined text-base" aria-hidden="true">refresh</span> Coba Muat Ulang
+                </button>
+            </div>`;
+        arsipDesc.textContent = 'Gagal memuat data arsip.';
+        return;
+    }
+
     daftarHari = data.hari || [];
     sudahDimuat = true;
 
     if (daftarHari.length === 0) {
         emptyState.classList.remove('hidden');
+        cardContainer.innerHTML = '';
         arsipDesc.textContent = 'Belum ada data arsip.';
         return;
     }
