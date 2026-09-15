@@ -1,15 +1,15 @@
 <div class="py-6 space-y-6">
-  <div class="border-b border-slate-200 pb-5">
-    <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Arsip Keamanan Siber</h2>
-    <p class="text-sm text-slate-600 mt-1" id="arsip-desc">Pilih tanggal untuk melihat riwayat ringkasan berita &amp; CVE hari itu.</p>
+  <div class="border-b border-[#BDD8E9]/80 pb-5">
+    <h2 class="text-xl sm:text-2xl font-black text-[#001D39] tracking-tight">Arsip Keamanan Siber</h2>
+    <p class="text-xs sm:text-sm text-[#49769F] mt-1" id="arsip-desc">Pilih tanggal untuk melihat riwayat ringkasan berita &amp; CVE hari itu.</p>
   </div>
   <div class="flex gap-2.5 flex-wrap" id="arsip-tombol-tanggal" role="group" aria-label="Filter tanggal arsip"></div>
-  <div class="text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-xs hidden" id="arsip-empty-state">
-    <div class="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4 text-slate-400">
+  <div class="text-center py-16 bg-white rounded-3xl border border-[#E2EDF8] shadow-xs hidden" id="arsip-empty-state">
+    <div class="w-14 h-14 rounded-2xl bg-[#EEF5FA] border border-[#BDD8E9] flex items-center justify-center mx-auto mb-4 text-[#49769F]">
       <span class="material-symbols-outlined text-3xl" aria-hidden="true">calendar_month</span>
     </div>
-    <h3 class="text-base font-bold text-slate-800 mb-1">Belum ada data arsip</h3>
-    <p class="text-slate-500 text-xs">Jalankan pipeline terlebih dahulu untuk mengisi arsip 7 hari terakhir.</p>
+    <h3 class="text-base font-bold text-[#001D39] mb-1">Belum ada data arsip</h3>
+    <p class="text-[#49769F] text-xs">Jalankan pipeline terlebih dahulu untuk mengisi arsip 7 hari terakhir.</p>
   </div>
   <div id="arsip-card-container"></div>
 </div>

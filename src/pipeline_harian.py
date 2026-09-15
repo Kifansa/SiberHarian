@@ -8,7 +8,6 @@ from typing import Optional
 
 import yaml
 
-from src.analytics.trend_analyzer import susun_ringkasan_statistik_tren
 from src.classifier.relevance_classifier import filter_artikel_relevan
 from src.dedup.deduplicator import deteksi_duplikat_hybrid, filter_belum_terkirim
 from src.scraper.cve_fetcher import ambil_cve_terbaru, susun_struktur_digest_cve

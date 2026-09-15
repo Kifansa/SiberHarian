@@ -16,11 +16,11 @@ function renderTombolTanggal() {
     tombolContainer.innerHTML = daftarHari.map(hari => {
         const aktif = hari.tanggal === tanggalTerpilih;
         const kelasAktif = aktif
-            ? 'bg-blue-600 text-white border-blue-600 shadow-xs font-semibold'
-            : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50 font-medium shadow-xs';
+            ? 'bg-[#0A4174] text-white border-[#0A4174] shadow-xs font-bold'
+            : 'bg-white hover:bg-[#EEF5FA] text-[#49769F] hover:text-[#001D39] border-[#BDD8E9] hover:border-[#49769F] font-semibold shadow-2xs';
         const jumlahTotal = hari.berita.length + hari.cve.length;
         return `
-      <button class="px-3.5 py-1.5 rounded-xl border text-xs transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none ${kelasAktif}" data-tanggal="${hari.tanggal}" aria-label="Arsip tanggal ${formatTanggalIndonesia(hari.tanggal)}, ${jumlahTotal} insiden">
+      <button class="px-4 py-2 rounded-full border text-xs transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none ${kelasAktif}" data-tanggal="${hari.tanggal}" aria-label="Arsip tanggal ${formatTanggalIndonesia(hari.tanggal)}, ${jumlahTotal} insiden">
         ${formatTanggalIndonesia(hari.tanggal)} <span class="opacity-75 font-normal">(${jumlahTotal})</span>
       </button>`;
     }).join('');
@@ -45,12 +45,12 @@ function renderCardUntukTanggalTerpilih() {
     const analisis = hari.berita.filter(b => b.kategori !== 'insiden_spesifik');
     let html = '';
     html += buatSection('Insiden Spesifik', insiden.map(buatCardBerita).join(''), insiden.length,
-        { ikon: 'local_fire_department', kelas: 'bg-red-600 text-white' });
+        { ikon: 'local_fire_department', kelas: 'bg-[#b91c1c] text-white' });
     html += buatSection('Edukasi / Evergreen', analisis.map(buatCardBerita).join(''), analisis.length,
-        { ikon: 'school', kelas: 'bg-blue-600 text-white' });
+        { ikon: 'school', kelas: 'bg-[#0A4174] text-white' });
     html += buatSection('CVE Critical', hari.cve.map(buatCardCve).join(''), hari.cve.length,
-        { ikon: 'bug_report', kelas: 'bg-amber-500 text-white' });
-    cardContainer.innerHTML = html || '<p class="text-slate-500 py-10 text-center">Tidak ada berita/CVE pada tanggal ini.</p>';
+        { ikon: 'bug_report', kelas: 'bg-[#b45309] text-white' });
+    cardContainer.innerHTML = html || '<p class="text-[#49769F] py-10 text-center font-medium">Tidak ada berita atau CVE pada tanggal ini.</p>';
 }
 
 export function filterArsipCards(query) {
@@ -81,11 +81,11 @@ export function filterArsipCards(query) {
         if (!searchEmptyNotice) {
             searchEmptyNotice = document.createElement('div');
             searchEmptyNotice.id = 'arsip-search-empty-notice';
-            searchEmptyNotice.className = 'text-center py-12 bg-white rounded-2xl border border-slate-200 p-6 shadow-xs';
+            searchEmptyNotice.className = 'text-center py-12 bg-white rounded-3xl border border-[#E2EDF8] p-6 shadow-xs';
             searchEmptyNotice.innerHTML = `
-                <span class="material-symbols-outlined text-3xl text-slate-400 mb-2" aria-hidden="true">search_off</span>
-                <h4 class="text-base font-bold text-slate-900 mb-1">Tidak ada hasil pencarian arsip</h4>
-                <p class="text-xs text-slate-500">Tidak ada artikel atau CVE pada tanggal ini yang cocok dengan "<strong>${escapeHtml(q)}</strong>".</p>
+                <span class="material-symbols-outlined text-3xl text-[#49769F] mb-2" aria-hidden="true">search_off</span>
+                <h4 class="text-base font-bold text-[#001D39] mb-1">Tidak ada hasil pencarian arsip</h4>
+                <p class="text-xs text-[#49769F]">Tidak ada artikel atau CVE pada tanggal ini yang cocok dengan "<strong>${escapeHtml(q)}</strong>".</p>
             `;
             cardContainer.appendChild(searchEmptyNotice);
         } else {
@@ -104,12 +104,12 @@ export async function muatTabArsip() {
     if (data.status === 'error') {
         emptyState.classList.add('hidden');
         cardContainer.innerHTML = `
-            <div class="text-center py-12 bg-red-50 rounded-2xl border border-red-200 p-6 shadow-xs my-4">
-                <span class="material-symbols-outlined text-3xl text-red-600 mb-2" aria-hidden="true">cloud_off</span>
-                <h3 class="text-base font-bold text-slate-900 mb-1">Gagal Memuat Data Arsip</h3>
-                <p class="text-xs text-slate-600 mb-4 max-w-md mx-auto">Terjadi kendala saat mengambil riwayat arsip (${escapeHtml(data.message || 'Koneksi terputus')}).</p>
-                <button onclick="window.muatUlangTabArsip()" class="px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-xl border border-slate-200 transition-all cursor-pointer inline-flex items-center gap-1.5 shadow-xs focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none">
-                    <span class="material-symbols-outlined text-base" aria-hidden="true">refresh</span> Coba Muat Ulang
+            <div class="text-center py-12 bg-rose-50 rounded-3xl border border-rose-200/80 p-6 shadow-xs my-4">
+                <span class="material-symbols-outlined text-3xl text-rose-600 mb-2" aria-hidden="true">cloud_off</span>
+                <h3 class="text-base font-bold text-[#001D39] mb-1">Gagal Memuat Data Arsip</h3>
+                <p class="text-xs text-[#49769F] mb-4 max-w-md mx-auto">Terjadi kendala saat mengambil riwayat arsip (${escapeHtml(data.message || 'Koneksi terputus')}).</p>
+                <button onclick="window.muatUlangTabArsip()" class="px-5 py-2.5 bg-white hover:bg-[#EEF5FA] text-[#0A4174] hover:text-[#001D39] font-bold text-xs rounded-full border border-[#BDD8E9] shadow-2xs transition-all duration-200 cursor-pointer inline-flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
+                    <span class="material-symbols-outlined text-base text-[#49769F]" aria-hidden="true">refresh</span> Coba Muat Ulang
                 </button>
             </div>`;
         arsipDesc.textContent = 'Gagal memuat data arsip.';

@@ -6,7 +6,6 @@ sama meskipun RSS/API sumber terlambat update atau di-scrape ulang.
 """
 import pandas as pd
 import sqlite3
-from collections import OrderedDict
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
@@ -79,6 +78,8 @@ def init_db(db_path: Path = DEFAULT_DB_PATH) -> None:
         _tambah_kolom_jika_belum_ada(conn, "riwayat_tren", "link", "TEXT")
         _tambah_kolom_jika_belum_ada(conn, "riwayat_tren", "skor_cvss", "REAL")
         _tambah_kolom_jika_belum_ada(conn, "riwayat_tren", "produk", "TEXT")
+        _tambah_kolom_jika_belum_ada(conn, "prediksi_tren_terakhir", "kasus_wilayah_ai", "TEXT")
+        _tambah_kolom_jika_belum_ada(conn, "prediksi_tren_terakhir", "statistik_json", "TEXT")
     logger.info(f"Database state siap di: {db_path}")
 
 def ambil_identifier_terkirim(kategori: str, db_path: Path = DEFAULT_DB_PATH) -> set:
@@ -119,19 +120,6 @@ def catat_terkirim(
     logger.info(f"Mencatat {len(identifiers)} item kategori '{kategori}' sebagai sudah terkirim.")
 
 
-def bersihkan_histori_lama(hari_retensi: int = 90, db_path: Path = DEFAULT_DB_PATH) -> None:
-    """
-    Menghapus catatan yang lebih tua dari N hari, supaya database tidak
-    membengkak tanpa batas. Dipanggil berkala (misal mingguan), bukan
-    tiap run harian.
-    """
-    with _koneksi(db_path) as conn:
-        cursor = conn.execute(
-            f"DELETE FROM konten_terkirim WHERE tanggal_kirim < datetime('now', '-{hari_retensi} days')"
-        )
-        logger.info(f"Membersihkan {cursor.rowcount} catatan histori yang lebih tua dari {hari_retensi} hari.")
-
-# fungsi baru di db.py
 def catat_untuk_tren(items: List[dict], db_path: Path = DEFAULT_DB_PATH) -> None:
     tanggal_dicatat = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with _koneksi(db_path) as conn:
@@ -155,7 +143,6 @@ def catat_untuk_tren(items: List[dict], db_path: Path = DEFAULT_DB_PATH) -> None
 
 def ambil_riwayat_tren(hari: int = 14, db_path: Path = DEFAULT_DB_PATH) -> "pd.DataFrame":
     """Mengambil riwayat dalam N tanggal unik publikasi terakhir untuk dianalisis trennya."""
-    import pandas as pd
     with _koneksi(db_path) as conn:
         df = pd.read_sql_query(
             "SELECT * FROM riwayat_tren ORDER BY tanggal_publish DESC",
@@ -177,6 +164,7 @@ def bersihkan_riwayat_tren_lama(hari_retensi: int = 14, db_path: Path = DEFAULT_
         )
         logger.info(f"Membersihkan {cursor.rowcount} baris riwayat_tren yang lebih tua dari {hari_retensi} hari.")
 
+
 def _tambah_kolom_jika_belum_ada(conn: sqlite3.Connection, tabel: str, kolom: str, definisi_tipe: str) -> None:
     """Menambahkan kolom baru ke tabel yang sudah ada, idempotent (aman
     dipanggil berkali-kali) - migrasi skema ringan tanpa tool terpisah."""
@@ -185,7 +173,7 @@ def _tambah_kolom_jika_belum_ada(conn: sqlite3.Connection, tabel: str, kolom: st
     if kolom not in kolom_ada:
         conn.execute(f"ALTER TABLE {tabel} ADD COLUMN {kolom} {definisi_tipe}")
 
-def ambil_riwayat_dikelompokkan_per_hari(hari: int = 14, db_path: Path = DEFAULT_DB_PATH) -> "OrderedDict":
+def ambil_riwayat_dikelompokkan_per_hari(hari: int = 14, db_path: Path = DEFAULT_DB_PATH) -> dict:
     """
     Mengambil riwayat_tren dan mengelompokkannya PER TANGGAL PUBLIKASI
     artikel (bukan tanggal pipeline dijalankan), dipisah lagi per kategori
@@ -193,11 +181,9 @@ def ambil_riwayat_dikelompokkan_per_hari(hari: int = 14, db_path: Path = DEFAULT
     scraping besar (mis. window 7 hari) langsung terdistribusi ke hari yang
     benar - bukan numpuk di satu hari berdasarkan kapan pipeline dijalankan.
 
-    Returns: OrderedDict terurut dari tanggal TERBARU ke TERLAMA, contoh:
+    Returns: dict terurut dari tanggal TERBARU ke TERLAMA, contoh:
         {"2026-08-19": {"berita": [...], "cve": [...]}, "2026-08-18": {...}, ...}
     """
-    from collections import OrderedDict
-
     with _koneksi(db_path) as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.execute(
@@ -208,7 +194,7 @@ def ambil_riwayat_dikelompokkan_per_hari(hari: int = 14, db_path: Path = DEFAULT
         )
         baris = [dict(row) for row in cursor.fetchall()]
 
-    hasil: "OrderedDict" = OrderedDict()
+    hasil: dict = {}
     for item in baris:
         tanggal_publish = item.get("tanggal_publish") or ""
         tanggal_bucket = tanggal_publish[:10] if len(tanggal_publish) >= 10 else "tanggal_tidak_diketahui"
@@ -235,25 +221,33 @@ def ambil_riwayat_dikelompokkan_per_hari(hari: int = 14, db_path: Path = DEFAULT
                 "link": item["link"],
             })
 
-    hasil = OrderedDict(list(hasil.items())[:hari])
+    hasil = dict(list(hasil.items())[:hari])
     return hasil
 
-def simpan_prediksi_tren(prediksi_berita: str, prediksi_cve: str, db_path: Path = DEFAULT_DB_PATH) -> None:
-    """Menyimpan/menimpa prediksi tren terakhir (selalu 1 baris saja)."""
+def simpan_prediksi_tren(
+    prediksi_berita: str,
+    prediksi_cve: str,
+    db_path: Path = DEFAULT_DB_PATH,
+    kasus_wilayah_ai: Optional[str] = None,
+    statistik_json: Optional[str] = None,
+) -> None:
+    """Menyimpan/menimpa prediksi tren terakhir (selalu 1 baris saja) beserta analisis kasus wilayah AI dan statistik dashboard."""
     tanggal = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with _koneksi(db_path) as conn:
         conn.execute(
             """
-            INSERT INTO prediksi_tren_terakhir (id, prediksi_berita, prediksi_cve, tanggal_dihitung)
-            VALUES (1, ?, ?, ?)
+            INSERT INTO prediksi_tren_terakhir (id, prediksi_berita, prediksi_cve, tanggal_dihitung, kasus_wilayah_ai, statistik_json)
+            VALUES (1, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 prediksi_berita = excluded.prediksi_berita,
                 prediksi_cve = excluded.prediksi_cve,
-                tanggal_dihitung = excluded.tanggal_dihitung
+                tanggal_dihitung = excluded.tanggal_dihitung,
+                kasus_wilayah_ai = coalesce(excluded.kasus_wilayah_ai, prediksi_tren_terakhir.kasus_wilayah_ai),
+                statistik_json = coalesce(excluded.statistik_json, prediksi_tren_terakhir.statistik_json)
             """,
-            (prediksi_berita, prediksi_cve, tanggal),
+            (prediksi_berita, prediksi_cve, tanggal, kasus_wilayah_ai, statistik_json),
         )
-    logger.info("Prediksi tren terakhir disimpan ke database.")
+    logger.info("Prediksi tren terakhir (termasuk kasus wilayah AI & statistik dashboard) disimpan ke database.")
 
 
 def ambil_prediksi_tren_terakhir(db_path: Path = DEFAULT_DB_PATH) -> Optional[dict]:

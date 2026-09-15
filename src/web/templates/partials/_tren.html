@@ -1,328 +1,380 @@
 <div class="py-6 space-y-8">
-  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+  <!-- 1. Header Bar: Title, Subtitle, Window Pill, & Action Buttons -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#BDD8E9]/80 pb-5">
     <div>
-      <span class="text-xs font-medium text-slate-500" id="tren-desc">Memuat data intelijen...</span>
-      <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mt-1">Dashboard Tren Keamanan Siber</h2>
-      <p class="text-sm text-slate-600 mt-1">Grafik analitik statistik, lonjakan kata kunci ancaman, dan prioritas kerentanan siber.</p>
-      <div class="mt-2.5 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-700 font-medium w-fit">
-        <span class="w-5 h-5 rounded-md bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs"><span class="material-symbols-outlined text-[13px]" aria-hidden="true">info</span></span>
-        <span>Metodologi Analisis: 7 Hari Terakhir (Dibandingkan Baseline 7 Hari Sebelumnya)</span>
+      <div class="flex items-center gap-2 mb-1">
+        <span class="text-xs text-[#49769F] font-medium" id="tren-desc">Memuat data intelijen...</span>
       </div>
+      <h2 class="text-xl sm:text-2xl font-black text-[#001D39] tracking-tight">Dashboard Intelijen Ancaman Siber</h2>
+      <p class="text-xs sm:text-sm text-[#49769F] mt-1">Pemantauan komparatif postur risiko, lonjakan insiden, dan prioritas kerentanan Diskominfo Jatim.</p>
     </div>
-    <div class="flex items-center gap-3 flex-wrap">
-      <button id="btn-export-tren" onclick="window.eksporLaporanTren()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs shadow-sm transition-all duration-200 active:scale-95 cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none" aria-label="Ekspor laporan intelijen siber ke format PDF">
-        <span class="material-symbols-outlined text-lg" aria-hidden="true">picture_as_pdf</span>
-        <span>Ekspor Laporan PDF</span>
+    
+    <div class="flex items-center gap-2.5 flex-wrap">
+      <button id="btn-export-tren" onclick="window.eksporLaporanTren()" class="bg-[#0A4174] hover:bg-[#001D39] text-white font-bold inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs shadow-sm transition-all duration-200 active:scale-95 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none" aria-label="Ekspor Laporan PDF Resmi Intelijen Mingguan">
+        <span class="material-symbols-outlined text-base" aria-hidden="true">picture_as_pdf</span>
+        <span>Ekspor Laporan PDF Resmi</span>
       </button>
-      <button id="btn-refresh-tren" onclick="window.muatUlangTabTren()" class="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs rounded-xl border border-slate-200 shadow-xs transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none" aria-label="Muat ulang data tren">
-        <span id="btn-refresh-tren-icon" class="material-symbols-outlined text-lg text-slate-500 transition-transform duration-300" aria-hidden="true">refresh</span>
+      <button id="btn-refresh-tren" onclick="window.muatUlangTabTren()" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-[#EEF5FA] hover:border-[#49769F] text-[#0A4174] hover:text-[#001D39] font-bold text-xs rounded-full border border-[#BDD8E9] shadow-2xs transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none" aria-label="Muat ulang data tren">
+        <span id="btn-refresh-tren-icon" class="material-symbols-outlined text-base text-[#49769F] transition-transform duration-300" aria-hidden="true">refresh</span>
         <span id="btn-refresh-tren-text">Muat Ulang Data</span>
       </button>
     </div>
   </div>
 
-  <!-- Dedicated Loading State untuk Tab Tren -->
+  <!-- 2. Loading State: Radar Ring & Skeleton Grid -->
   <div id="tren-loading-state" class="space-y-6">
-    <!-- Hero Loading Card -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-8 sm:p-10 shadow-xs text-center flex flex-col items-center justify-center relative overflow-hidden">
-      <!-- Ambient Glow Behind -->
-      <div class="absolute -top-20 -left-20 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute -bottom-20 -right-20 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-      <!-- Animated Circular Radar Loader -->
+    <div class="bg-white rounded-3xl border border-[#E2EDF8] p-8 sm:p-10 shadow-xs text-center flex flex-col items-center justify-center relative overflow-hidden">
       <div class="relative w-16 h-16 mb-4 flex items-center justify-center">
-        <!-- Outer dashed spinning ring -->
-        <svg class="animate-spin absolute inset-0 w-full h-full text-blue-300" style="animation: spin 3.5s linear infinite;" viewBox="0 0 100 100">
+        <svg class="animate-spin absolute inset-0 w-full h-full text-[#BDD8E9]" style="animation: spin 3.5s linear infinite;" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="8 8" />
         </svg>
-        <!-- Center icon with pulse -->
-        <div class="w-11 h-11 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 shadow-xs">
+        <div class="w-11 h-11 rounded-2xl bg-[#EEF5FA] border border-[#BDD8E9] flex items-center justify-center text-[#0A4174] shadow-2xs">
           <span class="material-symbols-outlined text-2xl animate-pulse" aria-hidden="true">insights</span>
         </div>
       </div>
-
-      <h3 class="text-base sm:text-lg font-bold text-slate-900 mb-1">Menganalisis Data Tren &amp; Intelijen Siber</h3>
-      <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
+      <h3 class="text-base sm:text-lg font-bold text-[#001D39] mb-1">Menganalisis Data Tren &amp; Intelijen Siber</h3>
+      <p class="text-xs sm:text-sm text-[#49769F] max-w-md mx-auto leading-relaxed">
         Mengolah data insiden 7 hari terakhir, menghitung pertumbuhan baseline, dan memetakan prioritas kerentanan CVE...
       </p>
-
-      <!-- Shimmer Progress Bar -->
-      <div class="w-56 sm:w-72 h-1.5 bg-slate-100 rounded-full overflow-hidden mx-auto mt-5 relative border border-slate-200/60">
-        <div class="h-full bg-blue-600 rounded-full w-1/2 animate-indeterminate"></div>
+      <div class="w-56 sm:w-72 h-1.5 bg-[#EEF4F8] rounded-full overflow-hidden mx-auto mt-5 relative border border-[#BDD8E9]/60">
+        <div class="h-full bg-[#4E8EA2] rounded-full w-1/2 animate-indeterminate"></div>
       </div>
     </div>
 
-    <!-- Skeleton Grid KPI Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs animate-pulse space-y-4">
-        <div class="flex items-center justify-between">
-          <div class="h-3.5 bg-slate-200 rounded w-28"></div>
-          <div class="w-10 h-10 rounded-xl bg-slate-200"></div>
+    <!-- Skeleton Grid KPI -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
+      <div class="bg-white rounded-3xl border border-[#E2EDF8] p-5 sm:p-6 shadow-xs animate-pulse space-y-4 flex flex-col justify-between">
+        <div>
+          <div class="h-4 bg-[#EEF4F8] rounded w-44 mb-3"></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div class="h-24 bg-[#EEF5FA] rounded-2xl"></div>
+            <div class="h-24 bg-[#EEF5FA] rounded-2xl"></div>
+          </div>
         </div>
-        <div class="space-y-2 pt-1">
-          <div class="h-8 bg-slate-200 rounded w-20"></div>
-          <div class="h-3 bg-slate-100 rounded w-32"></div>
-        </div>
+        <div class="h-2 bg-[#EEF4F8] rounded w-full mt-2"></div>
       </div>
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs animate-pulse space-y-4">
-        <div class="flex items-center justify-between">
-          <div class="h-3.5 bg-slate-200 rounded w-32"></div>
-          <div class="w-10 h-10 rounded-xl bg-slate-200"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch">
+        <div class="bg-white rounded-3xl border border-[#E2EDF8] p-5 sm:p-6 shadow-xs animate-pulse flex flex-col justify-between">
+          <div class="flex items-center justify-between gap-3">
+            <div class="h-3.5 bg-[#EEF4F8] rounded w-28"></div>
+            <div class="w-9 h-9 sm:w-10 sm:h-10 bg-[#EEF5FA] rounded-2xl"></div>
+          </div>
+          <div class="my-auto py-2 space-y-2">
+            <div class="h-8 bg-[#EEF5FA] rounded w-20"></div>
+            <div class="h-4 bg-[#EEF4F8] rounded w-32"></div>
+          </div>
         </div>
-        <div class="space-y-2 pt-1">
-          <div class="h-8 bg-slate-200 rounded w-20"></div>
-          <div class="h-3 bg-slate-100 rounded w-28"></div>
+        <div class="bg-white rounded-3xl border border-[#E2EDF8] p-5 sm:p-6 shadow-xs animate-pulse flex flex-col justify-between">
+          <div class="flex items-center justify-between gap-3">
+            <div class="h-3.5 bg-[#EEF4F8] rounded w-28"></div>
+            <div class="w-9 h-9 sm:w-10 sm:h-10 bg-[#EEF5FA] rounded-2xl"></div>
+          </div>
+          <div class="my-auto py-2 space-y-2">
+            <div class="h-8 bg-[#EEF5FA] rounded w-20"></div>
+            <div class="h-4 bg-[#EEF4F8] rounded w-32"></div>
+          </div>
         </div>
-      </div>
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs animate-pulse space-y-4">
-        <div class="flex items-center justify-between">
-          <div class="h-3.5 bg-slate-200 rounded w-36"></div>
-          <div class="w-10 h-10 rounded-xl bg-slate-200"></div>
-        </div>
-        <div class="space-y-2 pt-1">
-          <div class="h-8 bg-slate-200 rounded w-16"></div>
-          <div class="h-3 bg-slate-100 rounded w-36"></div>
-        </div>
-      </div>
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs animate-pulse space-y-4">
-        <div class="flex items-center justify-between">
-          <div class="h-3.5 bg-slate-200 rounded w-32"></div>
-          <div class="w-10 h-10 rounded-xl bg-slate-200"></div>
-        </div>
-        <div class="space-y-2 pt-1">
-          <div class="h-8 bg-slate-200 rounded w-24"></div>
-          <div class="h-3 bg-slate-100 rounded w-28"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Skeleton Analytics Section -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs animate-pulse space-y-4">
-      <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-        <div class="h-4 bg-slate-200 rounded w-48"></div>
-        <div class="h-8 bg-slate-100 rounded-xl w-36"></div>
-      </div>
-      <div class="space-y-3 pt-2">
-        <div class="h-4 bg-slate-100 rounded w-full"></div>
-        <div class="h-4 bg-slate-100 rounded w-5/6"></div>
-        <div class="h-4 bg-slate-100 rounded w-4/6"></div>
       </div>
     </div>
   </div>
 
-  <div class="text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-xs hidden" id="tren-empty-state">
-    <div class="w-14 h-14 bg-slate-100 border border-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-400">
+  <!-- 3. Empty State -->
+  <div class="text-center py-16 bg-white rounded-3xl border border-[#E2EDF8] shadow-xs hidden" id="tren-empty-state">
+    <div class="w-14 h-14 bg-[#EEF5FA] border border-[#BDD8E9] rounded-2xl flex items-center justify-center mx-auto mb-4 text-[#49769F]">
       <span class="material-symbols-outlined text-3xl" aria-hidden="true">insights</span>
     </div>
-    <h3 class="text-base font-bold text-slate-800 mb-1">Belum ada data tren</h3>
-    <p class="text-slate-500 text-xs max-w-md mx-auto mb-5">Jalankan pipeline harian untuk mengumpulkan artikel insiden siber dan data kerentanan CVE.</p>
-    <button onclick="window.mulaiPipeline()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-xl text-xs active:scale-95 inline-flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none">
+    <h3 class="text-base font-bold text-[#001D39] mb-1">Belum ada data tren</h3>
+    <p class="text-[#49769F] text-xs max-w-md mx-auto mb-5">Jalankan pipeline harian untuk mengumpulkan artikel insiden siber dan data kerentanan CVE.</p>
+    <button onclick="window.mulaiPipeline()" class="bg-[#0A4174] hover:bg-[#001D39] text-white font-bold px-6 py-2.5 rounded-full text-xs active:scale-95 inline-flex items-center gap-1.5 cursor-pointer shadow-sm focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
       <span class="material-symbols-outlined text-base" aria-hidden="true">play_arrow</span> Jalankan Pipeline
     </button>
   </div>
 
+  <!-- 4. Main Content Container -->
   <div class="space-y-8 hidden transition-all duration-300 ease-out" id="tren-konten-container">
-    <!-- Executive Scorecards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-      <div class="kpi-card bg-white rounded-2xl border border-slate-200 p-6 shadow-xs card-enterprise flex flex-col justify-between">
-        <div class="flex items-center justify-between mb-4">
-          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Insiden Berita</span>
-          <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-xl" aria-hidden="true">newspaper</span></div>
-        </div>
-        <div>
-          <div class="flex items-baseline gap-2.5">
-            <span class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-sans" id="kpi-total-berita">-</span>
-            <span class="text-xs font-semibold px-2 py-0.5 rounded-lg bg-emerald-600 text-white font-mono shadow-xs" id="kpi-berita-growth">+0%</span>
+    
+    <!-- EXECUTIVE SCORECARD GRID (Sapphire Oceanic Modern Reference) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+      
+      <!-- KIRI: Hero Primary KPI Card -> Standout Dark Card ala Reference 'Balance' -->
+      <div class="lg:col-span-5 kpi-card bg-gradient-to-br from-[#001D39] via-[#002447] to-[#0A4174] rounded-3xl border border-[#0A4174]/80 p-5 sm:p-6 shadow-lg shadow-[#001D39]/15 card-enterprise flex flex-col justify-between relative overflow-hidden text-white">
+        <div class="relative z-10">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs sm:text-sm font-bold text-[#7BBDE8] uppercase tracking-wider">Fokus Ancaman Teratas</h3>
           </div>
-          <p class="text-xs text-slate-500 mt-1.5">Artikel insiden (7 hari)</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <!-- Bagian Berita -->
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 border border-white/15 hover:bg-white/[0.14] transition-all flex flex-col justify-center">
+              <span class="text-[11px] font-bold text-[#BDD8E9] uppercase tracking-wider mb-1.5">Berita:</span>
+              <span class="text-xl sm:text-2xl font-black text-white tracking-tight break-words" id="kpi-fokus-berita-nama">-</span>
+            </div>
+
+            <!-- Bagian CVE -->
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 border border-white/15 hover:bg-white/[0.14] transition-all flex flex-col justify-center">
+              <span class="text-[11px] font-bold text-[#BDD8E9] uppercase tracking-wider mb-1.5">CVE:</span>
+              <span class="text-xl sm:text-2xl font-black text-[#7BBDE8] tracking-tight break-words" id="kpi-fokus-cve-nama">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Decorative Subtle Glowing Sparkline Wave at bottom (ala Reference) -->
+        <div class="relative w-full h-6 mt-3 -mb-1 opacity-75 pointer-events-none">
+          <svg class="w-full h-full" viewBox="0 0 400 24" fill="none" preserveAspectRatio="none">
+            <path d="M0 18 C80 6, 160 21, 240 9 C320 -1, 360 15, 400 8" stroke="#4E8EA2" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="160" cy="21" r="3" fill="#7BBDE8" />
+            <circle cx="240" cy="9" r="3" fill="#7BBDE8" />
+            <circle cx="320" cy="6" r="3.5" fill="#FFFFFF" />
+          </svg>
         </div>
       </div>
-      <div class="kpi-card bg-white rounded-2xl border border-slate-200 p-6 shadow-xs card-enterprise flex flex-col justify-between">
-        <div class="flex items-center justify-between mb-4">
-          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Kerentanan CVE</span>
-          <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-xl" aria-hidden="true">bug_report</span></div>
-        </div>
-        <div>
-          <div class="flex items-baseline gap-2.5">
-            <span class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-sans" id="kpi-total-cve">-</span>
-            <span class="text-xs font-semibold px-2 py-0.5 rounded-lg bg-slate-800 text-white font-mono shadow-xs" id="kpi-cve-vendor">- Vendor</span>
+
+      <!-- KANAN: 3 Secondary KPI Cards (Total Berita, Kerentanan CVE, Pola Terprediksi) -->
+      <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-3.5 items-stretch">
+        
+        <!-- Card 1: Total Berita Insiden -->
+        <div class="kpi-card bg-white rounded-3xl border border-[#E2EDF8] p-5 sm:p-6 shadow-xs card-enterprise flex flex-col justify-between">
+          <div class="flex items-center justify-between gap-3">
+            <h4 class="text-[11px] sm:text-xs font-bold text-[#49769F] uppercase tracking-wider leading-tight">Total Berita Insiden</h4>
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#EEF5FA] border border-[#BDD8E9]/60 text-[#0A4174] flex items-center justify-center shrink-0 shadow-2xs">
+              <span class="material-symbols-outlined text-lg sm:text-xl" aria-hidden="true">newspaper</span>
+            </div>
           </div>
-          <p class="text-xs text-slate-500 mt-1.5">Terdaftar di NVD</p>
-        </div>
-      </div>
-      <div class="kpi-card bg-white rounded-2xl border border-slate-200 p-6 shadow-xs card-enterprise flex flex-col justify-between">
-        <div class="flex items-center justify-between mb-4">
-          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Rata-Rata Skor CVSS</span>
-          <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-xl" aria-hidden="true">speed</span></div>
-        </div>
-        <div>
-          <div class="flex items-baseline gap-2.5">
-            <span class="text-3xl sm:text-4xl font-extrabold text-amber-600 tracking-tight font-mono" id="kpi-avg-cvss">-</span>
-            <span class="text-xs font-bold px-2 py-0.5 rounded-lg bg-amber-500 text-white font-mono shadow-xs" id="kpi-cvss-level">High</span>
+          <div class="my-auto py-2 space-y-1">
+            <div class="text-3xl sm:text-4xl font-black text-[#001D39] tracking-tight font-sans leading-none" id="kpi-total-berita">-</div>
+            <div class="pt-0.5 flex items-center gap-1.5 flex-wrap">
+              <div class="inline-flex items-center gap-1 text-xs sm:text-sm font-bold font-mono text-emerald-600" id="kpi-berita-growth">
+                <span class="material-symbols-outlined text-base leading-none">trending_up</span>
+                <span>+0%</span>
+              </div>
+              <span class="text-xs text-[#49769F] font-sans font-medium">vs minggu lalu</span>
+            </div>
           </div>
-          <p class="text-xs text-slate-500 mt-1.5">Skor dampak kerentanan</p>
         </div>
+
+        <!-- Card 2: Total Kerentanan CVE -->
+        <div class="kpi-card bg-white rounded-3xl border border-[#E2EDF8] p-5 sm:p-6 shadow-xs card-enterprise flex flex-col justify-between">
+          <div class="flex items-center justify-between gap-3">
+            <h4 class="text-[11px] sm:text-xs font-bold text-[#49769F] uppercase tracking-wider leading-tight">Kerentanan CVE</h4>
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#EEF5FA] border border-[#BDD8E9]/60 text-[#4E8EA2] flex items-center justify-center shrink-0 shadow-2xs">
+              <span class="material-symbols-outlined text-lg sm:text-xl" aria-hidden="true">bug_report</span>
+            </div>
+          </div>
+          <div class="my-auto py-2 space-y-1">
+            <div class="text-3xl sm:text-4xl font-black text-[#001D39] tracking-tight font-sans leading-none" id="kpi-total-cve">-</div>
+            <div class="pt-0.5 flex items-center gap-1.5 flex-wrap">
+              <div class="inline-flex items-center gap-1 text-xs sm:text-sm font-bold font-mono text-emerald-600" id="kpi-cve-growth">
+                <span class="material-symbols-outlined text-base leading-none">trending_up</span>
+                <span>+0%</span>
+              </div>
+              <span class="text-xs text-[#49769F] font-sans font-medium">vs minggu lalu</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Prediksi Pola Serangan (1 Kata Saja) -->
+        <div class="kpi-card bg-white rounded-3xl border border-[#E2EDF8] p-5 sm:p-6 shadow-xs card-enterprise flex flex-col justify-between">
+          <div class="flex items-center justify-between gap-3">
+            <h4 class="text-[11px] sm:text-xs font-bold text-[#49769F] uppercase tracking-wider leading-tight">Pola Terprediksi</h4>
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center shrink-0 shadow-2xs">
+              <span class="material-symbols-outlined text-lg sm:text-xl" aria-hidden="true">crisis_alert</span>
+            </div>
+          </div>
+          <div class="my-auto py-2 space-y-1">
+            <div class="text-2xl sm:text-3xl font-black text-[#001D39] tracking-tight font-sans leading-none uppercase truncate" id="kpi-pola-serangan" title="Pola Serangan Terprediksi">-</div>
+            <div class="pt-0.5 flex items-center gap-1.5 flex-wrap">
+              <div class="inline-flex items-center gap-1 text-xs sm:text-sm font-bold font-mono text-rose-600" id="kpi-pola-badge">
+                <span class="material-symbols-outlined text-base leading-none" id="kpi-pola-icon">trending_up</span>
+                <span id="kpi-pola-growth">+0%</span>
+              </div>
+              <span class="text-xs text-[#49769F] font-sans font-medium" id="kpi-pola-subtext">lonjakan 7H</span>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <div class="kpi-card bg-white rounded-2xl border border-slate-200 p-6 shadow-xs card-enterprise flex flex-col justify-between">
-        <div class="flex items-center justify-between mb-4">
-          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Topik &amp; Vendor Utama</span>
-          <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-xl" aria-hidden="true">trending_up</span></div>
+    </div>
+
+    <!-- KASUS INSIDEN SIBER TERAMAI (3 Kolom Wilayah KPI Style) -->
+    <div class="space-y-4">
+      <div class="border-b border-[#BDD8E9]/80 pb-3">
+        <h3 class="text-base sm:text-lg font-bold text-[#001D39] tracking-tight">Kasus Insiden Siber Teramai</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Kolom 1: Internasional -->
+        <div id="card-kasus-intl" class="kpi-card bg-white rounded-3xl border border-[#E2EDF8] p-5 sm:p-6 shadow-xs card-enterprise flex flex-col justify-between transition-all duration-200 hover:border-[#7BBDE8]/60">
+          <div class="text-center py-8 text-xs text-[#49769F] font-sans">Memuat insiden internasional...</div>
         </div>
-        <div>
-          <div class="flex items-baseline gap-2"><span class="text-lg font-bold text-slate-900 truncate max-w-[170px]" id="kpi-top-focus">-</span></div>
-          <p class="text-xs text-slate-500 mt-1.5 truncate" id="kpi-top-detail">Fokus utama analisis</p>
+
+        <!-- Kolom 2: Nasional -->
+        <div id="card-kasus-nas" class="kpi-card bg-white rounded-3xl border border-[#E2EDF8] p-5 sm:p-6 shadow-xs card-enterprise flex flex-col justify-between transition-all duration-200 hover:border-[#7BBDE8]/60">
+          <div class="text-center py-8 text-xs text-[#49769F] font-sans">Memuat insiden nasional...</div>
+        </div>
+
+        <!-- Kolom 3: Jawa Timur -->
+        <div id="card-kasus-jatim" class="kpi-card bg-white rounded-3xl border border-[#E2EDF8] p-5 sm:p-6 shadow-xs card-enterprise flex flex-col justify-between transition-all duration-200 hover:border-[#7BBDE8]/60">
+          <div class="text-center py-8 text-xs text-[#49769F] font-sans">Memuat insiden Jawa Timur...</div>
         </div>
       </div>
     </div>
 
-    <!-- AI Intelligence Predictions Section -->
-    <div class="chart-card bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 border-b border-slate-200 pb-4">
+    <!-- AI INTELLIGENCE PREDICTIONS & MITIGATION ADVISORY -->
+    <div class="chart-card bg-white border border-[#E2EDF8] rounded-3xl p-6 sm:p-7 shadow-xs">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 border-b border-[#E2EDF8] pb-4">
         <div>
-          <h3 class="text-base sm:text-lg font-bold text-slate-900 mb-1">Ringkasan Analisis &amp; Rekomendasi Mitigasi</h3>
+          <h3 class="text-base sm:text-lg font-bold text-[#001D39] tracking-tight">Ringkasan Analisis &amp; Rekomendasi Mitigasi</h3>
         </div>
-        <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 w-fit">
-          <button id="tab-ai-berita-btn" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-blue-600 shadow-xs cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none">Berita</button>
-          <button id="tab-ai-cve-btn" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900 cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none">CVE</button>
+        <div class="flex items-center gap-1 bg-[#EEF4F8] p-1 rounded-full border border-[#BDD8E9] w-fit">
+          <button id="tab-ai-berita-btn" type="button" class="px-5 py-1.5 rounded-full text-xs font-bold transition-all bg-[#7BBDE8] text-white shadow-2xs cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">Berita</button>
+          <button id="tab-ai-cve-btn" type="button" class="px-5 py-1.5 rounded-full text-xs font-semibold transition-all text-[#49769F] hover:text-[#001D39] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">CVE</button>
         </div>
       </div>
       <div id="ai-tab-berita">
-        <div id="prediksi-berita-cards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="text-slate-500 text-sm col-span-full py-6 text-center">Memuat laporan analisis berita...</div>
+        <div id="prediksi-berita-cards" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div class="text-[#49769F] text-sm col-span-full py-6 text-center">Memuat laporan analisis berita...</div>
         </div>
       </div>
       <div id="ai-tab-cve" class="hidden">
-        <div id="prediksi-cve-cards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="text-slate-500 text-sm col-span-full py-6 text-center">Memuat ringkasan prioritas CVE...</div>
+        <div id="prediksi-cve-cards" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div class="text-[#49769F] text-sm col-span-full py-6 text-center">Memuat ringkasan prioritas CVE...</div>
         </div>
       </div>
     </div>
 
-    <!-- Charts Row 1 -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="chart-card bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-        <div class="flex items-center justify-between mb-5">
+
+    <!-- GRAFIK ANALITIK STRATEGIS: Vektor Serangan & Sektor Target (Desain Referensi) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+      <div class="chart-card bg-white rounded-3xl border border-[#E2EDF8] p-6 sm:p-7 shadow-xs">
+        <div class="mb-5 flex items-center justify-between">
           <div>
-            <h4 class="text-base font-bold text-slate-900">Tren Aktivitas Harian (7 Hari)</h4>
+            <h4 class="text-base font-bold text-[#001D39]">Distribusi Vektor Serangan Siber (TTPs)</h4>
           </div>
-          <div class="hidden sm:flex items-center gap-3 text-xs font-medium bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
-            <span class="flex items-center gap-1.5 text-blue-600"><span class="w-2.5 h-2.5 rounded-full bg-blue-600" aria-hidden="true"></span> Berita</span>
-            <span class="flex items-center gap-1.5 text-red-600"><span class="w-2.5 h-2.5 rounded-full bg-red-600" aria-hidden="true"></span> CVE</span>
-          </div>
+          <span class="w-9 h-9 rounded-2xl bg-[#EEF5FA] border border-[#BDD8E9]/60 text-[#0A4174] flex items-center justify-center shrink-0 shadow-2xs">
+            <span class="material-symbols-outlined text-lg" aria-hidden="true">bar_chart</span>
+          </span>
         </div>
-        <div class="relative h-72 w-full"><canvas id="chart-harian"></canvas></div>
+        <div id="chart-radar-vektor" class="space-y-4 pt-1">
+          <div class="text-[#49769F] text-xs py-8 text-center font-sans">Memuat distribusi vektor...</div>
+        </div>
       </div>
-      <div class="chart-card bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-        <div class="flex items-center justify-between mb-5">
+
+      <div class="chart-card bg-white rounded-3xl border border-[#E2EDF8] p-6 sm:p-7 shadow-xs">
+        <div class="mb-5 flex items-center justify-between">
           <div>
-            <h4 class="text-base font-bold text-slate-900">Asal Tren Harian Berita</h4>
+            <h4 class="text-base font-bold text-[#001D39]">Sektor Industri Target Terpapar</h4>
           </div>
-          <div class="hidden sm:flex items-center gap-3 text-xs font-medium bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
-            <span class="flex items-center gap-1.5 text-emerald-600"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600" aria-hidden="true"></span> Nasional</span>
-            <span class="flex items-center gap-1.5 text-blue-600"><span class="w-2.5 h-2.5 rounded-full bg-blue-600" aria-hidden="true"></span> Internasional</span>
-          </div>
+          <span class="w-9 h-9 rounded-2xl bg-[#EEF5FA] border border-[#BDD8E9]/60 text-[#4E8EA2] flex items-center justify-center shrink-0 shadow-2xs">
+            <span class="material-symbols-outlined text-lg" aria-hidden="true">domain</span>
+          </span>
         </div>
-        <div class="relative h-72 w-full"><canvas id="chart-harian-sumber"></canvas></div>
-      </div>
-    </div>
-
-    <!-- Charts Row 2 -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="chart-card bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-        <div class="mb-5">
-          <h4 class="text-base font-bold text-slate-900">Kata Kunci Ancaman Paling Aktif</h4>
-        </div>
-        <div class="relative h-80 w-full"><canvas id="chart-kata-kunci"></canvas></div>
-      </div>
-      <div class="chart-card bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-        <div class="mb-5">
-          <h4 class="text-base font-bold text-slate-900">Peta Vektor Serangan Siber</h4>
-        </div>
-        <div class="relative h-80 w-full flex items-center justify-center"><canvas id="chart-radar-vektor"></canvas></div>
-      </div>
-    </div>
-
-    <!-- Charts Row 3 -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="chart-card bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-        <div class="mb-5">
-          <h4 class="text-base font-bold text-slate-900">Sektor &amp; Vertikal Target Terpapar</h4>
-        </div>
-        <div class="relative h-64 w-full"><canvas id="chart-sektor-target"></canvas></div>
-      </div>
-      <div class="chart-card bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-        <div class="mb-5">
-          <h4 class="text-base font-bold text-slate-900">Distribusi Media Sumber Berita</h4>
-        </div>
-        <div class="relative h-64 w-full"><canvas id="chart-sumber"></canvas></div>
-      </div>
-    </div>
-
-    <!-- Charts Row 4 -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="chart-card bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-        <div class="mb-5">
-          <h4 class="text-base font-bold text-slate-900">Vendor Kerentanan Terdampak dari CVE</h4>
-        </div>
-        <div class="relative h-72 w-full flex items-center justify-center"><canvas id="chart-vendor-cve"></canvas></div>
-      </div>
-      <div class="chart-card bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col justify-between">
-        <div>
-          <div class="mb-5">
-            <h4 class="text-base font-bold text-slate-900">Distribusi Tingkat Keparahan CVSS</h4>
-          </div>
-          <div class="relative h-48 w-full flex items-center justify-center"><canvas id="chart-cvss"></canvas></div>
-        </div>
-        <div class="mt-4 pt-3.5 border-t border-slate-200 grid grid-cols-3 gap-3 text-center text-xs">
-          <div class="bg-slate-50 hover:bg-slate-100/80 p-2.5 rounded-xl border border-slate-200 transition-colors">
-            <span class="block font-extrabold text-red-600 text-base font-mono" id="badge-cvss-perfect">0</span>
-            <span class="text-xs font-semibold text-slate-700">Skor 10.0</span>
-          </div>
-          <div class="bg-slate-50 hover:bg-slate-100/80 p-2.5 rounded-xl border border-slate-200 transition-colors">
-            <span class="block font-extrabold text-amber-600 text-base font-mono" id="badge-cvss-high">0</span>
-            <span class="text-xs font-semibold text-slate-700">Skor 9.5-9.9</span>
-          </div>
-          <div class="bg-slate-50 hover:bg-slate-100/80 p-2.5 rounded-xl border border-slate-200 transition-colors">
-            <span class="block font-extrabold text-blue-600 text-base font-mono" id="badge-cvss-mid">0</span>
-            <span class="text-xs font-semibold text-slate-700">Skor 9.0-9.4</span>
-          </div>
+        <div id="chart-sektor-target" class="space-y-4 pt-1">
+          <div class="text-[#49769F] text-xs py-8 text-center font-sans">Memuat sektor terpapar...</div>
         </div>
       </div>
     </div>
 
-    <!-- Data Tables -->
+    <!-- DATA RANKING TABLES: Kata Kunci & Vendor CVE -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="chart-card bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-        <h4 class="text-base font-bold text-slate-900 mb-4">Kata Kunci Lonjakan Tertinggi</h4>
-        <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-xs">
+      <div class="chart-card bg-white rounded-3xl border border-[#E2EDF8] p-6 sm:p-7 shadow-xs">
+        <div class="mb-4 flex items-center justify-between">
+          <h4 class="text-base font-bold text-[#001D39]">Kata Kunci Lonjakan Tertinggi</h4>
+        </div>
+        <div class="overflow-x-auto rounded-2xl border border-[#E2EDF8] shadow-2xs">
           <table class="w-full text-left border-collapse text-xs">
-            <thead class="bg-slate-50 border-b border-slate-200">
-              <tr class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <thead class="bg-[#EEF4F8] border-b border-[#BDD8E9]">
+              <tr class="text-xs font-bold text-[#001D39] uppercase tracking-wider">
                 <th class="py-3 px-3.5 font-sans">Kata Kunci</th>
                 <th class="py-3 px-3.5 text-center font-sans">Kemunculan (7H)</th>
                 <th class="py-3 px-3.5 text-right font-sans">Growth</th>
               </tr>
             </thead>
-            <tbody id="tabel-kata-kunci-body" class="divide-y divide-slate-100 text-sm text-slate-700 bg-white"></tbody>
+            <tbody id="tabel-kata-kunci-body" class="divide-y divide-[#E2EDF8] text-sm text-slate-700 bg-white"></tbody>
           </table>
         </div>
       </div>
-      <div class="chart-card bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-        <h4 class="text-base font-bold text-slate-900 mb-4">Vendor CVE Prioritas</h4>
-        <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-xs">
+
+      <div class="chart-card bg-white rounded-3xl border border-[#E2EDF8] p-6 sm:p-7 shadow-xs">
+        <div class="mb-4 flex items-center justify-between">
+          <h4 class="text-base font-bold text-[#001D39]">Vendor CVE Prioritas</h4>
+        </div>
+        <div class="overflow-x-auto rounded-2xl border border-[#E2EDF8] shadow-2xs">
           <table class="w-full text-left border-collapse text-xs">
-            <thead class="bg-slate-50 border-b border-slate-200">
-              <tr class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <thead class="bg-[#EEF4F8] border-b border-[#BDD8E9]">
+              <tr class="text-xs font-bold text-[#001D39] uppercase tracking-wider">
                 <th class="py-3 px-3.5 font-sans">Vendor</th>
                 <th class="py-3 px-3.5 text-center font-sans">Total CVE</th>
                 <th class="py-3 px-3.5 font-sans">Produk Terdampak Utama</th>
                 <th class="py-3 px-3.5 text-right font-sans">Growth</th>
               </tr>
             </thead>
-            <tbody id="tabel-vendor-body" class="divide-y divide-slate-100 text-sm text-slate-700 bg-white"></tbody>
+            <tbody id="tabel-vendor-body" class="divide-y divide-[#E2EDF8] text-sm text-slate-700 bg-white"></tbody>
           </table>
         </div>
       </div>
     </div>
+
   </div>
 </div>
+
+<!-- Clean Modern Modal Detail Ancaman (Desain Serupa Ringkasan Berita & CVE) -->
+<div class="fixed inset-0 bg-[#001D39]/70 backdrop-blur-xs z-[100] hidden items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-200 ease-out"
+  id="modal-detail-ancaman-overlay" onclick="window.tutupModalJikaLuarKasus(event)" aria-hidden="true">
+  <div class="bg-white rounded-3xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-7 relative border border-[#BDD8E9] shadow-2xl transform scale-95 opacity-0 translate-y-4 transition-all duration-200 ease-out font-sans"
+    id="modal-detail-ancaman-box" role="dialog" aria-modal="true" aria-labelledby="modal-ancaman-judul">
+    
+    <button class="absolute top-4 right-4 text-[#49769F] hover:text-[#001D39] w-8 h-8 rounded-full hover:bg-[#EEF5FA] flex items-center justify-center transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
+      onclick="window.tutupModalDetailKasus()" title="Tutup dialog (Esc)" aria-label="Tutup dialog">
+      <span class="material-symbols-outlined text-xl" aria-hidden="true">close</span>
+    </button>
+
+    <div class="flex items-center gap-2 mb-2" id="modal-ancaman-meta-header">
+      <span class="text-xs text-[#49769F] font-medium" id="modal-ancaman-sumber"></span>
+    </div>
+
+    <h3 class="text-xl font-bold text-[#001D39] mb-4 leading-snug" id="modal-ancaman-judul"></h3>
+
+    <!-- Section 1: Lanskap & Urgensi Ancaman Wilayah -->
+    <div class="bg-[#EEF5FA] p-5 rounded-2xl border border-[#BDD8E9]/70 mb-3.5">
+      <div class="font-bold text-[#001D39] flex items-center gap-1.5 text-xs mb-1.5 uppercase tracking-wider">
+        <span class="material-symbols-outlined text-[16px] text-[#0A4174]">trending_up</span>
+        <span>Lanskap &amp; Urgensi Ancaman Wilayah</span>
+      </div>
+      <div class="text-slate-700 text-sm leading-relaxed" id="modal-ancaman-urgensi"></div>
+    </div>
+
+    <!-- Section 2: Proyeksi Risiko & Eskalasi Wilayah -->
+    <div class="bg-[#EEF5FA] p-5 rounded-2xl border border-[#BDD8E9]/70 mb-3.5">
+      <div class="font-bold text-[#001D39] flex items-center gap-1.5 text-xs mb-1.5 uppercase tracking-wider">
+        <span class="material-symbols-outlined text-[16px] text-[#4E8EA2]">warning</span>
+        <span>Proyeksi Risiko &amp; Eskalasi Wilayah</span>
+      </div>
+      <div class="text-slate-700 text-sm leading-relaxed" id="modal-ancaman-potensi"></div>
+    </div>
+
+    <!-- Section 3: Contoh Kejadian Relevan (Bukti Empiris) -->
+    <div class="bg-[#EEF5FA] p-5 rounded-2xl border border-[#BDD8E9]/70" id="modal-ancaman-sampel-box">
+      <div class="font-bold text-[#001D39] flex items-center gap-1.5 text-xs mb-2 uppercase tracking-wider">
+        <span class="material-symbols-outlined text-[16px] text-[#0A4174]">feed</span>
+        <span>Contoh Studi Kasus Relevan (Bukti Empiris)</span>
+      </div>
+      <div id="modal-ancaman-sampel-content">
+        <!-- Konten sampel dinamis -->
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="mt-6 pt-4 border-t border-[#E2EDF8] flex items-center justify-between gap-3 flex-wrap">
+      <button type="button" 
+        onclick="window.tutupModalDetailKasus()"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#EEF5FA] hover:bg-[#BDD8E9] text-[#0A4174] text-xs font-semibold border border-[#BDD8E9] transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
+        <span>Tutup</span>
+      </button>
+      <a id="modal-ancaman-link" class="text-[#0A4174] font-semibold text-xs flex items-center gap-1.5 w-fit hover:text-[#001D39] transition-colors hover:underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none" href="#" target="_blank" rel="noopener noreferrer">
+        Buka tautan berita sumber <span class="material-symbols-outlined text-base" aria-hidden="true">open_in_new</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+

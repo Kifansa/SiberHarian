@@ -108,25 +108,25 @@ export function tampilkanToast(pesan, tipe = 'sukses') {
   }
 
   const toast = document.createElement('div');
-  let bg = 'bg-slate-900/95 text-white border border-slate-700/50 shadow-2xl';
+  let bg = 'bg-[#001D39] text-white border border-[#15803d]/70 shadow-xl';
   let icon = 'check_circle';
   let iconColor = 'text-emerald-400';
 
   if (tipe === 'error') {
-    bg = 'bg-rose-950/95 text-white border border-rose-800/60 shadow-2xl';
+    bg = 'bg-[#001D39] text-white border border-[#b91c1c]/70 shadow-xl';
     icon = 'error';
     iconColor = 'text-rose-400';
   } else if (tipe === 'warning') {
-    bg = 'bg-amber-950/95 text-white border border-amber-800/60 shadow-2xl';
+    bg = 'bg-[#001D39] text-white border border-[#b45309]/70 shadow-xl';
     icon = 'warning';
     iconColor = 'text-amber-400';
   } else if (tipe === 'info') {
-    bg = 'bg-blue-950/95 text-white border border-blue-800/60 shadow-2xl';
+    bg = 'bg-[#001D39] text-white border border-[#0A4174] shadow-xl';
     icon = 'info';
-    iconColor = 'text-blue-400';
+    iconColor = 'text-[#7BBDE8]';
   }
 
-  toast.className = `flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold backdrop-blur transition-all duration-300 transform translate-y-3 opacity-0 pointer-events-auto ${bg}`;
+  toast.className = `flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-xs font-semibold shadow-md transition-all duration-300 transform translate-y-3 opacity-0 pointer-events-auto ${bg}`;
   toast.innerHTML = `
     <span class="material-symbols-outlined text-lg ${iconColor}" aria-hidden="true">${icon}</span>
     <span>${escapeHtml(pesan)}</span>

@@ -1,8 +1,8 @@
-import { bukaModal, tutupModal, tutupModalJikaLuar, salinTeksModal } from './modal.js';
-import { tampilkanBeranda, mulaiPipeline, batalkanPipeline, filterBerandaCards } from './beranda.js';
-import { muatTabArsip, muatUlangTabArsip, filterArsipCards } from './arsip.js';
-import { muatTabTren, muatUlangTabTren, eksporLaporanTren } from './tren.js';
-import { debounce } from './utils.js';
+import { bukaModal, tutupModal, tutupModalJikaLuar, salinTeksModal } from './modal.js?v=5.3';
+import { tampilkanBeranda, mulaiPipeline, batalkanPipeline, filterBerandaCards } from './beranda.js?v=5.3';
+import { muatTabArsip, muatUlangTabArsip, filterArsipCards } from './arsip.js?v=5.3';
+import { muatTabTren, muatUlangTabTren, eksporLaporanTren } from './tren.js?v=6.3';
+import { debounce } from './utils.js?v=5.3';
 
 // Expose handlers ke window untuk Alpine.js & atribut onclick
 window.bukaModal = bukaModal;

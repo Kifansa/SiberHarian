@@ -5,11 +5,12 @@ dari LLM) ke riwayat_tren untuk 2 kebutuhan sekaligus - tab Arsip (riwayat
 selesai, BUKAN di dalam pipeline_harian.py atau llm_summarizer.py, supaya
 kedua modul itu tetap fokus di tanggung jawabnya masing-masing.
 """
+import json
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
 
-from src.analytics.trend_analyzer import susun_ringkasan_statistik_tren
+from src.analytics.trend_analyzer import susun_ringkasan_statistik_tren, susun_statistik_dashboard
 from src.analytics.trend_predictor import proses_prediksi_tren
 from src.storage.db import (
     DEFAULT_DB_PATH,
@@ -136,10 +137,17 @@ def proses_arsip_dan_tren(hasil_ringkas: Dict, db_path: Path = DEFAULT_DB_PATH) 
 
     df_riwayat = ambil_riwayat_tren(hari=14, db_path=db_path)
     statistik_tren = susun_ringkasan_statistik_tren(df_riwayat)
-    prediksi_tren = proses_prediksi_tren(statistik_tren)
+    prediksi_tren = proses_prediksi_tren(statistik_tren, df_riwayat=df_riwayat)
+    statistik_dashboard = susun_statistik_dashboard(df_riwayat, statistik_tren=statistik_tren)
 
+    kasus_wilayah_ai_json = json.dumps(prediksi_tren.get("kasus_wilayah_ai", {}), ensure_ascii=False)
+    statistik_json = json.dumps(statistik_dashboard, ensure_ascii=False)
     simpan_prediksi_tren(
-        prediksi_tren["prediksi_berita"], prediksi_tren["prediksi_cve"], db_path
+        prediksi_tren["prediksi_berita"],
+        prediksi_tren["prediksi_cve"],
+        db_path,
+        kasus_wilayah_ai=kasus_wilayah_ai_json,
+        statistik_json=statistik_json,
     )
     simpan_metadata(
         "waktu_terakhir_scraping", datetime.now().strftime("%Y-%m-%d %H:%M:%S"), db_path

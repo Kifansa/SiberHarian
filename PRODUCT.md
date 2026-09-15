@@ -21,18 +21,18 @@ Intelijen keamanan siber lokal dan mandiri tanpa dependensi cloud pihak ketiga: 
 
 ## Operating Context
 
-- **Rutinitas Pemantauan Harian**: Pipeline otomatis dijalankan setiap hari untuk mengambil berita siber terbaru, mengunduh data CVE HIGH/CRITICAL dari NVD NIST, melakukan klasifikasi relevansi, deduplikasi, dan peringkasan berbasis AI lokal.
-- **Lingkungan Kerja**: Tim keamanan memantau dashboard web (tab Beranda, Tren, Arsip) melalui browser desktop, serta menerima alert notifikasi harian melalui Bot Telegram.
-- **Tindakan Lanjut Operasional**: Analis membaca rekomendasi mitigasi teknis dan jangka panjang, memeriksa korelasi vendor yang terdampak, lalu melakukan hardening atau koordinasi patching pada infrastruktur website OPD di Jawa Timur.
+- **Rutinitas Pemantauan & Analisis**: Pipeline dijalankan secara berkala untuk mengagregasi data berita dan CVE 7 hari terkini, membandingkannya dengan 7 hari baseline sebelumnya, serta menghasilkan analisis ancaman mingguan yang berorientasi tindakan proteksi website.
+- **Lingkungan Kerja**: Tim keamanan memantau dashboard web (tab Beranda, Arsip, dan Tren Analisis Mingguan) melalui browser desktop, serta mengekspor Laporan PDF Resmi Mingguan untuk briefing pimpinan dan tim teknis.
+- **Tindakan Lanjut Operasional**: Analis membaca rekomendasi mitigasi taktis, matriks tindakan ancaman mingguan, audit kerentanan aset web/CMS, serta checklist proteksi berkala guna mencegah serangan ke website instansi pemerintah.
 
 ## Capabilities and Constraints
 
-- **Agregasi Multi-Sumber**: Mengambil berita keamanan siber dari berbagai RSS/feed media nasional & internasional, serta API NVD NIST untuk CVE skor 9.0–10.0.
-- **LLM Lokal On-Premise**: Inferensi AI menggunakan Ollama (model Qwen2.5-Coder / Qwen2.5:7b) untuk memastikan privasi data dan kedaulatan informasi tanpa ketergantungan API cloud eksternal.
-- **Analitik & Deteksi Tren 14 Hari**: Menghitung lonjakan kata kunci ancaman (growth %) dan sebaran vendor CVE terdampak, membandingkan 7 hari terkini vs 7 hari baseline.
-- **Prediksi Intelijen & Mitigasi**: LLM memetakan TTPs penyerang, sektor terpapar, korelasi ancaman, serta rekomendasi mitigasi bertingkat (Prioritas teknis & Tindak lanjut jangka panjang).
-- **Arsip & Pencarian Riwayat**: Penyimpanan SQLite terstruktur (`data/state.db`) dengan kemampuan filter tanggal 14 hari ke belakang, filter kategori (Insiden Spesifik vs Edukasi/Evergreen), dan pencarian instan.
-- **Distribusi Notifikasi**: Pengiriman otomatis format intelijen ringkas ke kanal Telegram dan visualisasi interaktif di dashboard Web Flask.
+- **Agregasi Multi-Sumber**: Mengambil berita keamanan siber dari berbagai RSS/feed media nasional & internasional, serta API publik NVD NIST (tanpa dependensi NVD API Key).
+- **LLM Lokal On-Premise**: Inferensi AI menggunakan Ollama (model Qwen2.5-Coder / Qwen2.5:7b / Llama) untuk memastikan privasi data dan kedaulatan informasi tanpa ketergantungan API cloud eksternal.
+- **Analisis Intelijen Mingguan (Rolling 7 Hari vs 7 Hari Baseline)**: Memetakan lonjakan ancaman, pergeseran postur risiko, vektor serangan TTPs, serta kerentanan software web server & CMS.
+- **Matriks Tindakan & Mitigasi Proteksi Website**: Rekomendasi mitigasi bertingkat, matriks aksi mingguan (Ransomware, Defacement, Exploit, Phishing), dan checklist verifikasi keamanan interaktif bagi pengelola web.
+- **Arsip & Pencarian Riwayat**: Penyimpanan SQLite terstruktur (`data/state.db`) dengan kemampuan filter tanggal, filter kategori, dan pencarian instan.
+- **Distribusi Laporan**: Ekspor dokumen resmi PDF Laporan Intelijen Ancaman Siber Mingguan (Executive Advisory) siap cetak langsung dari dashboard web.
 
 ## Brand Commitments
 

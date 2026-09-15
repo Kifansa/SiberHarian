@@ -15,20 +15,32 @@
       theme: {
         extend: {
           colors: {
-            "enterprise-bg": "#f8fafc",
+            "enterprise-bg": "#EEF4F8",
             "enterprise-surface": "#ffffff",
             "enterprise-card": "#ffffff",
-            "enterprise-border": "#e2e8f0",
-            "enterprise-border-light": "#cbd5e1",
-            "primary": "#2563eb",
-            "primary-hover": "#1d4ed8",
-            "primary-light": "#3b82f6",
-            "google-blue": "#2563eb",
-            "google-red": "#dc2626",
-            "google-yellow": "#d97706",
-            "google-green": "#059669",
+            "enterprise-border": "#E2EDF8",
+            "enterprise-border-light": "#EEF4F8",
+            "enterprise-subtle": "#EEF5FA",
+            // Reference 7 Colors
+            "ref-navy": "#001D39",
+            "ref-sapphire": "#0A4174",
+            "ref-slate": "#49769F",
+            "ref-teal": "#4E8EA2",
+            "ref-seafoam": "#6EA2B3",
+            "ref-sky": "#7BBDE8",
+            "ref-ice": "#BDD8E9",
+            // Semantic Aliases
+            "primary": "#0A4174",
+            "primary-hover": "#001D39",
+            "primary-light": "#EEF5FA",
+            "accent-sky": "#7BBDE8",
+            "accent-teal": "#4E8EA2",
+            "warm-blue": "#0A4174",
+            "warm-brick": "#b91c1c",
+            "warm-amber": "#b45309",
+            "warm-forest": "#15803d",
           },
-          borderRadius: { "DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.25rem", "full": "9999px" },
+          borderRadius: { "DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.25rem", "3xl": "1.5rem", "full": "9999px" },
           spacing: { "gutter": "24px", "container-max": "1240px", "xl": "36px" },
           fontFamily: {
             "sans": ["Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
@@ -41,22 +53,22 @@
   <style>
     [x-cloak] { display: none !important; }
     .site-header {
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid #e2e8f0;
+      background: #ffffff;
+      border-bottom: 1px solid rgba(189, 216, 233, 0.6);
     }
     .card-enterprise {
-      transition: all 0.2s ease-in-out;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 25px -5px rgba(0, 29, 57, 0.05), 0 8px 10px -6px rgba(0, 29, 57, 0.02);
     }
     .card-enterprise:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 16px 32px -6px rgba(0, 29, 57, 0.08), 0 8px 12px -4px rgba(0, 29, 57, 0.03);
     }
     .tab-nav-active {
-      background-color: #ffffff;
-      color: #1e293b;
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
-      font-weight: 600;
+      background-color: #7BBDE8 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 12px rgba(123, 189, 232, 0.35) !important;
+      font-weight: 700 !important;
     }
     #btn-cancel { display: none; }
     #btn-cancel.visible { display: inline-flex; }
@@ -82,9 +94,7 @@
       width: 100vw !important;
       height: 100vh !important;
       z-index: 999999 !important;
-      background: rgba(15, 23, 42, 0.55) !important;
-      backdrop-filter: blur(8px) !important;
-      -webkit-backdrop-filter: blur(8px) !important;
+      background: #001D39 !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -98,9 +108,9 @@
     }
     #page-loader-modal {
       background: #ffffff !important;
-      border: 1px solid #e2e8f0 !important;
-      border-radius: 24px !important;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3) !important;
+      border: 1px solid #BDD8E9 !important;
+      border-radius: 28px !important;
+      box-shadow: 0 25px 50px -12px rgba(0, 29, 57, 0.25) !important;
       padding: 32px 28px !important;
       width: 100% !important;
       max-width: 320px !important;
@@ -118,47 +128,46 @@
   </style>
   <noscript><style>#page-loader-overlay{display:none!important}#app-wrapper{opacity:1!important}</style></noscript>
 </head>
-<body class="text-sm antialiased pb-20 md:pb-6 bg-[#f8fafc] text-slate-700" x-data="{ tabAktif: 'beranda', terminalTerbuka: true }">
+<body class="text-sm antialiased pb-20 md:pb-6 bg-[#EEF4F8] text-[#001D39] font-sans" x-data="{ tabAktif: 'beranda', terminalTerbuka: true }">
 
   <!-- Modal Popup Loader (Tampil di Tengah Sebelum Halaman Utama Muncul) -->
-  <div id="page-loader-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:999999;background:rgba(15,23,42,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px;">
-    <div id="page-loader-modal" role="dialog" aria-modal="true" aria-label="Memuat sistem intelijen siber..." style="background:#ffffff;border:1px solid #e2e8f0;border-radius:24px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);padding:32px 28px;width:100%;max-width:320px;display:flex;flex-direction:column;align-items:center;text-align:center;">
+  <div id="page-loader-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:999999;background:#001D39;display:flex;align-items:center;justify-content:center;padding:16px;">
+    <div id="page-loader-modal" role="dialog" aria-modal="true" aria-label="Memuat sistem intelijen siber..." style="background:#ffffff;border:1px solid #BDD8E9;border-radius:28px;box-shadow:0 25px 50px -12px rgba(0,29,57,0.25);padding:32px 28px;width:100%;max-width:320px;display:flex;flex-direction:column;align-items:center;text-align:center;">
       
       <!-- Brand Logo Badge -->
       <div style="margin-bottom:18px;position:relative;">
-        <div style="width:52px;height:52px;border-radius:16px;background:#ffffff;border:1px solid #e2e8f0;padding:8px;box-shadow:0 2px 6px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;">
+        <div style="width:56px;height:56px;border-radius:20px;background:#EEF5FA;border:1px solid #BDD8E9;padding:10px;box-shadow:0 4px 12px rgba(0,29,57,0.06);display:flex;align-items:center;justify-content:center;">
           <img src="/static/img/Logo.png" alt="Logo SiberHarian" style="width:100%;height:100%;object-fit:contain;" />
         </div>
-        <div class="animate-pulse" style="position:absolute;inset:-4px;border-radius:20px;background:rgba(37,99,235,0.15);filter:blur(6px);z-index:-1;"></div>
       </div>
 
       <!-- Circular Progress Ring (Lingkaran Berputar & Presentase) -->
       <div style="position:relative;width:112px;height:112px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
         <!-- Outer rotating dashed radar ring -->
-        <svg class="animate-spin" style="position:absolute;inset:0;width:100%;height:100%;animation:spin 4s linear infinite;color:#93c5fd;" viewBox="0 0 100 100">
+        <svg class="animate-spin" style="position:absolute;inset:0;width:100%;height:100%;animation:spin 4s linear infinite;color:#BDD8E9;" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="5 7" />
         </svg>
 
         <!-- Main Progress SVG (circumference 238.76 for r=38) -->
         <svg style="width:100%;height:100%;transform:rotate(-90deg);" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="38" fill="none" stroke="#e2e8f0" stroke-width="5" />
-          <circle id="preloader-circle" cx="50" cy="50" r="38" fill="none" stroke="#2563eb" stroke-width="5" stroke-linecap="round"
+          <circle cx="50" cy="50" r="38" fill="none" stroke="#E2EDF8" stroke-width="5" />
+          <circle id="preloader-circle" cx="50" cy="50" r="38" fill="none" stroke="#7BBDE8" stroke-width="5" stroke-linecap="round"
             stroke-dasharray="238.76" stroke-dashoffset="238.76" style="transition:stroke-dashoffset 0.18s ease-out, stroke 0.3s ease;" />
         </svg>
 
         <!-- Center Counter Content -->
         <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <span id="preloader-percent" style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:800;color:#0f172a;letter-spacing:-0.025em;">0%</span>
+          <span id="preloader-percent" style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:800;color:#001D39;letter-spacing:-0.025em;">0%</span>
         </div>
       </div>
 
       <!-- Brand Info & Dynamic Status -->
       <div>
         <div style="display:flex;align-items:center;justify-content:center;margin-bottom:4px;">
-          <span style="font-family:Inter,sans-serif;font-weight:700;font-size:15px;color:#0f172a;">SiberHarian</span>
+          <span style="font-family:Inter,sans-serif;font-weight:800;font-size:16px;color:#001D39;letter-spacing:-0.02em;">SiberHarian</span>
         </div>
-        <p style="font-family:Inter,sans-serif;font-size:12px;color:#64748b;margin:0;display:flex;align-items:center;justify-content:center;gap:6px;">
-          <span class="animate-pulse" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#2563eb;"></span>
+        <p style="font-family:Inter,sans-serif;font-size:12px;color:#49769F;margin:0;display:flex;align-items:center;justify-content:center;gap:6px;">
+          <span class="animate-pulse" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#4E8EA2;"></span>
           <span id="preloader-status-desc">Memuat data intelijen siber...</span>
         </p>
       </div>
@@ -185,7 +194,7 @@
           var offset = circumference - (circumference * currentPercent) / 100;
           circle.style.strokeDashoffset = offset;
           if (currentPercent >= 100) {
-            circle.style.stroke = '#059669';
+            circle.style.stroke = '#15803d';
           }
         }
         if (statusDesc) {
@@ -253,40 +262,40 @@
   <header class="w-full sticky top-0 z-50 site-header">
     <div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto">
       <div class="flex items-center gap-3">
-        <img src="/static/img/Logo.png" alt="Logo SiberHarian" class="w-9 h-9 object-contain rounded-xl" />
+        <img src="/static/img/Logo.png" alt="Logo SiberHarian" class="w-9 h-9 object-contain rounded-2xl" />
         <div>
-          <span class="font-bold text-base text-slate-900 tracking-tight block leading-tight">SiberHarian</span>
+          <span class="font-black text-base text-[#001D39] tracking-tight block leading-tight">SiberHarian</span>
         </div>
       </div>
       
-      <!-- Desktop Navigation Tabs -->
-      <nav class="hidden md:flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200" role="tablist" aria-label="Navigasi Utama">
+      <!-- Desktop Navigation Tabs (Pill Buttons ala Reference) -->
+      <nav class="hidden md:flex items-center bg-[#EEF4F8] p-1 rounded-full border border-[#BDD8E9]/80 gap-1" role="tablist" aria-label="Navigasi Utama">
         <a href="#beranda" @click.prevent="tabAktif = 'beranda'" role="tab" :aria-selected="tabAktif === 'beranda'"
-          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-          :class="tabAktif === 'beranda' ? 'tab-nav-active' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'">
-          <span class="material-symbols-outlined text-lg" aria-hidden="true">dashboard</span> <span>Dashboard</span>
+          class="px-5 py-2 rounded-full font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
+          :class="tabAktif === 'beranda' ? 'tab-nav-active' : 'text-[#49769F] hover:text-[#001D39] hover:bg-white/60'">
+          <span class="material-symbols-outlined text-base" aria-hidden="true">dashboard</span> <span>Dashboard</span>
         </a>
         <a href="#arsip" @click.prevent="tabAktif = 'arsip'; muatTabArsip()" role="tab" :aria-selected="tabAktif === 'arsip'"
-          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-          :class="tabAktif === 'arsip' ? 'tab-nav-active' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'">
-          <span class="material-symbols-outlined text-lg" aria-hidden="true">inventory_2</span> <span>Arsip</span>
+          class="px-5 py-2 rounded-full font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
+          :class="tabAktif === 'arsip' ? 'tab-nav-active' : 'text-[#49769F] hover:text-[#001D39] hover:bg-white/60'">
+          <span class="material-symbols-outlined text-base" aria-hidden="true">inventory_2</span> <span>Arsip</span>
         </a>
         <a href="#tren" @click.prevent="tabAktif = 'tren'; muatTabTren()" role="tab" :aria-selected="tabAktif === 'tren'"
-          class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-          :class="tabAktif === 'tren' ? 'tab-nav-active' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'">
-          <span class="material-symbols-outlined text-lg" aria-hidden="true">insights</span> <span>Tren</span>
+          class="px-5 py-2 rounded-full font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
+          :class="tabAktif === 'tren' ? 'tab-nav-active' : 'text-[#49769F] hover:text-[#001D39] hover:bg-white/60'">
+          <span class="material-symbols-outlined text-base" aria-hidden="true">insights</span> <span>Tren</span>
         </a>
       </nav>
 
       <!-- Global Search -->
       <div class="flex items-center gap-3">
         <div class="relative flex items-center">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none" aria-hidden="true">search</span>
+          <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#49769F] text-lg pointer-events-none" aria-hidden="true">search</span>
           <input id="global-search-input"
-            class="pl-9 pr-12 py-2 rounded-xl bg-slate-100 border border-slate-200 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 outline-none text-xs w-44 sm:w-56 focus:w-64 transition-all duration-200 placeholder:text-slate-400 text-slate-800 shadow-xs"
+            class="pl-10 pr-12 py-2 rounded-full bg-[#EEF4F8] border border-[#BDD8E9] focus:border-[#7BBDE8] focus:bg-white focus:ring-2 focus:ring-[#7BBDE8]/30 outline-none text-xs w-44 sm:w-56 focus:w-64 transition-all duration-200 placeholder:text-[#49769F] text-[#001D39] shadow-2xs"
             placeholder="Cari insiden atau CVE..." type="text" aria-label="Cari insiden atau CVE" />
-          <kbd class="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-block font-mono text-[11px] text-slate-500 bg-slate-200/80 px-1.5 py-0.5 rounded border border-slate-300 pointer-events-none">/</kbd>
-          <button id="global-search-clear" style="display:none;" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-slate-200 hover:bg-slate-300 items-center justify-center text-slate-600 text-xs cursor-pointer focus-visible:outline-none" title="Bersihkan pencarian" aria-label="Bersihkan pencarian">
+          <kbd class="absolute right-3.5 top-1/2 -translate-y-1/2 hidden sm:inline-block font-mono text-[10px] text-[#49769F] bg-white px-1.5 py-0.5 rounded-full border border-[#BDD8E9] pointer-events-none">/</kbd>
+          <button id="global-search-clear" style="display:none;" class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[#BDD8E9] hover:bg-[#A8CEE5] items-center justify-center text-[#001D39] text-xs cursor-pointer focus-visible:outline-none" title="Bersihkan pencarian" aria-label="Bersihkan pencarian">
             <span class="material-symbols-outlined text-xs" aria-hidden="true">close</span>
           </button>
         </div>
@@ -295,22 +304,22 @@
   </header>
 
   <!-- Mobile Bottom Navigation -->
-  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-2 flex justify-around items-center shadow-lg" role="tablist" aria-label="Navigasi Mobile">
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#BDD8E9]/80 px-4 py-2 flex justify-around items-center shadow-md" role="tablist" aria-label="Navigasi Mobile">
     <button @click="tabAktif = 'beranda'" role="tab" :aria-selected="tabAktif === 'beranda'"
-      class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all cursor-pointer"
-      :class="tabAktif === 'beranda' ? 'text-blue-600 font-bold' : 'text-slate-500 font-medium'">
+      class="flex flex-col items-center gap-1 py-1 px-3 rounded-2xl transition-all cursor-pointer"
+      :class="tabAktif === 'beranda' ? 'text-[#0A4174] font-bold' : 'text-[#49769F] font-medium'">
       <span class="material-symbols-outlined text-xl" aria-hidden="true">dashboard</span>
       <span class="text-xs">Dashboard</span>
     </button>
     <button @click="tabAktif = 'arsip'; muatTabArsip()" role="tab" :aria-selected="tabAktif === 'arsip'"
-      class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all cursor-pointer"
-      :class="tabAktif === 'arsip' ? 'text-blue-600 font-bold' : 'text-slate-500 font-medium'">
+      class="flex flex-col items-center gap-1 py-1 px-3 rounded-2xl transition-all cursor-pointer"
+      :class="tabAktif === 'arsip' ? 'text-[#0A4174] font-bold' : 'text-[#49769F] font-medium'">
       <span class="material-symbols-outlined text-xl" aria-hidden="true">inventory_2</span>
       <span class="text-xs">Arsip</span>
     </button>
     <button @click="tabAktif = 'tren'; muatTabTren()" role="tab" :aria-selected="tabAktif === 'tren'"
-      class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all cursor-pointer"
-      :class="tabAktif === 'tren' ? 'text-blue-600 font-bold' : 'text-slate-500 font-medium'">
+      class="flex flex-col items-center gap-1 py-1 px-3 rounded-2xl transition-all cursor-pointer"
+      :class="tabAktif === 'tren' ? 'text-[#0A4174] font-bold' : 'text-[#49769F] font-medium'">
       <span class="material-symbols-outlined text-xl" aria-hidden="true">insights</span>
       <span class="text-xs">Tren</span>
     </button>
@@ -325,10 +334,10 @@
       <!-- Executive Hero & Terminal Section -->
       <section class="pt-4 pb-8 text-center">
         <div class="relative mb-6">
-          <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-3 max-w-3xl mx-auto leading-[1.15]">
+          <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#001D39] tracking-tight mb-3 max-w-3xl mx-auto leading-[1.15]">
             Pemantauan Keamanan Siber
           </h1>
-          <p class="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+          <p class="text-[#49769F] text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
             Platform Cyber Threat Intelligence &amp; Vulnerability Analytics On-Premise Diskominfo Provinsi Jawa Timur.
           </p>
         </div>
@@ -336,39 +345,39 @@
         <div class="flex flex-col items-center gap-5">
           <div class="flex items-center justify-center gap-3 flex-wrap">
             <button
-              class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all duration-200 active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+              class="bg-[#0A4174] hover:bg-[#001D39] text-white px-7 py-2.5 rounded-full text-sm font-bold shadow-md shadow-[#0A4174]/20 transition-all duration-200 active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
               id="btn-run" onclick="mulaiPipeline()" aria-label="Jalankan pipeline pengumpulan intelijen">
               <span class="material-symbols-outlined text-xl" id="run-icon" aria-hidden="true">play_arrow</span>
               <span id="btn-run-text">Jalankan Pipeline</span>
             </button>
             <button
-              class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl font-semibold text-xs shadow-sm transition-all active:scale-95 items-center gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none"
+              class="bg-[#b91c1c] hover:bg-[#991b1b] text-white px-5 py-2.5 rounded-full font-bold text-xs shadow-sm transition-all active:scale-95 items-center gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#b91c1c] focus-visible:outline-none"
               id="btn-cancel" onclick="batalkanPipeline()" aria-label="Batalkan eksekusi pipeline">
               <span class="material-symbols-outlined text-base" aria-hidden="true">stop_circle</span>
               Batalkan
             </button>
             <button @click="terminalTerbuka = !terminalTerbuka"
-              class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer shadow-xs focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+              class="bg-white hover:bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9] px-5 py-2.5 rounded-full text-xs font-semibold transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer shadow-2xs focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
               :title="terminalTerbuka ? 'Sembunyikan konsol log' : 'Tampilkan konsol log'">
               <span class="material-symbols-outlined text-base" aria-hidden="true">terminal</span>
               <span x-text="terminalTerbuka ? 'Tutup Monitor' : 'Buka Monitor'">Tutup Monitor</span>
             </button>
           </div>
 
-          <!-- Log Console (High-Contrast Dark Terminal) -->
+          <!-- Log Console (Deep Midnight Navy Terminal) -->
           <div x-show="terminalTerbuka" x-collapse
-            class="w-full max-w-3xl bg-slate-900 rounded-2xl p-5 text-left border border-slate-800 overflow-hidden relative transition-all duration-300 shadow-lg">
-            <div class="flex items-center justify-between gap-2 mb-3 border-b border-slate-800 pb-2.5">
+            class="w-full max-w-3xl bg-[#001D39] rounded-3xl p-5 text-left border border-[#0A4174] overflow-hidden relative transition-all duration-300 shadow-xl">
+            <div class="flex items-center justify-between gap-2 mb-3 border-b border-[#0A4174]/60 pb-2.5">
               <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
-                <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
-                <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
-                <span class="ml-2 font-mono text-xs text-slate-200 font-medium tracking-wide">Terminal</span>
+                <div class="w-3 h-3 rounded-full bg-[#b91c1c]/90"></div>
+                <div class="w-3 h-3 rounded-full bg-[#b45309]/90"></div>
+                <div class="w-3 h-3 rounded-full bg-[#4E8EA2]/90"></div>
+                <span class="ml-2 font-mono text-xs text-[#BDD8E9] font-semibold tracking-wide">Terminal</span>
               </div>
-              <span class="font-mono text-xs text-slate-400 font-medium" id="console-status">— standby —</span>
+              <span class="font-mono text-xs text-[#7BBDE8] font-medium" id="console-status">[standby]</span>
             </div>
-            <div class="font-mono text-xs text-slate-300 h-36 overflow-y-auto space-y-1.5 leading-relaxed" id="console-body">
-              <div class="flex gap-2 text-slate-500">
+            <div class="font-mono text-xs text-[#BDD8E9] h-36 overflow-y-auto space-y-1.5 leading-relaxed" id="console-body">
+              <div class="flex gap-2 text-[#49769F]">
                 <span>[SYSTEM] Menunggu instruksi pipeline dimulai...</span>
               </div>
             </div>
@@ -394,27 +403,27 @@
     </section>
   </main>
 
-  <!-- Clean Enterprise Light Modal Dialog -->
-  <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[100] hidden items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-200 ease-out"
+  <!-- Clean Modern Modal Dialog -->
+  <div class="fixed inset-0 bg-[#001D39]/70 backdrop-blur-xs z-[100] hidden items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-200 ease-out"
     id="modal-overlay" onclick="tutupModalJikaLuar(event)" aria-hidden="true">
-    <div class="bg-white rounded-2xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-7 relative border border-slate-200 shadow-2xl transform scale-95 opacity-0 translate-y-4 transition-all duration-200 ease-out"
+    <div class="bg-white rounded-3xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-7 relative border border-[#BDD8E9] shadow-2xl transform scale-95 opacity-0 translate-y-4 transition-all duration-200 ease-out"
       id="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-judul">
-      <button class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+      <button class="absolute top-4 right-4 text-[#49769F] hover:text-[#001D39] w-8 h-8 rounded-full hover:bg-[#EEF5FA] flex items-center justify-center transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
         onclick="tutupModal()" title="Tutup dialog (Esc)" aria-label="Tutup dialog">
         <span class="material-symbols-outlined text-xl" aria-hidden="true">close</span>
       </button>
       <div class="flex items-center gap-2 mb-3">
-        <span class="px-2.5 py-0.5 rounded-lg text-xs font-semibold" id="modal-pill"></span>
-        <span class="text-xs text-slate-500 font-medium" id="modal-sumber"></span>
+        <span class="px-3 py-0.5 rounded-full text-xs font-semibold" id="modal-pill"></span>
+        <span class="text-xs text-[#49769F] font-medium" id="modal-sumber"></span>
       </div>
-      <h3 class="text-xl font-bold text-slate-900 mb-3 leading-snug" id="modal-judul"></h3>
-      <div class="text-slate-700 text-sm leading-relaxed whitespace-pre-line bg-slate-50 p-5 rounded-xl border border-slate-200 font-sans" id="modal-teks"></div>
-      <div class="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between gap-3 flex-wrap">
-        <button id="modal-btn-copy" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none">
+      <h3 class="text-xl font-bold text-[#001D39] mb-3 leading-snug" id="modal-judul"></h3>
+      <div class="text-slate-700 text-sm leading-relaxed whitespace-pre-line bg-[#EEF5FA] p-5 rounded-2xl border border-[#BDD8E9]/70 font-sans" id="modal-teks"></div>
+      <div class="mt-6 pt-4 border-t border-[#E2EDF8] flex items-center justify-between gap-3 flex-wrap">
+        <button id="modal-btn-copy" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#EEF5FA] hover:bg-[#BDD8E9] text-[#0A4174] text-xs font-semibold border border-[#BDD8E9] transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
           <span class="material-symbols-outlined text-base" aria-hidden="true">content_copy</span>
           <span>Salin Rangkuman</span>
         </button>
-        <a class="text-blue-600 font-semibold text-xs flex items-center gap-1.5 w-fit hover:text-blue-700 transition-colors hover:underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none" id="modal-link" href="#" target="_blank" rel="noopener noreferrer">
+        <a class="text-[#0A4174] font-semibold text-xs flex items-center gap-1.5 w-fit hover:text-[#001D39] transition-colors hover:underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none" id="modal-link" href="#" target="_blank" rel="noopener noreferrer">
           Buka tautan sumber <span class="material-symbols-outlined text-base" aria-hidden="true">open_in_new</span>
         </a>
       </div>
@@ -424,6 +433,6 @@
   </div>
   <!-- /app-wrapper -->
 
-  <script type="module" src="/static/js/main.js?v=3.2"></script>
+  <script type="module" src="/static/js/main.js?v=6.3"></script>
 </body>
 </html>

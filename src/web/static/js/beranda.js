@@ -21,14 +21,14 @@ let dataBerandaTersimpan = { berita: [], cve: [] };
 function setLiveFeedStatus(aktif) {
     if (!liveFeedPulse || !liveFeedBadge) return;
     if (aktif) {
-        liveFeedPulse.classList.add('animate-pulse', 'bg-blue-600');
-        liveFeedPulse.classList.remove('bg-emerald-500');
-        liveFeedBadge.className = 'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-700 shadow-xs';
+        liveFeedPulse.classList.add('animate-pulse', 'bg-[#0A4174]');
+        liveFeedPulse.classList.remove('bg-[#15803d]');
+        liveFeedBadge.className = 'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EEF5FA] border border-[#BDD8E9] text-xs font-semibold text-[#0A4174] shadow-xs';
         liveFeedBadge.querySelector('.badge-label').textContent = 'Pipeline Intelijen Sedang Berjalan';
     } else {
-        liveFeedPulse.classList.remove('animate-pulse', 'bg-blue-600');
-        liveFeedPulse.classList.add('bg-emerald-500');
-        liveFeedBadge.className = 'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-700 shadow-xs';
+        liveFeedPulse.classList.remove('animate-pulse', 'bg-[#0A4174]');
+        liveFeedPulse.classList.add('bg-[#15803d]');
+        liveFeedBadge.className = 'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EEF5FA] border border-[#BDD8E9] text-xs font-semibold text-[#15803d] shadow-xs';
         liveFeedBadge.querySelector('.badge-label').textContent = 'Pemantauan Intelijen Ancaman Siber Aktif';
     }
 }
@@ -40,7 +40,7 @@ function tambahBarisLog(item) {
     const warnaTeks = item.level === 'ERROR' ? 'text-red-400' : item.level === 'WARNING' ? 'text-amber-400' : 'text-slate-300';
     const baris = document.createElement('div');
     baris.className = `flex gap-2 opacity-0 translate-y-1 transition-all duration-300 log-line level-${item.level || 'INFO'}`;
-    baris.innerHTML = `<span class="text-slate-500 font-mono">[${waktu}]</span><span class="${warnaTeks} font-mono">${escapeHtml(item.message)}</span>`;
+    baris.innerHTML = `<span class="text-[#49769F] font-mono">[${waktu}]</span><span class="${warnaTeks} font-mono">${escapeHtml(item.message)}</span>`;
     
     // Cek apakah posisi scroll saat ini berada di dekat dasar (jarak <= 45px)
     const isNearBottom = (consoleBody.scrollHeight - consoleBody.scrollTop - consoleBody.clientHeight) <= 45;
@@ -69,12 +69,12 @@ export async function tampilkanBeranda() {
         if (resultsDesc) resultsDesc.textContent = 'Gagal memuat data intelijen';
         emptyState.style.display = 'none';
         cardContainer.innerHTML = `
-            <div class="text-center py-12 bg-red-50 rounded-2xl border border-red-200 p-6 shadow-xs my-4">
+            <div class="text-center py-12 bg-red-50 rounded-3xl border border-red-200/80 p-6 shadow-xs my-4">
                 <span class="material-symbols-outlined text-3xl text-red-600 mb-2" aria-hidden="true">cloud_off</span>
-                <h3 class="text-base font-bold text-slate-900 mb-1">Gagal Menghubungi Server CTI</h3>
-                <p class="text-xs text-slate-600 mb-4 max-w-md mx-auto">Tidak dapat memuat ringkasan insiden terbaru (${escapeHtml(data.message || 'Koneksi terputus')}). Pastikan server backend aktif.</p>
-                <button onclick="window.tampilkanBeranda()" class="px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-xl border border-slate-200 transition-all cursor-pointer inline-flex items-center gap-1.5 shadow-xs focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none">
-                    <span class="material-symbols-outlined text-base" aria-hidden="true">refresh</span> Coba Muat Ulang
+                <h3 class="text-base font-bold text-[#001D39] mb-1">Gagal Menghubungi Server CTI</h3>
+                <p class="text-xs text-[#49769F] mb-4 max-w-md mx-auto">Tidak dapat memuat ringkasan insiden terbaru (${escapeHtml(data.message || 'Koneksi terputus')}). Pastikan server backend aktif.</p>
+                <button onclick="window.tampilkanBeranda()" class="px-5 py-2.5 bg-white hover:bg-[#EEF5FA] text-[#0A4174] hover:text-[#001D39] font-bold text-xs rounded-full border border-[#BDD8E9] shadow-2xs transition-all duration-200 cursor-pointer inline-flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
+                    <span class="material-symbols-outlined text-base text-[#49769F]" aria-hidden="true">refresh</span> Coba Muat Ulang
                 </button>
             </div>`;
         setLiveFeedStatus(false);
@@ -117,11 +117,11 @@ export async function tampilkanBeranda() {
     emptyState.style.display = 'none';
     let html = '';
     html += buatSection('Insiden Spesifik', insiden.map(buatCardBerita).join(''), insiden.length,
-        { ikon: 'local_fire_department', kelas: 'bg-red-600 text-white' });
+        { ikon: 'local_fire_department', kelas: 'bg-[#b91c1c] text-white' });
     html += buatSection('Edukasi / Evergreen', analisis.map(buatCardBerita).join(''), analisis.length,
-        { ikon: 'school', kelas: 'bg-blue-600 text-white' });
+        { ikon: 'school', kelas: 'bg-[#0A4174] text-white' });
     html += buatSection('CVE Critical', cve.map(buatCardCve).join(''), cve.length,
-        { ikon: 'bug_report', kelas: 'bg-amber-500 text-white' });
+        { ikon: 'bug_report', kelas: 'bg-[#b45309] text-white' });
     cardContainer.innerHTML = html;
     setLiveFeedStatus(false);
 }
@@ -154,11 +154,11 @@ export function filterBerandaCards(query) {
         if (!searchEmptyNotice) {
             searchEmptyNotice = document.createElement('div');
             searchEmptyNotice.id = 'search-empty-notice';
-            searchEmptyNotice.className = 'text-center py-12 bg-white rounded-2xl border border-slate-200 p-6 shadow-xs';
+            searchEmptyNotice.className = 'text-center py-12 bg-white rounded-3xl border border-[#E2EDF8] p-6 shadow-xs';
             searchEmptyNotice.innerHTML = `
-                <span class="material-symbols-outlined text-3xl text-slate-400 mb-2" aria-hidden="true">search_off</span>
-                <h4 class="text-base font-bold text-slate-900 mb-1">Tidak ada hasil pencarian</h4>
-                <p class="text-xs text-slate-500">Tidak ada artikel atau CVE yang cocok dengan kata kunci "<strong>${escapeHtml(q)}</strong>".</p>
+                <span class="material-symbols-outlined text-3xl text-[#49769F] mb-2" aria-hidden="true">search_off</span>
+                <h4 class="text-base font-bold text-[#001D39] mb-1">Tidak ada hasil pencarian</h4>
+                <p class="text-xs text-[#49769F]">Tidak ada artikel atau CVE yang cocok dengan kata kunci "<strong>${escapeHtml(q)}</strong>".</p>
             `;
             cardContainer.appendChild(searchEmptyNotice);
         } else {
@@ -175,7 +175,7 @@ export async function mulaiPipeline() {
     btnRunText.textContent = 'Sedang berjalan…';
     runIcon.textContent = 'autorenew';
     btnCancel.classList.add('visible');
-    consoleStatus.textContent = '— pipeline berjalan —';
+    consoleStatus.textContent = '[pipeline berjalan]';
     cardContainer.innerHTML = '';
     emptyState.style.display = 'none';
     consoleBody.innerHTML = '';
@@ -189,7 +189,7 @@ export async function mulaiPipeline() {
     } else if (data.status === 'error') {
         tambahBarisLog({ level: 'ERROR', message: `Gagal memulai pipeline: ${data.message || 'Server error'}` });
         resetTombol();
-        consoleStatus.textContent = '— error —';
+        consoleStatus.textContent = '[error]';
         return;
     }
 
@@ -201,7 +201,7 @@ export async function mulaiPipeline() {
                 sumberAktif.close();
                 sumberAktif = null;
                 resetTombol();
-                consoleStatus.textContent = item.sukses ? '— selesai —' : '— gagal, cek log di atas —';
+                consoleStatus.textContent = item.sukses ? '[selesai]' : '[gagal, cek log di atas]';
                 if (item.sukses) {
                     await tampilkanBeranda();
                     window.dispatchEvent(new CustomEvent('pipeline-selesai'));
@@ -214,7 +214,7 @@ export async function mulaiPipeline() {
                 sumberAktif = null;
             }
             resetTombol();
-            consoleStatus.textContent = '— koneksi terputus —';
+            consoleStatus.textContent = '[koneksi terputus]';
             tambahBarisLog({ level: 'WARNING', message: 'Koneksi log stream ke server terputus.' });
         }
     );
@@ -231,6 +231,6 @@ export async function batalkanPipeline() {
         sumberAktif.close();
         sumberAktif = null;
     }
-    consoleStatus.textContent = '— dibatalkan —';
+    consoleStatus.textContent = '[dibatalkan]';
     resetTombol();
 }
