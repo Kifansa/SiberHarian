@@ -4,57 +4,66 @@
 
 ## Platform
 
-web
+Web (Fitur Terintegrasi pada Portal Resmi CSIRT Provinsi Jawa Timur: `https://csirt.jatimprov.go.id/`)
 
 ## Users
 
-- **Analis Keamanan Siber & Tim CSIRT Diskominfo Jawa Timur**: Tim teknis yang bertugas memantau insiden siber harian, menganalisis kerentanan, dan mengambil tindakan mitigasi/pencegahan dini untuk melindungi website dan infrastruktur digital pemerintah provinsi Jawa Timur.
-- **Pengelola & Tim Keamanan Informasi**: Tim yang membutuhkan rangkuman eksekutif, evaluasi postur ancaman siber mingguan, serta bukti kepatuhan keamanan.
+1. **Admin Tim CTI & Analis Keamanan CSIRT Diskominfo Jawa Timur (Internal)**:
+   - Tim teknis operasional Security Operations Center (SOC) yang bertugas memantau insiden siber harian, mengeksekusi pipeline pengumpulan data & LLM summarization, mengaudit kerentanan CVE kritis, menganalisis lonjakan tren ancaman mingguan berbasis kerangka MITRE ATT&CK, serta mengekspor Laporan Intelijen Ancaman Siber Mingguan Resmi (PDF) untuk briefing pimpinan.
+2. **Pengunjung Portal CSIRT Jatim & Publik Umum (Eksternal)**:
+   - Masyarakat umum, pengelola website Organisasi Perangkat Daerah (OPD)/BUMD Jawa Timur, praktisi IT, dan akademisi yang membutuhkan akses transparan terhadap berita insiden siber terkini, arsip kerentanan, serta **Statistik Berita & CVE Publik** berbasis data fakta nyata untuk meningkatkan literasi dan kewaspadaan keamanan digital (*cyber awareness*).
 
 ## Product Purpose
 
-SiberHarian adalah platform intelijen ancaman siber (Cyber Threat Intelligence) terpadu yang memantau, mengagregasi, meringkas, dan menganalisis tren berita insiden siber (nasional & internasional) serta data kerentanan CVE kritis secara otomatis setiap hari. Tujuannya adalah memberikan pemahaman situasional cepat dan rekomendasi mitigasi preventif bagi tim Diskominfo Jawa Timur sebelum ancaman mengeksploitasi aset lokal.
+SiberHarian adalah modul intelijen ancaman siber (*Cyber Threat Intelligence*) dan portal edukasi keamanan terpadu yang diintegrasikan ke dalam ekosistem portal resmi CSIRT Provinsi Jawa Timur. Platform ini menjalankan fungsi ganda:
+1. Memberikan instrumen CTI operasional dan analisis prediktif berbasis AI lokal bagi Tim CSIRT Diskominfo Jatim guna memitigasi serangan sebelum mengeksploitasi aset pemerintah daerah.
+2. Menyajikan pusat informasi dan statistik fakta siber yang ramah publik guna mengedukasi masyarakat mengenai tren penipuan digital (phishing, malware, kebocoran data) dan celah software populer yang perlu diwaspadai.
 
 ## Positioning
 
-Intelijen keamanan siber lokal dan mandiri tanpa dependensi cloud pihak ketiga: mengombinasikan agregasi berita siber harian + NVD CVE NIST dengan inferensi LLM lokal (Ollama / Qwen) secara on-premise, dilengkapi analitik lonjakan 7 hari, arsip interaktif, dan prediksi ancaman bertingkat yang kontekstual terhadap proteksi website instansi pemerintah.
+Solusi intelijen dan edukasi keamanan siber mandiri berbasis *Local-First Sovereign Intelligence*: mengombinasikan agregasi berita siber harian (nasional & global) serta API NVD NIST 2.0 dengan inferensi AI on-premise (Ollama). Menyediakan dua lapis pengalaman pengguna: *Operational CTI Cockpit* untuk analis internal dan *Public Cyber Radar* berbasis data empiris murni untuk masyarakat luas.
 
 ## Operating Context
 
-- **Rutinitas Pemantauan & Analisis**: Pipeline dijalankan secara berkala untuk mengagregasi data berita dan CVE 7 hari terkini, membandingkannya dengan 7 hari baseline sebelumnya, serta menghasilkan analisis ancaman mingguan yang berorientasi tindakan proteksi website.
-- **Lingkungan Kerja**: Tim keamanan memantau dashboard web (tab Beranda, Arsip, dan Tren Analisis Mingguan) melalui browser desktop, serta mengekspor Laporan PDF Resmi Mingguan untuk briefing pimpinan dan tim teknis.
-- **Tindakan Lanjut Operasional**: Analis membaca rekomendasi mitigasi taktis, matriks tindakan ancaman mingguan, audit kerentanan aset web/CMS, serta checklist proteksi berkala guna mencegah serangan ke website instansi pemerintah.
+- **Mode Publik (2 Tab Saja)**: Pengunjung portal mengakses tab **Beranda & Statistik** (gabungan wawasan KPI berbasis fakta, Word Cloud interaktif kasus insiden spesifik, grafik fakta siber, intisari artikel edukasi asli dari database, serta feed berita & CVE hari terakhir) dan tab **Arsip** (penelusuran riwayat dan filter tanggal). Pengalaman publik bersih dari tombol operasional backend maupun konsol teknis.
+- **Mode Admin Tim CTI**: Analis mengakses tab **Beranda Admin** (dilengkapi konsol terminal real-time SSE untuk menjalankan atau membatalkan pipeline scraping & summarization), tab **Arsip**, dan tab **Tren Siber CTI** (analisis lonjakan rolling 7 hari vs baseline, klastering insiden wilayah Jatim vs Nasional vs Global, pemetaan TTPs MITRE ATT&CK, matriks mitigasi web, dan ekspor Laporan PDF Resmi).
 
 ## Capabilities and Constraints
 
-- **Agregasi Multi-Sumber**: Mengambil berita keamanan siber dari berbagai RSS/feed media nasional & internasional, serta API publik NVD NIST (tanpa dependensi NVD API Key).
-- **LLM Lokal On-Premise**: Inferensi AI menggunakan Ollama (model Qwen2.5-Coder / Qwen2.5:7b / Llama) untuk memastikan privasi data dan kedaulatan informasi tanpa ketergantungan API cloud eksternal.
-- **Analisis Intelijen Mingguan (Rolling 7 Hari vs 7 Hari Baseline)**: Memetakan lonjakan ancaman, pergeseran postur risiko, vektor serangan TTPs, serta kerentanan software web server & CMS.
-- **Matriks Tindakan & Mitigasi Proteksi Website**: Rekomendasi mitigasi bertingkat, matriks aksi mingguan (Ransomware, Defacement, Exploit, Phishing), dan checklist verifikasi keamanan interaktif bagi pengelola web.
-- **Arsip & Pencarian Riwayat**: Penyimpanan SQLite terstruktur (`data/state.db`) dengan kemampuan filter tanggal, filter kategori, dan pencarian instan.
-- **Distribusi Laporan**: Ekspor dokumen resmi PDF Laporan Intelijen Ancaman Siber Mingguan (Executive Advisory) siap cetak langsung dari dashboard web.
+- **Agregasi Multi-Sumber**: Memantau feed berita siber internasional (BleepingComputer, The Hacker News, Dark Reading, CISA, dll.), media nasional Indonesia (Google News RSS), dan API NVD NIST 2.0 tanpa dependensi API key berbayar.
+- **LLM Lokal On-Premise (Data Sovereignty)**: Menggunakan Ollama (model Qwen2.5 / Llama 3.2) yang berjalan lokal di server tanpa transmisi data sensitif ke cloud eksternal.
+- **Arsitektur Pemrosesan CTI Modular (SIMP)**: Menggunakan *Sequential Isolated Micro-Prompts* (SIMP) yang mengeksekusi analisis bagian demi bagian secara terisolasi (< 450 token per inferensi), menjamin kestabilan LLM tanpa bottleneck memori dan bebas ketergantungan format JSON rapuh.
+- **Taksonomi Sektor IIV & MITRE ATT&CK**: Standardisasi 10 sektor target berdasarkan **Perpres No. 82 Tahun 2022 tentang Infrastruktur Informasi Vital (IIV)** serta 12 taktik **MITRE ATT&CK Enterprise Matrix** untuk analisis vektor serangan yang akurat.
+- **Guardrail Semantic Role Separation**: Memisahkan peran entitas secara ketat sehingga vendor/peneliti keamanan (Zimperium, Mandiant, Kaspersky, BSSN, Google Security) tidak pernah keliru dilabeli sebagai aktor penyerang.
+- **Ensiklopedia Standar Keamanan Siber Komprehensif**: Mengintegrasikan 12 kerangka kerja global dan nasional (165 entitas standar) meliputi MITRE ATT&CK, MITRE D3FEND, NIST CSF 2.0, OWASP Top 10, CWE, BSSN CSIRT Framework, CIS Controls, Indeks KAMI BSSN, CISA CPG, ISO/IEC 27001, CSA CCM, dan CSIRT Framework Indonesia.
+- **Statistik Publik Berbasis Fakta Nyata**: Visualisasi interaktif (Chart.js) murni bersumber dari database empiris (frekuensi kata kunci ancaman, skor CVSS, vendor terdampak, timeline harian) tanpa kesimpulan spekulatif AI.
+- **Analisis Strategis CTI Internal**: Agen CTI multi-dimensi dengan RAG ensiklopedia siber untuk membedah pola serangan dan menyusun rekomendasi mitigasi bertingkat.
+- **Penyimpanan Terpusat SQLite (`data/state.db`)**: Tracking riwayat konten terkirim (anti-duplikasi), metadata artikel & CVE, serta cache statistik instan (< 5 ms).
+- **Ekspor Dokumen PDF Resmi**: Generator laporan berkas intelijen mingguan siap cetak langsung dari browser.
 
 ## Brand Commitments
 
-- **Nama**: SiberHarian (NOTIFIKASI-BERITA)
-- **Identitas Visual**: Bersih, presisi, bernuansa intelijen profesional (palet biru Google `#2563eb`, latar slate terang `#f8fafc`, kartu putih bersih dengan batas halus, serta kode warna tingkat risiko terstandar).
-- **Gaya Bahasa**: Bahasa Indonesia profesional Cyber Threat Intelligence, lugas, padat, obyektif, dan berorientasi tindakan mitigasi.
+- **Identitas Terintegrasi**: SiberHarian - Fitur Berita & Kerentanan CSIRT Provinsi Jawa Timur.
+- **Identitas Visual**: Tema *Sapphire Oceanic Edition* berwibawa khas kepemerintahan Diskominfo Jatim (Midnight Navy `#001D39`, Dark Sapphire `#0A4174`, Slate Blue `#49769F`, Ocean Teal `#4E8EA2`, Sky Blue `#7BBDE8`, Ice Blue `#BDD8E9`, dan kanvas sejuk `#EEF4F8`).
+- **Gaya Bahasa**:
+  - *Mode Publik*: Bahasa Indonesia yang komunikatif, lugas, mudah dipahami warga non-teknis, tanpa jargon membingungkan, dan berorientasi pada pencegahan praktis.
+  - *Mode Admin CTI*: Bahasa Indonesia teknis CTI profesional, presisi, padat, berdasar bukti empiris, dan berorientasi tindakan mitigasi terukur.
 
 ## Evidence on Hand
 
-- Database SQLite aktif di `data/state.db` menyimpan riwayat artikel berita, skor keparahan, CVE, kata kunci tren, dan ringkasan harian.
-- Log pemrosesan harian di direktori `logs/`.
-- File dataset perbandingan kualitas ringkasan dan klasifikasi relevansi di direktori `data/`.
-- Frontend dashboard web aktif di `src/web/` dengan template Flask Jinja2, Tailwind CSS, Alpine.js, dan Chart.js.
+- Database SQLite aktif di `data/state.db` dengan 900+ riwayat artikel dan CVE riil.
+- Endpoint backend FastAPI di `src/web/app.py` yang melayani API data harian, arsip, SSE streaming, dan agregat statistik.
+- Desain antarmuka responsif di `src/web/templates/` dan komponen modular di `src/web/static/js/`.
 
 ## Product Principles
 
-1. **Aksi Preventif di Atas Reaktif**: Seluruh analisis dan prediksi difokuskan untuk memberikan langkah mitigasi sebelum ancaman mengeksploitasi website atau sistem instansi.
-2. **Kedaulatan & Keamanan Data (Local First)**: Pemrosesan AI dan penyimpanan data berjalan lokal di server tanpa kebocoran data intelijen ke layanan eksternal.
-3. **Fakta & Data Akurat**: Narasi analisis dan rekomendasi hanya bertumpu pada data kejadian nyata dan statistik terverifikasi tanpa halusinasi atau asumsi berlebihan.
-4. **Cepat & Terstruktur**: Informasi disajikan dalam hirarki visual yang jelas, ringkas, dan mudah dipahami dalam hitungan detik oleh analis maupun pimpinan.
+1. **Integritas Fakta di Atas Spekulasi**: Statistik untuk publik disajikan 100% dari data empiris tanpa fabrikasi atau generalisasi berlebih.
+2. **Kedaulatan & Keamanan Data (Local First)**: Pemrosesan AI dan penyimpanan informasi berjalan sepenuhnya di infrastruktur lokal Diskominfo Jawa Timur.
+3. **Pemisahan Peran yang Tegas**: Akses operasional teknis (terminal scraping, eksekusi pipeline) terisolasi untuk Tim CTI, sementara publik mendapatkan pengalaman membaca yang nyaman dan mendidik.
+4. **Desain Berorientasi Aksi**: Baik analis maupun masyarakat umum mendapatkan nilai nyata: analis memperoleh rekomendasi mitigasi teknis, sementara masyarakat mendapatkan pemahaman risiko dan tips proteksi diri di ruang digital.
 
 ## Accessibility & Inclusion
 
-- Dukungan kontras teks tinggi dan tipografi jelas (Inter & JetBrains Mono) untuk kenyamanan pemantauan jangka panjang di Security Operations Center (SOC).
-- Desain responsif ramah layar lebar (desktop/monitor SOC) maupun tablet dan smartphone.
+- Rasio kontras teks tinggi (> 7:1 untuk teks utama) memenuhi standar WCAG AA.
+- Tipografi terstandar: `Inter` untuk seluruh teks narasi dan `JetBrains Mono` khusus untuk data teknis (kode CVE ID, persentase, skor CVSS).
+- Dukungan responsif penuh untuk monitor desktop SOC, tablet inspeksi, dan smartphone masyarakat umum.

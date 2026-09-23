@@ -1,0 +1,32 @@
+[
+  {
+    "id": "CISA-KEV",
+    "standard": "CISA Known Exploited Vulnerabilities (KEV) Catalog",
+    "keywords": ["cve", "zero-day", "eksploitasi aktif", "unpatched", "cisa kev", "kerentanan dieksploitasi", "in the wild"],
+    "mitigation": "Segera terapkan patch perbaikan resmi maksimal dalam tenggat waktu 14 hari kerja untuk seluruh CVE yang tercatat dalam katalog CISA KEV karena terbukti aktif diserang peretas."
+  },
+  {
+    "id": "CISA-CPG-AC",
+    "standard": "CISA Cross-Sector Cybersecurity Performance Goals (Account Security)",
+    "keywords": ["mfa tahan phishing", "fido2", "default password", "password spraying", "autentikasi kuat"],
+    "mitigation": "Hapuskan seluruh kata sandi bawaan pabrik (default credentials) dan wajibkan Phishing-Resistant Multi-Factor Authentication (FIDO2/WebAuthn) untuk seluruh akses sistem publik."
+  },
+  {
+    "id": "CISA-CPG-IR",
+    "standard": "CISA Cybersecurity Performance Goals (Incident Reporting)",
+    "keywords": ["notifikasi insiden cisa", "laporan darurat", "uji insiden", "tabletop drill"],
+    "mitigation": "Tetapkan rencana penanganan insiden siber yang diuji coba minimal setahun sekali dan mekanisme pelaporan eskalasi cepat maksimal 24 jam setelah indikasi intrusi terkonfirmasi."
+  },
+  {
+    "id": "CISA-CPG-DR",
+    "standard": "CISA StopRansomware Guidance (Data Recovery)",
+    "keywords": ["ransomware", "cadangan tidak bisa diubah", "immutable backup", "air gapped", "pemulihan darurat"],
+    "mitigation": "Simpan salinan cadangan data yang tidak dapat dimodifikasi atau dihapus (Immutable Storage) dan terpisah secara logis/fisik dari jaringan aktif untuk mencegah sabotase ransomware."
+  },
+  {
+    "id": "CISA-CPG-SC",
+    "standard": "CISA CPGs (Supply Chain Security)",
+    "keywords": ["sbom", "software bill of materials", "komponen pihak ketiga", "supply chain", "dependensi perangkat lunak"],
+    "mitigation": "Wajibkan penyediaan Software Bill of Materials (SBOM) dari vendor aplikasi untuk memantau keberadaan library bersumber terbuka yang memiliki kerentanan kritis."
+  }
+]

@@ -15,13 +15,13 @@ export function tampilAiTab(tab) {
   if (tab === 'berita') {
     boxBerita.classList.remove('hidden');
     boxCve.classList.add('hidden');
-    btnBerita.className = 'px-5 py-1.5 rounded-full text-xs font-bold transition-all bg-[#7BBDE8] text-white shadow-2xs cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none';
-    btnCve.className = 'px-5 py-1.5 rounded-full text-xs font-semibold transition-all text-[#49769F] hover:text-[#001D39] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none';
+    btnBerita.className = 'px-4 py-1.5 rounded-md text-xs font-bold transition-all bg-[#7BBDE8] text-white shadow-2xs cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none';
+    btnCve.className = 'px-4 py-1.5 rounded-md text-xs font-semibold transition-all text-[#49769F] hover:text-[#001D39] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none';
   } else {
     boxBerita.classList.add('hidden');
     boxCve.classList.remove('hidden');
-    btnCve.className = 'px-5 py-1.5 rounded-full text-xs font-bold transition-all bg-[#7BBDE8] text-white shadow-2xs cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none';
-    btnBerita.className = 'px-5 py-1.5 rounded-full text-xs font-semibold transition-all text-[#49769F] hover:text-[#001D39] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none';
+    btnCve.className = 'px-4 py-1.5 rounded-md text-xs font-bold transition-all bg-[#7BBDE8] text-white shadow-2xs cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none';
+    btnBerita.className = 'px-4 py-1.5 rounded-md text-xs font-semibold transition-all text-[#49769F] hover:text-[#001D39] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none';
   }
 }
 
@@ -42,8 +42,17 @@ export function isMainSectionHeader(line) {
   // Abaikan bullet points (*, -, •, +)
   if (/^[\*\-•\+]\s+/.test(trimmed)) return { isHeader: false, cleanTitle: '' };
 
-  // Abaikan baris key-value inline yang memiliki konten setelah titik dua
-  if (/:\s+\S+/.test(trimmed) && !trimmed.startsWith('**') && !trimmed.startsWith('#')) {
+  // Dukung diawali dengan #, atau format nomor tebal (**1. JUDUL**), atau nomor urut (1. JUDUL)
+  const isHashHeader = trimmed.startsWith('#');
+  const isNumberedBoldHeader = /^\*\*\s*\d+[\.\)]\s+/i.test(trimmed);
+  const isNumberedHeader = /^\d+[\.\)]\s+[A-Z]/i.test(trimmed);
+
+  if (!isHashHeader && !isNumberedBoldHeader && !isNumberedHeader) {
+    return { isHeader: false, cleanTitle: '' };
+  }
+
+  // Abaikan baris key-value inline yang memiliki konten setelah titik dua (kecuali untuk header bernomor)
+  if (/:\s+\S+/.test(trimmed) && !isNumberedBoldHeader && !isNumberedHeader) {
     return { isHeader: false, cleanTitle: '' };
   }
 
@@ -67,6 +76,8 @@ export function isMainSectionHeader(line) {
 
   // Kata kunci penanda 5 section berita dan 4 section CVE
   const mainKeywords = [
+    // Berita 0: Tren Insiden
+    'TREN INSIDEN MINGGUAN', 'MAKRO',
     // Berita 1: Lanskap
     'LANSKAP', 'POLA ANCAMAN',
     // Berita 2: Vektor Serangan & Sektor Terpapar
@@ -77,6 +88,8 @@ export function isMainSectionHeader(line) {
     'HUBUNGAN KERENTANAN', 'KERENTANAN & ANCAMAN', 'KORELASI KERENTANAN', 'HUBUNGAN ANCAMAN', 'HUBUNGAN', 'KORELASI',
     // Berita 5: Rekomendasi Mitigasi
     'REKOMENDASI MITIGASI', 'MITIGASI BERTINGKAT', 'MATRIKS MITIGASI', 'REKOMENDASI ANTISIPASI', 'REKOMENDASI AKSI', 'REKOMENDASI',
+    // Berita 6: Prediksi & Ancaman Masa Depan
+    'PREDIKSI', 'ANCAMAN MASA DEPAN', 'EMERGING THREATS',
     // CVE 1: Vendor & Produk Prioritas
     'VENDOR & PRODUK', 'PRODUK PRIORITAS', 'VENDOR PRIORITAS', 'VENDOR',
     // CVE 2: Analisis Vektor Eksploitasi
@@ -102,58 +115,53 @@ export function isMainSectionHeader(line) {
  * @param {string} title 
  * @param {number} index 
  * @param {number} totalSections 
- * @returns {{ number: string, numClass: string, cardBorder: string, badgePrioritas: string | null }}
+ * @returns {{ number: string, numClass: string, cardBorder: string }}
  */
 export function getSectionMeta(title, index = 0, totalSections = 5) {
   const t = title.toLowerCase();
 
-  // Berita Section 1: LANSKAP & POLA ANCAMAN
-  if (t.includes('lanskap') || t.includes('pola')) {
+  // Berita Section 1: TREN INSIDEN
+  if (t.includes('tren insiden') || t.includes('makro')) {
     return {
       number: '1',
-      numClass: 'bg-[#E0F2FE] text-[#0369A1]',
-      cardBorder: 'border-[#E2EDF8]',
-      badgePrioritas: null
+      numClass: 'bg-[#FDF2F8] text-[#BE185D]', // Pink theme
+      cardBorder: 'border-[#FBCFE8]'
     };
   }
 
-  // Berita Section 2: VEKTOR SERANGAN & SEKTOR
-  if (t.includes('vektor') || t.includes('sektor') || t.includes('ttp')) {
+  // Berita Section 2: LANSKAP
+  if (t.includes('lanskap') || t.includes('pola') || t.includes('mikro')) {
     return {
       number: '2',
-      numClass: 'bg-[#EEF2FF] text-[#4338CA]',
-      cardBorder: 'border-[#E2EDF8]',
-      badgePrioritas: null
+      numClass: 'bg-[#E0F2FE] text-[#0369A1]', // Blue theme
+      cardBorder: 'border-[#E2EDF8]'
     };
   }
 
-  // Berita Section 3: IMPLIKASI PERSANDIAN & KRIPTOGRAFI
-  if (t.includes('persandian') || (t.includes('implikasi') && t.includes('kripto') && !t.includes('integritas'))) {
+  // Berita Section 3: VEKTOR SERANGAN
+  if (t.includes('vektor') || t.includes('sektor') || t.includes('ttp')) {
     return {
       number: '3',
-      numClass: 'bg-[#EEF5FA] text-[#0A4174]',
-      cardBorder: 'border-[#BDD8E9]',
-      badgePrioritas: '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF5FA] text-[#0A4174] uppercase tracking-wider shrink-0 border border-[#BDD8E9]">PERSANDIAN</span>'
+      numClass: 'bg-[#EEF2FF] text-[#4338CA]', // Indigo theme
+      cardBorder: 'border-[#E2EDF8]'
     };
   }
 
-  // Berita Section 4: KORELASI KERENTANAN CVE
-  if (t.includes('korelasi') || t.includes('hubungan') || t.includes('kerentanan')) {
-    return {
-      number: '4',
-      numClass: 'bg-[#FFE4E6] text-[#BE123C]',
-      cardBorder: 'border-[#E2EDF8]',
-      badgePrioritas: null
-    };
-  }
-
-  // Berita Section 5 / CVE Section Terakhir: REKOMENDASI AKSI
+  // Berita Section 4: REKOMENDASI AKSI
   if (t.includes('rekomendasi') || t.includes('mitigasi') || t.includes('aksi')) {
     return {
-      number: String(totalSections || 5),
-      numClass: 'bg-[#059669] text-white',
-      cardBorder: 'border-emerald-300',
-      badgePrioritas: '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FEE2E2] text-[#991B1B] uppercase tracking-wider shrink-0">PRIORITAS 1</span>'
+      number: '4',
+      numClass: 'bg-[#FFE4E6] text-[#BE123C]', // Rose theme
+      cardBorder: 'border-[#E2EDF8]'
+    };
+  }
+
+  // Berita Section 5 / CVE Section Terakhir: PREDIKSI & ANCAMAN BARU
+  if (t.includes('prediksi') || t.includes('masa depan') || t.includes('emerging')) {
+    return {
+      number: '5',
+      numClass: 'bg-[#059669] text-white', // Emerald theme
+      cardBorder: 'border-emerald-300'
     };
   }
 
@@ -162,8 +170,7 @@ export function getSectionMeta(title, index = 0, totalSections = 5) {
     return {
       number: '1',
       numClass: 'bg-[#E0F2FE] text-[#0369A1]',
-      cardBorder: 'border-[#E2EDF8]',
-      badgePrioritas: null
+      cardBorder: 'border-[#E2EDF8]'
     };
   }
 
@@ -172,8 +179,7 @@ export function getSectionMeta(title, index = 0, totalSections = 5) {
     return {
       number: '2',
       numClass: 'bg-[#EEF2FF] text-[#4338CA]',
-      cardBorder: 'border-[#E2EDF8]',
-      badgePrioritas: null
+      cardBorder: 'border-[#E2EDF8]'
     };
   }
 
@@ -182,8 +188,7 @@ export function getSectionMeta(title, index = 0, totalSections = 5) {
     return {
       number: '3',
       numClass: 'bg-[#EEF5FA] text-[#0A4174]',
-      cardBorder: 'border-[#BDD8E9]',
-      badgePrioritas: '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF5FA] text-[#0A4174] uppercase tracking-wider shrink-0 border border-[#BDD8E9]">KRIPTOGRAFI</span>'
+      cardBorder: 'border-[#BDD8E9]'
     };
   }
 
@@ -192,8 +197,7 @@ export function getSectionMeta(title, index = 0, totalSections = 5) {
     return {
       number: String(totalSections || 4),
       numClass: 'bg-[#059669] text-white',
-      cardBorder: 'border-emerald-300',
-      badgePrioritas: '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FEE2E2] text-[#991B1B] uppercase tracking-wider shrink-0">PRIORITAS 1</span>'
+      cardBorder: 'border-emerald-300'
     };
   }
 
@@ -202,8 +206,7 @@ export function getSectionMeta(title, index = 0, totalSections = 5) {
   return {
     number: String(index + 1),
     numClass: isLast ? 'bg-[#059669] text-white' : 'bg-[#EEF5FA] text-[#0A4174]',
-    cardBorder: isLast ? 'border-emerald-300' : 'border-[#E2EDF8]',
-    badgePrioritas: isLast ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FEE2E2] text-[#991B1B] uppercase tracking-wider shrink-0">PRIORITAS 1</span>' : null
+    cardBorder: isLast ? 'border-emerald-300' : 'border-[#E2EDF8]'
   };
 }
 
@@ -269,7 +272,7 @@ export function renderLaporanCards(container, rawText, defaultType = 'berita') {
       if (trimmed.includes('|') && trimmed.startsWith('|')) {
         if (inList) { html += '</ul>'; inList = false; }
         if (!inTable) {
-          html += '<div class="overflow-x-auto my-3 rounded-2xl border border-[#E2EDF8]"><table class="w-full text-xs text-left border-collapse"><tbody class="divide-y divide-[#E2EDF8]">';
+          html += '<div class="overflow-x-auto my-3 rounded-lg border border-[#E2EDF8]"><table class="w-full text-xs text-left border-collapse"><tbody class="divide-y divide-[#E2EDF8]">';
           inTable = true;
         }
         if (/^\|[\s\-:|]+\|$/.test(trimmed)) continue;
@@ -286,18 +289,7 @@ export function renderLaporanCards(container, rawText, defaultType = 'berita') {
         const parts = trimmed.replace(/^[\*\-\•\s]+/, '').split(':');
         const badgeText = parts[0].replace(/\*\*(.*?)\*\*/g, '$1').trim();
         const bodyText = parts.slice(1).join(':').trim();
-        html += `<div class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#0A4174] text-white shadow-2xs mt-4 mb-2 w-fit"><span class="material-symbols-outlined text-[14px]">shield</span> ${badgeText}</div>`;
-        if (bodyText) {
-            html += `<p class="text-slate-700 text-sm leading-relaxed mb-2">${bodyText.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-[#001D39]">$1</strong>')}</p>`;
-        }
-        continue;
-      }
-      if (/^[\-\*\•]?\s*\*?prioritas(?:\s*1|\b)/i.test(trimmed)) {
-        if (inList) { html += '</ul>'; inList = false; }
-        const parts = trimmed.replace(/^[\*\-\•\s]+/, '').split(':');
-        const badgeText = parts[0].replace(/\*\*(.*?)\*\*/g, '$1').trim();
-        const bodyText = parts.slice(1).join(':').trim();
-        html += `<div class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#b91c1c] text-white shadow-2xs mt-3 mb-2 w-fit"><span class="material-symbols-outlined text-[14px]">local_fire_department</span> ${badgeText}</div>`;
+        html += `<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#0A4174] text-white shadow-2xs mt-4 mb-2 w-fit"><span class="material-symbols-outlined text-[14px]">shield</span> ${badgeText}</div>`;
         if (bodyText) {
             html += `<p class="text-slate-700 text-sm leading-relaxed mb-2">${bodyText.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-[#001D39]">$1</strong>')}</p>`;
         }
@@ -308,7 +300,7 @@ export function renderLaporanCards(container, rawText, defaultType = 'berita') {
         const parts = trimmed.replace(/^[\*\-\•\s]+/, '').split(':');
         const badgeText = parts[0].replace(/\*\*(.*?)\*\*/g, '$1').trim();
         const bodyText = parts.slice(1).join(':').trim();
-        html += `<div class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#4E8EA2] text-white shadow-2xs mt-4 mb-2 w-fit"><span class="material-symbols-outlined text-[14px]">tune</span> ${badgeText}</div>`;
+        html += `<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#4E8EA2] text-white shadow-2xs mt-4 mb-2 w-fit"><span class="material-symbols-outlined text-[14px]">tune</span> ${badgeText}</div>`;
         if (bodyText) {
             html += `<p class="text-slate-700 text-sm leading-relaxed mb-2">${bodyText.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-[#001D39]">$1</strong>')}</p>`;
         }
@@ -344,19 +336,16 @@ export function renderLaporanCards(container, rawText, defaultType = 'berita') {
   const cardsHtml = sections.map((sec, idx) => {
     const meta = getSectionMeta(sec.title, idx, sections.length);
     const bodyHtml = formatBodyHtml(sec.lines);
-    // Jika jumlah card ganjil (misal 5 card), jadikan card terakhir membentang 2 kolom penuh
-    const isFullWidth = (sections.length % 2 === 1 && idx === sections.length - 1);
-    const spanClass = isFullWidth ? 'lg:col-span-2' : '';
+    // Jika section ganjil dan ini elemen terakhir, buat span penuh agar rapi
+    const isOddLast = (sections.length % 2 !== 0 && idx === sections.length - 1);
+    const spanClass = isOddLast ? 'col-span-full' : '';
 
     return `
-      <div class="bg-white ${meta.cardBorder} rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between transition-all ${spanClass}">
+      <div class="bg-white ${meta.cardBorder} rounded-lg p-5 sm:p-6 shadow-xs flex flex-col justify-between transition-all ${spanClass}">
         <div>
-          <div class="flex items-center justify-between gap-2 mb-3.5">
-            <div class="flex items-center gap-2.5">
-              <span class="w-7 h-7 rounded-lg ${meta.numClass} flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs font-mono">${meta.number}</span>
-              <h4 class="text-xs sm:text-sm font-bold text-[#001D39] tracking-tight uppercase">${escapeHtml(sec.title)}</h4>
-            </div>
-            ${meta.badgePrioritas ? meta.badgePrioritas : ''}
+          <div class="flex items-center gap-2.5 mb-3.5">
+            <span class="w-7 h-7 rounded-md ${meta.numClass} flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs font-mono">${meta.number}</span>
+            <h4 class="text-xs sm:text-sm font-bold text-[#001D39] tracking-tight uppercase">${escapeHtml(sec.title)}</h4>
           </div>
           <div class="space-y-1">
             ${bodyHtml}

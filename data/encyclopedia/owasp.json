@@ -1,0 +1,98 @@
+[
+  {
+    "id": "A01:2021",
+    "category": "Broken Access Control",
+    "keywords": ["bocornya basis data", "akses ilegal", "rdp terbuka", "akses tidak sah", "bypass otorisasi", "bola", "bola api", "idors", "horizontal privilege"],
+    "mitigation": "Terapkan prinsip Least Privilege, audit ACL endpoint API, dan nonaktifkan akses port manajemen (RDP/SSH/SMB) secara langsung dari internet publik."
+  },
+  {
+    "id": "A02:2021",
+    "category": "Cryptographic Failures",
+    "keywords": ["enkripsi lemah", "plaintext password", "md5", "sha1", "data tidak dienkripsi", "sertifikat kedaluwarsa", "kriptografi"],
+    "mitigation": "Gunakan algoritma enkripsi standar industri modern (AES-GCM 256-bit, SHA-256/SHA-3, Argon2id untuk hash kata sandi), dan matikan cipher suite usang."
+  },
+  {
+    "id": "A03:2021",
+    "category": "Injection",
+    "keywords": ["sql injection", "sqli", "xss", "injeksi database", "command injection", "rce", "injeksi perintah", "payload berbahaya"],
+    "mitigation": "Wajibkan Parameterized Queries (Prepared Statements), sanitasi input karakter khusus, dan terapkan Content Security Policy (CSP) ketat."
+  },
+  {
+    "id": "A04:2021",
+    "category": "Insecure Design",
+    "keywords": ["arsitektur lemah", "alur bisnis tidak aman", "desain tanpa keamanan", "threat modeling", "tidak ada rate limiting"],
+    "mitigation": "Terapkan Threat Modeling sejak tahap awal perancangan aplikasi (Secure by Design) dan validasi alur logika bisnis secara ketat."
+  },
+  {
+    "id": "A05:2021",
+    "category": "Security Misconfiguration",
+    "keywords": ["deface", "defacement", "judi online", "slot gacor", "webshell", "misconfiguration", "konfigurasi salah", "situs diretas", "debug mode", "default password"],
+    "mitigation": "Kunci izin tulis (chmod/write permission) pada direktori upload aplikasi web, matikan eksekusi script PHP di folder media publik, dan ganti kredensial default CMS."
+  },
+  {
+    "id": "A06:2021",
+    "category": "Vulnerable and Outdated Components",
+    "keywords": ["komponen usang", "library lawas", "unpatched cve", "versi php usang", "wordpress out of date", "plugin rentan"],
+    "mitigation": "Lakukan Software Composition Analysis (SCA) secara berkala, audit dependensi pustaka pihak ketiga, dan perbarui komponen perangkat lunak yang telah usang."
+  },
+  {
+    "id": "A07:2021",
+    "category": "Identification and Authentication Failures",
+    "keywords": ["brute force", "credential stuffing", "session hijacking", "cookie", "token", "password lemah", "bypass autentikasi", "tanpa mfa"],
+    "mitigation": "Terapkan rate limiting ketat pada endpoint login, kunci akun setelah kegagalan berulang, serta enkripsi atribut cookie dengan flag HttpOnly, Secure, dan SameSite=Strict."
+  },
+  {
+    "id": "A08:2021",
+    "category": "Software and Data Integrity Failures",
+    "keywords": ["deserialisasi", "untrusted deserialization", "tampering", "integritas data", "ci/cd pipeline hacked", "pembaruan palsu"],
+    "mitigation": "Terapkan verifikasi tanda tangan digital pada seluruh artefak perangkat lunak, hindari deserialisasi objek dari sumber yang tidak tepercaya."
+  },
+  {
+    "id": "A09:2021",
+    "category": "Security Logging and Monitoring Failures",
+    "keywords": ["tidak ada log", "insiden tidak terdeteksi", "log tidak dipantau", "audit trail", "ketiadaan visibilitas"],
+    "mitigation": "Pastikan seluruh peristiwa autentikasi, akses administratif, dan kegagalan sistem dicatat secara terpusat dan diteruskan ke sistem SIEM."
+  },
+  {
+    "id": "A10:2021",
+    "category": "Server-Side Request Forgery (SSRF)",
+    "keywords": ["ssrf", "server-side request forgery", "request forged", "metadata aws", "internal network request", "fetch url eksternal"],
+    "mitigation": "Validasi dan lakukan allowlisting ketat terhadap seluruh URL tujuan, blokir resolusi ke alamat IP privat/internal (RFC 1918), dan nonaktifkan pengalihan HTTP."
+  },
+  {
+    "id": "API1:2023",
+    "category": "Broken Object Level Authorization (BOLA)",
+    "keywords": ["bola", "idor", "akses data orang lain", "ganti id url", "akses endpoint tidak sah"],
+    "mitigation": "Validasi kepemilikan objek pada level kode backend sebelum mengembalikan data berdasarkan parameter ID yang dikirim oleh pengguna."
+  },
+  {
+    "id": "API2:2023",
+    "category": "Broken Authentication",
+    "keywords": ["api key bocor", "jwt lemah", "token kedaluwarsa", "jwt secret default", "api tanpa autentikasi"],
+    "mitigation": "Gunakan mekanisme token OAuth2/JWT yang kuat, rotasi kunci rahasia berkala, dan batasi masa aktif token akses (short-lived access tokens)."
+  },
+  {
+    "id": "API3:2023",
+    "category": "Broken Object Property Level Authorization",
+    "keywords": ["mass assignment", "properti tersembunyi", "eksposur data berlebih", "parameter tampering"],
+    "mitigation": "Gunakan Data Transfer Object (DTO) ketat dan filter properti sensitif agar tidak terekspos langsung ke respons API publik."
+  },
+  {
+    "id": "API9:2023",
+    "category": "Improper Inventory Management (Shadow/Zombie API)",
+    "keywords": ["zombie api", "shadow api", "api lama", "endpoint tidak terdokumentasi", "api debug"],
+    "mitigation": "Lakukan penemuan dan inventarisasi seluruh endpoint API yang aktif, matikan versi API lama (deprecated) yang tidak lagi digunakan."
+  },
+  {
+    "id": "LLM01:2025",
+    "category": "Prompt Injection & Jailbreak",
+    "keywords": ["prompt injection", "jailbreak ai", "manipulasi model ai", "gemini hacked", "bypass guardrail ai"],
+    "mitigation": "Terapkan pemisahan ketat antara instruksi sistem dan input pengguna, gunakan lapisan penyaring masukan khusus (input guardrail), serta batasi privilege agen AI."
+  },
+  {
+    "id": "LLM02:2025",
+    "category": "Sensitive Information Disclosure via LLM",
+    "keywords": ["kebocoran data via ai", "pelatihan ai bocor", "data rahasia di prompt", "eksposur kredensial ai"],
+    "mitigation": "Lakukan scrubbing otomatis pada data input sebelum dikirim ke LLM untuk menyaring PII, token, dan informasi rahasia dinas."
+  }
+]

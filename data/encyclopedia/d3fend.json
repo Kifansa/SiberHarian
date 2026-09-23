@@ -1,0 +1,149 @@
+[
+  {
+    "id": "D3-MFA",
+    "tactic": "Credential Access Defense",
+    "technique": "Multi-Factor Authentication",
+    "keywords": ["phishing", "kredensial", "password", "akun", "sso", "login", "pembajakan akun", "credential stuffing", "kata sandi", "brute force"],
+    "mitigation": "Wajibkan Multi-Factor Authentication (MFA) berbasis aplikasi authenticator/FIDO2 hardware token untuk seluruh akses administratif dan portal ASN, serta hindari SMS OTP konvensional."
+  },
+  {
+    "id": "D3-DBR",
+    "tactic": "Evict & Recover",
+    "technique": "Data Backup and Recovery",
+    "keywords": ["ransomware", "enkripsi", "data terkunci", "lockbit", "brain cipher", "pemerasan", "kehilangan data", "shadow copy", "hapus backup"],
+    "mitigation": "Terapkan skema cadangan data 3-2-1 dengan salinan offline terisolasi (air-gapped immutable backup) dan uji coba pemulihan berkala minimal sebulan sekali."
+  },
+  {
+    "id": "D3-WAF",
+    "tactic": "Application Hardening",
+    "technique": "Web Application Filtering",
+    "keywords": ["rce", "cve", "sql injection", "celah keamanan web", "webshell", "deface", "defacement", "judi online", "slot gacor", "xss", "ssrf"],
+    "mitigation": "Aktifkan Web Application Firewall (WAF) dengan aturan virtual patching aktif, validasi input berlapis, serta pemblokiran pola URL injeksi dan webshell."
+  },
+  {
+    "id": "D3-SPFE",
+    "tactic": "Message Authentication",
+    "technique": "Email Authentication (SPF, DKIM, DMARC)",
+    "keywords": ["phishing", "email palsu", "spear-phishing", "spoofing", "docusign", "zoom", "surat dinas palsu", "penipuan email", "bec"],
+    "mitigation": "Konfigurasikan DMARC dengan kebijakan penolakan ketat (p=reject), diselaraskan dengan verifikasi cryptographic signature DKIM dan SPF record resmi instansi."
+  },
+  {
+    "id": "D3-DLP",
+    "tactic": "Network Isolation & Egress Filtering",
+    "technique": "Database Egress & Data Loss Prevention",
+    "keywords": ["bocor", "leak", "breach", "dark web", "data pribadi", "paspor", "kebocoran data", "database", "dump data", "exfiltrasi"],
+    "mitigation": "Terapkan enkripsi data at-rest dan in-transit (AES-256), batasi kuota ekspor data massal, serta pantau trafik anomali egress keluar jaringan datacenter."
+  },
+  {
+    "id": "D3-EDR",
+    "tactic": "Endpoint Hardening",
+    "technique": "Endpoint Detection and Response & App Sandboxing",
+    "keywords": ["malware", "infostealer", "trojan", "lumma", "redline", "apk", "android", "keylogger", "spyware", "grayrabbit", "virus"],
+    "mitigation": "Terapkan perlindungan EDR pada endpoint, blokir instalasi biner pihak ketiga di luar repositori resmi, dan cabut izin aksesibilitas tidak lazim pada perangkat seluler."
+  },
+  {
+    "id": "D3-FIM",
+    "tactic": "Platform Monitoring",
+    "technique": "File Integrity Monitoring",
+    "keywords": ["webshell", "deface", "injeksi file", "modifikasi berkas", "backdoor", "upload terlarang", "perubahan web root"],
+    "mitigation": "Aktifkan File Integrity Monitoring (FIM) secara real-time pada direktori web root dan direktori sistem /etc, /bin, serta C:\\Windows\\System32."
+  },
+  {
+    "id": "D3-NTF",
+    "tactic": "Network Isolation",
+    "technique": "Network Traffic Filtering & Segmentation",
+    "keywords": ["rdp terbuka", "port scanning", "ssh terbuka", "smb", "lateral movement", "ddos", "volumetric attack", "akses jarak jauh"],
+    "mitigation": "Tutup seluruh port manajemen (RDP/SSH/SMB) dari internet publik, batasi akses via VPN terenkripsi, dan terapkan segmentasi jaringan mikrosegmentasi/VLAN."
+  },
+  {
+    "id": "D3-SU",
+    "tactic": "System Hardening",
+    "technique": "Software Update & Vulnerability Remediation",
+    "keywords": ["cve", "zero-day", "0-day", "unpatched", "patching", "vulnerability", "pembaruan keamanan", "eksploitasi"],
+    "mitigation": "Segera terapkan patch keamanan resmi vendor maksimal 1x24 jam untuk celah kategori CRITICAL (CVSS >= 9.0) dan isolasi server rentan jika patch belum tersedia."
+  },
+  {
+    "id": "D3-EI",
+    "tactic": "Execution Isolation",
+    "technique": "Execution Isolation & Process Sandboxing",
+    "keywords": ["rce", "remote code execution", "command injection", "eksekusi perintah", "container breakout", "isolasi eksekusi"],
+    "mitigation": "Isolasi proses aplikasi web menggunakan container berhak akses non-root (unprivileged) dengan pembatasan kapabilitas kernel (AppArmor/SELinux)."
+  },
+  {
+    "id": "D3-DNSAL",
+    "tactic": "Network Defense",
+    "technique": "DNS Allowlisting & Sinkholing",
+    "keywords": ["c2", "command and control", "dns tunneling", "domain jahat", "botnet", "komunikasi malware"],
+    "mitigation": "Arahkan rekursif DNS ke Secure DNS Resolver berfitur DNS Sinkholing untuk memutus komunikasi malware ke domain Command and Control (C2)."
+  },
+  {
+    "id": "D3-URA",
+    "tactic": "User Behavior Defense",
+    "technique": "URL Reputation Analysis",
+    "keywords": ["phishing", "tautan palsu", "situs tiruan", "link penipuan", "undangan wa", "social engineering"],
+    "mitigation": "Terapkan gateway keamanan penjelajahan web dengan analisis reputasi URL real-time untuk memblokir akses aparatur ke domain phishing dan unduhan berbahaya."
+  },
+  {
+    "id": "D3-PSA",
+    "tactic": "Platform Monitoring",
+    "technique": "Process Spawn Analysis",
+    "keywords": ["powershell", "cmd", "wmic", "certutil", "lolbas", "skrip siluman", "anak proses mencurigakan"],
+    "mitigation": "Pantau hierarki pemanggilan proses untuk mendeteksi anomali web server yang memicu shell CLI (misalnya httpd/nginx yang memanggil bash/cmd.exe)."
+  },
+  {
+    "id": "D3-UBA",
+    "tactic": "User Behavior Defense",
+    "technique": "User Behavior Analytics",
+    "keywords": ["credential stuffing", "login anomali", "lokasi ganjil", "jam tidak wajar", "pembajakan akun"],
+    "mitigation": "Implementasikan User and Entity Behavior Analytics (UEBA) untuk mendeteksi login bersamaan dari geolokasi yang tidak mungkin (impossible travel)."
+  },
+  {
+    "id": "D3-AMED",
+    "tactic": "Access Control",
+    "technique": "Access Mediation & Least Privilege",
+    "keywords": ["privilege escalation", "eskalasi hak akses", "akses root", "superadmin", "least privilege"],
+    "mitigation": "Terapkan prinsip hak akses minimum (Principle of Least Privilege), pisahkan akun operasional harian dari akun administrasi sistem tingkat tinggi."
+  },
+  {
+    "id": "D3-AZET",
+    "tactic": "Access Control",
+    "technique": "Authorization Event Thresholding & Rate Limiting",
+    "keywords": ["brute force", "kamus password", "tebak kredensial", "percobaan login gagal"],
+    "mitigation": "Terapkan pembatasan laju permintaan (rate limiting) dan penguncian akun otomatis setelah 5 kali kegagalan autentikasi berturut-turut."
+  },
+  {
+    "id": "D3-CERO",
+    "tactic": "Message Authentication",
+    "technique": "Certificate Rotation & Strict TLS Enforcement",
+    "keywords": ["mitm", "man in the middle", "enkripsi lemah", "sertifikat kedaluwarsa", "sadap trafik"],
+    "mitigation": "Wajibkan enkripsi TLS 1.3 dengan cipher suite modern (Forward Secrecy), rotasi sertifikat SSL secara otomatis, dan aktifkan HTTP Strict Transport Security (HSTS)."
+  },
+  {
+    "id": "D3-DE",
+    "tactic": "Deceive",
+    "technique": "Decoy Environment & Honeytokens",
+    "keywords": ["peretas jaringan", "pemindaian internal", "lateral movement", "reconnaissance", "penyusup"],
+    "mitigation": "Pasang sistem penjerat (Honeypot/Decoy) pada segmen jaringan internal dan taburkan honeytoken kredensial untuk memicu peringatan dini saat disusupi."
+  },
+  {
+    "id": "D3-LAM",
+    "tactic": "Access Control",
+    "technique": "Local Account Monitoring & Stale Account Cleanup",
+    "keywords": ["akun siluman", "backdoor akun", "pegawai resign", "akun tidak aktif"],
+    "mitigation": "Lakukan audit bulanan terhadap seluruh akun lokal dan domain, segera nonaktifkan akun aparatur/kontraktor yang telah mutasi atau purnatugas."
+  },
+  {
+    "id": "D3-AR",
+    "tactic": "Credential Access Defense",
+    "technique": "Account Revocation & Session Invalidation",
+    "keywords": ["session hijacking", "token dicuri", "cookie dibajak", "infostealer sukses", "pembajakan sesi"],
+    "mitigation": "Segera picu pemutusan sesi aktif secara global (Global Session Revocation), reset kredensial, dan invalidasi seluruh refresh token yang telah terbit."
+  },
+  {
+    "id": "D3-PR",
+    "tactic": "Evict & Contain",
+    "technique": "Process Revocation & Host Quarantine",
+    "keywords": ["insiden aktif", "malware berjalan", "ransomware menyebar", "darurat", "penyebaran aktif"],
+    "mitigation": "Lakukan karantina host terdampak secara terisolasi via kontroler EDR, hentikan proses biner berbahaya secara paksa, dan cabut antarmuka jaringannya."
+  }
+]

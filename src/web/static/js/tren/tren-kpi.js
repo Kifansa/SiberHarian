@@ -91,12 +91,12 @@ export function renderKpiCards(stat, isAnimated = false) {
     kpiPolaGrowth.textContent = `${polaGrowth >= 0 ? '+' : ''}${polaGrowth}%`;
   }
   if (kpiPolaSubtext) {
-    kpiPolaSubtext.textContent = polaData.subteks || 'lonjakan risiko 7H';
+    kpiPolaSubtext.textContent = 'vs minggu lalu';
   }
   if (kpiPolaBadge) {
     const isUp = polaGrowth >= 0;
     const icon = isUp ? 'trending_up' : 'trending_down';
-    const colorClass = isUp ? 'text-rose-600' : 'text-emerald-600';
+    const colorClass = isUp ? 'text-emerald-600' : 'text-rose-600';
     kpiPolaBadge.className = `inline-flex items-center gap-1 text-xs sm:text-sm font-bold font-mono ${colorClass}`;
     kpiPolaBadge.innerHTML = `
       <span class="material-symbols-outlined text-base leading-none">${icon}</span>
@@ -104,19 +104,20 @@ export function renderKpiCards(stat, isAnimated = false) {
     `;
   }
 
-  // Hero Card: Fokus Ancaman Teratas (Berita & CVE)
-  const topKk = stat.kata_kunci_naik?.[0]?.kata_kunci || '-';
-  const topVendor = stat.vendor_naik?.[0]?.vendor || '-';
-
-  const elFokusBeritaNama = document.getElementById('kpi-fokus-berita-nama');
-  if (elFokusBeritaNama) {
-    elFokusBeritaNama.textContent = topKk;
-    elFokusBeritaNama.title = topKk;
-  }
-
-  const elFokusCveNama = document.getElementById('kpi-fokus-cve-nama');
-  if (elFokusCveNama) {
-    elFokusCveNama.textContent = topVendor;
-    elFokusCveNama.title = topVendor;
+  // Card: Prediksi Ancaman Baru
+  const elAncamanBaru = document.getElementById('kpi-ancaman-baru');
+  if (elAncamanBaru) {
+    const teksAncaman = stat.ancaman_baru || 'Menunggu Sinyal';
+    elAncamanBaru.textContent = teksAncaman;
+    elAncamanBaru.title = teksAncaman;
+    
+    // Auto-shrink font size jika teks terlalu panjang (> 15 karakter)
+    if (teksAncaman.length > 25) {
+      elAncamanBaru.className = "text-sm sm:text-base font-black text-[#001D39] tracking-tight font-sans leading-tight line-clamp-2";
+    } else if (teksAncaman.length > 15) {
+      elAncamanBaru.className = "text-lg sm:text-xl font-black text-[#001D39] tracking-tight font-sans leading-tight truncate";
+    } else {
+      elAncamanBaru.className = "text-2xl sm:text-3xl font-black text-[#001D39] tracking-tight font-sans leading-none uppercase truncate";
+    }
   }
 }

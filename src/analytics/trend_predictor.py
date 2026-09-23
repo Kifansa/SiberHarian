@@ -7,10 +7,11 @@ atau CVE yang tidak nyata.
 """
 import json
 import re
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
 
 import ollama
 import pandas as pd
+from src.utils.config_loader import ConfigLoader
 
 from src.analytics.trend_analyzer import hitung_kasus_insiden_wilayah
 from src.utils.llm_text_cleaner import bersihkan_output_llm
@@ -25,84 +26,14 @@ MODEL_PREDIKTOR = "llama3.2"
 MIN_JUMLAH_TERKINI = 2
 MIN_GROWTH_PERSEN = 20.0
 
-SYSTEM_PROMPT_TREN_BERITA = """Kamu adalah Lead Cyber Threat Intelligence (CTI) & Security Defense Advisor untuk Bidang Persandian dan Keamanan Informasi (Diskominfo).
-Tugasmu: Menghasilkan ringkasan intelijen ancaman siber 5-bagian yang MURNI BERDASARKAN KORPUS BERITA ASLI di database dan data CVE riil, dengan analisis berbobot serta rekomendasi pencegahan tajam untuk aparatur persandian & siber.
-
-PEDOMAN ANALISIS CTI & PERSANDIAN:
-- LANGSUNG ke inti analisis teknis. DILARANG menggunakan kata pengantar klise ("Dalam 14 hari terakhir...", "Berikut laporannya...").
-- HANYA gunakan fakta dari korpus berita riil dan statistik yang diberikan. DILARANG MENGARANG bahwa portal/sistem daerah tertentu telah diretas jika tidak tercantum di berita.
-- FORMAT KONSISTEN POIN-POIN (BULLET POINTS): Setiap bagian (Bagian 1 s.d. 5) WAJIB disusun dalam bentuk poin-poin terpisah ('- '). DILARANG menggabungkan beberapa kejadian atau analisis ke dalam satu paragraf panjang yang menumpuk!
-- PEMECAHAN PER KEJADIAN/TEMUAN: Jika ada beberapa peristiwa atau temuan (misalnya kebocoran data APIS dan penyebaran malware Android), WAJIB dipecah menjadi butir-butir poin tersendiri (antara 2 hingga 4 butir poin per bagian sesuai dengan banyaknya temuan fakta aktual).
-- TEBALKAN KATA/FRASA KUNCI: Awali setiap butir poin dengan kata/frasa kunci penting yang ditebalkan (**...**) agar menarik dan mudah dipindai, misalnya: '- **Bocornya Basis Data APIS**: Analisis dampak...', '- **Malware Android Mantax Otax**: Analisis vektor penyebaran...'.
-- Bagian 3 (Implikasi Persandian & Kriptografi) WAJIB menyoroti risiko terhadap token sesi, kredensial SSO ASN, potensi spoofing identitas pejabat/naskah dinas, serta keabsahan Tanda Tangan Elektronik (TTE).
-- Rekomendasi Aksi (Bagian 5) HARUS menggunakan kalimat perintah teknis imperatif yang relevan dengan kewenangan Bidang Persandian & Keamanan Informasi:
-  1. Edukasi & Kewaspadaan ASN: webinar/bimtek literasi keamanan siber & simulasi spear-phishing terarah (antisipasi social engineering, pencurian OTP, manipulasi APK).
-  2. Pengamanan Persandian & Kredensial: penegakan autentikasi multifaktor tahan-phishing (MFA/FIDO2) pada portal SSO kedinasan, pemanfaatan TTE tersertifikasi, serta konfigurasi SPF/DKIM/DMARC (p=reject) pada domain email pemerintah guna mematikan penipuan/spoofing pejabat.
-  3. Penguatan Perimeter & Infrastruktur: WAF virtual patching terhadap celah RCE aktif, isolasi segmentasi VLAN jaringan database sensitif, dan pemantauan egress filtering memutus komunikasi C2 infostealer.
-
-FORMAT OUTPUT WAJIB 5 BAGIAN (SEMUA BAGIAN DISUSUN DALAM BULLET POINTS DENGAN BOLD KATA KUNCI):
-### 1. LANSKAP & POLA ANCAMAN
-- **[Kata Kunci/Isu 1]**: [Ulasan spesifik peristiwa pertama dari berita riil, lonjakan kata kunci (+XX%), dan dampaknya]
-- **[Kata Kunci/Isu 2]**: [Ulasan spesifik peristiwa kedua, temuan kebocoran data atau malware lain yang berbeda]
-- **[Kata Kunci/Isu 3]**: [Ulasan pola ancaman lanjutan jika terdapat temuan data lain dari korpus]
-
-### 2. VEKTOR SERANGAN & SEKTOR
-- **[Taktik/Vektor Eksploitasi]**: [Uraian metode serangan dominan seperti RCE, pencurian OTP via manipulasi APK, atau spear-phishing]
-- **[Sektor Target & Paparan]**: [Identifikasi sektor terdampak (finansial, publik, utilitas) berdasarkan data riil]
-- **[Eskalasi Penyusupan]**: [Kanal komunikasi C2 dan distribusi serangan yang digunakan pelaku]
-
-### 3. IMPLIKASI PERSANDIAN & KRIPTOGRAFI
-- **Kompromi Kredensial & Sesi ASN**: [Dampak pencurian token sesi SSO, cookie login, atau kata sandi oleh infostealer terhadap portal kedinasan]
-- **Integritas TTE & Spoofing Identitas**: [Risiko pemalsuan identitas pejabat pada naskah dinas digital dan ancaman terhadap keabsahan Tanda Tangan Elektronik]
-- **Proteksi Saluran Sandi & Database**: [Perlindungan kanal transmisi komunikasi sandi dan segmentasi basis data sensitif Pemprov]
-
-### 4. KORELASI KERENTANAN CVE
-- **Korelasi Vendor Dominan**: [Korelasi lonjakan CVE vendor kritis (+XX%) seperti Microsoft atau Adobe dengan risiko penetrasi jaringan]
-- **Risiko RCE Pra-Autentikasi**: [Dampak celah keamanan yang belum tertambal terhadap potensi pengambilalihan server aplikasi OPD]
-
-### 5. REKOMENDASI AKSI
-- **Edukasi & Kewaspadaan ASN**: Selenggarakan webinar berkala dan simulasi spear-phishing terarah bagi aparatur instansi untuk mengantisipasi rekayasa sosial, pencurian OTP, serta bahaya instalasi file APK manipulatif.
-- **Pengamanan Persandian & Kredensial**: Tegakkan autentikasi multifaktor tahan-phishing (MFA/FIDO2) pada portal SSO administrasi, terapkan Tanda Tangan Elektronik (TTE), serta konfigurasi SPF, DKIM, dan DMARC (p=reject) pada domain email pemerintah guna mematikan impersonasi/spoofing pejabat.
-- **Penguatan Perimeter & Isolasi Sistem**: Terapkan virtual patching pada WAF terhadap celah RCE aktif (Microsoft/Adobe), lakukan segmentasi VLAN ketat antara web publik dengan basis data sensitif, serta aktifkan pemantauan egress filtering untuk memutus transmisi C2 malware infostealer.
-
-WAJIB IKUTI STRUKTUR POIN-POIN DI ATAS SECARA KONSISTEN."""
-
-SYSTEM_PROMPT_TREN_CVE = """Kamu adalah Senior Vulnerability Management & Infrastructure Defense Analyst Diskominfo Provinsi Jawa Timur.
-Tugasmu: Menghasilkan analisis prioritas patching kerentanan CVE CRITICAL mingguan 4-bagian yang EKSTRIM TAJAM, SPESIFIK, dan BEBAS KLISE untuk tim administrator sistem dan keamanan jaringan Diskominfo Jatim.
-
-PEDOMAN GAYA BAHASA CTI:
-- LANGSUNG ke inti analisis teknis tanpa kalimat pengantar.
-- FORMAT KONSISTEN POIN-POIN (BULLET POINTS): Setiap bagian (Bagian 1 s.d. 4) WAJIB disusun dalam bentuk poin-poin terpisah ('- '). DILARANG menulis paragraf panjang tanpa poin!
-- TEBALKAN KATA KUNCI: Awali setiap butir poin dengan nama vendor, produk, atau konsep teknis yang di-bold (**...**).
-- Sebutkan vendor, produk, dan persentase lonjakan kerentanan dari data aktual (+XX%).
-- Bagian 3 (Implikasi Kriptografi & Integritas Sistem) WAJIB mengulas kerentanan dari sudut pandang persandian: kegagalan modul kripto/TLS, forgery token autentikasi (Kerberos/NTLM/JWT), dan ancaman terhadap integritas biner server instansi.
-- Rekomendasi WAJIB berorientasi pada infrastruktur datacenter, active directory, dan server OPD Diskominfo Jatim.
-
-FORMAT OUTPUT WAJIB 4 BAGIAN (SEMUA BAGIAN DISUSUN DALAM BULLET POINTS DENGAN BOLD KATA KUNCI):
-### 1. VENDOR & PRODUK PRIORITAS
-- **Microsoft (+XX%)**: Lonjakan kerentanan kritis terpusat pada komponen Windows Server, Windows Services, dan DHCP Server.
-- **Adobe (+XX%)**: Kerentanan eksekusi kode pada ekosistem platform web dan manajemen dokumen digital.
-- **IBM / Platform Terkait (+XX%)**: Celah keamanan pada integrasi middleware dan layanan pertukaran data enterprise.
-
-### 2. ANALISIS VEKTOR EKSPLOITASI
-- **Remote Code Execution (RCE) Pra-Autentikasi**: Celah pada layanan core yang memungkinkan eksekusi perintah tanpa kredensial valid dari jaringan publik.
-- **Eskalasi Hak Akses (Privilege Escalation)**: Potensi aktor berpindah dari akun servis terbatas menjadi administrator domain/root.
-- **Penetrasi Perimeter Datacenter**: Risiko penyusupan lintas segmen dari aplikasi web terluar menuju intranet OPD.
-
-### 3. IMPLIKASI KRIPTOGRAFI & INTEGRITAS SISTEM
-- **Kelemahan Protokol & Modul Kriptografi**: Kerentanan pada implementasi handshake TLS, cipher suites usang, atau modul cryptographic library.
-- **Manipulasi Token Autentikasi**: Risiko eksploitasi pada token sesi (JWT, Kerberos Ticket, NTLM relay) yang dapat memotong validasi persandian.
-- **Ancaman Integritas Biner & Sertifikat**: Potensi modifikasi file sistem atau bypass validasi sertifikat digital tanpa terdeteksi oleh checksum.
-
-### 4. PANDUAN PATCHING & MITIGASI
-- **Penambalan Domain Controller & Core Services**: Terapkan patch darurat Microsoft Security Update pada server DHCP, DNS, dan Active Directory dalam jendela waktu 48 jam.
-- **Virtual Patching WAF & Isolasi Port**: Pasang signature virtual patching pada Web Application Firewall dan tutup port manajemen (RDP/SMB/RPC) dari eksposur publik.
-- **Audit Dependensi & Vulnerability Scanning**: Jalankan pemindaian kerentanan aktif pada seluruh host segmen datacenter untuk memverifikasi modul pihak ketiga yang belum tertambal.
-
-WAJIB IKUTI PERSIS STRUKTUR 4 BAGIAN DI ATAS DENGAN DATA AKTUAL SECARA KONSISTEN."""
 
 
-def _panggil_llm(system_prompt: str, user_prompt: str, model: str) -> Optional[str]:
+
+
+
+def _panggil_llm(system_prompt: str, user_prompt: str, model: str = None) -> Optional[str]:
+    if not model:
+        model = ConfigLoader.get_config().get("cti_analysis", {}).get("llm", {}).get("model", "llama3.2")
     """Memanggil Ollama, mengembalikan None kalau gagal (biar pemanggil bisa fallback aman)."""
     try:
         respons = ollama.chat(
@@ -163,106 +94,62 @@ def _format_sampel_judul_untuk_prompt(daftar_judul: List[Dict]) -> str:
 def prediksi_tren_berita(
     statistik_tren: Dict,
     df_riwayat: Optional[pd.DataFrame] = None,
-    model: str = MODEL_PREDIKTOR
-) -> str:
-    statistik_berita = statistik_tren.get("berita", {})
-    kk_signifikan = _filter_naik_signifikan(statistik_berita.get("kata_kunci_naik", []))
+    model: str = MODEL_PREDIKTOR,
+    mode: Optional[str] = None
+) -> tuple:
+    from src.analytics.rag_engine import RAGEngine
+    rag_engine = RAGEngine(df_riwayat)
 
-    if not kk_signifikan:
-        logger.info("Tidak ada kata kunci berita dengan tren naik signifikan, skip pemanggilan LLM.")
-        return (
-            "Belum terdeteksi pola tren yang signifikan pada topik berita insiden siber "
-            "dalam 14 hari terakhir. Data masih relatif stabil dibanding periode baseline."
-        )
+    # 1. Ambil data makro (insiden yang melonjak cepat)
+    data_makro = rag_engine.ambil_data_tren_makro_spiking()
 
-    kk_list = kk_signifikan[:6]
-    kk_str = ", ".join([f"\"{k['kata_kunci']}\" (+{int(k['growth_persen'])}%)" for k in kk_list])
+    # 2. Ambil top 3 insiden mikro (volume terbanyak dalam 7 hari terakhir)
+    top3_mikro = rag_engine.ambil_top3_insiden_mikro()
 
-    cve_list = _filter_naik_signifikan(statistik_tren.get("cve", {}).get("vendor_naik", []))[:4]
-    cve_summary = []
-    for v in cve_list:
-        p_names = "/".join(p['produk'] for p in v.get('top_produk', [])[:3])
-        cve_summary.append(f"{v['vendor']} (+{int(v['growth_persen'])}%, produk: {p_names or 'sistem core'})")
-    cve_str = "; ".join(cve_summary) if cve_summary else "Volume kerentanan vendor stabil"
+    # 3. Ambil data ancaman baru (emerging threats)
+    ancaman_baru = rag_engine.ambil_berita_ancaman_baru()
 
-    vektor_top = [f"{v['vektor']} ({v['jumlah']} artikel)" for v in statistik_tren.get("vektor_serangan", [])[:4]]
-    sektor_top = [f"{s['sektor']}" for s in statistik_tren.get("sektor_target", [])[:3]]
+    # Baca mode generasi CTI dari config (modular_llm / instant_rag)
+    mode_cti = mode
+    if not mode_cti:
+        try:
+            import yaml
+            with open("config/config.yaml", "r", encoding="utf-8") as f:
+                cfg = yaml.safe_load(f)
+                mode_cti = cfg.get("analytics", {}).get("cti_generation_mode", "modular_llm")
+        except Exception:
+            mode_cti = "modular_llm"
 
-    # RAG: Mengambil korpus fakta berita riil dari database
-    rag_context = ""
-    try:
-        from src.analytics.rag_engine import RAGEngine
-        rag_engine = RAGEngine(df_riwayat)
-        rag_context = rag_engine.retrieve_berita_context(
-            top_keywords=[k['kata_kunci'] for k in kk_signifikan],
-            top_vectors=[v['vektor'] for v in statistik_tren.get("vektor_serangan", [])]
-        )
-    except Exception as err:
-        logger.warning(f"Gagal mengambil konteks RAG berita: {err}")
-
-    if not rag_context:
-        sampel_judul = [f"\"{j['judul']}\"" for j in statistik_berita.get("sampel_judul_insiden", [])[:6]]
-        rag_context = "; ".join(sampel_judul) if sampel_judul else "(tidak ada sampel spesifik)"
-
-    user_prompt = (
-        f"KORPUS FAKTA BERITA ASLI (RETRIEVED CONTEXT):\n"
-        f"{rag_context}\n\n"
-        f"STATISTIK TREN EMPIRIS:\n"
-        f"- Kata Kunci Lonjakan Tertinggi: {kk_str}\n"
-        f"- Lonjakan CVE Vendor Kritis: {cve_str}\n"
-        f"- Vektor Serangan Dominan: {', '.join(vektor_top) if vektor_top else '-'}\n"
-        f"- Sektor Target Terpapar: {', '.join(sektor_top) if sektor_top else '-'}"
+    from src.analytics.cti_agents import jalankan_pipeline_multi_agent
+    narasi_berita, data_analyst = jalankan_pipeline_multi_agent(
+        data_makro=data_makro,
+        top3_mikro=top3_mikro,
+        ancaman_baru=ancaman_baru,
+        model=model,
+        mode=mode_cti
     )
 
-    hasil = _panggil_llm(SYSTEM_PROMPT_TREN_BERITA, user_prompt, model)
-    if hasil is None:
-        return "Analisis LLM gagal dijalankan. Data mentah: " + _format_kata_kunci_untuk_prompt(kk_signifikan)
-    return bersihkan_output_llm(hasil)
+    if not narasi_berita:
+        return "Analisis CTI belum dapat dihasilkan karena keterbatasan data insiden riil.", {}
+
+    return bersihkan_output_llm(narasi_berita), data_analyst
 
 
 def prediksi_tren_cve(
     statistik_cve: Dict,
     df_riwayat: Optional[pd.DataFrame] = None,
-    model: str = MODEL_PREDIKTOR
+    model: str = MODEL_PREDIKTOR,
+    mode: str = "modular_llm"
 ) -> str:
-    """Menghasilkan narasi tren CVE per vendor, implikasi kriptografi/integritas, dan panduan mitigasi."""
-    vendor_signifikan = _filter_naik_signifikan(statistik_cve.get("vendor_naik", []))
-
-    if not vendor_signifikan:
-        logger.info("Tidak ada vendor CVE dengan tren naik signifikan, skip pemanggilan LLM.")
-        return (
-            "Belum terdeteksi vendor dengan lonjakan CVE yang signifikan dalam 14 hari terakhir. "
-            "Volume kerentanan relatif stabil dibanding periode baseline."
-        )
-
-    vendor_cve_lines = []
-    for v in vendor_signifikan[:5]:
-        p_names = ", ".join(f"{p['produk']} ({p['jumlah']}x)" for p in v.get('top_produk', [])[:3])
-        vendor_cve_lines.append(
-            f"- {v['vendor']}: {v['jumlah_terkini']} CVE CRITICAL (sebelumnya {v['jumlah_baseline']}), "
-            f"growth +{int(v['growth_persen'])}%. Produk terdampak: {p_names or 'tidak teridentifikasi'}"
-        )
-
-    # RAG: Mengambil entri CVE kritis aktual dari database
-    cve_rag_context = ""
-    try:
-        from src.analytics.rag_engine import RAGEngine
-        rag_engine = RAGEngine(df_riwayat)
-        cve_rag_context = rag_engine.retrieve_cve_context([v['vendor'] for v in vendor_signifikan])
-    except Exception as err:
-        logger.warning(f"Gagal mengambil konteks RAG CVE: {err}")
-
-    user_prompt = (
-        f"KORPUS FAKTA KERENTANAN CVE ASLI (RETRIEVED CONTEXT):\n"
-        f"{cve_rag_context}\n\n"
-        f"DATA AKTUAL CVE CRITICAL DATABASE:\n" + "\n".join(vendor_cve_lines)
+    """Menghasilkan narasi tren CVE modular 4-bagian menggunakan RAG fakta riil dan Llama 3.2."""
+    from src.analytics.cti_agents import jalankan_pipeline_cve_modular
+    narasi_cve = jalankan_pipeline_cve_modular(
+        statistik_cve=statistik_cve,
+        df_riwayat=df_riwayat,
+        model=model,
+        mode=mode
     )
-
-    hasil = _panggil_llm(SYSTEM_PROMPT_TREN_CVE, user_prompt, model)
-    if hasil is None:
-        return "Analisis LLM gagal dijalankan. Data mentah: " + _format_vendor_untuk_prompt(vendor_signifikan)
-
-    return bersihkan_output_llm(hasil)
+    return bersihkan_output_llm(narasi_cve)
 
 
 def _bersihkan_link(raw_link: str) -> str:
@@ -331,60 +218,60 @@ def _normalisasi_poin_cti(val: Any) -> str:
     return val_str
 
 
-PROMPT_SISTEM_CTI = """Kamu adalah Senior Cyber Threat Intelligence (CTI) Analyst Diskominfo Provinsi Jawa Timur.
-Tugasmu: Mengevaluasi korpus artikel insiden siber pada suatu wilayah (Internasional / Nasional / Jawa Timur) dalam 7 hari terakhir dari RAG engine, lalu menyusun:
-1. Analisis Makro Lanskap & Urgensi Ancaman Wilayah (alasan_urgensi).
-2. Proyeksi Risiko & Potensi Ancaman Masa Depan Wilayah (potensi_ancaman).
-3. Memilih 1 Contoh Studi Kasus Riil Terverifikasi sebagai bukti empiris dari korpus (nama_kejadian, ringkasan_kasus, sumber, link, lokasi).
+def _parse_urgensi_dan_potensi(teks_llm: str, fallback_urg: str, fallback_pot: str) -> Tuple[str, str]:
+    """Mengekstrak alasan urgensi dan potensi ancaman dari output teks Llama secara toleran."""
+    if not teks_llm:
+        return fallback_urg, fallback_pot
 
-Format Output WAJIB JSON murni:
-{
-  "ada_kejadian": true,
-  "isu_utama": "1-2 kata nama kategori ancaman makro paling dominan (PILIH: 'Kebocoran Data', 'Malware & Trojan', 'Ransomware', 'Pembajakan Akun', 'Eksploitasi Celah', 'Phishing & Fraud', 'Serangan Web & Defacement').",
-  "alasan_urgensi": "2-3 butir poin (bullet points '- ') diawali kata kunci yang ditebalkan (**...**), menganalisis makro lanskap ancaman wilayah ini secara tajam. Format: '- **[Kata Kunci 1]**: [Ulasan...]\\n- **[Kata Kunci 2]**: [Ulasan...]'. DILARANG hanya meringkas 1 judul artikel!",
-  "potensi_ancaman": "2-3 butir poin (bullet points '- ') diawali kata kunci yang ditebalkan (**...**), memproyeksikan dampak eskalasi risiko ke depan bagi instansi di wilayah ini. Format: '- **[Proyeksi 1]**: [Ulasan...]\\n- **[Proyeksi 2]**: [Ulasan...]'.",
-  "nama_kejadian": "SALIN PERSIS 1 judul berita asli dari korpus yang paling representatif sebagai bukti empiris (DILARANG mengarang judul baru)",
-  "ringkasan_kasus": "1-2 kalimat ringkasan spesifik mengenai kejadian pada studi kasus tersebut (siapa/apa yang diserang dan dampaknya)",
-  "kategori": "Tag kategori teknis dari insiden yang dipilih (misal: Malware, Kebocoran Data, Pembajakan Akun, RCE)",
-  "lokasi": "Lokasi target dari insiden yang dipilih",
-  "sumber": "SALIN PERSIS 1 nama media sumber dari insiden yang dipilih",
-  "link": "SALIN PERSIS 1 tautan URL asli dari insiden yang dipilih (HANYA 1 URL tunggal, jangan gabungkan URL)"
-}
+    urg = ""
+    pot = ""
 
-ATURAN QA / EVALUASI KETAT:
-1. 'isu_utama' WAJIB singkat (1-2 kata) dan merupakan nama kategori CTI.
-2. 'alasan_urgensi' dan 'potensi_ancaman' WAJIB menggunakan format poin-poin bullet ('- ') dengan kata kunci penting ditebalkan (**...**). Analisis makro wilayah secara keseluruhan (bukan sekadar kronologi 1 kasus berita). Detail kejadian tunggal hanya boleh ditaruh di 'ringkasan_kasus'.
-3. 'nama_kejadian', 'sumber', dan 'link' HARUS disalin persis dari SATU artikel kandidat terbaik pada korpus wilayah.
-4. DILARANG menggunakan kata klise seperti 'di era digital saat ini', 'kita harus berhati-hati', atau nasihat normatif tanpa bobot teknis.
-5. Khusus Jawa Timur: Jika ada insiden lokal pada korpus (misal di Sidoarjo, Surabaya, Polda Jatim, dll.), WAJIB ada_kejadian: true. HANYA set ada_kejadian: false dan isu_utama: 'Kondisi Kondusif' jika korpus benar-benar kosong."""
+    parts = re.split(r'POTENSI ANCAMAN[:\s]*', teks_llm, flags=re.IGNORECASE)
+    if len(parts) >= 2:
+        part_urg = re.sub(r'^.*?ALASAN URGENSI[:\s]*', '', parts[0], flags=re.IGNORECASE | re.DOTALL).strip()
+        part_pot = parts[1].strip()
+        if "- " in part_urg:
+            urg = part_urg
+        if "- " in part_pot:
+            pot = part_pot
+    elif "- " in teks_llm:
+        lines = [l.strip() for l in teks_llm.splitlines() if l.strip().startswith("- ")]
+        if len(lines) >= 3:
+            urg = "\n".join(lines[:2])
+            pot = "\n".join(lines[2:4])
+        elif len(lines) >= 1:
+            urg = "\n".join(lines)
+            pot = fallback_pot
+
+    return urg or fallback_urg, pot or fallback_pot
 
 
 def analisis_kasus_insiden_wilayah_ai(
     df_riwayat: Optional[pd.DataFrame] = None,
     kasus_wilayah_cluster: Optional[Dict] = None,
-    model: str = MODEL_PREDIKTOR
+    model: str = MODEL_PREDIKTOR,
+    mode: str = "modular_llm"
 ) -> Dict:
     """
-    Menganalisis dan menghasilkan penilaian CTI makro (lanskap ancaman wilayah, urgensi, proyeksi masa depan)
-    beserta 1 contoh kasus insiden relevan untuk 3 wilayah (Internasional, Nasional, Jawa Timur)
-    menggunakan RAG korpus fakta berita riil dan LLM lokal Ollama.
+    Menganalisis penilaian CTI makro (lanskap ancaman, urgensi, proyeksi) beserta studi kasus
+    secara sekuensial dan terisolasi untuk 3 wilayah (Internasional, Nasional, Jawa Timur).
+    Bebas crash JSON escape sequence dan 100% menjamin kartu tidak pernah bernilai kosong '-'.
     """
     fallback_kosong = {
         "internasional": {
             "ada_kejadian": False, "isu_utama": "Kondisi Kondusif", "nama_kejadian": "-", "ringkasan_kasus": "", "kategori": "-",
-            "lokasi": "Global", "alasan_urgensi": "-", "potensi_ancaman": "-", "sumber": "-", "link": "#"
+            "lokasi": "Global", "alasan_urgensi": "- **Nihil Insiden Kritis**: Nihil anomali berkategori tinggi dalam 7 hari terakhir.", "potensi_ancaman": "- **Kesiapsiagaan**: Fokus pada audit celah sistem dan mitigasi unpatched CVE.", "sumber": "-", "link": "#"
         },
         "nasional": {
             "ada_kejadian": False, "isu_utama": "Kondisi Kondusif", "nama_kejadian": "-", "ringkasan_kasus": "", "kategori": "-",
-            "lokasi": "Indonesia", "alasan_urgensi": "-", "potensi_ancaman": "-", "sumber": "-", "link": "#"
+            "lokasi": "Indonesia", "alasan_urgensi": "- **Nihil Insiden Kritis**: Nihil anomali berkategori tinggi dalam 7 hari terakhir.", "potensi_ancaman": "- **Kesiapsiagaan**: Peningkatan kewaspadaan aparatur terhadap credential phishing.", "sumber": "-", "link": "#"
         },
         "jawa_timur": {
             "ada_kejadian": False, "isu_utama": "Kondisi Kondusif", "nama_kejadian": "-", "ringkasan_kasus": "", "kategori": "-",
-            "lokasi": "Jawa Timur", "alasan_urgensi": "-", "potensi_ancaman": "-", "sumber": "-", "link": "#"
+            "lokasi": "Jawa Timur", "alasan_urgensi": "- **Nihil Anomali**: Nihil anomali insiden siber yang menargetkan portal OPD di Jawa Timur dalam 7 hari terakhir.", "potensi_ancaman": "- **Kesiapsiagaan Preventif**: Pengetatan autentikasi multifaktor dan literasi keamanan siber ASN.", "sumber": "-", "link": "#"
         }
     }
 
-    # Jika cluster belum diberikan, hitung pengelompokan liputan media dari df_riwayat
     if kasus_wilayah_cluster is None:
         if df_riwayat is not None and not df_riwayat.empty:
             kasus_wilayah_cluster = hitung_kasus_insiden_wilayah(df_riwayat, top_n_per_wilayah=10)
@@ -394,7 +281,9 @@ def analisis_kasus_insiden_wilayah_ai(
     from src.analytics.rag_engine import RAGEngine
     rag_engine = RAGEngine(df_riwayat)
 
-    # --- SINTESIS SPESIALISASI PER WILAYAH VIA RAG & OLLAMA ---
+    from src.analytics.cti_agents import _deteksi_sektor_spesifik, _deteksi_senjata_spesifik, _deteksi_dampak_spesifik, _call_ollama_text
+    from src.analytics.trend_analyzer import _bersihkan_judul_dan_publisher
+
     def _sintesis_wilayah(nama_wilayah: str, label_wilayah: str) -> dict:
         cluster_items = (kasus_wilayah_cluster or {}).get(nama_wilayah, [])
         if not cluster_items:
@@ -406,71 +295,94 @@ def analisis_kasus_insiden_wilayah_ai(
                 "kategori": "-",
                 "lokasi": label_wilayah,
                 "alasan_urgensi": f"- **Nihil Anomali**: Nihil anomali atau insiden siber berkategori tinggi yang terverifikasi menargetkan infrastruktur di {label_wilayah} dalam 7 hari terakhir.",
-                "potensi_ancaman": "- **Prioritas Hardening**: Fokus mitigasi tetap pada hardening celah sistem (unpatched CVE) dan peningkatan kewaspadaan aparatur terhadap rekayasa sosial / credential phishing.",
+                "potensi_ancaman": "- **Prioritas Kesiapsiagaan**: Fokus mitigasi tetap pada hardening celah sistem (unpatched CVE) dan peningkatan kewaspadaan aparatur terhadap rekayasa sosial / credential phishing.",
                 "sumber": "-",
                 "link": "#",
             }
 
-        rag_context = rag_engine.retrieve_regional_context(cluster_items, label_wilayah, limit=10)
+        # 1. Ekstraksi deterministik sampel kasus riil terbaik (paling terverifikasi)
+        top_art = cluster_items[0]
+        raw_nama = top_art.get("judul", "-")
+        nama_kejadian, _ = _bersihkan_judul_dan_publisher(raw_nama, "")
+        ringkasan_kasus = top_art.get("ringkasan", "") or top_art.get("ringkasan_atau_narasi", "")
+        sumber = top_art.get("sumber", "Media Intelijen Terverifikasi")
+        link = _bersihkan_link(top_art.get("link", "#"))
+        kategori_raw = top_art.get("tag", "Insiden Siber")
+        isu_utama = _normalisasi_isu_utama(kategori_raw, "")
 
-        user_content = (
-            f"KORPUS FAKTA BERITA WILAYAH (RETRIEVED CONTEXT):\n"
-            f"Wilayah: {label_wilayah}\n\n"
-            f"{rag_context}\n\n"
-            f"Instruksi CTI Wilayah:\n"
-            f"- 'alasan_urgensi': Susun dalam 2-3 butir poin ('- ') diawali frasa kunci penting yang ditebalkan (**...**), analisis makro lanskap ancaman wilayah {label_wilayah} secara menyeluruh (vektor serangan, dinamika aktor, kerentanan yang sering disasar). DILARANG hanya menceritakan satu artikel!\n"
-            f"- 'potensi_ancaman': Susun dalam 2-3 butir poin ('- ') diawali frasa kunci penting yang ditebalkan (**...**), proyeksikan ancaman lanjutan dan eskalasi risiko ke depan bagi instansi/wilayah ini.\n"
-            f"- 'nama_kejadian': Pilih 1 artikel riil dari korpus di atas sebagai contoh kejadian relevan terverifikasi.\n"
-            f"- 'ringkasan_kasus': Tuliskan 1-2 kalimat ringkasan spesifik mengenai kejadian studi kasus tersebut.\n"
-            f"- 'sumber', 'link', 'lokasi': Salin persis data dari artikel yang dipilih tersebut."
+        # 2. Fallback deterministik berbasis korpus fakta RAG riil (tidak pernah kosong)
+        sektor_f = _deteksi_sektor_spesifik(f"{nama_kejadian} {ringkasan_kasus}")
+        senjata_f = _deteksi_senjata_spesifik(f"{nama_kejadian} {ringkasan_kasus}")
+        dampak_f = _deteksi_dampak_spesifik(f"{nama_kejadian} {ringkasan_kasus}")
+
+        fallback_urgensi = (
+            f"- **Lanskap Ancaman Aktif**: Terdeteksi {len(cluster_items)} laporan insiden siber dalam 7 hari terakhir di ranah {label_wilayah} dengan fokus eskalasi pada **{isu_utama}**.\n"
+            f"- **Paparan Sektor & Metode**: Penyerangan menargetkan **{sektor_f}** dengan memanfaatkan **{senjata_f}**, yang memicu kerugian berupa **{dampak_f}**."
+        )
+        fallback_potensi = (
+            f"- **Proyeksi Eskalasi Risiko**: Potensi replikasi teknik serangan serupa terhadap sistem informasi dan basis data instansi di wilayah {label_wilayah}.\n"
+            f"- **Kesiapsiagaan Tim CSIRT**: Direkomendasikan pengetatan pemantauan log anomali, penegakan autentikasi multifaktor (MFA), dan audit konfigurasi server berkala."
+        )
+
+        if mode == "instant_rag":
+            return {
+                "ada_kejadian": True,
+                "isu_utama": isu_utama,
+                "nama_kejadian": nama_kejadian,
+                "ringkasan_kasus": ringkasan_kasus,
+                "kategori": kategori_raw,
+                "lokasi": label_wilayah,
+                "alasan_urgensi": _normalisasi_poin_cti(fallback_urgensi),
+                "potensi_ancaman": _normalisasi_poin_cti(fallback_potensi),
+                "sumber": sumber,
+                "link": link,
+            }
+
+        # 3. Mode Modular LLM (Panggilan terisolasi ringan ~250 token)
+        rag_context = rag_engine.retrieve_regional_context(cluster_items, label_wilayah, limit=6)
+        user_prompt = (
+            f"KORPUS FAKTA BERITA WILAYAH: {label_wilayah}\n{rag_context[:800]}\n\n"
+            f"Tulis analisis intelijen makro wilayah dalam 2 bagian berikut:\n"
+            f"ALASAN URGENSI:\n"
+            f"- **[Kata Kunci]**: [Analisis makro lanskap ancaman wilayah {label_wilayah}]\n"
+            f"- **[Kata Kunci]**: [Analisis paparan sektor dan metode penyerangan]\n\n"
+            f"POTENSI ANCAMAN:\n"
+            f"- **[Proyeksi]**: [Analisis eskalasi risiko ke depan]\n"
+            f"- **[Kesiapsiagaan]**: [Rekomendasi mitigasi spesifik]"
         )
 
         try:
-            resp = ollama.chat(
+            hasil_teks = _call_ollama_text(
+                "Kamu adalah Lead CTI Analyst Diskominfo Jawa Timur. Tulis teks analisis langsung dalam format poin-poin bertanda tebal. DILARANG menggunakan JSON.",
+                user_prompt,
                 model=model,
-                messages=[
-                    {"role": "system", "content": PROMPT_SISTEM_CTI},
-                    {"role": "user", "content": user_content},
-                ],
-                format="json",
-                options={"temperature": 0.1, "num_predict": 1024},
+                num_predict=350
             )
-            raw = json.loads(resp["message"]["content"].strip())
-            nama = str(raw.get("nama_kejadian", "-")).strip()
-            ada = bool(raw.get("ada_kejadian", True)) and nama not in ["-", "", "None"]
-
-            isu_raw = str(raw.get("isu_utama", "")).strip()
-            isu_normal = _normalisasi_isu_utama(isu_raw, str(raw.get("kategori", "")))
-
-            return {
-                "ada_kejadian": ada,
-                "isu_utama": isu_normal if ada else "Kondisi Kondusif",
-                "nama_kejadian": nama if ada else "-",
-                "ringkasan_kasus": str(raw.get("ringkasan_kasus", "")).strip() if ada else "",
-                "kategori": str(raw.get("kategori", "Insiden Siber")).strip() if ada else "-",
-                "lokasi": str(raw.get("lokasi", label_wilayah)).strip() if ada else label_wilayah,
-                "alasan_urgensi": _normalisasi_poin_cti(raw.get("alasan_urgensi", "-")) if ada else "-",
-                "potensi_ancaman": _normalisasi_poin_cti(raw.get("potensi_ancaman", "-")) if ada else "-",
-                "sumber": str(raw.get("sumber", "-")).strip() if ada else "-",
-                "link": _bersihkan_link(raw.get("link", "#")) if ada else "#",
-            }
+            urgensi, potensi = _parse_urgensi_dan_potensi(hasil_teks, fallback_urgensi, fallback_potensi)
         except Exception as err:
-            logger.warning(f"Gagal sintesis CTI AI untuk {label_wilayah}: {err}")
-            return {
-                "ada_kejadian": False,
-                "isu_utama": "Kondisi Kondusif",
-                "nama_kejadian": "-",
-                "ringkasan_kasus": "",
-                "kategori": "-",
-                "lokasi": label_wilayah,
-                "alasan_urgensi": "-",
-                "potensi_ancaman": "-",
-                "sumber": "-",
-                "link": "#",
-            }
+            logger.warning(f"Fallback CTI AI wilayah {label_wilayah}: {err}")
+            urgensi, potensi = fallback_urgensi, fallback_potensi
 
+        return {
+            "ada_kejadian": True,
+            "isu_utama": isu_utama,
+            "nama_kejadian": nama_kejadian,
+            "ringkasan_kasus": ringkasan_kasus,
+            "kategori": kategori_raw,
+            "lokasi": label_wilayah,
+            "alasan_urgensi": _normalisasi_poin_cti(urgensi),
+            "potensi_ancaman": _normalisasi_poin_cti(potensi),
+            "sumber": sumber,
+            "link": link,
+        }
+
+    logger.info("[Wilayah 1/3] Menganalisis CTI Internasional (Global)...")
     hasil_intl = _sintesis_wilayah("internasional", "Internasional (Global)")
+
+    logger.info("[Wilayah 2/3] Menganalisis CTI Nasional (Indonesia)...")
     hasil_nas = _sintesis_wilayah("nasional", "Nasional (Indonesia)")
+
+    logger.info("[Wilayah 3/3] Menganalisis CTI Jawa Timur...")
     hasil_jatim = _sintesis_wilayah("jawa_timur", "Jawa Timur")
 
     return {
@@ -486,23 +398,34 @@ def proses_prediksi_tren(
     model: str = MODEL_PREDIKTOR
 ) -> Dict:
     """
-    Titik masuk utama modul ini: menerima output susun_ringkasan_statistik_tren()
-    dari trend_analyzer.py, mengembalikan 2 narasi terpisah siap tampil di web
-    beserta analisis makro wilayah menggunakan RAG korpus fakta berita riil dan Ollama.
+    Titik masuk utama: Menjalankan pipeline CTI secara sekuensial dan terisolasi
+    (Berita -> CVE -> Kasus Wilayah), sehingga LLM tidak memproses hal besar bersamaan.
     """
-    logger.info("Menyusun prediksi tren berita CTI dengan RAG korpus berita riil...")
-    narasi_berita = prediksi_tren_berita(statistik_tren, df_riwayat=df_riwayat, model=model)
+    mode_cti = "modular_llm"
+    try:
+        import yaml
+        with open("config/config.yaml", "r", encoding="utf-8") as f:
+            cfg = yaml.safe_load(f)
+            mode_cti = cfg.get("analytics", {}).get("cti_generation_mode", "modular_llm")
+    except Exception:
+        mode_cti = "modular_llm"
 
-    logger.info("Menyusun prediksi tren CVE dengan RAG data kerentanan riil...")
-    narasi_cve = prediksi_tren_cve(statistik_tren.get("cve", {}), df_riwayat=df_riwayat, model=model)
+    logger.info(f"=== MEMULAI PIPELINE CTI SEQUENTIAL ISOLATED ({mode_cti.upper()}) ===")
 
-    logger.info("Menganalisis penilaian CTI makro wilayah (Internasional, Nasional, Jawa Timur) dengan RAG & Ollama...")
-    kasus_ai = analisis_kasus_insiden_wilayah_ai(df_riwayat=df_riwayat, model=model)
+    logger.info("[TAHAP 1/3] Menyusun prediksi tren berita CTI secara modular...")
+    narasi_berita, data_analyst = prediksi_tren_berita(statistik_tren, df_riwayat=df_riwayat, model=model, mode=mode_cti)
+
+    logger.info("[TAHAP 2/3] Menyusun prediksi tren CVE secara modular...")
+    narasi_cve = prediksi_tren_cve(statistik_tren.get("cve", {}), df_riwayat=df_riwayat, model=model, mode=mode_cti)
+
+    logger.info("[TAHAP 3/3] Menganalisis penilaian CTI makro wilayah secara sekuensial (Intl -> Nas -> Jatim)...")
+    kasus_ai = analisis_kasus_insiden_wilayah_ai(df_riwayat=df_riwayat, model=model, mode=mode_cti)
 
     return {
         "prediksi_berita": narasi_berita,
         "prediksi_cve": narasi_cve,
         "kasus_wilayah_ai": kasus_ai,
+        "data_analyst": data_analyst,
     }
 
 

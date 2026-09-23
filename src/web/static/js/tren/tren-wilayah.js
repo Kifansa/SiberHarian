@@ -6,7 +6,6 @@ import { escapeHtml } from './tren-utils.js';
 const WILAYAH_META = {
   intl: {
     label: 'Internasional',
-    sublabel: 'Isu Siber Global & APT',
     icon: 'public',
     iconColor: 'text-[#0A4174]',
     badgeBg: 'bg-[#EEF5FA]',
@@ -14,7 +13,6 @@ const WILAYAH_META = {
   },
   nas: {
     label: 'Nasional',
-    sublabel: 'Paparan Siber Indonesia',
     icon: 'flag',
     iconColor: 'text-[#4E8EA2]',
     badgeBg: 'bg-[#EEF7FA]',
@@ -22,7 +20,6 @@ const WILAYAH_META = {
   },
   jatim: {
     label: 'Jawa Timur',
-    sublabel: 'Entitas Wilayah Jatim',
     icon: 'location_on',
     iconColor: 'text-[#001D39]',
     badgeBg: 'bg-[#EEF5FA]',
@@ -47,19 +44,19 @@ let currentKasusData = {
 export function getTagBadge(tag) {
   const t = (tag || '').toLowerCase();
   if (t.includes('ransomware')) {
-    return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-[#b91c1c] border border-red-200">Ransomware</span>';
+    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-50 text-[#b91c1c] border border-red-200">Ransomware</span>';
   } else if (t.includes('bocor') || t.includes('data')) {
-    return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]">Kebocoran Data</span>';
+    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]">Kebocoran Data</span>';
   } else if (t.includes('peretasan') || t.includes('deface') || t.includes('slot')) {
-    return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#EEF7FA] text-[#4E8EA2] border border-[#BDD8E9]">Peretasan Web</span>';
+    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF7FA] text-[#4E8EA2] border border-[#BDD8E9]">Peretasan Web</span>';
   } else if (t.includes('malware')) {
-    return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#EEF5FA] text-[#001D39] border border-[#BDD8E9]">Malware</span>';
+    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF5FA] text-[#001D39] border border-[#BDD8E9]">Malware</span>';
   } else if (t.includes('phishing')) {
-    return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#EEF5FA] text-[#49769F] border border-[#BDD8E9]">Phishing</span>';
+    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF5FA] text-[#49769F] border border-[#BDD8E9]">Phishing</span>';
   } else if (t.includes('celah') || t.includes('zero-day')) {
-    return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]">Eksploitasi Celah</span>';
+    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]">Eksploitasi Celah</span>';
   }
-  return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]">' + escapeHtml(tag || 'Insiden Siber') + '</span>';
+  return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]">' + escapeHtml(tag || 'Insiden Siber') + '</span>';
 }
 
 /**
@@ -135,8 +132,8 @@ export function bukaModalDetailKasus(wilayahKey) {
 
   if (titleEl) titleEl.textContent = `Analisis Ancaman Wilayah: ${meta.label}`;
   if (sumberEl) {
-    sumberEl.innerHTML = `
-      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]">
+      sumberEl.innerHTML = `
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[11px] font-semibold bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]">
         <span class="material-symbols-outlined text-[13px] text-[#0A4174]">travel_explore</span>
         Sintesis Intelijen RAG: ${escapeHtml(meta.label)} (${escapeHtml(isuName)})
       </span>
@@ -154,7 +151,7 @@ export function bukaModalDetailKasus(wilayahKey) {
     } else {
       const hasLink = item.link && item.link !== '#' && !item.link.startsWith('javascript:');
       const lokasiHtml = item.lokasi && item.lokasi !== '-' ? `
-        <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-[#49769F] bg-white border border-[#BDD8E9] px-2.5 py-0.5 rounded-full shadow-2xs">
+        <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-[#49769F] bg-white px-2.5 py-0.5 rounded border border-[#BDD8E9]">
           <span class="material-symbols-outlined text-[11px] text-[#4E8EA2]">location_on</span>
           ${escapeHtml(item.lokasi)}
         </span>
@@ -167,7 +164,7 @@ export function bukaModalDetailKasus(wilayahKey) {
         <div class="space-y-1.5">
           <div class="flex items-center gap-1.5 flex-wrap mb-1">
             ${lokasiHtml}
-            <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-[#0A4174] bg-[#EEF5FA] border border-[#BDD8E9] px-2.5 py-0.5 rounded-full shadow-2xs">
+            <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-[#0A4174] bg-[#EEF5FA] px-2.5 py-0.5 rounded border border-[#BDD8E9]">
               <span class="material-symbols-outlined text-[11px]">verified</span>
               Studi Kasus Terverifikasi
             </span>
@@ -183,7 +180,7 @@ export function bukaModalDetailKasus(wilayahKey) {
           </h5>
           ${ringkasanHtml}
           <div class="flex items-center text-xs text-[#49769F] pt-1">
-            <span class="flex items-center gap-1 font-medium" title="${escapeHtml(item.sumber || '')}">
+            <span class="inline-flex items-center gap-1 font-medium" title="${escapeHtml(item.sumber || '')}">
               <span class="material-symbols-outlined text-[13px] text-[#49769F] shrink-0">newspaper</span>
               <span>${escapeHtml(item.sumber || 'Media Terverifikasi')}</span>
             </span>
@@ -290,9 +287,8 @@ export function renderSingleIncidentCard(item, wilayahKey) {
     <div class="flex items-center justify-between gap-3 pb-3 border-b border-[#E2EDF8]">
       <div>
         <h4 class="text-[11px] sm:text-xs font-bold text-[#49769F] uppercase tracking-wider leading-tight">${escapeHtml(meta.label)}</h4>
-        <p class="text-[11px] text-[#0A4174] font-medium mt-0.5">${escapeHtml(meta.sublabel)}</p>
       </div>
-      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#EEF5FA] border border-[#BDD8E9]/60 ${meta.iconColor} flex items-center justify-center shrink-0 shadow-2xs">
+      <div class="${meta.iconColor}">
         <span class="material-symbols-outlined text-lg sm:text-xl" aria-hidden="true">${meta.icon}</span>
       </div>
     </div>
@@ -308,7 +304,7 @@ export function renderSingleIncidentCard(item, wilayahKey) {
     <div class="pt-3 border-t border-[#E2EDF8] flex items-center justify-between">
       <button type="button" 
         onclick="window.bukaModalDetailKasus('${wilayahKey}')"
-        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#EEF5FA] hover:bg-[#0A4174] text-[#0A4174] hover:text-white border border-[#BDD8E9] transition-all cursor-pointer shadow-2xs group focus:outline-none focus:ring-2 focus:ring-[#0A4174]"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold bg-[#EEF5FA] hover:bg-[#0A4174] text-[#0A4174] hover:text-white border border-[#BDD8E9] transition-all cursor-pointer shadow-2xs group focus:outline-none focus:ring-2 focus:ring-[#0A4174]"
         title="Buka rincian analisis ancaman ${escapeHtml(meta.label)}">
         <span>Detail Ancaman</span>
         <span class="material-symbols-outlined text-[15px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>

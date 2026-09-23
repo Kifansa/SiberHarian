@@ -126,7 +126,7 @@ export function tampilkanToast(pesan, tipe = 'sukses') {
     iconColor = 'text-[#7BBDE8]';
   }
 
-  toast.className = `flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-xs font-semibold shadow-md transition-all duration-300 transform translate-y-3 opacity-0 pointer-events-auto ${bg}`;
+  toast.className = `flex items-center gap-2.5 px-4 py-2.5 rounded-md text-xs font-semibold shadow-md transition-all duration-300 transform translate-y-3 opacity-0 pointer-events-auto ${bg}`;
   toast.innerHTML = `
     <span class="material-symbols-outlined text-lg ${iconColor}" aria-hidden="true">${icon}</span>
     <span>${escapeHtml(pesan)}</span>

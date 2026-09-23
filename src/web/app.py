@@ -13,6 +13,7 @@ import queue
 import threading
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Optional
 
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
@@ -28,6 +29,7 @@ from src.storage.db import (
     ambil_riwayat_tren,
     simpan_prediksi_tren,
     ambil_data_terbaru_per_kategori,
+    ambil_statistik_publik,
 )
 from src.summarizer.llm_summarizer import proses_summarization_harian
 
@@ -194,6 +196,22 @@ async def ambil_tren():
         "tanggal_dihitung": prediksi["tanggal_dihitung"],
         "statistik": statistik,
     }
+
+
+@app.get("/api/statistik-publik")
+async def api_statistik_publik():
+    """Tab Statistik Publik: Agregat visualisasi fakta siber empiris untuk masyarakat umum."""
+    return ambil_statistik_publik()
+
+
+@app.get("/api/ensiklopedia")
+async def api_ensiklopedia(q: Optional[str] = None):
+    """Endpoint eksplorasi ensiklopedia referensi standar keamanan siber (MITRE, D3FEND, NIST, OWASP, CWE, BSSN)."""
+    from src.analytics.encyclopedia_lookup import get_all_framework_counts, search_encyclopedia
+    if q:
+        keywords = [k.strip() for k in q.split(",") if k.strip()]
+        return {"query": q, "hasil": search_encyclopedia(keywords)}
+    return {"status": "ok", "frameworks": get_all_framework_counts()}
 
 
 @app.get("/")

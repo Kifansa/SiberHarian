@@ -1,0 +1,62 @@
+[
+  {
+    "id": "ISO-A.5.15",
+    "theme": "Organizational Controls (Access Control)",
+    "keywords": ["access control", "hak akses", "pemisahan peran", "segregation of duties", "least privilege"],
+    "mitigation": "Terapkan aturan pembatasan akses berbasis peran dan kebutuhan tugas (need-to-know basis) serta lakukan evaluasi hak akses berkala minimal setiap 6 bulan."
+  },
+  {
+    "id": "ISO-A.5.23",
+    "theme": "Organizational Controls (Information Security for Cloud Services)",
+    "keywords": ["cloud", "pdn", "komputasi awan", "iaas", "paas", "saas", "keamanan cloud"],
+    "mitigation": "Tetapkan dan pantau standar keamanan informasi khusus untuk pemanfaatan layanan komputasi awan (Cloud Services) sesuai matriks tanggung jawab bersama (Shared Responsibility Model)."
+  },
+  {
+    "id": "ISO-A.5.24",
+    "theme": "Organizational Controls (Incident Management Planning)",
+    "keywords": ["manajemen insiden", "sop tanggap insiden", "prosedur insiden", "eskalasi krisis", "perencanaan darurat"],
+    "mitigation": "Susun dan sosialisasikan prosedur formal manajemen insiden keamanan informasi termasuk mekanisme pelaporan, investigasi, dan dokumentasi bukti digital."
+  },
+  {
+    "id": "ISO-A.6.3",
+    "theme": "People Controls (Information Security Awareness and Training)",
+    "keywords": ["kesadaran keamanan", "pelatihan asn", "literasi digital", "edukasi pegawai", "sosialisasi keamanan"],
+    "mitigation": "Selenggarakan program pendidikan dan pelatihan kesadaran keamanan informasi secara berkala bagi seluruh personel instansi dan mitra kerja."
+  },
+  {
+    "id": "ISO-A.8.7",
+    "theme": "Technological Controls (Protection Against Malware)",
+    "keywords": ["antimalware", "perlindungan malware", "edr", "ransomware", "trojan", "antivirus"],
+    "mitigation": "Terapkan perlindungan anti-malware di seluruh endpoint dan gateway jaringan yang diperbarui secara otomatis dan dilengkapi fitur deteksi anomali perilaku."
+  },
+  {
+    "id": "ISO-A.8.8",
+    "theme": "Technological Controls (Management of Technical Vulnerabilities)",
+    "keywords": ["cve", "patching", "manajemen kerentanan", "vulnerability management", "uji penetrasi"],
+    "mitigation": "Dapatkan informasi kerentanan teknis sistem informasi secara proaktif, evaluasi paparan risikonya, dan lakukan tindakan perbaikan (patching) secara terukur."
+  },
+  {
+    "id": "ISO-A.8.9",
+    "theme": "Technological Controls (Configuration Management)",
+    "keywords": ["manajemen konfigurasi", "hardening", "baseline konfigurasi", "standar keamanan server"],
+    "mitigation": "Tetapkan, dokumentasikan, dan terapkan baseline konfigurasi standar yang aman pada seluruh perangkat lunak dan infrastruktur komputasi instansi."
+  },
+  {
+    "id": "ISO-A.8.12",
+    "theme": "Technological Controls (Data Leakage Prevention)",
+    "keywords": ["dlp", "kebocoran data", "pencegahan kebocoran", "exfiltrasi", "transfer data ilegal"],
+    "mitigation": "Terapkan langkah pencegahan kebocoran data (Data Leakage Prevention) pada endpoint, jaringan, dan media penyimpanan untuk mencegah eksfiltrasi informasi rahasia."
+  },
+  {
+    "id": "ISO-A.8.20",
+    "theme": "Technological Controls (Network Security)",
+    "keywords": ["keamanan jaringan", "segmentasi jaringan", "firewall", "dmz", "isolasi vlan"],
+    "mitigation": "Kelola dan amankan jaringan komunikasi data secara memadai guna melindungi informasi dalam sistem serta pisahkan layanan publik dari basis data internal."
+  },
+  {
+    "id": "ISO-A.8.24",
+    "theme": "Technological Controls (Use of Cryptography)",
+    "keywords": ["kriptografi", "enkripsi", "manajemen kunci", "tls", "sertifikat digital", "hash"],
+    "mitigation": "Terapkan kebijakan penggunaan kriptografi yang kuat untuk melindungi kerahasiaan dan integritas informasi serta kelola siklus hidup kunci kriptografi secara aman."
+  }
+]

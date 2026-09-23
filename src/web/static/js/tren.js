@@ -2,15 +2,16 @@
  * Modul Controller Utama Tab Tren (Orkestrator Komponen Modular)
  * Mengintegrasikan submodul di static/js/tren/ untuk menjaga kode tetap bersih, modular, dan ringan.
  */
-import { ambilTren } from './api.js?v=5.6';
-import { formatWaktuSekarang, tampilkanToast } from './utils.js?v=5.6';
+import { ambilTren } from './api.js';
+import { formatWaktuSekarang, tampilkanToast } from './utils.js';
 
-import { renderKpiCards, flashUpdatedCards } from './tren/tren-kpi.js?v=6.2';
-import { renderCharts } from './tren/tren-charts.js?v=5.6';
-import { renderKasusInsidenWilayah } from './tren/tren-wilayah.js?v=6.3';
-import { renderTables } from './tren/tren-tables.js?v=5.6';
-import { renderLaporanCards, tampilAiTab } from './tren/tren-ai-cards.js?v=6.3';
-import { eksporLaporanTren as eksporPdf } from './tren/tren-pdf-exporter.js?v=5.6';
+import { renderKpiCards, flashUpdatedCards } from './tren/tren-kpi.js';
+import { renderCharts } from './tren/tren-charts.js';
+import { renderKasusInsidenWilayah } from './tren/tren-wilayah.js';
+import { renderTables } from './tren/tren-tables.js';
+import { renderLaporanCards, tampilAiTab } from './tren/tren-ai-cards.js';
+import { eksporLaporanTren as eksporPdf } from './tren/tren-pdf-exporter.js';
+
 
 let sudahDimuat = false;
 let sedangMemuat = false;
@@ -137,29 +138,16 @@ export async function muatTabTren(isManualReload = false) {
     if (isManualReload) {
       if (btnRefreshIcon) {
         btnRefreshIcon.classList.remove('animate-spin');
-        btnRefreshIcon.textContent = 'check_circle';
-        btnRefreshIcon.classList.add('text-google-green');
+        btnRefreshIcon.textContent = 'refresh';
       }
       if (btnRefreshText) {
-        btnRefreshText.textContent = 'Data Terkini!';
-        btnRefreshText.classList.add('text-google-green');
+        btnRefreshText.textContent = 'Muat Ulang Data';
+      }
+      if (btnRefresh) {
+        btnRefresh.disabled = false;
+        btnRefresh.classList.remove('opacity-70', 'cursor-not-allowed');
       }
       tampilkanToast('Data tren keamanan siber berhasil diperbarui');
-
-      setTimeout(() => {
-        if (btnRefreshIcon) {
-          btnRefreshIcon.textContent = 'refresh';
-          btnRefreshIcon.classList.remove('text-google-green');
-        }
-        if (btnRefreshText) {
-          btnRefreshText.textContent = 'Muat Ulang Data';
-          btnRefreshText.classList.remove('text-google-green');
-        }
-        if (btnRefresh) {
-          btnRefresh.disabled = false;
-          btnRefresh.classList.remove('opacity-70', 'cursor-not-allowed');
-        }
-      }, 1500);
     }
   } catch (err) {
     console.error('Error saat memuat tab tren:', err);

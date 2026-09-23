@@ -1,8 +1,10 @@
-import { bukaModal, tutupModal, tutupModalJikaLuar, salinTeksModal } from './modal.js?v=5.3';
-import { tampilkanBeranda, mulaiPipeline, batalkanPipeline, filterBerandaCards } from './beranda.js?v=5.3';
-import { muatTabArsip, muatUlangTabArsip, filterArsipCards } from './arsip.js?v=5.3';
-import { muatTabTren, muatUlangTabTren, eksporLaporanTren } from './tren.js?v=6.3';
-import { debounce } from './utils.js?v=5.3';
+import { bukaModal, tutupModal, tutupModalJikaLuar, salinTeksModal } from './modal.js';
+import { tampilkanBeranda, mulaiPipeline, batalkanPipeline, filterBerandaCards } from './beranda.js';
+import { muatTabArsip, muatUlangTabArsip, filterArsipCards } from './arsip.js';
+import { muatTabTren, muatUlangTabTren, eksporLaporanTren } from './tren.js';
+import { muatTabStatistikPublik } from './statistik-publik.js';
+import { debounce } from './utils.js';
+
 
 // Expose handlers ke window untuk Alpine.js & atribut onclick
 window.bukaModal = bukaModal;
@@ -15,6 +17,7 @@ window.muatTabArsip = muatTabArsip;
 window.muatTabTren = muatTabTren;
 window.muatUlangTabTren = muatUlangTabTren;
 window.eksporLaporanTren = eksporLaporanTren;
+window.muatTabStatistikPublik = muatTabStatistikPublik;
 window.tampilkanBeranda = tampilkanBeranda;
 
 // Invalidate cache saat pipeline selesai jalan
@@ -58,21 +61,23 @@ function inisialisasiPencarianDanShortcut() {
         const isInputFocused = document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
 
         if (e.key === '/' && !isInputFocused) {
-            e.preventDefault();
-            if (searchInput) {
-                searchInput.focus();
-                searchInput.select();
+            const arsipSearch = document.getElementById('arsip-search-input');
+            if (arsipSearch && arsipSearch.offsetParent !== null) {
+                e.preventDefault();
+                arsipSearch.focus();
+                arsipSearch.select();
             }
             return;
         }
 
         if (e.key === 'Escape' && isInputFocused) {
-            if (searchInput && document.activeElement === searchInput) {
-                searchInput.value = '';
-                if (searchClear) searchClear.style.display = 'none';
-                filterBerandaCards('');
+            const arsipSearch = document.getElementById('arsip-search-input');
+            if (arsipSearch && document.activeElement === arsipSearch) {
+                arsipSearch.value = '';
+                const arsipClear = document.getElementById('arsip-search-clear');
+                if (arsipClear) arsipClear.style.display = 'none';
                 filterArsipCards('');
-                searchInput.blur();
+                arsipSearch.blur();
             }
             return;
         }
@@ -95,13 +100,24 @@ function inisialisasiPencarianDanShortcut() {
     });
 }
 
-window.addEventListener('DOMContentLoaded', async () => {
+async function inisialisasiAplikasi() {
+    inisialisasiPencarianDanShortcut();
     try {
-        await tampilkanBeranda();
+        await Promise.allSettled([
+            tampilkanBeranda(),
+            muatTabStatistikPublik(),
+        ]);
+    } catch (err) {
+        console.error('Error saat inisialisasi aplikasi:', err);
     } finally {
         if (window.selesaikanPreloader) {
             window.selesaikanPreloader();
         }
     }
-    inisialisasiPencarianDanShortcut();
-});
+}
+
+if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', inisialisasiAplikasi);
+} else {
+    inisialisasiAplikasi();
+}

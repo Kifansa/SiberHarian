@@ -1,0 +1,212 @@
+[
+  {
+    "id": "T1566",
+    "tactic": "Initial Access",
+    "technique": "Phishing",
+    "keywords": ["phishing", "email palsu", "apk", "undangan palsu", "whatsapp", "spear-phishing", "tautan palsu", "social engineering", "rekayasa sosial", "surat tilang", "paket kurir"]
+  },
+  {
+    "id": "T1190",
+    "tactic": "Initial Access",
+    "technique": "Exploit Public-Facing Application",
+    "keywords": ["rce", "cve", "sql injection", "celah keamanan web", "laravel", "vulnerability", "eksploitasi", "unauthenticated", "remote code execution", "log4j", "spring4shell", "zero-day", "0-day"]
+  },
+  {
+    "id": "T1133",
+    "tactic": "Initial Access",
+    "technique": "External Remote Services",
+    "keywords": ["vpn", "rdp", "rdp terbuka", "remote desktop", "ssh terbuka", "citrix", "fortinet vpn", "anydesk", "teamviewer", "akses jarak jauh"]
+  },
+  {
+    "id": "T1189",
+    "tactic": "Initial Access",
+    "technique": "Drive-by Compromise",
+    "keywords": ["drive-by", "watering hole", "malvertising", "iklan berbahaya", "situs terinfeksi", "skrip pihak ketiga"]
+  },
+  {
+    "id": "T1195",
+    "tactic": "Initial Access",
+    "technique": "Supply Chain Compromise",
+    "keywords": ["supply chain", "rantai pasok", "vendor perangkat lunak", "repositori", "pypi", "npm", "rubygems", "crate", "pembaruan palsu", "library beracun"]
+  },
+  {
+    "id": "T1078",
+    "tactic": "Initial Access / Defense Evasion",
+    "technique": "Valid Accounts",
+    "keywords": ["akun", "kredensial", "sso", "password", "pembajakan akun", "credential stuffing", "login tidak sah", "kebocoran akun", "default password"]
+  },
+  {
+    "id": "T1059",
+    "tactic": "Execution",
+    "technique": "Command and Scripting Interpreter",
+    "keywords": ["powershell", "bash", "cmd.exe", "python script", "vbs", "skrip berbahaya", "shell script", "eksekusi perintah"]
+  },
+  {
+    "id": "T1204",
+    "tactic": "Execution",
+    "technique": "User Execution",
+    "keywords": ["klik tautan", "unduh berkas", "buka lampiran", "macro excel", "dokumen berskrip", "eksekusi pengguna"]
+  },
+  {
+    "id": "T1407",
+    "tactic": "Execution",
+    "technique": "Malicious Mobile APK Installation",
+    "keywords": ["file apk", "apk android", "surat tilang", "undangan pernikahan", "paket ekspedisi", "aksesibilitas android", "trojan perbankan", "aplikasi palsu"]
+  },
+  {
+    "id": "T1505",
+    "tactic": "Persistence",
+    "technique": "Server Software Component: Web Shell",
+    "keywords": ["webshell", "deface", "defacement", "judi online", "slot gacor", "peretasan web", "backdoor", "injeksi file", "c99", "b374k", "wso"]
+  },
+  {
+    "id": "T1053",
+    "tactic": "Persistence / Execution",
+    "technique": "Scheduled Task / Job",
+    "keywords": ["cron", "crontab", "scheduled task", "penjadwalan tugas", "tugas otomatis", "persistensi task"]
+  },
+  {
+    "id": "T1098",
+    "tactic": "Persistence",
+    "technique": "Account Manipulation",
+    "keywords": ["tambah akun admin", "ubah izin akun", "reset password ilegal", "modifikasi otentikasi", "akun siluman"]
+  },
+  {
+    "id": "T1547",
+    "tactic": "Persistence / Privilege Escalation",
+    "technique": "Boot or Logon Autostart Execution",
+    "keywords": ["startup", "registry run keys", "autostart", "service instalasi otomatis", "boot persistence"]
+  },
+  {
+    "id": "T1068",
+    "tactic": "Privilege Escalation",
+    "technique": "Exploitation for Privilege Escalation",
+    "keywords": ["eskalasi hak akses", "privilege escalation", "eskalasi root", "eskalasi admin", "kerentanan kernel", "dirty cow", "dirty pipe"]
+  },
+  {
+    "id": "T1548",
+    "tactic": "Privilege Escalation / Defense Evasion",
+    "technique": "Abuse Elevation Control Mechanism",
+    "keywords": ["bypass uac", "sudo exploit", "polkit exploit", "pkexec", "pwnkit", "elevasi kontrol"]
+  },
+  {
+    "id": "T1027",
+    "tactic": "Defense Evasion",
+    "technique": "Obfuscated / Encrypted Files or Information",
+    "keywords": ["obfuscation", "enkripsi payload", "packer", "upx", "base64 encode", "kode terselubung", "kamuflase file"]
+  },
+  {
+    "id": "T1070",
+    "tactic": "Defense Evasion",
+    "technique": "Indicator Removal",
+    "keywords": ["hapus log", "clear event log", "timestomping", "penghapusan jejak", "hapus riwayat bash", "wevtutil"]
+  },
+  {
+    "id": "T1562",
+    "tactic": "Defense Evasion",
+    "technique": "Impair Defenses",
+    "keywords": ["matikan antivirus", "nonaktifkan edr", "matikan windows defender", "kill security agent", "modifikasi firewall"]
+  },
+  {
+    "id": "T1110",
+    "tactic": "Credential Access",
+    "technique": "Brute Force / Credential Stuffing",
+    "keywords": ["brute force", "credential stuffing", "tebak password", "password spraying", "kamus kata sandi", "botnet stuffing"]
+  },
+  {
+    "id": "T1003",
+    "tactic": "Credential Access",
+    "technique": "OS Credential Dumping",
+    "keywords": ["mimikatz", "lsass", "dump password", "sam database", "pencurian hash", "procdump", "ntds.dit"]
+  },
+  {
+    "id": "T1056",
+    "tactic": "Credential Access",
+    "technique": "Input Capture / Infostealer",
+    "keywords": ["infostealer", "stealer", "trojan", "lumma", "redline", "vidar", "mantax", "keylogger", "pencurian otp", "sms otp", "grayrabbit"]
+  },
+  {
+    "id": "T1539",
+    "tactic": "Credential Access",
+    "technique": "Steal Web Session Cookie",
+    "keywords": ["session hijacking", "cookie", "token sesi", "bypass mfa", "pembajakan session", "steal cookie", "aitm", "adversary in the middle"]
+  },
+  {
+    "id": "T1087",
+    "tactic": "Discovery",
+    "technique": "Account Discovery",
+    "keywords": ["net user", "enum akun", "whoami", "id command", "pencarian administrator", "discovery pengguna"]
+  },
+  {
+    "id": "T1046",
+    "tactic": "Discovery",
+    "technique": "Network Service Discovery",
+    "keywords": ["port scanning", "nmap", "pemindaian port", "pemetaan jaringan", "masscan", "service scanning"]
+  },
+  {
+    "id": "T1021",
+    "tactic": "Lateral Movement",
+    "technique": "Remote Services (RDP / SMB / SSH)",
+    "keywords": ["lateral movement", "pergerakan lateral", "smb", "psexec", "wmi", "winrm", "remote ssh", "admin shares"]
+  },
+  {
+    "id": "T1550",
+    "tactic": "Lateral Movement",
+    "technique": "Use Alternate Authentication Material",
+    "keywords": ["pass the hash", "pass the ticket", "kerberos ticket", "golden ticket", "silver ticket", "pth"]
+  },
+  {
+    "id": "T1005",
+    "tactic": "Collection",
+    "technique": "Data from Local System",
+    "keywords": ["pengambilan file", "pencurian database", "koleksi dokumen", "dump database", "salin berkas rahasia"]
+  },
+  {
+    "id": "T1560",
+    "tactic": "Collection",
+    "technique": "Archive Collected Data",
+    "keywords": ["zip data", "rar password", "kompresi data", "enkripsi arsip", "7z archive"]
+  },
+  {
+    "id": "T1071",
+    "tactic": "Command and Control",
+    "technique": "Application Layer Protocol",
+    "keywords": ["c2", "command and control", "telegram c2", "discord bot c2", "komunikasi http c2", "dns tunneling", "cobalt strike"]
+  },
+  {
+    "id": "T1105",
+    "tactic": "Command and Control",
+    "technique": "Ingress Tool Transfer",
+    "keywords": ["unduh malware", "certutil download", "curl download", "wget", "transfer tools peretas", "powershell downloadstring"]
+  },
+  {
+    "id": "T1567",
+    "tactic": "Exfiltration",
+    "technique": "Exfiltration Over Web Service / Data Breach",
+    "keywords": ["bocor", "leak", "breach", "dark web", "data pribadi", "paspor", "kebocoran data", "basis data diperjualbelikan", "upload mega", "exfiltrasi"]
+  },
+  {
+    "id": "T1486",
+    "tactic": "Impact",
+    "technique": "Data Encrypted for Impact (Ransomware)",
+    "keywords": ["ransomware", "brain cipher", "lockbit", "akira", "enkripsi", "tebusan", "file terkunci", "pemerasan", "double extortion"]
+  },
+  {
+    "id": "T1490",
+    "tactic": "Impact",
+    "technique": "Inhibit System Recovery",
+    "keywords": ["hapus shadow copy", "vssadmin delete shadows", "matikan backup", "rusak pemulihan", "bcdr dinonaktifkan"]
+  },
+  {
+    "id": "T1499",
+    "tactic": "Impact",
+    "technique": "Endpoint Denial of Service",
+    "keywords": ["ddos", "dos", "layanan lumpuh", "traffic spike", "volumetric attack", "server down", "flooding", "slowloris", "syn flood"]
+  },
+  {
+    "id": "T1491",
+    "tactic": "Impact",
+    "technique": "Defacement",
+    "keywords": ["deface", "defacement", "ubah tampilan web", "slot gacor", "judi online", "hacked by", "pesan peretas"]
+  }
+]

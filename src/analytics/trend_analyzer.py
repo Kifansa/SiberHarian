@@ -15,6 +15,7 @@ from typing import Dict, List, Optional
 import re
 
 import pandas as pd
+from src.utils.config_loader import ConfigLoader
 
 from src.utils.logger import setup_logger
 
@@ -106,7 +107,7 @@ def _dedup_ringan_lintas_hari(df_berita: pd.DataFrame, kolom_judul: str = "judul
 
 
 def hitung_tren_kata_kunci_berita(
-    df_riwayat: pd.DataFrame, top_n: int = 8, df_berita_dedup: Optional[pd.DataFrame] = None
+    df_riwayat: pd.DataFrame, top_n: int = 10, df_berita_dedup: Optional[pd.DataFrame] = None
 ) -> List[Dict]:
     """
     Menghitung tren kemunculan tiap kata kunci individual dari kolom
@@ -217,7 +218,7 @@ def ambil_sampel_judul_insiden(
     ]
 
 
-def hitung_tren_vendor_cve(df_riwayat: pd.DataFrame, top_n: int = 8, top_produk_per_vendor: int = 3) -> List[Dict]:
+def hitung_tren_vendor_cve(df_riwayat: pd.DataFrame, top_n: int = 10, top_produk_per_vendor: int = 3) -> List[Dict]:
     df_cve = df_riwayat[df_riwayat["kategori"] == "cve"].copy()
     df_cve = df_cve[df_cve["vendor"].notna() & (df_cve["vendor"] != "Lainnya / Belum Teridentifikasi")]
     if df_cve.empty:
@@ -271,23 +272,9 @@ def hitung_tren_vendor_cve(df_riwayat: pd.DataFrame, top_n: int = 8, top_produk_
     return hasil[:top_n]
 
 
-VEKTOR_RULES = {
-    "Weaponized AI & Botnet": ["ai", "claude", "otonom", "botnet", "ddos", "tsunami"],
-    "Malware & Infostealer": ["malware", "trojan", "stealer", "lumma", "infostealer", "spynote", "toxicpanda", "grandoreiro", "virus", "spyware"],
-    "Eksploitasi Celah RCE": ["celah", "exploit", "rce", "zero-day", "0-day", "bypass", "kerentanan", "vulnerability", "overflow", "flaw"],
-    "Phishing & Social Engineering": ["phishing", "email", "sms", "smishing", "vishing", "brandname", "kuota", "bansos"],
-    "Ransomware & Pemerasan": ["ransomware", "tebusan", "jadepuffer", "pemerasan"],
-    "Supply Chain & Repositori": ["supply chain", "crate", "rubygems", "npm", "pypi", "repository", "package", "poison"],
-    "Pembajakan Akun & Kredensial": ["credential", "stuffing", "bajak", "take over", "screen sharing", "password"],
-}
 
-SEKTOR_RULES = {
-    "Pengembang & Infrastruktur TI": ["developer", "rust", "wordpress", "netscaler", "citrix", "vmware", "unix", "apple", "windows", "dns", "server", "jaringan", "cdn", "cloud"],
-    "Pengguna & Konsumen Ritel": ["whatsapp", "iphone", "android", "kartu", "game", "gta", "jungkook", "warga", "pengguna", "masyarakat"],
-    "Korporasi & Enterprise": ["perusahaan", "alation", "netflix", "brinks", "pnld", "bisnis", "bumn", "umkm", "industri"],
-    "Pemerintahan & Instansi Publik": ["pemerintah", "pemda", "polres", "polri", "kementerian", "dprd", "tangsel", "berlin", "bgn", "bpjs", "nuklir", "taiwan", "pemkot", "desa", "irs"],
-    "Finansial, Bank & Kripto": ["bank", "keuangan", "bitcoin", "kripto", "btc", "dompet", "coldcard", "swiss", "pajak", "transaksi", "visa", "biocatch", "ethereum"],
-}
+
+
 
 
 def hitung_tren_vektor_serangan(
@@ -345,6 +332,8 @@ def hitung_tren_sektor_target(
 
 def hitung_skor_threat_posture(df_riwayat: pd.DataFrame) -> Dict:
     """
+    SEKTOR_RULES = ConfigLoader.get_rules("sektor_rules")
+    VEKTOR_RULES = ConfigLoader.get_rules("vektor_rules")
     Menghitung skor threat posture komparatif: 7 hari terkini vs 7 hari baseline.
     """
     if df_riwayat.empty:
@@ -439,44 +428,8 @@ def hitung_matriks_tindakan_ancaman(
         df_terkini_dedup = _dedup_ringan_lintas_hari(df_terkini)
         df_baseline_dedup = _dedup_ringan_lintas_hari(df_baseline)
 
-    kategori_ancaman_definisi = [
-        {
-            "id": "ransomware",
-            "kategori": "Ransomware & Pemerasan",
-            "ikon": "lock",
-            "warna": "red",
-            "keywords": ["ransomware", "tebusan", "pemerasan", "encryptor", "jadepuffer"],
-            "fokus_website": "Pencegahan enkripsi basis data web, server cadangan, dan pemerasan data OPD.",
-            "tindakan_taktis": "Isolasi database dari akses publik langsung, aktifkan immutable offline backup, dan perketat MFA.",
-        },
-        {
-            "id": "defacement_rce",
-            "kategori": "Web Defacement & Celah RCE",
-            "ikon": "web",
-            "warna": "amber",
-            "keywords": ["deface", "defacement", "rce", "exploit", "celah", "vulnerability", "bypass", "web shell", "diretas", "hacked"],
-            "fokus_website": "Perlindungan integritas halaman web, portal dinas, dan pencegahan backdoor/judi online.",
-            "tindakan_taktis": "Nonaktifkan eksekusi PHP di folder upload (/uploads), terapkan WAF rule, dan update plugin/CMS.",
-        },
-        {
-            "id": "phishing_kredensial",
-            "kategori": "Pencurian Akun & Phishing",
-            "ikon": "badge",
-            "warna": "blue",
-            "keywords": ["phishing", "kredensial", "credential", "password", "akun", "login", "otp", "rekayasa sosial", "stealer", "infostealer"],
-            "fokus_website": "Mencegah pengambilalihan akun admin cPanel/CMS website melalui kebocoran kredensial staf.",
-            "tindakan_taktis": "Wajibkan 2FA pada panel admin, batasi login admin dengan IP Whitelist, dan rotasi password berkala.",
-        },
-        {
-            "id": "kebocoran_data",
-            "kategori": "Kebocoran Data & Database Dump",
-            "ikon": "database",
-            "warna": "purple",
-            "keywords": ["kebocoran data", "data bocor", "pencurian data", "data dijual", "breach", "dark web", "nik", "ktp", "dukcapil"],
-            "fokus_website": "Mencegah eksfiltrasi data warga dan data operasional dari database layanan publik.",
-            "tindakan_taktis": "Audit endpoint API publik, aktifkan enkripsi at-rest/in-transit, dan cegah akses open dump SQL.",
-        },
-    ]
+    kategori_ancaman_definisi = ConfigLoader.get_rules("kategori_ancaman")
+
 
     matriks = []
     for item in kategori_ancaman_definisi:
@@ -496,7 +449,8 @@ def hitung_matriks_tindakan_ancaman(
         cnt_baseline = _hitung_frekuensi(df_baseline_dedup)
         growth = _hitung_growth(cnt_terkini, cnt_baseline)
 
-        if cnt_terkini >= 4 or growth >= 50.0:
+        urg_cfg = ConfigLoader.get_config().get("cti_analysis", {}).get("threat_posture", {}).get("urgency", {"kritis_count": 4, "kritis_growth": 50.0})
+        if cnt_terkini >= urg_cfg["kritis_count"] or growth >= urg_cfg["kritis_growth"]:
             level_urgensi = "KRITIS"
             badge_warna = "red"
         elif cnt_terkini >= 2 or growth > 0:
@@ -528,32 +482,14 @@ def hitung_matriks_tindakan_ancaman(
 
 
 # Media Cybersecurity Internasional (RSS Resmi Luar Negeri)
-_SUMBER_INTERNASIONAL = {
-    "The Hacker News", "BleepingComputer", "Krebs on Security",
-    "Dark Reading", "SecurityWeek", "The Record", "CyberScoop",
-    "Infosecurity Magazine", "The Register Security", "Security Affairs",
-    "Help Net Security", "SANS ISC", "CISA News", "Unit 42",
-    "Trend Micro ZDI", "Microsoft Security", "Cisco Talos",
-    "WeLiveSecurity", "Malwarebytes Labs", "Kaspersky Securelist",
-    "Wired Security", "Red Canary", "Tenable Blog", "Qualys Blog",
-}
+
 
 # Entitas Geografis Murni Jawa Timur (Provinsi + 29 Kabupaten + 9 Kota)
 # Tanpa hardcode nama instansi/OPD karena instansi lokal selalu mengandung unsur "Jatim"/"Jawa Timur" atau nama kota/kabupatennya.
-_KEYWORDS_JAWA_TIMUR = [
-    "jawa timur", "jatim",
-    # 29 Kabupaten
-    "bangkalan", "banyuwangi", "blitar", "bojonegoro", "bondowoso", "gresik",
-    "jember", "jombang", "kediri", "lamongan", "lumajang", "madiun", "magetan",
-    "malang", "mojokerto", "nganjuk", "ngawi", "pacitan", "pamekasan", "pasuruan",
-    "ponorogo", "probolinggo", "sampang", "sidoarjo", "situbondo", "sumenep",
-    "trenggalek", "tuban", "tulungagung",
-    # 9 Kota
-    "surabaya", "batu", "blitar", "kediri", "madiun", "malang", "mojokerto", "pasuruan", "probolinggo",
-]
+
 
 _KEYWORDS_JATIM_REGEX = re.compile(
-    r'\b(?:' + '|'.join(re.escape(k) for k in _KEYWORDS_JAWA_TIMUR) + r')\b',
+    r'\b(?:' + '|'.join(re.escape(k) for k in ConfigLoader.get_rules("keywords_jawa_timur")) + r')\b',
     re.IGNORECASE
 )
 
@@ -788,12 +724,12 @@ def susun_ringkasan_statistik_tren(df_riwayat: pd.DataFrame) -> Dict:
 
     statistik = {
         "berita": {
-            "kata_kunci_naik": hitung_tren_kata_kunci_berita(df_riwayat, df_berita_dedup=df_berita_dedup),
+            "kata_kunci_naik": hitung_tren_kata_kunci_berita(df_riwayat, top_n=10, df_berita_dedup=df_berita_dedup),
             "tren_kategori": hitung_tren_kategori_berita(df_riwayat, df_berita_dedup=df_berita_dedup),
             "sampel_judul_insiden": ambil_sampel_judul_insiden(df_riwayat, df_berita_dedup=df_berita_dedup),
         },
         "cve": {
-            "vendor_naik": hitung_tren_vendor_cve(df_riwayat),
+            "vendor_naik": hitung_tren_vendor_cve(df_riwayat, top_n=10),
         },
         "vektor_serangan": hitung_tren_vektor_serangan(df_riwayat, df_berita_dedup=df_berita_dedup),
         "sektor_target": hitung_tren_sektor_target(df_riwayat, df_berita_dedup=df_berita_dedup),
@@ -893,10 +829,13 @@ def susun_statistik_dashboard(df_riwayat: pd.DataFrame, statistik_tren: Optional
     # Prediksi 1 Pola Serangan untuk KPI Dashboard
     try:
         from src.analytics.rag_engine import RAGEngine
-        pola_serangan = RAGEngine(df_riwayat).hitung_prediksi_pola_serangan()
+        rag = RAGEngine(df_riwayat)
+        pola_serangan = rag.hitung_prediksi_pola_serangan()
+        ancaman_baru = rag.hitung_prediksi_ancaman_baru()
     except Exception as err:
-        logger.warning(f"Gagal menghitung prediksi pola serangan: {err}")
+        logger.warning(f"Gagal menghitung prediksi pola serangan/ancaman: {err}")
         pola_serangan = {"pola": "RCE", "growth_persen": 0.0, "subteks": "Stabil"}
+        ancaman_baru = "Menunggu Sinyal"
 
     return {
         "total_berita": total_berita,
@@ -904,6 +843,7 @@ def susun_statistik_dashboard(df_riwayat: pd.DataFrame, statistik_tren: Optional
         "total_vendor_cve": total_vendor_cve,
         "cve_growth": statistik.get("threat_posture", {}).get("cve_growth", 0.0),
         "avg_cvss": avg_cvss,
+        "ancaman_baru": ancaman_baru,
         "kata_kunci_naik": statistik.get("berita", {}).get("kata_kunci_naik", []),
         "vendor_naik": statistik.get("cve", {}).get("vendor_naik", []),
         "sampel_judul_insiden": statistik.get("berita", {}).get("sampel_judul_insiden", []),

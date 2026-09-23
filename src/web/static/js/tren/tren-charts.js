@@ -108,8 +108,8 @@ export function renderCharts(stat) {
                 ${item.jumlah} artikel
               </div>
             </div>
-            <div class="w-full bg-[#EEF4F8] rounded-full h-2 overflow-hidden border border-[#E2EDF8]">
-              <div class="h-full rounded-full transition-all duration-700 ease-out" style="width: ${widthPct}%; background-color: ${barColor};"></div>
+            <div class="w-full bg-[#EEF4F8] rounded h-2 overflow-hidden border border-[#E2EDF8]">
+              <div class="h-full rounded transition-all duration-700 ease-out" style="width: ${widthPct}%; background-color: ${barColor};"></div>
             </div>
           </div>
         `;
@@ -178,8 +178,8 @@ export function renderCharts(stat) {
                 ${item.jumlah} insiden <span class="font-semibold text-[11px] opacity-90">(${pctInsiden}%)</span>
               </div>
             </div>
-            <div class="w-full bg-[#EEF4F8] rounded-full h-2 overflow-hidden border border-[#E2EDF8]">
-              <div class="h-full rounded-full transition-all duration-700 ease-out" style="width: ${widthPct}%; background-color: ${barColor};"></div>
+            <div class="w-full bg-[#EEF4F8] rounded h-2 overflow-hidden border border-[#E2EDF8]">
+              <div class="h-full rounded transition-all duration-700 ease-out" style="width: ${widthPct}%; background-color: ${barColor};"></div>
             </div>
           </div>
         `;

@@ -23,12 +23,12 @@ function setLiveFeedStatus(aktif) {
     if (aktif) {
         liveFeedPulse.classList.add('animate-pulse', 'bg-[#0A4174]');
         liveFeedPulse.classList.remove('bg-[#15803d]');
-        liveFeedBadge.className = 'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EEF5FA] border border-[#BDD8E9] text-xs font-semibold text-[#0A4174] shadow-xs';
+        liveFeedBadge.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#EEF5FA] border border-[#BDD8E9] text-xs font-semibold text-[#0A4174] shadow-xs';
         liveFeedBadge.querySelector('.badge-label').textContent = 'Pipeline Intelijen Sedang Berjalan';
     } else {
         liveFeedPulse.classList.remove('animate-pulse', 'bg-[#0A4174]');
         liveFeedPulse.classList.add('bg-[#15803d]');
-        liveFeedBadge.className = 'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EEF5FA] border border-[#BDD8E9] text-xs font-semibold text-[#15803d] shadow-xs';
+        liveFeedBadge.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#EEF5FA] border border-[#BDD8E9] text-xs font-semibold text-[#15803d] shadow-xs';
         liveFeedBadge.querySelector('.badge-label').textContent = 'Pemantauan Intelijen Ancaman Siber Aktif';
     }
 }
@@ -55,8 +55,7 @@ function tambahBarisLog(item) {
 
 function resetTombol() {
     btnRun.disabled = false;
-    btnRunText.textContent = 'Jalankan Pipeline';
-    runIcon.textContent = 'play_arrow';
+    btnRun.style.display = '';
     btnCancel.classList.remove('visible');
     setLiveFeedStatus(false);
 }
@@ -69,11 +68,11 @@ export async function tampilkanBeranda() {
         if (resultsDesc) resultsDesc.textContent = 'Gagal memuat data intelijen';
         emptyState.style.display = 'none';
         cardContainer.innerHTML = `
-            <div class="text-center py-12 bg-red-50 rounded-3xl border border-red-200/80 p-6 shadow-xs my-4">
+            <div class="text-center py-12 bg-red-50 rounded-lg -200/80 p-6 shadow-xs my-4">
                 <span class="material-symbols-outlined text-3xl text-red-600 mb-2" aria-hidden="true">cloud_off</span>
                 <h3 class="text-base font-bold text-[#001D39] mb-1">Gagal Menghubungi Server CTI</h3>
                 <p class="text-xs text-[#49769F] mb-4 max-w-md mx-auto">Tidak dapat memuat ringkasan insiden terbaru (${escapeHtml(data.message || 'Koneksi terputus')}). Pastikan server backend aktif.</p>
-                <button onclick="window.tampilkanBeranda()" class="px-5 py-2.5 bg-white hover:bg-[#EEF5FA] text-[#0A4174] hover:text-[#001D39] font-bold text-xs rounded-full border border-[#BDD8E9] shadow-2xs transition-all duration-200 cursor-pointer inline-flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
+                <button onclick="window.tampilkanBeranda()" class="px-4 py-2 bg-white hover:bg-[#EEF5FA] text-[#0A4174] hover:text-[#001D39] font-bold text-xs rounded-md shadow-2xs transition-all duration-200 cursor-pointer inline-flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
                     <span class="material-symbols-outlined text-base text-[#49769F]" aria-hidden="true">refresh</span> Coba Muat Ulang
                 </button>
             </div>`;
@@ -154,7 +153,7 @@ export function filterBerandaCards(query) {
         if (!searchEmptyNotice) {
             searchEmptyNotice = document.createElement('div');
             searchEmptyNotice.id = 'search-empty-notice';
-            searchEmptyNotice.className = 'text-center py-12 bg-white rounded-3xl border border-[#E2EDF8] p-6 shadow-xs';
+            searchEmptyNotice.className = 'text-center py-12 bg-white rounded-lg border border-[#E2EDF8] p-6 shadow-xs';
             searchEmptyNotice.innerHTML = `
                 <span class="material-symbols-outlined text-3xl text-[#49769F] mb-2" aria-hidden="true">search_off</span>
                 <h4 class="text-base font-bold text-[#001D39] mb-1">Tidak ada hasil pencarian</h4>
@@ -171,9 +170,7 @@ export function filterBerandaCards(query) {
 }
 
 export async function mulaiPipeline() {
-    btnRun.disabled = true;
-    btnRunText.textContent = 'Sedang berjalan…';
-    runIcon.textContent = 'autorenew';
+    btnRun.style.display = 'none';
     btnCancel.classList.add('visible');
     consoleStatus.textContent = '[pipeline berjalan]';
     cardContainer.innerHTML = '';

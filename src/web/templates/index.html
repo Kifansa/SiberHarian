@@ -40,7 +40,7 @@
             "warm-amber": "#b45309",
             "warm-forest": "#15803d",
           },
-          borderRadius: { "DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.25rem", "3xl": "1.5rem", "full": "9999px" },
+          borderRadius: { "xs": "0.125rem", "sm": "0.25rem", "DEFAULT": "0.375rem", "md": "0.375rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "3xl": "1.25rem", "full": "9999px" },
           spacing: { "gutter": "24px", "container-max": "1240px", "xl": "36px" },
           fontFamily: {
             "sans": ["Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
@@ -69,6 +69,25 @@
       color: #ffffff !important;
       box-shadow: 0 4px 12px rgba(123, 189, 232, 0.35) !important;
       font-weight: 700 !important;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #EEF4F8;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #BDD8E9;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #7BBDE8;
+    }
+    .custom-scrollbar {
+      scrollbar-width: thin;
+      scrollbar-color: #BDD8E9 #EEF4F8;
     }
     #btn-cancel { display: none; }
     #btn-cancel.visible { display: inline-flex; }
@@ -109,7 +128,7 @@
     #page-loader-modal {
       background: #ffffff !important;
       border: 1px solid #BDD8E9 !important;
-      border-radius: 28px !important;
+      border-radius: 12px !important;
       box-shadow: 0 25px 50px -12px rgba(0, 29, 57, 0.25) !important;
       padding: 32px 28px !important;
       width: 100% !important;
@@ -128,15 +147,15 @@
   </style>
   <noscript><style>#page-loader-overlay{display:none!important}#app-wrapper{opacity:1!important}</style></noscript>
 </head>
-<body class="text-sm antialiased pb-20 md:pb-6 bg-[#EEF4F8] text-[#001D39] font-sans" x-data="{ tabAktif: 'beranda', terminalTerbuka: true }">
+<body class="text-sm antialiased pb-20 md:pb-6 bg-[#EEF4F8] text-[#001D39] font-sans" x-data="{ tabAktif: 'beranda', modeUser: 'publik', terminalTerbuka: false, terminalState: 'normal' }">
 
   <!-- Modal Popup Loader (Tampil di Tengah Sebelum Halaman Utama Muncul) -->
   <div id="page-loader-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:999999;background:#001D39;display:flex;align-items:center;justify-content:center;padding:16px;">
-    <div id="page-loader-modal" role="dialog" aria-modal="true" aria-label="Memuat sistem intelijen siber..." style="background:#ffffff;border:1px solid #BDD8E9;border-radius:28px;box-shadow:0 25px 50px -12px rgba(0,29,57,0.25);padding:32px 28px;width:100%;max-width:320px;display:flex;flex-direction:column;align-items:center;text-align:center;">
+    <div id="page-loader-modal" role="dialog" aria-modal="true" aria-label="Memuat sistem intelijen siber..." style="background:#ffffff;border:1px solid #BDD8E9;border-radius:12px;box-shadow:0 25px 50px -12px rgba(0,29,57,0.25);padding:32px 28px;width:100%;max-width:320px;display:flex;flex-direction:column;align-items:center;text-align:center;">
       
       <!-- Brand Logo Badge -->
       <div style="margin-bottom:18px;position:relative;">
-        <div style="width:56px;height:56px;border-radius:20px;background:#EEF5FA;border:1px solid #BDD8E9;padding:10px;box-shadow:0 4px 12px rgba(0,29,57,0.06);display:flex;align-items:center;justify-content:center;">
+        <div style="width:56px;height:56px;border-radius:8px;background:#EEF5FA;border:1px solid #BDD8E9;padding:10px;box-shadow:0 4px 12px rgba(0,29,57,0.06);display:flex;align-items:center;justify-content:center;">
           <img src="/static/img/Logo.png" alt="Logo SiberHarian" style="width:100%;height:100%;object-fit:contain;" />
         </div>
       </div>
@@ -260,68 +279,79 @@
   <div id="app-wrapper" style="opacity:0;transition:opacity 0.35s ease;">
   <!-- Enterprise Header -->
   <header class="w-full sticky top-0 z-50 site-header">
-    <div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto">
-      <div class="flex items-center gap-3">
-        <img src="/static/img/Logo.png" alt="Logo SiberHarian" class="w-9 h-9 object-contain rounded-2xl" />
+    <div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto gap-2 sm:gap-4">
+      <!-- Logo & CSIRT Jatim Identity -->
+      <div class="flex items-center gap-3 shrink-0">
+        <img src="/static/img/Logo.png" alt="Logo SiberHarian" class="w-9 h-9 object-contain rounded-lg shadow-2xs" />
         <div>
           <span class="font-black text-base text-[#001D39] tracking-tight block leading-tight">SiberHarian</span>
+          <span class="text-[10px] sm:text-xs text-[#49769F] font-semibold block leading-tight" x-text="modeUser === 'admin' ? 'CSIRT Jatim • Tim CTI Diskominfo' : 'CSIRT Dinas Kominfo Jawa Timur'">CSIRT Dinas Kominfo Jawa Timur</span>
         </div>
       </div>
       
-      <!-- Desktop Navigation Tabs (Pill Buttons ala Reference) -->
-      <nav class="hidden md:flex items-center bg-[#EEF4F8] p-1 rounded-full border border-[#BDD8E9]/80 gap-1" role="tablist" aria-label="Navigasi Utama">
+      <!-- Desktop Navigation Tabs -->
+      <nav class="hidden md:flex items-center bg-[#EEF4F8] p-1 rounded-lg border border-[#BDD8E9]/80 gap-1" role="tablist" aria-label="Navigasi Utama">
         <a href="#beranda" @click.prevent="tabAktif = 'beranda'" role="tab" :aria-selected="tabAktif === 'beranda'"
-          class="px-5 py-2 rounded-full font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
+          class="px-3.5 py-1.5 rounded-md font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
           :class="tabAktif === 'beranda' ? 'tab-nav-active' : 'text-[#49769F] hover:text-[#001D39] hover:bg-white/60'">
-          <span class="material-symbols-outlined text-base" aria-hidden="true">dashboard</span> <span>Dashboard</span>
+          <span class="material-symbols-outlined text-base" aria-hidden="true">dashboard</span>
+          <span x-text="modeUser === 'admin' ? 'Dashboard' : 'Berita & Statistik'">Berita &amp; Statistik</span>
         </a>
         <a href="#arsip" @click.prevent="tabAktif = 'arsip'; muatTabArsip()" role="tab" :aria-selected="tabAktif === 'arsip'"
-          class="px-5 py-2 rounded-full font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
+          class="px-3.5 py-1.5 rounded-md font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
           :class="tabAktif === 'arsip' ? 'tab-nav-active' : 'text-[#49769F] hover:text-[#001D39] hover:bg-white/60'">
           <span class="material-symbols-outlined text-base" aria-hidden="true">inventory_2</span> <span>Arsip</span>
         </a>
-        <a href="#tren" @click.prevent="tabAktif = 'tren'; muatTabTren()" role="tab" :aria-selected="tabAktif === 'tren'"
-          class="px-5 py-2 rounded-full font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
+
+        <!-- Tab Tren Siber CTI (Hanya untuk Admin Tim CTI) -->
+        <a x-show="modeUser === 'admin'" href="#tren" @click.prevent="tabAktif = 'tren'; muatTabTren()" role="tab" :aria-selected="tabAktif === 'tren'"
+          class="px-3.5 py-1.5 rounded-md font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
           :class="tabAktif === 'tren' ? 'tab-nav-active' : 'text-[#49769F] hover:text-[#001D39] hover:bg-white/60'">
-          <span class="material-symbols-outlined text-base" aria-hidden="true">insights</span> <span>Tren</span>
+          <span class="material-symbols-outlined text-base" aria-hidden="true">insights</span> <span>Tren CTI</span>
         </a>
       </nav>
 
-      <!-- Global Search -->
-      <div class="flex items-center gap-3">
-        <div class="relative flex items-center">
-          <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#49769F] text-lg pointer-events-none" aria-hidden="true">search</span>
-          <input id="global-search-input"
-            class="pl-10 pr-12 py-2 rounded-full bg-[#EEF4F8] border border-[#BDD8E9] focus:border-[#7BBDE8] focus:bg-white focus:ring-2 focus:ring-[#7BBDE8]/30 outline-none text-xs w-44 sm:w-56 focus:w-64 transition-all duration-200 placeholder:text-[#49769F] text-[#001D39] shadow-2xs"
-            placeholder="Cari insiden atau CVE..." type="text" aria-label="Cari insiden atau CVE" />
-          <kbd class="absolute right-3.5 top-1/2 -translate-y-1/2 hidden sm:inline-block font-mono text-[10px] text-[#49769F] bg-white px-1.5 py-0.5 rounded-full border border-[#BDD8E9] pointer-events-none">/</kbd>
-          <button id="global-search-clear" style="display:none;" class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[#BDD8E9] hover:bg-[#A8CEE5] items-center justify-center text-[#001D39] text-xs cursor-pointer focus-visible:outline-none" title="Bersihkan pencarian" aria-label="Bersihkan pencarian">
-            <span class="material-symbols-outlined text-xs" aria-hidden="true">close</span>
+      <!-- Role Switcher (Mode Publik vs Tim CTI CSIRT) -->
+      <div class="flex items-center gap-2 shrink-0">
+        <div class="flex items-center bg-[#EEF4F8] p-1 rounded-lg border border-[#BDD8E9]/80 text-xs shadow-2xs">
+          <button @click="modeUser = 'publik'; if (tabAktif === 'tren') { tabAktif = 'beranda'; } terminalTerbuka = false; muatTabStatistikPublik();"
+            :class="modeUser === 'publik' ? 'bg-white text-[#0A4174] shadow-xs font-bold' : 'text-[#49769F] hover:text-[#001D39] font-medium'"
+            class="px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer focus-visible:outline-none"
+            title="Tampilan ramah masyarakat umum">
+            <span class="material-symbols-outlined text-sm">public</span>
+            <span>Publik</span>
+          </button>
+          <button @click="modeUser = 'admin'"
+            :class="modeUser === 'admin' ? 'bg-[#0A4174] text-white shadow-xs font-bold' : 'text-[#49769F] hover:text-[#001D39] font-medium'"
+            class="px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer focus-visible:outline-none"
+            title="Tampilan operasional internal Tim CTI CSIRT">
+            <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
+            <span>Tim CTI</span>
           </button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Mobile Bottom Navigation -->
-  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#BDD8E9]/80 px-4 py-2 flex justify-around items-center shadow-md" role="tablist" aria-label="Navigasi Mobile">
+  <!-- Mobile Bottom Navigation (2 Tab untuk Publik, 3 Tab untuk Admin CTI) -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#BDD8E9]/80 px-2 py-1.5 flex justify-around items-center shadow-lg" role="tablist" aria-label="Navigasi Mobile">
     <button @click="tabAktif = 'beranda'" role="tab" :aria-selected="tabAktif === 'beranda'"
-      class="flex flex-col items-center gap-1 py-1 px-3 rounded-2xl transition-all cursor-pointer"
+      class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg transition-all cursor-pointer"
       :class="tabAktif === 'beranda' ? 'text-[#0A4174] font-bold' : 'text-[#49769F] font-medium'">
-      <span class="material-symbols-outlined text-xl" aria-hidden="true">dashboard</span>
-      <span class="text-xs">Dashboard</span>
+      <span class="material-symbols-outlined text-lg" aria-hidden="true">dashboard</span>
+      <span class="text-[10px]" x-text="modeUser === 'admin' ? 'Dashboard' : 'Berita & Statistik'">Berita &amp; Statistik</span>
     </button>
     <button @click="tabAktif = 'arsip'; muatTabArsip()" role="tab" :aria-selected="tabAktif === 'arsip'"
-      class="flex flex-col items-center gap-1 py-1 px-3 rounded-2xl transition-all cursor-pointer"
+      class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg transition-all cursor-pointer"
       :class="tabAktif === 'arsip' ? 'text-[#0A4174] font-bold' : 'text-[#49769F] font-medium'">
-      <span class="material-symbols-outlined text-xl" aria-hidden="true">inventory_2</span>
-      <span class="text-xs">Arsip</span>
+      <span class="material-symbols-outlined text-lg" aria-hidden="true">inventory_2</span>
+      <span class="text-[10px]">Arsip</span>
     </button>
-    <button @click="tabAktif = 'tren'; muatTabTren()" role="tab" :aria-selected="tabAktif === 'tren'"
-      class="flex flex-col items-center gap-1 py-1 px-3 rounded-2xl transition-all cursor-pointer"
+    <button x-show="modeUser === 'admin'" @click="tabAktif = 'tren'; muatTabTren()" role="tab" :aria-selected="tabAktif === 'tren'"
+      class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg transition-all cursor-pointer"
       :class="tabAktif === 'tren' ? 'text-[#0A4174] font-bold' : 'text-[#49769F] font-medium'">
-      <span class="material-symbols-outlined text-xl" aria-hidden="true">insights</span>
-      <span class="text-xs">Tren</span>
+      <span class="material-symbols-outlined text-lg" aria-hidden="true">insights</span>
+      <span class="text-[10px]">Tren CTI</span>
     </button>
   </nav>
 
@@ -331,52 +361,69 @@
       x-transition:enter-start="opacity-0 translate-y-2"
       x-transition:enter-end="opacity-100 translate-y-0">
       
-      <!-- Executive Hero & Terminal Section -->
-      <section class="pt-4 pb-8 text-center">
-        <div class="relative mb-6">
-          <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#001D39] tracking-tight mb-3 max-w-3xl mx-auto leading-[1.15]">
-            Pemantauan Keamanan Siber
+      <!-- Executive Hero Section -->
+      <section class="pt-4 pb-6 text-center">
+        <div class="relative mb-5">
+          <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#001D39] tracking-tight mb-2.5 max-w-3xl mx-auto leading-[1.15]"
+            x-text="modeUser === 'admin' ? 'Pemantauan Keamanan Siber' : 'Portal Informasi Keamanan Siber'">
+            Portal Informasi Keamanan Siber
           </h1>
-          <p class="text-[#49769F] text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-            Platform Cyber Threat Intelligence &amp; Vulnerability Analytics On-Premise Diskominfo Provinsi Jawa Timur.
+          <p class="text-[#49769F] text-xs sm:text-base max-w-2xl mx-auto leading-relaxed"
+            x-text="modeUser === 'admin' ? 'Platform Cyber Threat Intelligence & Vulnerability Analytics On-Premise Diskominfo Provinsi Jawa Timur.' : 'Informasi terverifikasi mengenai berita insiden siber harian dan peringatan kerentanan software untuk masyarakat Jawa Timur.'">
+            Informasi terverifikasi mengenai berita insiden siber harian dan peringatan kerentanan software untuk masyarakat Jawa Timur.
           </p>
         </div>
 
-        <div class="flex flex-col items-center gap-5">
-          <div class="flex items-center justify-center gap-3 flex-wrap">
-            <button
-              class="bg-[#0A4174] hover:bg-[#001D39] text-white px-7 py-2.5 rounded-full text-sm font-bold shadow-md shadow-[#0A4174]/20 transition-all duration-200 active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
-              id="btn-run" onclick="mulaiPipeline()" aria-label="Jalankan pipeline pengumpulan intelijen">
-              <span class="material-symbols-outlined text-xl" id="run-icon" aria-hidden="true">play_arrow</span>
-              <span id="btn-run-text">Jalankan Pipeline</span>
-            </button>
-            <button
-              class="bg-[#b91c1c] hover:bg-[#991b1b] text-white px-5 py-2.5 rounded-full font-bold text-xs shadow-sm transition-all active:scale-95 items-center gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#b91c1c] focus-visible:outline-none"
-              id="btn-cancel" onclick="batalkanPipeline()" aria-label="Batalkan eksekusi pipeline">
-              <span class="material-symbols-outlined text-base" aria-hidden="true">stop_circle</span>
-              Batalkan
-            </button>
-            <button @click="terminalTerbuka = !terminalTerbuka"
-              class="bg-white hover:bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9] px-5 py-2.5 rounded-full text-xs font-semibold transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer shadow-2xs focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
-              :title="terminalTerbuka ? 'Sembunyikan konsol log' : 'Tampilkan konsol log'">
-              <span class="material-symbols-outlined text-base" aria-hidden="true">terminal</span>
-              <span x-text="terminalTerbuka ? 'Tutup Monitor' : 'Buka Monitor'">Tutup Monitor</span>
-            </button>
-          </div>
+        <!-- Terminal Console (Khusus Mode Admin Tim CTI) -->
+        <div x-show="modeUser === 'admin'" class="flex flex-col items-center gap-5">
+          <!-- Reopen Button (if closed) -->
+          <button x-show="!terminalTerbuka" @click="terminalTerbuka = true; terminalState = 'normal'"
+            x-transition:enter="transition ease-out duration-150 transform"
+            x-transition:enter-start="opacity-0 scale-50"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-100 transform"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-50"
+            class="fixed origin-center bottom-6 right-6 z-50 bg-[#0A4174] hover:bg-[#001D39] text-white p-3 rounded-lg shadow-xl flex items-center justify-center transition-all cursor-pointer focus-visible:outline-none" title="Buka Monitor Pipeline">
+            <span class="material-symbols-outlined text-xl" aria-hidden="true">terminal</span>
+          </button>
 
           <!-- Log Console (Deep Midnight Navy Terminal) -->
-          <div x-show="terminalTerbuka" x-collapse
-            class="w-full max-w-3xl bg-[#001D39] rounded-3xl p-5 text-left border border-[#0A4174] overflow-hidden relative transition-all duration-300 shadow-xl">
-            <div class="flex items-center justify-between gap-2 mb-3 border-b border-[#0A4174]/60 pb-2.5">
+          <div x-show="terminalTerbuka" 
+            x-transition:enter="transition ease-out duration-150 transform origin-bottom-right" 
+            x-transition:enter-start="opacity-0 scale-50" 
+            x-transition:enter-end="opacity-100 scale-100" 
+            x-transition:leave="transition ease-in duration-100 transform origin-bottom-right" 
+            x-transition:leave-start="opacity-100 scale-100" 
+            x-transition:leave-end="opacity-0 scale-50"
+            class="fixed z-[100] bg-[#001D39] rounded-xl text-left border border-[#0A4174] overflow-hidden transition-all duration-500 shadow-2xl flex flex-col bottom-20 md:bottom-6 right-4 md:right-6 w-[550px] max-w-[calc(100vw-32px)] h-64">
+            <div class="flex items-center justify-between gap-2 border-b border-[#0A4174]/60 px-4 py-2.5 bg-[#001429] shrink-0">
               <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-[#b91c1c]/90"></div>
-                <div class="w-3 h-3 rounded-full bg-[#b45309]/90"></div>
-                <div class="w-3 h-3 rounded-full bg-[#4E8EA2]/90"></div>
-                <span class="ml-2 font-mono text-xs text-[#BDD8E9] font-semibold tracking-wide">Terminal</span>
+                <span class="material-symbols-outlined text-[#7BBDE8] text-base" aria-hidden="true">terminal</span>
+                <span class="font-mono text-xs text-[#BDD8E9] font-semibold tracking-wide">SiberHarian Terminal</span>
               </div>
-              <span class="font-mono text-xs text-[#7BBDE8] font-medium" id="console-status">[standby]</span>
+              
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-[10px] text-[#7BBDE8] font-medium mr-2" id="console-status">[standby]</span>
+                <button
+                  class="bg-[#0A4174] hover:bg-[#7BBDE8] hover:text-[#001D39] text-white px-3 py-1.5 rounded-md text-[10px] font-bold shadow transition-all active:scale-95 flex items-center gap-1 disabled:opacity-50 cursor-pointer focus-visible:outline-none"
+                  id="btn-run" onclick="event.stopPropagation(); mulaiPipeline()" title="Jalankan Pipeline">
+                  <span class="material-symbols-outlined text-[14px]" id="run-icon">play_arrow</span>
+                  <span class="hidden sm:inline" id="btn-run-text">Run</span>
+                </button>
+                <button
+                  class="bg-[#b91c1c] hover:bg-[#991b1b] text-white px-3 py-1.5 rounded-md text-[10px] font-bold shadow transition-all active:scale-95 items-center gap-1 cursor-pointer focus-visible:outline-none hidden"
+                  id="btn-cancel" onclick="event.stopPropagation(); batalkanPipeline()" title="Batalkan">
+                  <span class="material-symbols-outlined text-[14px]">stop_circle</span>
+                  <span class="hidden sm:inline">Stop</span>
+                </button>
+                <!-- Tombol Close ("X") -->
+                <button @click.stop="terminalTerbuka = false" class="ml-2 p-1 rounded-md text-red-500 hover:text-red-400 transition-colors cursor-pointer focus-visible:outline-none flex items-center justify-center" title="Tutup Terminal">
+                  <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+              </div>
             </div>
-            <div class="font-mono text-xs text-[#BDD8E9] h-36 overflow-y-auto space-y-1.5 leading-relaxed" id="console-body">
+            <div class="font-mono text-xs text-[#BDD8E9] flex-1 overflow-y-auto overflow-x-hidden whitespace-pre-wrap break-words space-y-1.5 leading-relaxed p-4" id="console-body">
               <div class="flex gap-2 text-[#49769F]">
                 <span>[SYSTEM] Menunggu instruksi pipeline dimulai...</span>
               </div>
@@ -385,6 +432,12 @@
         </div>
       </section>
 
+      <!-- Bagian Khusus Publik: Statistik Fakta, Word Cloud, Charts & Inti Edukasi Asli -->
+      <div x-show="modeUser === 'publik'" class="mb-8">
+        {% include "partials/_statistik_publik.html" %}
+      </div>
+
+      <!-- Feed Berita Insiden & Kerentanan CVE Hari Terakhir -->
       {% include "partials/_beranda.html" %}
     </section>
 
@@ -395,7 +448,8 @@
       {% include "partials/_arsip.html" %}
     </section>
 
-    <section x-show="tabAktif === 'tren'" x-cloak
+    <!-- Tab Tren Siber CTI (Khusus Admin Tim CTI) -->
+    <section x-show="tabAktif === 'tren' && modeUser === 'admin'" x-cloak
       x-transition:enter="transition ease-out duration-300 transform"
       x-transition:enter-start="opacity-0 translate-y-2"
       x-transition:enter-end="opacity-100 translate-y-0">
@@ -406,20 +460,20 @@
   <!-- Clean Modern Modal Dialog -->
   <div class="fixed inset-0 bg-[#001D39]/70 backdrop-blur-xs z-[100] hidden items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-200 ease-out"
     id="modal-overlay" onclick="tutupModalJikaLuar(event)" aria-hidden="true">
-    <div class="bg-white rounded-3xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-7 relative border border-[#BDD8E9] shadow-2xl transform scale-95 opacity-0 translate-y-4 transition-all duration-200 ease-out"
+    <div class="bg-white rounded-xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-7 relative border border-[#BDD8E9] shadow-2xl transform scale-95 opacity-0 translate-y-4 transition-all duration-200 ease-out"
       id="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-judul">
-      <button class="absolute top-4 right-4 text-[#49769F] hover:text-[#001D39] w-8 h-8 rounded-full hover:bg-[#EEF5FA] flex items-center justify-center transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
+      <button class="absolute top-4 right-4 text-[#49769F] hover:text-[#001D39] w-8 h-8 rounded-md hover:bg-[#EEF5FA] flex items-center justify-center transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
         onclick="tutupModal()" title="Tutup dialog (Esc)" aria-label="Tutup dialog">
         <span class="material-symbols-outlined text-xl" aria-hidden="true">close</span>
       </button>
       <div class="flex items-center gap-2 mb-3">
-        <span class="px-3 py-0.5 rounded-full text-xs font-semibold" id="modal-pill"></span>
+        <span class="px-2.5 py-0.5 rounded-md text-xs font-semibold" id="modal-pill"></span>
         <span class="text-xs text-[#49769F] font-medium" id="modal-sumber"></span>
       </div>
       <h3 class="text-xl font-bold text-[#001D39] mb-3 leading-snug" id="modal-judul"></h3>
-      <div class="text-slate-700 text-sm leading-relaxed whitespace-pre-line bg-[#EEF5FA] p-5 rounded-2xl border border-[#BDD8E9]/70 font-sans" id="modal-teks"></div>
+      <div class="text-slate-700 text-sm leading-relaxed whitespace-pre-line bg-[#EEF5FA] p-5 rounded-lg border border-[#BDD8E9]/70 font-sans" id="modal-teks"></div>
       <div class="mt-6 pt-4 border-t border-[#E2EDF8] flex items-center justify-between gap-3 flex-wrap">
-        <button id="modal-btn-copy" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#EEF5FA] hover:bg-[#BDD8E9] text-[#0A4174] text-xs font-semibold border border-[#BDD8E9] transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
+        <button id="modal-btn-copy" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-[#EEF5FA] hover:bg-[#BDD8E9] text-[#0A4174] text-xs font-semibold transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
           <span class="material-symbols-outlined text-base" aria-hidden="true">content_copy</span>
           <span>Salin Rangkuman</span>
         </button>
@@ -433,6 +487,6 @@
   </div>
   <!-- /app-wrapper -->
 
-  <script type="module" src="/static/js/main.js?v=6.3"></script>
+  <script type="module" src="/static/js/main.js?v=8.3"></script>
 </body>
 </html>

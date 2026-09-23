@@ -1,14 +1,18 @@
 import { escapeHtml, sanitizeUrl } from './utils.js';
-import { dataLengkap } from './modal.js';
+import { simpanItemModal, dataLengkap } from './modal.js';
 
 export function buatCardBerita(item) {
   const safeLink = sanitizeUrl(item.link);
-  const idx = dataLengkap.push({
-    judul: item.judul, sumber: item.sumber, link: safeLink,
-    teksLengkap: item.ringkasan, pillClass: '', pillLabel: ''
-  }) - 1;
+  const idx = simpanItemModal({
+    judul: item.judul,
+    sumber: item.sumber,
+    link: safeLink,
+    teksLengkap: item.ringkasan,
+    pillClass: '',
+    pillLabel: ''
+  });
   return `
-    <article class="bg-white border border-[#E2EDF8] hover:border-[#7BBDE8]/60 rounded-3xl p-6 shadow-xs card-enterprise flex flex-col justify-between" data-search-text="${escapeHtml((item.judul + ' ' + item.sumber + ' ' + (item.ringkasan || '')).toLowerCase())}">
+    <article class="bg-white border border-[#E2EDF8] hover:border-[#7BBDE8]/60 rounded-lg p-6 shadow-xs card-enterprise flex flex-col justify-between" data-search-text="${escapeHtml((item.judul + ' ' + item.sumber + ' ' + (item.ringkasan || '')).toLowerCase())}">
       <div>
         <div class="flex justify-between items-center gap-2 mb-3.5">
           <span class="text-xs text-[#49769F] font-semibold">${escapeHtml(item.sumber)}</span>
@@ -17,9 +21,12 @@ export function buatCardBerita(item) {
         <p class="text-slate-600 text-sm mb-4 line-clamp-3 leading-relaxed break-words">${escapeHtml(item.ringkasan)}</p>
       </div>
       <div>
-        <button class="text-[#0A4174] hover:text-[#001D39] font-bold text-xs text-left transition-colors mb-4 w-fit cursor-pointer underline-offset-4 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none rounded" onclick="bukaModal(${idx})" aria-label="Buka ringkasan lengkap: ${escapeHtml(item.judul)}">Selengkapnya →</button>
+        <button type="button" class="text-[#0A4174] hover:text-[#001D39] font-bold text-xs text-left transition-colors mb-4 w-fit cursor-pointer underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none rounded-md inline-flex items-center gap-1" onclick="window.bukaModal ? window.bukaModal(${idx}) : bukaModal(${idx})" aria-haspopup="dialog" aria-label="Buka ringkasan lengkap: ${escapeHtml(item.judul)}">
+          <span>Selengkapnya</span>
+          <span aria-hidden="true">&rarr;</span>
+        </button>
         <div class="pt-3.5 border-t border-[#E2EDF8] flex justify-between items-center">
-          <a class="text-[#49769F] text-xs hover:text-[#001D39] transition-colors flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none rounded" href="${safeLink}" target="_blank" rel="noopener noreferrer">
+          <a class="text-[#49769F] text-xs hover:text-[#001D39] transition-colors flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none rounded-md" href="${safeLink}" target="_blank" rel="noopener noreferrer">
             Baca sumber asli <span class="material-symbols-outlined text-sm" aria-hidden="true">open_in_new</span>
           </a>
         </div>
@@ -30,12 +37,16 @@ export function buatCardBerita(item) {
 export function buatCardCve(item) {
   const teks = item.narasi || 'Tidak ada narasi detail untuk CVE ini.';
   const safeLink = sanitizeUrl(item.link);
-  const idx = dataLengkap.push({
-    judul: item.cve_id, sumber: item.vendor, link: safeLink,
-    teksLengkap: teks, pillClass: '', pillLabel: ''
-  }) - 1;
+  const idx = simpanItemModal({
+    judul: item.cve_id,
+    sumber: item.vendor,
+    link: safeLink,
+    teksLengkap: teks,
+    pillClass: '',
+    pillLabel: ''
+  });
   return `
-    <article class="bg-white border border-[#E2EDF8] hover:border-[#7BBDE8]/60 rounded-3xl p-6 shadow-xs card-enterprise flex flex-col justify-between" data-search-text="${escapeHtml((item.cve_id + ' ' + item.vendor + ' ' + (item.ringkasan_atau_narasi || teks)).toLowerCase())}">
+    <article class="bg-white border border-[#E2EDF8] hover:border-[#7BBDE8]/60 rounded-lg p-6 shadow-xs card-enterprise flex flex-col justify-between" data-search-text="${escapeHtml((item.cve_id + ' ' + item.vendor + ' ' + (item.ringkasan_atau_narasi || teks)).toLowerCase())}">
       <div>
         <div class="flex justify-between items-center gap-2 mb-3.5">
           <span class="text-xs text-[#49769F] font-semibold">${escapeHtml(item.vendor)}</span>
@@ -44,12 +55,15 @@ export function buatCardCve(item) {
         <p class="text-slate-600 text-sm mb-4 line-clamp-3 leading-relaxed break-words">${escapeHtml(item.ringkasan_atau_narasi || teks)}</p>
       </div>
       <div>
-        <button class="text-[#0A4174] hover:text-[#001D39] font-bold text-xs text-left transition-colors mb-4 w-fit cursor-pointer underline-offset-4 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none rounded" onclick="bukaModal(${idx})" aria-label="Buka narasi CVE: ${escapeHtml(item.cve_id)}">Selengkapnya →</button>
+        <button type="button" class="text-[#0A4174] hover:text-[#001D39] font-bold text-xs text-left transition-colors mb-4 w-fit cursor-pointer underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none rounded-md inline-flex items-center gap-1" onclick="window.bukaModal ? window.bukaModal(${idx}) : bukaModal(${idx})" aria-haspopup="dialog" aria-label="Buka narasi CVE: ${escapeHtml(item.cve_id)}">
+          <span>Selengkapnya</span>
+          <span aria-hidden="true">&rarr;</span>
+        </button>
         <div class="pt-3.5 border-t border-[#E2EDF8] flex justify-between items-center">
-          <a class="text-[#49769F] text-xs hover:text-[#001D39] transition-colors flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none rounded" href="${safeLink}" target="_blank" rel="noopener noreferrer">
+          <a class="text-[#49769F] text-xs hover:text-[#001D39] transition-colors flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none rounded-md" href="${safeLink}" target="_blank" rel="noopener noreferrer">
             Detail NVD <span class="material-symbols-outlined text-sm" aria-hidden="true">open_in_new</span>
           </a>
-          <span class="px-3 py-1 rounded-full bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9] font-mono text-xs font-bold shadow-2xs">CVSS ${item.skor_cvss ?? '-'}</span>
+          <span class="px-2.5 py-0.5 rounded-md bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9] font-mono text-xs font-bold shadow-2xs">CVSS ${item.skor_cvss ?? '-'}</span>
         </div>
       </div>
     </article>`;
@@ -58,14 +72,14 @@ export function buatCardCve(item) {
 export function buatSection(label, cardsHtml, jumlah, { ikon = '', kelas = '' } = {}) {
   if (jumlah === 0) return '';
   const ikonHtml = ikon
-    ? `<span class="w-9 h-9 rounded-2xl ${kelas} flex items-center justify-center shrink-0 shadow-2xs"><span class="material-symbols-outlined text-lg" aria-hidden="true">${ikon}</span></span>`
+    ? `<span class="w-8 h-8 rounded-md ${kelas} flex items-center justify-center shrink-0 shadow-2xs"><span class="material-symbols-outlined text-lg" aria-hidden="true">${ikon}</span></span>`
     : '';
   return `
       <div class="mb-10 section-wrapper">
         <div class="flex items-center gap-3 mb-5 border-b border-[#BDD8E9]/70 pb-3">
           ${ikonHtml}
           <h4 class="text-lg font-bold text-[#001D39]">${label}</h4>
-          <span class="bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9] text-xs font-bold px-3 py-0.5 rounded-full count-badge">${jumlah}</span>
+          <span class="bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9] text-xs font-bold px-2.5 py-0.5 rounded-md count-badge">${jumlah}</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 cards-grid">${cardsHtml}</div>
       </div>`;

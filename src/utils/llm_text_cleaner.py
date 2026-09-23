@@ -4,6 +4,7 @@ sebagai modul independen (bukan bagian dari llm_summarizer.py) supaya
 modul lain yang juga generate teks via LLM (mis. trend_predictor.py)
 bisa memakainya tanpa menyebabkan circular import.
 """
+import os
 import re
 from typing import Optional
 
@@ -17,19 +18,6 @@ POLA_PEMBUKA_TERLARANG = re.compile(
     r"berdasarkan\s+(teks|artikel|deskripsi)[^:]*:)\s*",
     re.IGNORECASE,
 )
-
-
-def _panjang_prefix_sama(a: str, b: str) -> int:
-    """Menghitung panjang prefix yang SAMA PERSIS antara 2 string (case-insensitive).
-    Dipakai untuk memotong pengulangan judul dengan presisi - bukan asumsi
-    panjang penuh, karena judul dari RSS sering mengandung embel-embel nama
-    situs (mis. '- Adatah - adatah.com') yang TIDAK pernah diulang oleh LLM."""
-    a, b = a.lower(), b.lower()
-    n = min(len(a), len(b))
-    i = 0
-    while i < n and a[i] == b[i]:
-        i += 1
-    return i
 
 
 def bersihkan_output_llm(teks: Optional[str], judul_atau_id: str = "") -> Optional[str]:
@@ -53,7 +41,7 @@ def bersihkan_output_llm(teks: Optional[str], judul_atau_id: str = "") -> Option
     teks = re.sub(r"\n{3,}", "\n\n", teks).strip()
 
     if judul_atau_id:
-        panjang_sama = _panjang_prefix_sama(teks, judul_atau_id)
+        panjang_sama = len(os.path.commonprefix([teks.lower(), judul_atau_id.lower()]))
         if panjang_sama >= 20:
             sisa = teks[panjang_sama:].lstrip(" .:-\n")
             if len(sisa) > 20 and sisa[0].isupper():

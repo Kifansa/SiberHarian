@@ -1,6 +1,6 @@
 ---
 name: SiberHarian
-description: Cyber Threat Intelligence & Vulnerability Analytics Platform (Diskominfo Jawa Timur) - Sapphire Oceanic Edition
+description: Cyber Threat Intelligence & Vulnerability Analytics Platform (CSIRT Diskominfo Jawa Timur) - Sapphire Oceanic Edition
 colors:
   # The 7 Reference Palette Colors:
   ref-navy: "#001D39"      # 1. Midnight Navy (Headings, primary hero dark card, primary chart bars)
@@ -75,11 +75,12 @@ typography:
     fontFamily: "Material Symbols Outlined"
     fontSize: "1.25rem"
 rounded:
-  sm: "8px"
-  md: "12px"
-  lg: "16px"
-  xl: "20px"
-  2xl: "24px"
+  xs: "2px"
+  sm: "4px"
+  md: "6px"
+  lg: "8px"
+  xl: "12px"
+  2xl: "16px"
   full: "9999px"
 spacing:
   xs: "4px"
@@ -123,70 +124,92 @@ components:
     padding: "24px"
 ---
 
-# Design System: Sapphire Oceanic Edition (SiberHarian)
+# Design System: Sapphire Oceanic Edition (SiberHarian - CSIRT Jatim)
 
 ## Overview
 
-**Creative North Star: "Sapphire Oceanic - High-Trust, Dignified Government Cyber Threat Intelligence"**
+**Creative North Star: "Sapphire Oceanic - High-Trust, Dignified Government Cyber Threat Intelligence & Public Cyber Awareness"**
 
-SiberHarian menghadirkan antarmuka analitik intelijen ancaman siber (CTI) dengan palet **Sapphire Oceanic** (`#0A4174`) yang berwibawa, dipadukan dengan latar belakang kanvas sejuk (`#EEF4F8`), kartu putih bersih, dan sistem aksen 7 warna referensi (`#001D39`, `#0A4174`, `#49769F`, `#4E8EA2`, `#6EA2B3`, `#7BBDE8`, `#BDD8E9`). Palet ini menghapus seluruh nuansa kecokelatan/kopi (coffee tone) dan tetap bebas dari glare dingin maupun neon elektrik yang menyilaukan.
+SiberHarian menghadirkan antarmuka analitik intelijen ancaman siber (CTI) sekaligus portal informasi publik resmi CSIRT Provinsi Jawa Timur (`https://csirt.jatimprov.go.id/`). Menggunakan palet **Sapphire Oceanic** (`#0A4174`), kanvas sejuk (`#EEF4F8`), kartu putih bersih, dan aksen 7 warna referensi (`#001D39`, `#0A4174`, `#49769F`, `#4E8EA2`, `#6EA2B3`, `#7BBDE8`, `#BDD8E9`).
 
-**Key Design Pillars:**
-- **Clean Oceanic Canvas (`#EEF4F8`)**: Latar belakang sejuk dan bersih yang nyaman di mata untuk pemantauan harian.
-- **Deep Midnight Navy Text (`#001D39`)**: Tipografi tajam berkontras tinggi (rasio kontras > 14:1) dengan warna teks navy gelap alami.
-- **Subheadings & Borders Slate Blue (`#49769F` & `#BDD8E9`)**: Hirarki teks pendukung dan garis batas kartu yang terstruktur rapi.
-- **Sapphire Primary Action (`#0A4174`, hover `#001D39`)**: Tombol eksekusi utama, status terpilih, dan aksen visual berwibawa.
-- **Deep Midnight Navy Console (`#001D39`, border `#0A4174`)**: Area log terminal pipeline dengan latar belakang midnight navy pekat dan teks kode tajam.
-- **Grounded Semantic Accents**:
-  - *Brick Red (`#b91c1c`)*: Insiden kritis, tombol pembatalan, dan lonjakan vendor CVE.
-  - *Honey Amber / Ochre (`#b45309`)*: Skor CVSS tinggi dan peringatan mitigasi taktis.
-  - *Warm Forest / Green (`#15803d`)*: Validasi sukses, status radar aktif, dan pertumbuhan insiden.
-  - *Ocean Teal / Sky (`#4E8EA2` / `#7BBDE8`)*: Garis tren grafik, indikator aktif, dan aksen data.
-- **Natural Human Copywriting**: Seluruh label tombol dan status menggunakan teks bersih berbahasa Indonesia yang jelas (`Jalankan Pipeline`, `Ekspor Laporan PDF Resmi`, `Selengkapnya →`).
-- **Targeted Monospace Usage**: Font `JetBrains Mono` digunakan secara terarah hanya untuk data teknis (kode CVE ID, skor CVSS, timestamp, persentase data, dan log terminal), sedangkan semua heading dan teks konten menggunakan font `Inter`.
+Desain ini melayani **Dua Persona Pengguna (Dual-User Experience)**:
+1. **Mode Publik (Masyarakat Umum & Pengelola OPD)**: Antarmuka bersih, informatif, dan edukatif tanpa tombol teknis backend.
+2. **Mode Admin CTI (Tim CSIRT Diskominfo Jatim)**: Konsol operasional SOC lengkap dengan monitor terminal pipeline real-time dan analisis intelijen strategis.
 
 ---
 
-## Semantic Color Palette
+## Key Design Pillars
 
-### Base Surfaces
-- **Canvas / Background**: `#EEF4F8` (Clean Oceanic Light Gray-Blue)
-- **Subtle Surface**: `#EEF5FA` (Subtle Ice Blue Tint)
-- **Card Surfaces**: `#ffffff` (Pure White Card)
-- **Card Border**: `#E2EDF8` (Subtle Outline Border), hover `#BDD8E9` (Ice Blue Border)
-- **Text Heading**: `#001D39` (Deep Midnight Navy)
-- **Text Body**: `#334155` / `#475569` (Slate 700 / Slate 600)
-- **Text Muted / Subtitle**: `#49769F` (Slate Blue / Denim)
-
-### Severity Signals
-- **Critical / Insiden Riil**: `bg-red-50 text-[#b91c1c] border border-red-200`
-- **Edukasi / Evergreen / Info**: `bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]`
-- **Warning / High CVE**: `bg-amber-50 text-[#b45309] border border-amber-200`
-- **Live Feed Active**: `bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]` dengan pulse `bg-[#15803d]`
+1. **Clean Oceanic Canvas (`#EEF4F8`)**: Latar belakang sejuk, tenang, dan profesional yang nyaman untuk penjelajahan publik maupun pemantauan intensif di SOC.
+2. **Deep Midnight Navy Text (`#001D39`)**: Tipografi tajam berkontras tinggi (rasio kontras > 14:1) dengan warna teks navy gelap alami, bebas dari efek lelah mata.
+3. **Sapphire Primary Action (`#0A4174`, hover `#001D39`)**: Aksen biru berwibawa khas identitas Pemprov Jawa Timur untuk tombol aksi utama dan status terpilih.
+4. **Natural Human Copywriting**: Seluruh teks, label, dan grafik menggunakan bahasa Indonesia baku, jelas, dan lugas. Menghilangkan seluruh AI-slop buzzwords (*unlock, elevate, revolutionize, seamless*).
+5. **Targeted Monospace Usage**: Font `JetBrains Mono` digunakan secara disiplin hanya untuk data teknis numerik (kode CVE ID, skor CVSS, persentase, tanggal teknis, dan terminal log). Teks judul dan narasi menggunakan font `Inter`.
 
 ---
 
-## Layout & Components
+## Dual-Role Navigation Architecture
 
-### Hero Section
-- Header bersih dengan logo instansi Diskominfo Jatim / SiberHarian berwibawa.
-- Action Bar: Tombol solid `Jalankan Pipeline` (`bg-[#0A4174] hover:bg-[#001D39] text-white font-bold rounded-full shadow-md shadow-[#0A4174]/20`), tombol `Batalkan` (`bg-[#b91c1c] hover:bg-[#991b1b] text-white rounded-full font-bold`), dan toggle `Buka/Tutup Monitor` (`bg-white hover:bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9] rounded-full`).
+### Header Role Switcher
+Terletak di sisi kanan header portal, memberikan toggle halus dan jelas:
+- **Mode Publik (2 Tab Saja)**: Menampilkan tab **Berita & Statistik** (gabungan wawasan KPI, Word Cloud, grafik fakta, intisari edukasi asli, dan feed berita) serta **Arsip**.
+- **Mode Admin CTI (3 Tab)**: Menampilkan tab **Dashboard** (operasional + floating console terminal SSE), **Arsip**, dan **Tren CTI**. Badge identitas `"Tim CTI CSIRT"` ditampilkan di samping logo.
 
-### Telemetry KPI Cards
-- Kartu metrik utama di tab Tren (`Fokus Ancaman Teratas`, `Total Berita Insiden`, `Total Kerentanan CVE`).
-- Ikon fungsional dalam wadah membulat dengan aksen warna semantik hangat (`#0A4174`, `#4E8EA2`, `#b91c1c`, `#b45309`).
-- Nilai angka tegas dan bersih dengan badge pertumbuhan persentase.
+### Desktop & Mobile Navigation
+- **Desktop**: Segmented navigation pill control (`#EEF4F8` container dengan border `#BDD8E9`). Tab aktif disorot dengan warna `#7BBDE8` (Sky Blue) dengan teks putih tegas.
+- **Mobile**: Fixed bottom navigation bar (`bg-white` dengan border-t `#BDD8E9`) yang dinamis menyesuaikan 2 tab untuk Publik dan 3 tab untuk Admin CTI.
 
-### Threat Intelligence & CVE Feed Cards
-- Kartu berita dan CVE berukuran 3 kolom responsif dengan border bersih (`#E2EDF8`) dan hover border (`#7BBDE8`/60).
-- Kategori badge di sudut kiri atas, sumber/vendor di kanan atas.
-- Link aksi: `Selengkapnya →` dengan warna `#0A4174` untuk ringkasan modal lengkap dan `Baca sumber asli` / `Detail NVD` untuk tautan eksternal.
+---
 
-### Regional Cyber Incident Highlights (7 Hari Terakhir)
-- Visualisasi 3 kolom responsif memetakan kasus insiden siber teramai: **Internasional**, **Nasional**, dan **Jawa Timur**.
-- Jawa Timur dilengkapi pendeteksian otomatis kabupaten/kota serta instansi Pemprov/BUMD. Jika tidak ada insiden dalam 7 hari terakhir, menampilkan tanda **`-`** (Kondisi Kondusif / Nihil Kasus) secara tegas dan rapi.
-- Perhitungan berbasis klastering frekuensi liputan media (RapidFuzz token matching) tanpa LLM/Ollama untuk latensi sub-10ms dan akurasi 100% bebas halusinasi.
+## Surface Specifications
 
-### Charts & Data Visualizations
-- Grafik analitik interaktif berbasis Chart.js dengan garis kisi-kisi abu-abu halus (`#E2EDF8`), tick abu-abu slate (`#49769F`), tooltip midnight navy pekat (`#001D39`), dan palet warna solid analitik seimbang tanpa efek kaca/transparansi berlebihan.
-- Tabel Kata Kunci dan Vendor CVE dengan baris hover halus (`hover:bg-[#EEF5FA]/60`) dan badge pertumbuhan data.
+### 1. Tab Beranda & Statistik (Sisi Publik)
+Menggabungkan wawasan intelijen dan berita hari terakhir dalam satu alur yang kohesif:
+- **Insightful KPI Cards**: 4 kartu wawasan fakta bermakna (*Modus Paling Mengintai: Akun & Phishing 54%*, *Status Risiko Software: Kritis Ekstrem 9.5/10*, *Software Terbanyak Celah: Microsoft & Web CMS*, *Fokus Wilayah: 60% Isu Nasional*).
+- **Word Cloud Kasus Insiden Spesifik (Interaktif)**: Diekstrak eksklusif dari berita `insiden_spesifik`. Ukuran font dinamis (12px–26px) dengan palet Sapphire Oceanic. Mengklik kata kunci akan langsung memfilter kartu berita kejadian terkait di bawahnya.
+- **Grafik Fakta Empiris**: Bar chart sebaran modus ancaman dan horizontal bar chart software populer terpapar celah kritis.
+- **Intisari Artikel Edukasi Asli**: Daftar himbauan pencegahan yang disarikan langsung dari artikel edukasi siber terverifikasi di database (`kategori_relevansi == 'analisis_relevan'`) lengkap dengan link ke sumber berita asli.
+- **Feed Berita & CVE Hari Terakhir**: Kartu berita dan CVE terkini dengan modal pop-up pembaca ringkasan lengkap.
+
+### 2. Tab Arsip (Publik & Admin)
+- Penelusuran data 7-14 hari dengan dropdown tanggal, filter kategori (Insiden Spesifik, Edukasi, CVE), dan kotak pencarian instan (*live search*).
+
+### 3. Tab Tren Siber CTI (Khusus Admin Tim CTI)
+- **Komparatif Mingguan**: Analisis rolling 7 hari aktif vs 7 hari baseline untuk mengukur eskalasi ancaman siber secara matematis.
+- **SITREP CTI 5-Bagian Terstruktur**: 
+  1. Tren Insiden Mingguan (Makro)
+  2. Lanskap & Entitas Ancaman (Mikro - klastering insiden multi-artikel dengan nama kampanye profesional dan mitigasi halusinasi peneliti)
+  3. Vektor Serangan & Pemetaan MITRE ATT&CK (1-to-1)
+  4. Rekomendasi Aksi Preskriptif (Injeksi deterministik dari Ensiklopedia Keamanan)
+  5. Prediksi & Sinyal Ancaman Masa Depan (Emerging Threats)
+- **Taksonomi Terstandarisasi**:
+  - **10 Sektor Standar Nasional**: Mengacu pada Perpres No. 82 Tahun 2022 tentang Infrastruktur Informasi Vital (IIV) + Sektor Pendidikan & Pengguna Digital.
+  - **12 Taktik MITRE ATT&CK Enterprise Matrix**: Initial Access, Execution, Persistence, Privilege Escalation, Defense Evasion, Credential Access, Discovery, Lateral Movement, Collection, Command & Control, Exfiltration, Impact.
+- **Kasus Wilayah 3-Level (Internasional, Nasional, Jawa Timur)**: Visualisasi kartu insiden teramai dengan deteksi cerdas 29 kabupaten dan 9 kota di Jawa Timur.
+- **Matriks Mitigasi Proteksi Web & Sistem**: Rekomendasi teknis langsung untuk pengamanan portal instansi publik.
+- **Ekspor Dokumen PDF Resmi**: Cetak dokumen SITREP mingguan bertata letak standar Diskominfo Jatim langsung dari peramban.
+
+### 4. Pusat Ensiklopedia Standar Keamanan Siber
+- Database 12 kerangka kerja global dan nasional (165 entitas) tersimpan terstruktur dalam format JSON di `data/encyclopedia/`:
+  - Standar Global: MITRE ATT&CK, MITRE D3FEND, NIST CSF 2.0, OWASP Top 10, CWE, CIS Controls, CISA CPG, ISO/IEC 27001, Cloud Security Alliance (CSA) CCM.
+  - Standar Nasional: BSSN CSIRT Framework, Indeks KAMI (Keamanan Informasi BSSN), Panduan Operasional CSIRT Indonesia.
+- Layanan API `/api/ensiklopedia` dengan filter kerangka kerja dan pencarian instan berbasis kata kunci.
+
+---
+
+## Semantic Color Tokens
+
+- **Canvas Background**: `#EEF4F8`
+- **Subtle Surface**: `#EEF5FA`
+- **Card Surface**: `#ffffff`
+- **Card Border**: `#E2EDF8`, hover: `#BDD8E9`
+- **Navy Heading**: `#001D39`
+- **Slate Text**: `#49769F`
+- **Body Text**: `#334155`
+- **Sapphire Primary**: `#0A4174`
+- **Sky Active Pill**: `#7BBDE8`
+- **Semantic Accents**:
+  - *Critical / Darurat*: `#b91c1c` (Red 700)
+  - *Warning / Perhatian*: `#b45309` (Amber 700)
+  - *Success / Aman*: `#15803d` (Green 700)
+  - *Teal Data Line*: `#4E8EA2`
