@@ -1,4 +1,4 @@
-import os
+﻿import os
 import yaml
 from pathlib import Path
 
@@ -47,3 +47,16 @@ class ConfigLoader:
     @classmethod
     def get_prompt(cls, prompt_name):
         return cls().prompts.get(prompt_name, "")
+
+
+    @classmethod
+    def save_config(cls, new_config: dict):
+        """Menyimpan perubahan config.yaml (dipanggil dari admin panel)."""
+        instance = cls()
+        base_dir = Path(__file__).resolve().parent.parent.parent
+        config_path = base_dir / "config" / "config.yaml"
+        instance.config.update(new_config)
+        with open(config_path, "w", encoding="utf-8") as f:
+            yaml.dump(instance.config, f, sort_keys=False, allow_unicode=True)
+        cls._instance = None  # Force reload
+

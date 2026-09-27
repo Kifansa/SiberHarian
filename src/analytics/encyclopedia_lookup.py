@@ -1,7 +1,7 @@
 import json
 import os
 import re
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 # Constants
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -62,8 +62,19 @@ SEARCH_CONFIG = [
     {'name': 'csirt_framework', 'header': 'REFERENSI CSIRT SERVICES FRAMEWORK (FIRST.ORG & BSSN):', 'format': lambda e: f"- Layanan CSIRT [{e['id']}] {e['service']}: {e['mitigation']}"}
 ]
 
-def search_encyclopedia(query: str) -> str:
-    query_lower = [q.strip() for q in query.lower().split() if len(q.strip()) > 2]
+def get_all_framework_counts() -> Dict[str, int]:
+    counts = {}
+    for name, filename in FRAMEWORK_REGISTRY.items():
+        data = load_encyclopedia(filename)
+        counts[name] = len(data)
+    return counts
+
+
+def search_encyclopedia(query: Union[str, List[str]]) -> str:
+    if isinstance(query, list):
+        query_lower = [k.lower().strip() for k in query if k and len(k.strip()) > 2]
+    else:
+        query_lower = [q.strip() for q in query.lower().split() if len(q.strip()) > 2]
     if not query_lower:
         return "(Query terlalu pendek untuk pencarian ensiklopedia)"
     
@@ -73,9 +84,9 @@ def search_encyclopedia(query: str) -> str:
         db = load_encyclopedia(FRAMEWORK_REGISTRY[fw['name']])
         matches = [fw['format'](e) for e in db if _cocok_kata_kunci(e.get("keywords", []), query_lower)]
         if matches:
-            hasil_sections.append(fw['header'] + "\\n" + "\\n".join(sorted(set(matches))[:3]))
+            hasil_sections.append(fw['header'] + "\n" + "\n".join(sorted(set(matches))[:3]))
             
-    return "\\n\\n".join(hasil_sections) if hasil_sections else "(Tidak ada kecocokan di database ensiklopedia lokal)"
+    return "\n\n".join(hasil_sections) if hasil_sections else "(Tidak ada kecocokan di database ensiklopedia lokal)"
 
 # LAYER MAPPINGS
 INCIDENT_LAYERS = {

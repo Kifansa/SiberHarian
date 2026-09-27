@@ -7,16 +7,36 @@ terdepan (1 kata) berdasarkan momentum eskalasi historis.
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Any
+import math
 import pandas as pd
 from src.utils.config_loader import ConfigLoader
 import re
 from collections import Counter
 
+from src.utils.llm_adapter import GeminiLLMAdapter
 from src.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
 DEFAULT_DB_PATH = Path(__file__).resolve().parents[2] / "data" / "state.db"
+
+_EMBEDDING_CACHE: Dict[str, List[float]] = {}
+
+
+def _cosine_similarity(vec_a: List[float], vec_b: List[float]) -> float:
+    """Menghitung cosine similarity antara dua vector embedding."""
+    if not vec_a or not vec_b or len(vec_a) != len(vec_b):
+        return 0.0
+    dot = 0.0
+    sum_a = 0.0
+    sum_b = 0.0
+    for a, b in zip(vec_a, vec_b):
+        dot += a * b
+        sum_a += a * a
+        sum_b += b * b
+    if sum_a <= 0.0 or sum_b <= 0.0:
+        return 0.0
+    return dot / (math.sqrt(sum_a) * math.sqrt(sum_b))
 
 
 class RAGEngine:
@@ -52,6 +72,57 @@ class RAGEngine:
             return []
         return [k for k, v in Counter(all_keywords).most_common(top_n)]
 
+    def retrieve_berita_semantic(self, query: str, limit: int = 5) -> List[tuple]:
+        """
+        Mengambil artikel berita paling relevan secara semantik menggunakan
+        vector embeddings text-embedding-004 dan cosine similarity.
+        Mengembalikan list of (score, sumber, judul, ringkasan, tanggal).
+        """
+        if self.df_berita.empty or not query:
+            return []
+
+        try:
+            query_emb = GeminiLLMAdapter.embed_text(query)
+            if not query_emb:
+                return []
+
+            results = []
+            sample_df = self.df_berita.head(30)
+            items_to_embed = []
+            keys_to_embed = []
+            for _, row in sample_df.iterrows():
+                judul = str(row.get("judul", "")).strip()
+                ringkasan = str(row.get("ringkasan_atau_narasi", "")).strip()
+                tanggal = str(row.get("tanggal_publish", "")).split()[0]
+                teks = f"{judul}. {ringkasan}".strip()
+                cache_key = f"{judul}_{tanggal}"
+                if cache_key not in _EMBEDDING_CACHE and teks:
+                    items_to_embed.append(teks)
+                    keys_to_embed.append(cache_key)
+
+            if items_to_embed:
+                batch_embs = GeminiLLMAdapter.embed_documents(items_to_embed, batch_size=50)
+                for k, emb in zip(keys_to_embed, batch_embs):
+                    if emb:
+                        _EMBEDDING_CACHE[k] = emb
+
+            for _, row in sample_df.iterrows():
+                judul = str(row.get("judul", "")).strip()
+                ringkasan = str(row.get("ringkasan_atau_narasi", "")).strip()
+                sumber = str(row.get("sumber", "Media")).strip()
+                tanggal = str(row.get("tanggal_publish", "")).split()[0]
+                cache_key = f"{judul}_{tanggal}"
+                doc_emb = _EMBEDDING_CACHE.get(cache_key)
+                if doc_emb:
+                    sim = _cosine_similarity(query_emb, doc_emb)
+                    results.append((sim, sumber, judul, ringkasan, tanggal))
+
+            results.sort(key=lambda x: x[0], reverse=True)
+            return results[:limit]
+        except Exception as e:
+            logger.debug(f"Semantic embedding search bypassed: {e}")
+            return []
+
     def retrieve_berita_context(
         self,
         top_keywords: List[str],
@@ -60,7 +131,7 @@ class RAGEngine:
     ) -> str:
         """
         Mengambil sampel artikel berita asli paling relevan berdasarkan kecocokan
-        kata kunci tren lonjakan dan vektor ancaman utama.
+        semantik (vector embeddings) dan frekuensi kata kunci tren (lexical).
         """
         if self.df_berita.empty:
             return "(Tidak ada korpus berita pada database)"
@@ -69,6 +140,25 @@ class RAGEngine:
         kw_set = [k.lower().strip() for k in top_keywords if k and len(k.strip()) > 2]
         vector_set = [v.lower().strip() for v in (top_vectors or []) if v]
 
+        # 1. Coba Semantic Vector Retrieval lebih dulu
+        query_gabung = " ".join(kw_set[:5] + vector_set[:3])
+        if query_gabung:
+            semantic_matches = self.retrieve_berita_semantic(query_gabung, limit=limit)
+            if semantic_matches and semantic_matches[0][0] >= 0.65:
+                judul_terpilih = set()
+                chunks = []
+                for sim, sumber, judul, ringkasan, tanggal in semantic_matches:
+                    if judul in judul_terpilih:
+                        continue
+                    judul_terpilih.add(judul)
+                    ringkas_teks = ringkasan[:220] + ("..." if len(ringkasan) > 220 else "") if ringkasan else judul
+                    chunks.append(f"- [{sumber} | {tanggal}] \"{judul}\": {ringkas_teks}")
+                    if len(chunks) >= limit:
+                        break
+                if chunks:
+                    return "\n".join(chunks)
+
+        # 2. Fallback Lexical Scoring jika embedding belum aktif / similarity rendah
         scored_articles = []
         for _, row in self.df_berita.iterrows():
             judul = str(row.get("judul", "")).strip()

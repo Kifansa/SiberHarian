@@ -6,8 +6,8 @@ newspaper3k==0.2.8
 python-dateutil==2.9.0.post0
 googlenewsdecoder==0.1.7
 
-# LLM Summarization (lokal via Ollama)
-ollama==0.4.4
+# LLM Inference via Gemini API
+google-generativeai>=0.8.0
 
 # Konfigurasi
 PyYAML==6.0.2
@@ -16,6 +16,9 @@ PyYAML==6.0.2
 pandas==2.2.3
 rapidfuzz==3.10.1
 
-# DEMO
+# Web Framework
 fastapi==0.115.6
 uvicorn==0.34.0
+
+# Autentikasi
+bcrypt>=4.0.1

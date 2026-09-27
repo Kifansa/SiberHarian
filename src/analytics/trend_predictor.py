@@ -1,6 +1,6 @@
 """
 Menarasikan statistik tren (hasil trend_analyzer.py) menjadi teks yang
-mudah dibaca tim security, menggunakan LLM lokal (Ollama). BUKAN sumber
+mudah dibaca tim security, menggunakan Gemini API (GeminiLLMAdapter). BUKAN sumber
 angka - LLM di sini murni menerjemahkan angka yang SUDAH dihitung Python
 jadi bahasa manusia, supaya tidak ada ruang untuk mengarang insiden
 atau CVE yang tidak nyata.
@@ -9,7 +9,7 @@ import json
 import re
 from typing import Dict, List, Optional, Any, Tuple
 
-import ollama
+from src.utils.llm_adapter import GeminiLLMAdapter
 import pandas as pd
 from src.utils.config_loader import ConfigLoader
 
@@ -19,7 +19,6 @@ from src.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
-MODEL_PREDIKTOR = "llama3.2"
 
 # Ambang batas minimal supaya LLM tidak dipaksa menganalisis data yang
 # terlalu tipis untuk bermakna (mis. cuma 1 kata kunci muncul 1x).
@@ -32,22 +31,9 @@ MIN_GROWTH_PERSEN = 20.0
 
 
 def _panggil_llm(system_prompt: str, user_prompt: str, model: str = None) -> Optional[str]:
-    if not model:
-        model = ConfigLoader.get_config().get("cti_analysis", {}).get("llm", {}).get("model", "llama3.2")
-    """Memanggil Ollama, mengembalikan None kalau gagal (biar pemanggil bisa fallback aman)."""
-    try:
-        respons = ollama.chat(
-            model=model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            options={"temperature": 0.1, "num_predict": 2048},
-        )
-        return respons["message"]["content"].strip()
-    except Exception as e:
-        logger.error(f"Gagal memanggil model prediktor tren ({model}): {e}")
-        return None
+    """Memanggil Gemini, mengembalikan None kalau gagal."""
+    hasil = GeminiLLMAdapter.chat(system_prompt, user_prompt, temperature=0.1, max_tokens=2048)
+    return hasil if hasil else None
 
 
 def _filter_naik_signifikan(items: List[Dict]) -> List[Dict]:
@@ -94,7 +80,7 @@ def _format_sampel_judul_untuk_prompt(daftar_judul: List[Dict]) -> str:
 def prediksi_tren_berita(
     statistik_tren: Dict,
     df_riwayat: Optional[pd.DataFrame] = None,
-    model: str = MODEL_PREDIKTOR,
+    model: str = None,
     mode: Optional[str] = None
 ) -> tuple:
     from src.analytics.rag_engine import RAGEngine
@@ -138,10 +124,10 @@ def prediksi_tren_berita(
 def prediksi_tren_cve(
     statistik_cve: Dict,
     df_riwayat: Optional[pd.DataFrame] = None,
-    model: str = MODEL_PREDIKTOR,
+    model: str = None,
     mode: str = "modular_llm"
 ) -> str:
-    """Menghasilkan narasi tren CVE modular 4-bagian menggunakan RAG fakta riil dan Llama 3.2."""
+    """Menghasilkan narasi tren CVE modular 4-bagian menggunakan RAG fakta riil dan Gemini API."""
     from src.analytics.cti_agents import jalankan_pipeline_cve_modular
     narasi_cve = jalankan_pipeline_cve_modular(
         statistik_cve=statistik_cve,
@@ -219,7 +205,7 @@ def _normalisasi_poin_cti(val: Any) -> str:
 
 
 def _parse_urgensi_dan_potensi(teks_llm: str, fallback_urg: str, fallback_pot: str) -> Tuple[str, str]:
-    """Mengekstrak alasan urgensi dan potensi ancaman dari output teks Llama secara toleran."""
+    """Mengekstrak alasan urgensi dan potensi ancaman dari output teks LLM secara toleran."""
     if not teks_llm:
         return fallback_urg, fallback_pot
 
@@ -249,7 +235,7 @@ def _parse_urgensi_dan_potensi(teks_llm: str, fallback_urg: str, fallback_pot: s
 def analisis_kasus_insiden_wilayah_ai(
     df_riwayat: Optional[pd.DataFrame] = None,
     kasus_wilayah_cluster: Optional[Dict] = None,
-    model: str = MODEL_PREDIKTOR,
+    model: str = None,
     mode: str = "modular_llm"
 ) -> Dict:
     """
@@ -281,7 +267,7 @@ def analisis_kasus_insiden_wilayah_ai(
     from src.analytics.rag_engine import RAGEngine
     rag_engine = RAGEngine(df_riwayat)
 
-    from src.analytics.cti_agents import _deteksi_sektor_spesifik, _deteksi_senjata_spesifik, _deteksi_dampak_spesifik, _call_ollama_text
+    from src.analytics.cti_agents import _deteksi_sektor_spesifik, _deteksi_senjata_spesifik, _deteksi_dampak_spesifik, _call_llm_text
     from src.analytics.trend_analyzer import _bersihkan_judul_dan_publisher
 
     def _sintesis_wilayah(nama_wilayah: str, label_wilayah: str) -> dict:
@@ -294,18 +280,18 @@ def analisis_kasus_insiden_wilayah_ai(
                 "ringkasan_kasus": "",
                 "kategori": "-",
                 "lokasi": label_wilayah,
-                "alasan_urgensi": f"- **Nihil Anomali**: Nihil anomali atau insiden siber berkategori tinggi yang terverifikasi menargetkan infrastruktur di {label_wilayah} dalam 7 hari terakhir.",
+                "alasan_urgensi": f"- **Nihil Anomali**: Nihil anomali atau insiden siber berkategori tinggi yang menargetkan infrastruktur di {label_wilayah} dalam 7 hari terakhir.",
                 "potensi_ancaman": "- **Prioritas Kesiapsiagaan**: Fokus mitigasi tetap pada hardening celah sistem (unpatched CVE) dan peningkatan kewaspadaan aparatur terhadap rekayasa sosial / credential phishing.",
                 "sumber": "-",
                 "link": "#",
             }
 
-        # 1. Ekstraksi deterministik sampel kasus riil terbaik (paling terverifikasi)
+        # 1. Ekstraksi deterministik sampel kasus riil terbaik
         top_art = cluster_items[0]
         raw_nama = top_art.get("judul", "-")
         nama_kejadian, _ = _bersihkan_judul_dan_publisher(raw_nama, "")
         ringkasan_kasus = top_art.get("ringkasan", "") or top_art.get("ringkasan_atau_narasi", "")
-        sumber = top_art.get("sumber", "Media Intelijen Terverifikasi")
+        sumber = top_art.get("sumber", "Media Intelijen")
         link = _bersihkan_link(top_art.get("link", "#"))
         kategori_raw = top_art.get("tag", "Insiden Siber")
         isu_utama = _normalisasi_isu_utama(kategori_raw, "")
@@ -341,19 +327,21 @@ def analisis_kasus_insiden_wilayah_ai(
         # 3. Mode Modular LLM (Panggilan terisolasi ringan ~250 token)
         rag_context = rag_engine.retrieve_regional_context(cluster_items, label_wilayah, limit=6)
         user_prompt = (
-            f"KORPUS FAKTA BERITA WILAYAH: {label_wilayah}\n{rag_context[:800]}\n\n"
-            f"Tulis analisis intelijen makro wilayah dalam 2 bagian berikut:\n"
+            f"KORPUS FAKTA BERITA WILAYAH: {label_wilayah}\n{rag_context[:900]}\n\n"
+            f"Instruksi: Terapkan prinsip BLUF (Bottom Line Up Front) dengan langsung menyajikan dampak kritis di baris awal. "
+            f"Sertakan potensi dampak domino (cascading effect) lintas sektor dan implikasinya terhadap infrastruktur digital.\n"
+            f"Format keluaran harus persis 2 bagian berikut:\n"
             f"ALASAN URGENSI:\n"
-            f"- **[Kata Kunci]**: [Analisis makro lanskap ancaman wilayah {label_wilayah}]\n"
-            f"- **[Kata Kunci]**: [Analisis paparan sektor dan metode penyerangan]\n\n"
+            f"- **[Dampak Kritis]**: [Analisis urgensi utama dan sektor vital yang terpapar di {label_wilayah}]\n"
+            f"- **[Vektor & Taktik]**: [Metode penyerangan atau celah yang dieksploitasi]\n\n"
             f"POTENSI ANCAMAN:\n"
-            f"- **[Proyeksi]**: [Analisis eskalasi risiko ke depan]\n"
-            f"- **[Kesiapsiagaan]**: [Rekomendasi mitigasi spesifik]"
+            f"- **[Proyeksi Risiko]**: [Eskalasi ancaman dan potensi penyebaran ke domain instansi publik]\n"
+            f"- **[Tindakan Pengamanan]**: [Langkah preventif atau mitigasi taktis yang wajib disiapkan]"
         )
 
         try:
-            hasil_teks = _call_ollama_text(
-                "Kamu adalah Lead CTI Analyst Diskominfo Jawa Timur. Tulis teks analisis langsung dalam format poin-poin bertanda tebal. DILARANG menggunakan JSON.",
+            hasil_teks = _call_llm_text(
+                "Kamu adalah Senior CTI Strategic Advisor CSIRT Dinas Komunikasi dan Informatika Jawa Timur. Sajikan intelijen ringkas, tajam, dan actionable berbasis fakta. DILARANG menggunakan JSON atau kata klise.",
                 user_prompt,
                 model=model,
                 num_predict=350
@@ -395,7 +383,7 @@ def analisis_kasus_insiden_wilayah_ai(
 def proses_prediksi_tren(
     statistik_tren: Dict,
     df_riwayat: Optional[pd.DataFrame] = None,
-    model: str = MODEL_PREDIKTOR
+    model: str = None
 ) -> Dict:
     """
     Titik masuk utama: Menjalankan pipeline CTI secara sekuensial dan terisolasi
@@ -442,3 +430,4 @@ if __name__ == "__main__":
     print(hasil["prediksi_berita"])
     print("\n=== PREDIKSI TREN CVE ===")
     print(hasil["prediksi_cve"])
+

@@ -332,10 +332,10 @@ export function eksporLaporanTren(lastTrenData) {
 
   <div class="posture-banner">
     <div>
-      <div class="posture-title">Status Postur Risiko: ${postur.level || 'TINGGI'} (${postur.skor ? postur.skor + '/10' : '-'}) &bull; Perubahan: ${postur.growth_persen > 0 ? '+' : ''}${postur.growth_persen || 0}% (${postur.status_tren || 'Stabil'})</div>
-      <div class="posture-meta">Fokus Utama: <strong>${escapeHtml(stat.top_focus || 'Keamanan Website & Infrastruktur OPD')}</strong> &bull; Metodologi: Rolling Weekly 7 Hari vs Baseline</div>
+      <div class="posture-title">Laporan Pemantauan Intelijen Ancaman Siber Mingguan &bull; CSIRT Diskominfo Jawa Timur</div>
+      <div class="posture-meta">Fokus Utama: <strong>${escapeHtml(stat.top_focus || 'Keamanan Website & Infrastruktur OPD')}</strong> &bull; Pemantauan: 7 Hari Terkini</div>
     </div>
-    <div class="posture-badge">${postur.level || 'TINGGI'}</div>
+    <div class="posture-badge">RESMI</div>
   </div>
 
   <div class="kpi-grid">
@@ -386,7 +386,7 @@ export function eksporLaporanTren(lastTrenData) {
           <tr>
             <td><span class="badge-menengah" style="background:#EEF5FA;color:#0A4174;">Internasional</span><br><span style="font-size:7pt;color:#49769F;">${escapeHtml(item.lokasi || 'Global')}</span></td>
             <td><strong>${escapeHtml(item.kategori || 'Insiden')}</strong></td>
-            <td><strong>${escapeHtml(item.nama_kejadian)}</strong><br><span style="font-size:7pt;color:#64748b;">Sumber: ${escapeHtml(item.sumber || 'Media Terverifikasi')}</span></td>
+            <td><strong>${escapeHtml(item.nama_kejadian)}</strong><br><span style="font-size:7pt;color:#64748b;">Sumber: ${escapeHtml(item.sumber || 'Media Intelijen')}</span></td>
             <td style="font-size:7.5pt;line-height:1.35;">
               <strong style="color:#b45309;">Urgensi:</strong> ${escapeHtml(item.alasan_urgensi || '-')}<br>
               <strong style="color:#b91c1c;">Potensi:</strong> ${escapeHtml(item.potensi_ancaman || '-')}
@@ -413,7 +413,7 @@ export function eksporLaporanTren(lastTrenData) {
           <tr>
             <td><span class="badge-menengah" style="background:#f0fdf4;color:#0f766e;">Nasional</span><br><span style="font-size:7pt;color:#64748b;">${escapeHtml(item.lokasi || 'Indonesia')}</span></td>
             <td><strong>${escapeHtml(item.kategori || 'Insiden')}</strong></td>
-            <td><strong>${escapeHtml(item.nama_kejadian)}</strong><br><span style="font-size:7pt;color:#64748b;">Sumber: ${escapeHtml(item.sumber || 'Media Terverifikasi')}</span></td>
+            <td><strong>${escapeHtml(item.nama_kejadian)}</strong><br><span style="font-size:7pt;color:#64748b;">Sumber: ${escapeHtml(item.sumber || 'Media Intelijen')}</span></td>
             <td style="font-size:7.5pt;line-height:1.35;">
               <strong style="color:#b45309;">Urgensi:</strong> ${escapeHtml(item.alasan_urgensi || '-')}<br>
               <strong style="color:#b91c1c;">Potensi:</strong> ${escapeHtml(item.potensi_ancaman || '-')}
@@ -446,7 +446,7 @@ export function eksporLaporanTren(lastTrenData) {
           <tr style="background:#fefce8;">
             <td><span class="badge-prio" style="background:#fef3c7;color:#92400e;">Jawa Timur</span><br><span style="font-size:7pt;color:#92400e;font-weight:bold;">${escapeHtml(item.lokasi || 'Jawa Timur')}</span></td>
             <td><strong>${escapeHtml(item.kategori || 'Insiden')}</strong></td>
-            <td><strong>${escapeHtml(item.nama_kejadian)}</strong><br><span style="font-size:7pt;color:#64748b;">Sumber: ${escapeHtml(item.sumber || 'Media Terverifikasi')}</span></td>
+            <td><strong>${escapeHtml(item.nama_kejadian)}</strong><br><span style="font-size:7pt;color:#64748b;">Sumber: ${escapeHtml(item.sumber || 'Media Intelijen')}</span></td>
             <td style="font-size:7.5pt;line-height:1.35;">
               <strong style="color:#b45309;">Urgensi:</strong> ${escapeHtml(item.alasan_urgensi || '-')}<br>
               <strong style="color:#b91c1c;">Potensi:</strong> ${escapeHtml(item.potensi_ancaman || '-')}

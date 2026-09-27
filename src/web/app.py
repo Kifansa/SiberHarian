@@ -1,22 +1,24 @@
 """
 Web demo interface untuk pipeline cyber news digest. Endpoint untuk
 memicu pipeline lengkap (scraping -> summarization -> arsip & tren)
-dengan progress log real-time (SSE), dan endpoint terpisah untuk 3 tab
-dashboard (Beranda, Arsip, Tren Siber) yang membaca langsung dari
-database - source kebenaran tunggal, jadi data tetap ada untuk demo
-walau server di-restart tanpa perlu scraping ulang.
+dengan progress log real-time (SSE), dan endpoint terpisah untuk
+dashboard publik (Berita & Statistik, Arsip) serta panel administratif
+Tim CTI Diskominfo Jatim dengan navigasi sidebar.
 """
 import asyncio
+from datetime import datetime, timedelta
+import hashlib
+import hmac
 import json
 import logging
+import os
+from pathlib import Path
 import queue
 import threading
-from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, Request
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, Request, Response
+from fastapi.responses import JSONResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -35,12 +37,50 @@ from src.summarizer.llm_summarizer import proses_summarization_harian
 
 BASE_DIR = Path(__file__).parent
 
-app = FastAPI(title="Cyber News Digest - Demo")
+app = FastAPI(title="SiberHarian - CSIRT Diskominfo Jatim")
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 log_queue: "queue.Queue[dict]" = queue.Queue()
 sedang_berjalan = False
+
+SESSION_SECRET = os.getenv("SESSION_SECRET", "siberharian-csirt-jatim-auth-secret-key-2026")
+
+
+@app.on_event("startup")
+async def on_startup():
+    """Inisialisasi database dan pastikan tabel serta akun admin siap."""
+    from src.storage.db import DEFAULT_DB_PATH, init_db
+    init_db(DEFAULT_DB_PATH)
+
+
+def buat_token_sesi(username: str) -> str:
+    sig = hmac.new(SESSION_SECRET.encode(), username.encode(), hashlib.sha256).hexdigest()
+    return f"{username}:{sig}"
+
+
+def ambil_user_dari_sesi(request: Request) -> Optional[dict]:
+    cookie = request.cookies.get("cti_session")
+    if not cookie or ":" not in cookie:
+        return None
+    parts = cookie.split(":", 1)
+    if len(parts) != 2:
+        return None
+    username, sig = parts
+    expected_sig = hmac.new(SESSION_SECRET.encode(), username.encode(), hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(sig, expected_sig):
+        return None
+    from src.utils.admin_auth import get_admin_user
+    return get_admin_user(username)
+
+
+def cek_admin_autentikasi(request: Request) -> bool:
+    return ambil_user_dari_sesi(request) is not None
+
+
+def cek_superadmin_autentikasi(request: Request) -> bool:
+    user = ambil_user_dari_sesi(request)
+    return user is not None and user.get("role") == "superadmin"
 
 
 class QueueLogHandler(logging.Handler):
@@ -65,8 +105,7 @@ _pasang_handler_global()
 def _jalankan_pipeline_di_thread() -> None:
     """
     Menjalankan pipeline lengkap secara sinkron di thread terpisah. Hasil
-    akhir langsung tersimpan ke database lewat proses_arsip_dan_tren() -
-    tidak ada lagi cache JSON manual, database adalah sumber kebenarannya.
+    akhir langsung tersimpan ke database lewat proses_arsip_dan_tren().
     """
     global sedang_berjalan
     try:
@@ -82,9 +121,131 @@ def _jalankan_pipeline_di_thread() -> None:
         sedang_berjalan = False
 
 
+# ==============================================================================
+# Endpoint Autentikasi Admin
+# ==============================================================================
+
+@app.post("/api/auth/login")
+async def api_auth_login(request: Request):
+    """Memvalidasi kredensial admin dan menerbitkan session cookie."""
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"status": "error", "message": "Format data tidak valid."}, status_code=400)
+
+    username = (body.get("username") or "").strip()
+    password = (body.get("password") or "").strip()
+
+    from src.utils.admin_auth import verifikasi_admin
+    is_valid, role = verifikasi_admin(username, password)
+    if is_valid:
+        token = buat_token_sesi(username)
+        res = JSONResponse({"status": "ok", "redirect": "/admin"})
+        res.set_cookie(
+            key="cti_session",
+            value=token,
+            httponly=True,
+            max_age=86400 * 7,  # 7 hari
+            samesite="lax",
+        )
+        return res
+
+    return JSONResponse(
+        {"status": "error", "message": "Nama pengguna atau kata sandi tidak valid."},
+        status_code=401,
+    )
+
+
+@app.post("/api/auth/logout")
+async def api_auth_logout():
+    """Menghapus session cookie admin dan logout."""
+    res = JSONResponse({"status": "ok", "redirect": "/"})
+    res.delete_cookie(key="cti_session")
+    return res
+
+
+
+
+@app.post("/api/settings/prompts")
+async def simpan_prompts(request: Request):
+    if not cek_admin_autentikasi(request):
+        return JSONResponse({"status": "error", "message": "Akses ditolak: Autentikasi diperlukan."}, status_code=401)
+    if not cek_superadmin_autentikasi(request):
+        return JSONResponse({"status": "error", "message": "Akses ditolak: Hanya superadmin yang dapat mengubah prompt."}, status_code=403)
+
+    body = await request.json()
+    from src.utils.settings_manager import SettingsManager
+    for nama, isi in body.items():
+        SettingsManager.set(f"prompt.{nama}", isi)
+    return {"status": "ok"}
+
+
+@app.get("/api/settings/prompts/{nama}")
+async def get_prompt_lengkap(nama: str, request: Request):
+    if not cek_admin_autentikasi(request):
+        return JSONResponse({"status": "error", "message": "Akses ditolak: Autentikasi diperlukan."}, status_code=401)
+    from src.utils.settings_manager import SettingsManager
+    return {"status": "ok", "isi": SettingsManager.get_prompt(nama)}
+
+
+@app.post("/api/settings/rss")
+async def simpan_rss(request: Request):
+    if not cek_admin_autentikasi(request):
+        return JSONResponse({"status": "error", "message": "Akses ditolak: Autentikasi diperlukan."}, status_code=401)
+    if not cek_superadmin_autentikasi(request):
+        return JSONResponse({"status": "error", "message": "Akses ditolak: Hanya superadmin yang dapat mengubah sumber RSS."}, status_code=403)
+
+    body = await request.json()
+    from src.utils.settings_manager import SettingsManager
+    if "international" in body:
+        SettingsManager.set("rss_sources_international", body["international"])
+    if "indonesia" in body:
+        SettingsManager.set("rss_sources_indonesia", body["indonesia"])
+    return {"status": "ok"}
+
+
+@app.post("/api/settings/admin/password")
+async def ubah_password(request: Request):
+    if not cek_admin_autentikasi(request):
+        return JSONResponse({"status": "error", "message": "Akses ditolak: Autentikasi diperlukan."}, status_code=401)
+    body = await request.json()
+    password_baru = (body.get("password_baru") or "").strip()
+    if not password_baru:
+        return JSONResponse({"status": "error", "message": "Password baru tidak boleh kosong."}, status_code=400)
+
+    user = ambil_user_dari_sesi(request)
+    if not user:
+        return JSONResponse({"status": "error", "message": "Sesi tidak valid."}, status_code=401)
+
+    from src.utils.admin_auth import ubah_password_admin
+    if ubah_password_admin(user["username"], password_baru):
+        return {"status": "ok"}
+    return JSONResponse({"status": "error", "message": "Gagal mengubah kata sandi."}, status_code=500)
+
+
+@app.get("/api/auth/status")
+async def api_auth_status(request: Request):
+    """Mengecek status autentikasi admin beserta role aktif."""
+    user = ambil_user_dari_sesi(request)
+    if user:
+        return {
+            "authenticated": True,
+            "username": user["username"],
+            "role": user.get("role", "viewer")
+        }
+    return {"authenticated": False, "username": None, "role": None}
+
+
+# ==============================================================================
+# Endpoint Pipeline & Streaming
+# ==============================================================================
+
 @app.post("/api/run")
-async def mulai_pipeline():
-    """Memicu pipeline di background thread. Progres dipantau lewat /api/stream."""
+async def mulai_pipeline(request: Request):
+    """Memicu pipeline di background thread. Khusus admin CTI."""
+    if not cek_admin_autentikasi(request):
+        return JSONResponse({"status": "error", "message": "Akses ditolak: Autentikasi diperlukan."}, status_code=401)
+
     global sedang_berjalan
     if sedang_berjalan:
         return {"status": "sudah_berjalan"}
@@ -111,9 +272,11 @@ async def stream_log():
 
 
 @app.post("/api/cancel")
-async def batalkan_pipeline():
-    """Menandai pipeline sebagai tidak berjalan lagi dari sisi status server (lihat
-    docstring versi sebelumnya soal keterbatasan pembatalan paksa thread Python)."""
+async def batalkan_pipeline(request: Request):
+    """Menandai pembatalan pipeline. Khusus admin CTI."""
+    if not cek_admin_autentikasi(request):
+        return JSONResponse({"status": "error", "message": "Akses ditolak: Autentikasi diperlukan."}, status_code=401)
+
     global sedang_berjalan
     sedang_berjalan = False
     log_queue.put({"type": "log", "level": "WARNING", "message": "Pipeline dibatalkan oleh pengguna."})
@@ -121,9 +284,13 @@ async def batalkan_pipeline():
     return {"status": "dibatalkan"}
 
 
+# ==============================================================================
+# Endpoint Data & Analitik
+# ==============================================================================
+
 @app.get("/api/beranda")
 async def ambil_beranda():
-    """Tab Beranda: berita & CVE, MASING-MASING dari tanggal terbarunya sendiri."""
+    """Tab Beranda / Dashboard: berita & CVE, MASING-MASING dari tanggal terbarunya sendiri."""
     data = ambil_data_terbaru_per_kategori(hari=7)
     ada_data = bool(data["berita"]) or bool(data["cve"])
     return {
@@ -154,7 +321,6 @@ async def ambil_tren():
     if not prediksi:
         return {"status": "kosong", "prediksi_berita": "", "prediksi_cve": "", "tanggal_dihitung": None, "statistik": None}
 
-    # 1. Ambil statistik dashboard yang sudah tersimpan di database (instan, < 5ms tanpa dedup ulang)
     statistik = None
     raw_stat = dict(prediksi).get("statistik_json")
     if raw_stat:
@@ -163,7 +329,6 @@ async def ambil_tren():
         except Exception:
             statistik = None
 
-    # 2. Fallback: jika belum tersimpan di DB (inisialisasi awal), hitung 1x lalu simpan ke DB
     if not statistik:
         df_14 = ambil_riwayat_tren(hari=14)
         statistik = susun_statistik_dashboard(df_14)
@@ -177,7 +342,6 @@ async def ambil_tren():
         except Exception as err:
             logging.getLogger().error(f"Gagal menyimpan cache statistik ke DB: {err}")
 
-    # 3. Ambil hasil analisis AI kasus wilayah jika ada
     kasus_wilayah_ai = None
     raw_ai = dict(prediksi).get("kasus_wilayah_ai")
     if raw_ai:
@@ -214,6 +378,82 @@ async def api_ensiklopedia(q: Optional[str] = None):
     return {"status": "ok", "frameworks": get_all_framework_counts()}
 
 
+@app.get("/api/settings")
+async def ambil_settings(request: Request):
+    """Admin: Membaca konfigurasi yang bisa diubah."""
+    if not cek_admin_autentikasi(request):
+        return JSONResponse({"status": "error", "message": "Akses ditolak: Autentikasi diperlukan."}, status_code=401)
+
+    from src.utils.settings_manager import SettingsManager
+    gemini = SettingsManager.get_gemini_config()
+    from src.utils.config_loader import ConfigLoader
+    return {
+        "gemini_api_key_set": bool(gemini.get("api_key")),
+        "model_chain": gemini.get("model_chain", []),
+        "temperature": gemini.get("temperature", 0.1),
+        "max_output_tokens": gemini.get("max_output_tokens", 500),
+        "embedding_model": gemini.get("embedding_model", ""),
+        "keywords": SettingsManager.get_keywords(),
+        "rss_sources_international": SettingsManager.get_rss_sources("international"),
+        "rss_sources_indonesia": SettingsManager.get_rss_sources("indonesia"),
+        "prompts": SettingsManager.get_all_prompts_info(),
+    }
+
+
+@app.post("/api/settings")
+async def simpan_settings(request: Request):
+    """Admin: Menyimpan perubahan konfigurasi."""
+    if not cek_admin_autentikasi(request):
+        return JSONResponse({"status": "error", "message": "Akses ditolak: Autentikasi diperlukan."}, status_code=401)
+    if not cek_superadmin_autentikasi(request):
+        return JSONResponse({"status": "error", "message": "Akses ditolak: Hanya superadmin yang dapat mengubah pengaturan."}, status_code=403)
+
+    from src.utils.settings_manager import SettingsManager
+    from src.utils.llm_adapter import GeminiLLMAdapter
+
+    body = await request.json()
+
+    if "gemini" in body:
+        for k, v in body["gemini"].items():
+            SettingsManager.set(f"gemini.{k}", v)
+
+    if "keywords" in body:
+        for grup, daftar in body["keywords"].items():
+            SettingsManager.set(f"keywords.{grup}", daftar)
+
+    GeminiLLMAdapter.reload_config()
+    return {"status": "ok"}
+
+
+# ==============================================================================
+# Halaman Web (HTML Pages)
+# ==============================================================================
+
 @app.get("/")
 async def halaman_utama(request: Request):
-    return templates.TemplateResponse(request, "index.html")
+    """Halaman publik terpadu: 2 tab (Dashboard dan Arsip) + tombol Login Admin."""
+    from src.storage.db import DEFAULT_DB_PATH, ambil_statistik_publik
+    statistik = None
+    try:
+        statistik = ambil_statistik_publik(DEFAULT_DB_PATH)
+    except Exception as e:
+        logging.getLogger().error(f"Gagal mengambil statistik SSR: {e}")
+    return templates.TemplateResponse(request, "index.html", context={"statistik": statistik})
+
+
+@app.get("/login")
+async def halaman_login(request: Request):
+    """Halaman login admin Tim CTI. Jika sudah terautentikasi, otomatis redirect ke /admin."""
+    if cek_admin_autentikasi(request):
+        return RedirectResponse(url="/admin", status_code=303)
+    return templates.TemplateResponse(request, "login.html")
+
+
+@app.get("/admin")
+async def halaman_admin(request: Request):
+    """Panel operasional Tim CTI CSIRT Jatim dengan sidebar kiri (default: Tren CTI)."""
+    if not cek_admin_autentikasi(request):
+        return RedirectResponse(url="/login", status_code=303)
+    return templates.TemplateResponse(request, "admin.html")
+
+

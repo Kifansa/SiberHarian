@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Login Tim CTI | SiberHarian Diskominfo Jatim</title>
+  <link rel="icon" type="image/png" href="/static/img/Logo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "enterprise-bg": "#EEF4F8",
+            "ref-navy": "#001D39",
+            "ref-sapphire": "#0A4174",
+            "ref-slate": "#49769F",
+            "ref-teal": "#4E8EA2",
+            "ref-sky": "#7BBDE8",
+            "ref-ice": "#BDD8E9",
+            "primary": "#0A4174",
+            "primary-hover": "#001D39",
+            "primary-light": "#EEF5FA",
+          },
+          fontFamily: {
+            "sans": ["Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"],
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-[#EEF4F8] text-[#001D39] font-sans flex flex-col justify-between p-4 sm:p-6 antialiased selection:bg-[#7BBDE8] selection:text-[#001D39]">
+
+  <!-- Top Simple Brand Bar -->
+  <header class="w-full max-w-5xl mx-auto flex items-center justify-between py-2">
+    <a href="/" class="inline-flex items-center gap-2.5 text-[#001D39] hover:text-[#0A4174] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A4174] rounded-md px-1 py-0.5">
+      <img src="/static/img/Logo.png" alt="Logo SiberHarian" class="w-7 h-7 object-contain" />
+      <span class="font-extrabold text-sm tracking-tight text-[#001D39]">SiberHarian</span>
+    </a>
+    <a href="/" class="inline-flex items-center gap-1 text-xs font-semibold text-[#49769F] hover:text-[#001D39] transition-colors py-1 px-2.5 rounded-md hover:bg-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A4174]">
+      <span class="material-symbols-outlined text-base">arrow_back</span>
+      <span>Kembali ke Portal Publik</span>
+    </a>
+  </header>
+
+  <!-- Centered Login Box -->
+  <main class="w-full max-w-md mx-auto my-auto py-8">
+    <div class="bg-white rounded-xl border border-[#BDD8E9] p-7 sm:p-9 shadow-xl relative overflow-hidden" id="login-card">
+      
+      <!-- Top Decorative Accent -->
+      <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#0A4174] via-[#4E8EA2] to-[#7BBDE8]"></div>
+
+      <!-- Header Icon & Titles -->
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 mx-auto mb-3.5 flex items-center justify-center">
+          <img src="/static/img/Logo.png" alt="Logo SiberHarian" class="w-12 h-12 object-contain" />
+        </div>
+        <h1 class="text-xl sm:text-2xl font-black text-[#001D39] tracking-tight">Masuk Tim CTI</h1>
+        <p class="text-xs text-[#49769F] mt-1 max-w-xs mx-auto leading-relaxed">
+          Autentikasi operasional intelijen ancaman siber Diskominfo Provinsi Jawa Timur
+        </p>
+      </div>
+
+      <!-- Alert Notifikasi Kesalahan -->
+      <div id="login-alert" class="hidden mb-5 p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-[#b91c1c] flex items-start gap-2 animate-fade-in" role="alert">
+        <span class="material-symbols-outlined text-base shrink-0 mt-0.5" aria-hidden="true">error</span>
+        <span id="login-alert-msg" class="leading-relaxed font-medium">Username atau kata sandi tidak valid.</span>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="space-y-4" onsubmit="handleLoginSubmit(event)" novalidate>
+        <div>
+          <label for="username" class="block text-xs font-bold text-[#001D39] mb-1.5">
+            Nama Pengguna <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-[#49769F]">
+              <span class="material-symbols-outlined text-lg">person</span>
+            </span>
+            <input type="text" id="username" name="username" required autocomplete="username" autofocus
+              placeholder="Masukkan username admin"
+              class="w-full text-sm pl-10 pr-3 py-2.5 rounded-lg border border-[#BDD8E9] bg-[#EEF5FA] text-[#001D39] placeholder-[#49769F]/70 focus:bg-white focus:border-[#0A4174] focus:ring-2 focus:ring-[#7BBDE8]/40 outline-none transition-all duration-150" />
+          </div>
+        </div>
+
+        <div>
+          <label for="password" class="block text-xs font-bold text-[#001D39] mb-1.5">
+            Kata Sandi <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-[#49769F]">
+              <span class="material-symbols-outlined text-lg">lock</span>
+            </span>
+            <input type="password" id="password" name="password" required autocomplete="current-password"
+              placeholder="Masukkan kata sandi"
+              class="w-full text-sm pl-10 pr-10 py-2.5 rounded-lg border border-[#BDD8E9] bg-[#EEF5FA] text-[#001D39] placeholder-[#49769F]/70 focus:bg-white focus:border-[#0A4174] focus:ring-2 focus:ring-[#7BBDE8]/40 outline-none transition-all duration-150" />
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-[#49769F] hover:text-[#001D39] focus:outline-none" title="Lihat/Sembunyikan sandi">
+              <span id="password-toggle-icon" class="material-symbols-outlined text-lg">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" id="btn-submit"
+            class="w-full py-2.5 px-4 bg-[#0A4174] hover:bg-[#001D39] text-white font-bold text-sm rounded-lg shadow-sm transition-all duration-200 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed">
+            <span id="btn-submit-icon" class="material-symbols-outlined text-lg">login</span>
+            <span id="btn-submit-text">Masuk ke Sistem CTI</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Security Notice Footer -->
+      <div class="mt-6 pt-4 border-t border-[#E2EDF8] text-center">
+        <p class="text-[11px] text-[#49769F] flex items-center justify-center gap-1.5">
+          <span class="material-symbols-outlined text-sm text-[#15803d]">shield</span>
+          <span>Akses terbatas hanya untuk personel berwenang CSIRT Jatim</span>
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Page Footer -->
+  <footer class="w-full max-w-5xl mx-auto py-3 text-center text-xs text-[#49769F]">
+    &copy; 2026 CSIRT Dinas Komunikasi dan Informatika Provinsi Jawa Timur. Seluruh hak cipta dilindungi.
+  </footer>
+
+  <script>
+    function togglePasswordVisibility() {
+      const pwdInput = document.getElementById('password');
+      const icon = document.getElementById('password-toggle-icon');
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        pwdInput.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    }
+
+    async function handleLoginSubmit(event) {
+      event.preventDefault();
+      const usernameInput = document.getElementById('username');
+      const passwordInput = document.getElementById('password');
+      const alertBox = document.getElementById('login-alert');
+      const alertMsg = document.getElementById('login-alert-msg');
+      const btnSubmit = document.getElementById('btn-submit');
+      const btnText = document.getElementById('btn-submit-text');
+      const btnIcon = document.getElementById('btn-submit-icon');
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      alertBox.classList.add('hidden');
+
+      if (!username || !password) {
+        alertMsg.textContent = 'Silakan isi nama pengguna dan kata sandi.';
+        alertBox.classList.remove('hidden');
+        if (!username) usernameInput.focus();
+        else passwordInput.focus();
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      btnText.textContent = 'Memverifikasi...';
+      btnIcon.textContent = 'hourglass_empty';
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'ok') {
+          btnText.textContent = 'Berhasil, Mengalihkan...';
+          btnIcon.textContent = 'check_circle';
+          window.location.href = data.redirect || '/admin';
+        } else {
+          alertMsg.textContent = data.message || 'Nama pengguna atau kata sandi tidak sesuai.';
+          alertBox.classList.remove('hidden');
+          passwordInput.value = '';
+          passwordInput.focus();
+          btnSubmit.disabled = false;
+          btnText.textContent = 'Masuk ke Sistem CTI';
+          btnIcon.textContent = 'login';
+        }
+      } catch (err) {
+        alertMsg.textContent = 'Koneksi gagal atau server tidak merespons. Silakan coba lagi.';
+        alertBox.classList.remove('hidden');
+        btnSubmit.disabled = false;
+        btnText.textContent = 'Masuk ke Sistem CTI';
+        btnIcon.textContent = 'login';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -89,8 +89,6 @@
       scrollbar-width: thin;
       scrollbar-color: #BDD8E9 #EEF4F8;
     }
-    #btn-cancel { display: none; }
-    #btn-cancel.visible { display: inline-flex; }
     @keyframes indeterminate {
       0% { transform: translateX(-100%); }
       50% { transform: translateX(30%); }
@@ -105,7 +103,7 @@
       .card-enterprise:hover { transform: none !important; }
       .animate-pulse, .animate-spin, .animate-indeterminate { animation: none !important; }
     }
-    /* Modal Popup Loader (Muncul Sebelum Halaman Utama) */
+    /* Modal Popup Loader */
     #page-loader-overlay {
       position: fixed !important;
       top: 0 !important;
@@ -131,7 +129,7 @@
       border-radius: 12px !important;
       box-shadow: 0 25px 50px -12px rgba(0, 29, 57, 0.25) !important;
       padding: 32px 28px !important;
-      width: 100% !important;
+      width: 100%;
       max-width: 320px !important;
       display: flex !important;
       flex-direction: column !important;
@@ -147,12 +145,11 @@
   </style>
   <noscript><style>#page-loader-overlay{display:none!important}#app-wrapper{opacity:1!important}</style></noscript>
 </head>
-<body class="text-sm antialiased pb-20 md:pb-6 bg-[#EEF4F8] text-[#001D39] font-sans" x-data="{ tabAktif: 'beranda', modeUser: 'publik', terminalTerbuka: false, terminalState: 'normal' }">
+<body class="text-sm antialiased pb-20 md:pb-6 bg-[#EEF4F8] text-[#001D39] font-sans" x-data="{ tabAktif: 'beranda' }">
 
   <!-- Modal Popup Loader (Tampil di Tengah Sebelum Halaman Utama Muncul) -->
-  <div id="page-loader-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:999999;background:#001D39;display:flex;align-items:center;justify-content:center;padding:16px;">
-    <div id="page-loader-modal" role="dialog" aria-modal="true" aria-label="Memuat sistem intelijen siber..." style="background:#ffffff;border:1px solid #BDD8E9;border-radius:12px;box-shadow:0 25px 50px -12px rgba(0,29,57,0.25);padding:32px 28px;width:100%;max-width:320px;display:flex;flex-direction:column;align-items:center;text-align:center;">
-      
+  <div id="page-loader-overlay">
+    <div id="page-loader-modal" role="dialog" aria-modal="true" aria-label="Memuat sistem intelijen siber...">
       <!-- Brand Logo Badge -->
       <div style="margin-bottom:18px;position:relative;">
         <div style="width:56px;height:56px;border-radius:8px;background:#EEF5FA;border:1px solid #BDD8E9;padding:10px;box-shadow:0 4px 12px rgba(0,29,57,0.06);display:flex;align-items:center;justify-content:center;">
@@ -160,21 +157,16 @@
         </div>
       </div>
 
-      <!-- Circular Progress Ring (Lingkaran Berputar & Presentase) -->
+      <!-- Circular Progress Ring -->
       <div style="position:relative;width:112px;height:112px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
-        <!-- Outer rotating dashed radar ring -->
         <svg class="animate-spin" style="position:absolute;inset:0;width:100%;height:100%;animation:spin 4s linear infinite;color:#BDD8E9;" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="5 7" />
         </svg>
-
-        <!-- Main Progress SVG (circumference 238.76 for r=38) -->
         <svg style="width:100%;height:100%;transform:rotate(-90deg);" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="38" fill="none" stroke="#E2EDF8" stroke-width="5" />
           <circle id="preloader-circle" cx="50" cy="50" r="38" fill="none" stroke="#7BBDE8" stroke-width="5" stroke-linecap="round"
             stroke-dasharray="238.76" stroke-dashoffset="238.76" style="transition:stroke-dashoffset 0.18s ease-out, stroke 0.3s ease;" />
         </svg>
-
-        <!-- Center Counter Content -->
         <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
           <span id="preloader-percent" style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:800;color:#001D39;letter-spacing:-0.025em;">0%</span>
         </div>
@@ -190,7 +182,6 @@
           <span id="preloader-status-desc">Memuat data intelijen siber...</span>
         </p>
       </div>
-
     </div>
   </div>
 
@@ -239,7 +230,7 @@
 
         var diff = targetPercent - currentPercent;
         if (diff > 0) {
-          var step = isReady ? Math.max(4, diff * 0.4) : Math.max(0.6, diff * 0.16);
+          var step = isReady ? Math.max(15, diff * 0.8) : Math.max(0.6, diff * 0.16);
           updateUI(currentPercent + step);
         }
 
@@ -266,7 +257,6 @@
         targetPercent = 100;
       };
 
-      // Fallback safety timeout: buka halaman utama maksimal 3.5 detik
       setTimeout(function() {
         if (window.selesaikanPreloader) window.selesaikanPreloader();
         var elWrapper = document.getElementById('app-wrapper');
@@ -275,218 +265,141 @@
     })();
   </script>
 
-  <!-- Halaman Utama (Awalnya opacity:0, Muncul Halus Setelah Popup Selesai) -->
+  <!-- Halaman Utama -->
   <div id="app-wrapper" style="opacity:0;transition:opacity 0.35s ease;">
-  <!-- Enterprise Header -->
-  <header class="w-full sticky top-0 z-50 site-header">
-    <div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto gap-2 sm:gap-4">
-      <!-- Logo & CSIRT Jatim Identity -->
-      <div class="flex items-center gap-3 shrink-0">
-        <img src="/static/img/Logo.png" alt="Logo SiberHarian" class="w-9 h-9 object-contain rounded-lg shadow-2xs" />
-        <div>
-          <span class="font-black text-base text-[#001D39] tracking-tight block leading-tight">SiberHarian</span>
-          <span class="text-[10px] sm:text-xs text-[#49769F] font-semibold block leading-tight" x-text="modeUser === 'admin' ? 'CSIRT Jatim • Tim CTI Diskominfo' : 'CSIRT Dinas Kominfo Jawa Timur'">CSIRT Dinas Kominfo Jawa Timur</span>
-        </div>
-      </div>
-      
-      <!-- Desktop Navigation Tabs -->
-      <nav class="hidden md:flex items-center bg-[#EEF4F8] p-1 rounded-lg border border-[#BDD8E9]/80 gap-1" role="tablist" aria-label="Navigasi Utama">
-        <a href="#beranda" @click.prevent="tabAktif = 'beranda'" role="tab" :aria-selected="tabAktif === 'beranda'"
-          class="px-3.5 py-1.5 rounded-md font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
-          :class="tabAktif === 'beranda' ? 'tab-nav-active' : 'text-[#49769F] hover:text-[#001D39] hover:bg-white/60'">
-          <span class="material-symbols-outlined text-base" aria-hidden="true">dashboard</span>
-          <span x-text="modeUser === 'admin' ? 'Dashboard' : 'Berita & Statistik'">Berita &amp; Statistik</span>
-        </a>
-        <a href="#arsip" @click.prevent="tabAktif = 'arsip'; muatTabArsip()" role="tab" :aria-selected="tabAktif === 'arsip'"
-          class="px-3.5 py-1.5 rounded-md font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
-          :class="tabAktif === 'arsip' ? 'tab-nav-active' : 'text-[#49769F] hover:text-[#001D39] hover:bg-white/60'">
-          <span class="material-symbols-outlined text-base" aria-hidden="true">inventory_2</span> <span>Arsip</span>
-        </a>
-
-        <!-- Tab Tren Siber CTI (Hanya untuk Admin Tim CTI) -->
-        <a x-show="modeUser === 'admin'" href="#tren" @click.prevent="tabAktif = 'tren'; muatTabTren()" role="tab" :aria-selected="tabAktif === 'tren'"
-          class="px-3.5 py-1.5 rounded-md font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
-          :class="tabAktif === 'tren' ? 'tab-nav-active' : 'text-[#49769F] hover:text-[#001D39] hover:bg-white/60'">
-          <span class="material-symbols-outlined text-base" aria-hidden="true">insights</span> <span>Tren CTI</span>
-        </a>
-      </nav>
-
-      <!-- Role Switcher (Mode Publik vs Tim CTI CSIRT) -->
-      <div class="flex items-center gap-2 shrink-0">
-        <div class="flex items-center bg-[#EEF4F8] p-1 rounded-lg border border-[#BDD8E9]/80 text-xs shadow-2xs">
-          <button @click="modeUser = 'publik'; if (tabAktif === 'tren') { tabAktif = 'beranda'; } terminalTerbuka = false; muatTabStatistikPublik();"
-            :class="modeUser === 'publik' ? 'bg-white text-[#0A4174] shadow-xs font-bold' : 'text-[#49769F] hover:text-[#001D39] font-medium'"
-            class="px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer focus-visible:outline-none"
-            title="Tampilan ramah masyarakat umum">
-            <span class="material-symbols-outlined text-sm">public</span>
-            <span>Publik</span>
-          </button>
-          <button @click="modeUser = 'admin'"
-            :class="modeUser === 'admin' ? 'bg-[#0A4174] text-white shadow-xs font-bold' : 'text-[#49769F] hover:text-[#001D39] font-medium'"
-            class="px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer focus-visible:outline-none"
-            title="Tampilan operasional internal Tim CTI CSIRT">
-            <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
-            <span>Tim CTI</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Mobile Bottom Navigation (2 Tab untuk Publik, 3 Tab untuk Admin CTI) -->
-  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#BDD8E9]/80 px-2 py-1.5 flex justify-around items-center shadow-lg" role="tablist" aria-label="Navigasi Mobile">
-    <button @click="tabAktif = 'beranda'" role="tab" :aria-selected="tabAktif === 'beranda'"
-      class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg transition-all cursor-pointer"
-      :class="tabAktif === 'beranda' ? 'text-[#0A4174] font-bold' : 'text-[#49769F] font-medium'">
-      <span class="material-symbols-outlined text-lg" aria-hidden="true">dashboard</span>
-      <span class="text-[10px]" x-text="modeUser === 'admin' ? 'Dashboard' : 'Berita & Statistik'">Berita &amp; Statistik</span>
-    </button>
-    <button @click="tabAktif = 'arsip'; muatTabArsip()" role="tab" :aria-selected="tabAktif === 'arsip'"
-      class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg transition-all cursor-pointer"
-      :class="tabAktif === 'arsip' ? 'text-[#0A4174] font-bold' : 'text-[#49769F] font-medium'">
-      <span class="material-symbols-outlined text-lg" aria-hidden="true">inventory_2</span>
-      <span class="text-[10px]">Arsip</span>
-    </button>
-    <button x-show="modeUser === 'admin'" @click="tabAktif = 'tren'; muatTabTren()" role="tab" :aria-selected="tabAktif === 'tren'"
-      class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg transition-all cursor-pointer"
-      :class="tabAktif === 'tren' ? 'text-[#0A4174] font-bold' : 'text-[#49769F] font-medium'">
-      <span class="material-symbols-outlined text-lg" aria-hidden="true">insights</span>
-      <span class="text-[10px]">Tren CTI</span>
-    </button>
-  </nav>
-
-  <main class="max-w-container-max mx-auto px-gutter py-6">
-    <section x-show="tabAktif === 'beranda'" x-cloak
-      x-transition:enter="transition ease-out duration-300 transform"
-      x-transition:enter-start="opacity-0 translate-y-2"
-      x-transition:enter-end="opacity-100 translate-y-0">
-      
-      <!-- Executive Hero Section -->
-      <section class="pt-4 pb-6 text-center">
-        <div class="relative mb-5">
-          <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#001D39] tracking-tight mb-2.5 max-w-3xl mx-auto leading-[1.15]"
-            x-text="modeUser === 'admin' ? 'Pemantauan Keamanan Siber' : 'Portal Informasi Keamanan Siber'">
-            Portal Informasi Keamanan Siber
-          </h1>
-          <p class="text-[#49769F] text-xs sm:text-base max-w-2xl mx-auto leading-relaxed"
-            x-text="modeUser === 'admin' ? 'Platform Cyber Threat Intelligence & Vulnerability Analytics On-Premise Diskominfo Provinsi Jawa Timur.' : 'Informasi terverifikasi mengenai berita insiden siber harian dan peringatan kerentanan software untuk masyarakat Jawa Timur.'">
-            Informasi terverifikasi mengenai berita insiden siber harian dan peringatan kerentanan software untuk masyarakat Jawa Timur.
-          </p>
-        </div>
-
-        <!-- Terminal Console (Khusus Mode Admin Tim CTI) -->
-        <div x-show="modeUser === 'admin'" class="flex flex-col items-center gap-5">
-          <!-- Reopen Button (if closed) -->
-          <button x-show="!terminalTerbuka" @click="terminalTerbuka = true; terminalState = 'normal'"
-            x-transition:enter="transition ease-out duration-150 transform"
-            x-transition:enter-start="opacity-0 scale-50"
-            x-transition:enter-end="opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-100 transform"
-            x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 scale-50"
-            class="fixed origin-center bottom-6 right-6 z-50 bg-[#0A4174] hover:bg-[#001D39] text-white p-3 rounded-lg shadow-xl flex items-center justify-center transition-all cursor-pointer focus-visible:outline-none" title="Buka Monitor Pipeline">
-            <span class="material-symbols-outlined text-xl" aria-hidden="true">terminal</span>
-          </button>
-
-          <!-- Log Console (Deep Midnight Navy Terminal) -->
-          <div x-show="terminalTerbuka" 
-            x-transition:enter="transition ease-out duration-150 transform origin-bottom-right" 
-            x-transition:enter-start="opacity-0 scale-50" 
-            x-transition:enter-end="opacity-100 scale-100" 
-            x-transition:leave="transition ease-in duration-100 transform origin-bottom-right" 
-            x-transition:leave-start="opacity-100 scale-100" 
-            x-transition:leave-end="opacity-0 scale-50"
-            class="fixed z-[100] bg-[#001D39] rounded-xl text-left border border-[#0A4174] overflow-hidden transition-all duration-500 shadow-2xl flex flex-col bottom-20 md:bottom-6 right-4 md:right-6 w-[550px] max-w-[calc(100vw-32px)] h-64">
-            <div class="flex items-center justify-between gap-2 border-b border-[#0A4174]/60 px-4 py-2.5 bg-[#001429] shrink-0">
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-[#7BBDE8] text-base" aria-hidden="true">terminal</span>
-                <span class="font-mono text-xs text-[#BDD8E9] font-semibold tracking-wide">SiberHarian Terminal</span>
-              </div>
-              
-              <div class="flex items-center gap-2">
-                <span class="font-mono text-[10px] text-[#7BBDE8] font-medium mr-2" id="console-status">[standby]</span>
-                <button
-                  class="bg-[#0A4174] hover:bg-[#7BBDE8] hover:text-[#001D39] text-white px-3 py-1.5 rounded-md text-[10px] font-bold shadow transition-all active:scale-95 flex items-center gap-1 disabled:opacity-50 cursor-pointer focus-visible:outline-none"
-                  id="btn-run" onclick="event.stopPropagation(); mulaiPipeline()" title="Jalankan Pipeline">
-                  <span class="material-symbols-outlined text-[14px]" id="run-icon">play_arrow</span>
-                  <span class="hidden sm:inline" id="btn-run-text">Run</span>
-                </button>
-                <button
-                  class="bg-[#b91c1c] hover:bg-[#991b1b] text-white px-3 py-1.5 rounded-md text-[10px] font-bold shadow transition-all active:scale-95 items-center gap-1 cursor-pointer focus-visible:outline-none hidden"
-                  id="btn-cancel" onclick="event.stopPropagation(); batalkanPipeline()" title="Batalkan">
-                  <span class="material-symbols-outlined text-[14px]">stop_circle</span>
-                  <span class="hidden sm:inline">Stop</span>
-                </button>
-                <!-- Tombol Close ("X") -->
-                <button @click.stop="terminalTerbuka = false" class="ml-2 p-1 rounded-md text-red-500 hover:text-red-400 transition-colors cursor-pointer focus-visible:outline-none flex items-center justify-center" title="Tutup Terminal">
-                  <span class="material-symbols-outlined text-lg">close</span>
-                </button>
-              </div>
-            </div>
-            <div class="font-mono text-xs text-[#BDD8E9] flex-1 overflow-y-auto overflow-x-hidden whitespace-pre-wrap break-words space-y-1.5 leading-relaxed p-4" id="console-body">
-              <div class="flex gap-2 text-[#49769F]">
-                <span>[SYSTEM] Menunggu instruksi pipeline dimulai...</span>
-              </div>
-            </div>
+    <!-- Enterprise Header -->
+    <header class="w-full sticky top-0 z-50 site-header">
+      <div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto gap-2 sm:gap-4">
+        <!-- Logo & CSIRT Jatim Identity -->
+        <div class="flex items-center gap-3 shrink-0">
+          <img src="/static/img/Logo.png" alt="Logo SiberHarian" class="w-9 h-9 object-contain rounded-lg shadow-2xs" />
+          <div>
+            <span class="font-black text-base text-[#001D39] tracking-tight block leading-tight">SiberHarian</span>
+            <span class="text-[10px] sm:text-xs text-[#49769F] font-semibold block leading-tight">CSIRT Dinas Kominfo Jawa Timur</span>
           </div>
         </div>
+        
+        <!-- Desktop Navigation Tabs (2 Tab Terpadu: Dashboard & Arsip) -->
+        <nav class="hidden md:flex items-center bg-[#EEF4F8] p-1 rounded-lg border border-[#BDD8E9]/80 gap-1" role="tablist" aria-label="Navigasi Utama">
+          <a href="#beranda" @click.prevent="tabAktif = 'beranda'" role="tab" :aria-selected="tabAktif === 'beranda'"
+            class="px-4 py-1.5 rounded-md font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
+            :class="tabAktif === 'beranda' ? 'tab-nav-active' : 'text-[#49769F] hover:text-[#001D39] hover:bg-white/60'">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">dashboard</span>
+            <span>Dashboard</span>
+          </a>
+          <a href="#arsip" @click.prevent="tabAktif = 'arsip'; muatTabArsip()" role="tab" :aria-selected="tabAktif === 'arsip'"
+            class="px-4 py-1.5 rounded-md font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
+            :class="tabAktif === 'arsip' ? 'tab-nav-active' : 'text-[#49769F] hover:text-[#001D39] hover:bg-white/60'">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">inventory_2</span>
+            <span>Arsip</span>
+          </a>
+        </nav>
+
+        <!-- Tombol Login Admin Tim CTI di Pojok Kanan Atas -->
+        <div class="flex items-center gap-2 shrink-0">
+          <a href="/login" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#0A4174] hover:bg-[#001D39] text-white font-bold text-xs transition-all duration-200 shadow-xs active:scale-95 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none" title="Masuk ke Panel Analisis Tim CTI CSIRT">
+            <span class="material-symbols-outlined text-sm" aria-hidden="true">login</span>
+            <span>Login Admin</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Bottom Navigation (2 Tab untuk Publik) -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#BDD8E9]/80 px-2 py-1.5 flex justify-around items-center shadow-lg" role="tablist" aria-label="Navigasi Mobile">
+      <button @click="tabAktif = 'beranda'" role="tab" :aria-selected="tabAktif === 'beranda'"
+        class="flex flex-col items-center gap-0.5 py-1 px-4 rounded-lg transition-all cursor-pointer"
+        :class="tabAktif === 'beranda' ? 'text-[#0A4174] font-bold' : 'text-[#49769F] font-medium'">
+        <span class="material-symbols-outlined text-lg" aria-hidden="true">dashboard</span>
+        <span class="text-xs">Dashboard</span>
+      </button>
+      <button @click="tabAktif = 'arsip'; muatTabArsip()" role="tab" :aria-selected="tabAktif === 'arsip'"
+        class="flex flex-col items-center gap-0.5 py-1 px-4 rounded-lg transition-all cursor-pointer"
+        :class="tabAktif === 'arsip' ? 'text-[#0A4174] font-bold' : 'text-[#49769F] font-medium'">
+        <span class="material-symbols-outlined text-lg" aria-hidden="true">inventory_2</span>
+        <span class="text-xs">Arsip</span>
+      </button>
+    </nav>
+
+    <main class="max-w-container-max mx-auto px-gutter py-6">
+      <h2 class="sr-only">Informasi Publik dan Feed Intelijen</h2>
+      <!-- Tab 1: Dashboard (Statistik Fakta + Feed Berita & CVE Hari Terakhir) -->
+      <section x-show="tabAktif === 'beranda'" x-cloak
+        x-transition:enter="transition ease-out duration-300 transform"
+        x-transition:enter-start="opacity-0 translate-y-2"
+        x-transition:enter-end="opacity-100 translate-y-0">
+        
+        <!-- Executive Hero Section -->
+        <section class="pt-4 pb-6 text-center">
+          <div class="relative mb-6">
+            <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#001D39] tracking-tight mb-2.5 max-w-3xl mx-auto leading-[1.15]">
+              Portal Informasi Keamanan Siber
+            </h1>
+            <p class="text-[#49769F] text-xs sm:text-base max-w-2xl mx-auto leading-relaxed">
+              Informasi mengenai berita insiden siber harian dan peringatan kerentanan software untuk masyarakat Jawa Timur.
+            </p>
+          </div>
+        </section>
+
+        <!-- Statistik Fakta, Word Cloud Kasus, Charts & Intisari Edukasi -->
+        <div class="mb-8">
+          {% include "partials/_statistik_publik.html" %}
+        </div>
+
+        <!-- Feed Berita Insiden & Kerentanan CVE Hari Terakhir -->
+        {% include "partials/_beranda.html" %}
       </section>
 
-      <!-- Bagian Khusus Publik: Statistik Fakta, Word Cloud, Charts & Inti Edukasi Asli -->
-      <div x-show="modeUser === 'publik'" class="mb-8">
-        {% include "partials/_statistik_publik.html" %}
-      </div>
+      <!-- Tab 2: Arsip Riwayat Intelijen -->
+      <section x-show="tabAktif === 'arsip'" x-cloak
+        x-transition:enter="transition ease-out duration-300 transform"
+        x-transition:enter-start="opacity-0 translate-y-2"
+        x-transition:enter-end="opacity-100 translate-y-0">
+        {% include "partials/_arsip.html" %}
+      </section>
+    </main>
 
-      <!-- Feed Berita Insiden & Kerentanan CVE Hari Terakhir -->
-      {% include "partials/_beranda.html" %}
-    </section>
+    <!-- Footer Disclaimer Hukum & Hak Cipta -->
+    <footer class="mt-12 py-8 border-t border-[#BDD8E9]/70 text-center max-w-container-max mx-auto px-gutter mb-16 md:mb-6">
+      <p class="text-[11px] sm:text-xs text-[#49769F] max-w-2xl mx-auto leading-relaxed">
+        Konten di portal ini merupakan ringkasan (parafrase) dari berita yang dikumpulkan secara otomatis dari sumber media terpercaya. Ringkasan disintesis oleh AI dan bukan salinan langsung dari artikel asli. Pembaca disarankan membaca artikel lengkap di sumber asli melalui tautan yang disediakan.
+        <br><span class="font-medium text-[#0A4174]/80">Berdasarkan UU No. 28/2014 Pasal 43(c) tentang Hak Cipta & Perpres No. 32/2024.</span>
+      </p>
+      <p class="text-[10px] sm:text-[11px] text-[#49769F]/80 mt-2 font-medium">
+        © 2024–2026 CSIRT Dinas Komunikasi dan Informatika Provinsi Jawa Timur
+      </p>
+    </footer>
 
-    <section x-show="tabAktif === 'arsip'" x-cloak
-      x-transition:enter="transition ease-out duration-300 transform"
-      x-transition:enter-start="opacity-0 translate-y-2"
-      x-transition:enter-end="opacity-100 translate-y-0">
-      {% include "partials/_arsip.html" %}
-    </section>
-
-    <!-- Tab Tren Siber CTI (Khusus Admin Tim CTI) -->
-    <section x-show="tabAktif === 'tren' && modeUser === 'admin'" x-cloak
-      x-transition:enter="transition ease-out duration-300 transform"
-      x-transition:enter-start="opacity-0 translate-y-2"
-      x-transition:enter-end="opacity-100 translate-y-0">
-      {% include "partials/_tren.html" %}
-    </section>
-  </main>
-
-  <!-- Clean Modern Modal Dialog -->
-  <div class="fixed inset-0 bg-[#001D39]/70 backdrop-blur-xs z-[100] hidden items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-200 ease-out"
-    id="modal-overlay" onclick="tutupModalJikaLuar(event)" aria-hidden="true">
-    <div class="bg-white rounded-xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-7 relative border border-[#BDD8E9] shadow-2xl transform scale-95 opacity-0 translate-y-4 transition-all duration-200 ease-out"
-      id="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-judul">
-      <button class="absolute top-4 right-4 text-[#49769F] hover:text-[#001D39] w-8 h-8 rounded-md hover:bg-[#EEF5FA] flex items-center justify-center transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
-        onclick="tutupModal()" title="Tutup dialog (Esc)" aria-label="Tutup dialog">
-        <span class="material-symbols-outlined text-xl" aria-hidden="true">close</span>
-      </button>
-      <div class="flex items-center gap-2 mb-3">
-        <span class="px-2.5 py-0.5 rounded-md text-xs font-semibold" id="modal-pill"></span>
-        <span class="text-xs text-[#49769F] font-medium" id="modal-sumber"></span>
-      </div>
-      <h3 class="text-xl font-bold text-[#001D39] mb-3 leading-snug" id="modal-judul"></h3>
-      <div class="text-slate-700 text-sm leading-relaxed whitespace-pre-line bg-[#EEF5FA] p-5 rounded-lg border border-[#BDD8E9]/70 font-sans" id="modal-teks"></div>
-      <div class="mt-6 pt-4 border-t border-[#E2EDF8] flex items-center justify-between gap-3 flex-wrap">
-        <button id="modal-btn-copy" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-[#EEF5FA] hover:bg-[#BDD8E9] text-[#0A4174] text-xs font-semibold transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
-          <span class="material-symbols-outlined text-base" aria-hidden="true">content_copy</span>
-          <span>Salin Rangkuman</span>
+    <!-- Clean Modern Modal Dialog -->
+    <div class="fixed inset-0 bg-[#001D39]/70 backdrop-blur-xs z-[100] hidden items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-200 ease-out"
+      id="modal-overlay" onclick="tutupModalJikaLuar(event)" aria-hidden="true">
+      <div class="bg-white rounded-xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-7 relative border border-[#BDD8E9] shadow-2xl transform scale-95 opacity-0 translate-y-4 transition-all duration-200 ease-out"
+        id="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-judul">
+        <button class="absolute top-4 right-4 text-[#49769F] hover:text-[#001D39] w-8 h-8 rounded-md hover:bg-[#EEF5FA] flex items-center justify-center transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
+          onclick="tutupModal()" title="Tutup dialog (Esc)" aria-label="Tutup dialog">
+          <span class="material-symbols-outlined text-xl" aria-hidden="true">close</span>
         </button>
-        <a class="text-[#0A4174] font-semibold text-xs flex items-center gap-1.5 w-fit hover:text-[#001D39] transition-colors hover:underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none" id="modal-link" href="#" target="_blank" rel="noopener noreferrer">
-          Buka tautan sumber <span class="material-symbols-outlined text-base" aria-hidden="true">open_in_new</span>
-        </a>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="px-2.5 py-0.5 rounded-md text-xs font-semibold" id="modal-pill"></span>
+          <span class="text-xs text-[#49769F] font-medium" id="modal-sumber"></span>
+        </div>
+        <h3 class="text-xl font-bold text-[#001D39] mb-3 leading-snug" id="modal-judul"></h3>
+        <div class="text-slate-700 text-sm leading-relaxed whitespace-pre-line bg-[#EEF5FA] p-5 rounded-lg border border-[#BDD8E9]/70 font-sans" id="modal-teks"></div>
+        <div class="mt-6 pt-4 border-t border-[#E2EDF8] flex items-center justify-between gap-3 flex-wrap">
+          <button id="modal-btn-copy" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-[#EEF5FA] hover:bg-[#BDD8E9] text-[#0A4174] text-xs font-semibold transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">content_copy</span>
+            <span>Salin Rangkuman</span>
+          </button>
+          <a class="text-[#0A4174] font-semibold text-xs flex items-center gap-1.5 w-fit hover:text-[#001D39] transition-colors hover:underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none" id="modal-link" href="#" target="_blank" rel="noopener noreferrer">
+            Buka tautan sumber <span class="material-symbols-outlined text-base" aria-hidden="true">open_in_new</span>
+          </a>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- /modal-overlay -->
+    <!-- /modal-overlay -->
   </div>
   <!-- /app-wrapper -->
 
-  <script type="module" src="/static/js/main.js?v=8.3"></script>
+  <script type="module" src="/static/js/main.js?v=8.5"></script>
 </body>
 </html>

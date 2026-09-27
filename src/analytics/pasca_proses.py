@@ -21,6 +21,7 @@ from src.storage.db import (
     simpan_metadata,
     simpan_prediksi_tren,
 )
+from src.utils.config_loader import ConfigLoader
 from src.utils.logger import setup_logger
 
 logger = setup_logger(__name__)

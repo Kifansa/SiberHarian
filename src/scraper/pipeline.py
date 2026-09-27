@@ -24,6 +24,7 @@ from src.scraper.extractor import (
     ekstrak_teks_hybrid,
     normalisasi_tanggal,
 )
+from src.scraper.robots_checker import boleh_scrape
 from src.scraper.sources import (
     FilterKataKunci,
     bangun_daftar_feed_google_news,
@@ -40,6 +41,23 @@ POLA_NOISE_JUDUL = re.compile(
     r"\b(podcast|stormcast|webinar|virtual event|whitepaper|download guide|cfp tracker|squid blogging)\b",
     re.IGNORECASE,
 )
+
+
+def _ekstrak_media_google_news(entry: dict, judul: str):
+    media = None
+    src = entry.get("source")
+    if src:
+        media = getattr(src, "title", None) if hasattr(src, "title") else src.get("title") if isinstance(src, dict) else None
+
+    judul_bersih = judul
+    if " - " in judul:
+        bagian = judul.rsplit(" - ", 1)
+        if len(bagian) == 2 and len(bagian[1].strip()) < 50:
+            if not media:
+                media = bagian[1].strip()
+            judul_bersih = bagian[0].strip()
+
+    return media or "Google News", judul_bersih
 
 
 def parse_rss_feeds(
@@ -77,13 +95,18 @@ def parse_rss_feeds(
             link = entry.get("link", "").strip()
             tanggal_rss = entry.get("published", "") or entry.get("updated", "")
 
+            if sumber_nama == "Google News":
+                nama_media, judul = _ekstrak_media_google_news(entry, judul)
+            else:
+                nama_media = sumber_nama
+
             if judul and link and link not in url_ditemukan:
                 url_ditemukan.add(link)
                 entri.append({
                     "judul": judul,
                     "url": link,
                     "tanggal_rss": tanggal_rss,
-                    "sumber_nama": sumber_nama,
+                    "sumber_nama": nama_media,
                     "butuh_decode": butuh_decode,
                     "kategori": kategori,
                 })
@@ -172,6 +195,10 @@ def jalankan_pipeline_berita(config: dict = None) -> pd.DataFrame:
         url_target = entri["url"]
         if entri["butuh_decode"]:
             url_target = dapatkan_url_asli(entri["url"], session)
+
+        if not boleh_scrape(url_target, session=session):
+            logger.info(f"     [-] Scraping dibatasi oleh robots.txt: {url_target}")
+            continue
 
         time_module.sleep(delay)
         teks_artikel, tanggal_halaman = ekstrak_teks_hybrid(url_target, session, timeout)

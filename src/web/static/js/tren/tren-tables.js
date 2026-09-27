@@ -90,4 +90,65 @@ export function renderTables(stat) {
       });
     }
   }
+
+  // 3. Matriks Tindakan Ancaman Aktif
+  renderMatriksTindakan(stat.matriks_tindakan || []);
+}
+
+/**
+ * Merender tabel matriks tindakan taktis CTI (Remediation Checklist)
+ * @param {Array} matriksList Daftar data matriks tindakan
+ */
+export function renderMatriksTindakan(matriksList) {
+  const tbody = document.getElementById('tabel-matriks-tindakan-body');
+  if (!tbody) return;
+
+  if (!matriksList || matriksList.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-[#49769F]">Nihil anomali ancaman khusus yang memerlukan tindakan darurat minggu ini.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = '';
+  matriksList.forEach((m) => {
+    const tr = document.createElement('tr');
+    tr.className = 'hover:bg-[#EEF5FA]/60 transition-colors border-b border-[#E2EDF8] last:border-b-0';
+
+    const urgensi = m.level_urgensi || 'SEDANG';
+    let badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
+    if (urgensi === 'KRITIS') {
+      badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
+    } else if (urgensi === 'TINGGI') {
+      badgeClass = 'bg-amber-50 text-amber-800 border-amber-200';
+    } else if (urgensi === 'MONITOR' || urgensi === 'RENDAH') {
+      badgeClass = 'bg-slate-50 text-slate-700 border-slate-200';
+    }
+
+    const growth = m.growth_persen ?? 0;
+    const isUp = growth > 0;
+
+    tr.innerHTML = `
+      <td class="py-3 px-4 font-semibold text-[#001D39] whitespace-nowrap align-top">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-base text-[#0A4174]">${m.ikon || 'security'}</span>
+          <span>${escapeHtml(m.kategori)}</span>
+        </div>
+      </td>
+      <td class="py-3 px-4 text-center font-mono align-top whitespace-nowrap">
+        <span class="font-bold text-[#001D39]">${m.jumlah_terkini}</span>
+        <span class="text-[11px] font-semibold text-[#49769F] block">${isUp ? '+' : ''}${growth}%</span>
+      </td>
+      <td class="py-3 px-4 text-center align-top whitespace-nowrap">
+        <span class="inline-block px-2.5 py-0.5 rounded text-[11px] font-bold border font-mono ${badgeClass}">
+          ${urgensi}
+        </span>
+      </td>
+      <td class="py-3 px-4 text-xs text-[#001D39] leading-relaxed max-w-[280px] align-top">
+        ${escapeHtml(m.fokus_website || '-')}
+      </td>
+      <td class="py-3 px-4 text-xs text-slate-700 font-medium leading-relaxed max-w-[340px] align-top">
+        ${escapeHtml(m.tindakan_taktis || '-')}
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
 }

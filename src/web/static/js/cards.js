@@ -1,5 +1,5 @@
 import { escapeHtml, sanitizeUrl } from './utils.js';
-import { simpanItemModal, dataLengkap } from './modal.js';
+import { simpanItemModal } from './modal.js';
 
 export function buatCardBerita(item) {
   const safeLink = sanitizeUrl(item.link);

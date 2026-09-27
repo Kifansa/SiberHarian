@@ -81,7 +81,48 @@ def init_db(db_path: Path = DEFAULT_DB_PATH) -> None:
         _tambah_kolom_jika_belum_ada(conn, "riwayat_tren", "produk", "TEXT")
         _tambah_kolom_jika_belum_ada(conn, "prediksi_tren_terakhir", "kasus_wilayah_ai", "TEXT")
         _tambah_kolom_jika_belum_ada(conn, "prediksi_tren_terakhir", "statistik_json", "TEXT")
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS pengaturan (
+                kunci TEXT PRIMARY KEY,
+                nilai TEXT NOT NULL,
+                diubah TEXT NOT NULL
+            )
+        """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS admin_users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                role TEXT NOT NULL DEFAULT 'viewer',
+                dibuat TEXT NOT NULL,
+                diubah TEXT NOT NULL
+            )
+        """)
+        _seed_admin_default(conn)
     logger.info(f"Database state siap di: {db_path}")
+
+def _seed_admin_default(conn):
+    """Seed akun admin default jika tabel kosong."""
+    row = conn.execute("SELECT count(*) FROM admin_users").fetchone()
+    if row[0] == 0:
+        import os
+        import bcrypt
+        # Buat superadmin default
+        username = os.getenv("ADMIN_USERNAME", "admin")
+        password = os.getenv("ADMIN_PASSWORD", "csirtjatim")
+        hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+        sekarang = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        conn.execute(
+            "INSERT INTO admin_users (username, password, role, dibuat, diubah) VALUES (?, ?, ?, ?, ?)",
+            (username, hashed, "superadmin", sekarang, sekarang)
+        )
+        # Buat viewer default
+        hashed_viewer = bcrypt.hashpw(b"viewer123", bcrypt.gensalt()).decode("utf-8")
+        conn.execute(
+            "INSERT INTO admin_users (username, password, role, dibuat, diubah) VALUES (?, ?, ?, ?, ?)",
+            ("viewer", hashed_viewer, "viewer", sekarang, sekarang)
+        )
+
 
 def ambil_identifier_terkirim(kategori: str, db_path: Path = DEFAULT_DB_PATH) -> set:
     """
@@ -371,17 +412,24 @@ def ambil_statistik_publik(db_path: Path = DEFAULT_DB_PATH) -> dict:
             for cat in sorted(ancaman_counts, key=lambda x: ancaman_counts[x], reverse=True)
         ]
 
-        # 3. Insightful KPI Cards (Menghasilkan Wawasan Nyata bagi Masyarakat)
-        persen_kredensial = round(((ancaman_counts["Pembobolan Akun & Rekening"] + ancaman_counts["Phishing & Link Palsu"]) / (total_berita * 2)) * 100) if total_berita else 54
-        
-        kpi_insights = ConfigLoader.get_rules("publik_statistik").get("kpi_insights", [])
-
-        # 4. Word Cloud Khusus Kasus Insiden Spesifik
+        # 3. Word Cloud Khusus Kasus Insiden Spesifik (Jendela 7 Hari Terkini)
         rows_insiden = cur.execute("""
             SELECT kata_kunci 
             FROM riwayat_tren 
             WHERE kategori_relevansi = 'insiden_spesifik'
+              AND substr(tanggal_publish, 1, 10) >= (
+                  SELECT date(max(substr(tanggal_publish, 1, 10)), '-7 days') 
+                  FROM riwayat_tren
+              )
         """).fetchall()
+        if not rows_insiden:
+            rows_insiden = cur.execute("""
+                SELECT kata_kunci 
+                FROM riwayat_tren 
+                WHERE kategori_relevansi = 'insiden_spesifik'
+                ORDER BY tanggal_publish DESC
+                LIMIT 100
+            """).fetchall()
 
         stop_words = set(ConfigLoader.get_rules("publik_statistik").get("stop_words", []))
 
@@ -467,8 +515,52 @@ def ambil_statistik_publik(db_path: Path = DEFAULT_DB_PATH) -> dict:
         """).fetchall()
         sebaran_media = {r[0]: r[1] for r in rows_media}
 
+        # Dynamic KPI Insights (3 Kartu Fakta Bersih)
+        total_ancaman_count = sum(a["jumlah"] for a in top_ancaman) or 1
+        top_cat = top_ancaman[0] if top_ancaman and top_ancaman[0]["jumlah"] > 0 else {"kategori": "Nihil Anomali", "jumlah": 0}
+        persen_top = round((top_cat["jumlah"] / total_ancaman_count) * 100) if top_cat["jumlah"] > 0 else 0
+
+        vendor_names = [v["vendor"] for v in top_vendor[:2]] if top_vendor else []
+        vendor_str = " & ".join(vendor_names) if vendor_names else "Terdistribusi Merata"
+
+        total_media = sum(sebaran_media.values()) or 1
+        nasional_count = sebaran_media.get("Media Nasional", 0)
+        persen_nasional = round((nasional_count / total_media) * 100)
+
+        kpi_insights = [
+            {
+                "id": "top_target",
+                "judul": "Modus Paling Mengintai",
+                "nilai": f"{top_cat['kategori']}" if top_cat["jumlah"] > 0 else "Kondisi Terkendali",
+                "insight": f"Mencakup {persen_top}% ({top_cat['jumlah']} laporan) dari pantauan ancaman aktif yang dilaporkan media.",
+                "badge": "Top Target Warga",
+                "icon": "warning",
+            },
+            {
+                "id": "top_vendor",
+                "judul": "Software Terbanyak Celah",
+                "nilai": vendor_str,
+                "insight": f"Celah keamanan tertinggi terkonsentrasi pada software dan produk dari {vendor_str}.",
+                "badge": "Ekosistem Populer",
+                "icon": "devices",
+            },
+            {
+                "id": "fokus_wilayah",
+                "judul": "Fokus Wilayah Paparan",
+                "nilai": f"{persen_nasional}% Isu Nasional",
+                "insight": f"Sebanyak {nasional_count} dari {total_media} pemberitaan berfokus langsung pada wilayah digital Indonesia.",
+                "badge": "Ruang Digital RI",
+                "icon": "policy",
+            },
+        ]
+
         return {
             "status": "ok",
+            "total_berita": total_berita,
+            "total_cve": total_cve,
+            "avg_cvss": round(float(avg_cvss), 1) if avg_cvss else 0.0,
+            "cve_darurat_10": cve_darurat_10 or 0,
+            "total_edukasi": total_edukasi or 0,
             "kpi_insights": kpi_insights,
             "word_cloud": word_cloud,
             "edukasi_list": edukasi_list,
@@ -478,3 +570,4 @@ def ambil_statistik_publik(db_path: Path = DEFAULT_DB_PATH) -> dict:
             "sebaran_media": sebaran_media,
             "waktu_terakhir_update": ambil_waktu_terakhir_scraping(db_path),
         }
+

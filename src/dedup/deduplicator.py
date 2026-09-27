@@ -1,14 +1,12 @@
 """
 Deteksi dan penghapusan duplikat:
-1. Duplikat lintas hari - artikel/CVE yang sudah pernah dikirim
-   sebelumnya (dicek terhadap database state).
-2. Duplikat dalam hari yang sama - artikel dari media berbeda yang
-   membahas insiden yang sama (dideteksi lewat kemiripan judul).
+1. Duplikat lintas hari - artikel/CVE yang sudah pernah dikirim sebelumnya.
+2. Duplikat dalam hari yang sama - dideteksi lewat kemiripan judul (rapidfuzz & batch semantic embedding).
 """
 from pathlib import Path
 from typing import List
 
-import ollama
+from src.utils.embedding_adapter import GeminiEmbeddingAdapter
 import pandas as pd
 from rapidfuzz import fuzz
 
@@ -21,10 +19,7 @@ logger = setup_logger(__name__)
 def filter_belum_terkirim(
     df: pd.DataFrame, kategori: str, kolom_identifier: str, db_path: Path
 ) -> pd.DataFrame:
-    """
-    Membuang baris yang identifier-nya (URL untuk berita, cve_id untuk
-    CVE) sudah pernah tercatat terkirim sebelumnya.
-    """
+    """Membuang baris yang identifier-nya sudah pernah tercatat terkirim sebelumnya."""
     if df.empty:
         return df
 
@@ -37,12 +32,9 @@ def filter_belum_terkirim(
         logger.info(f"[{kategori}] {jumlah_dibuang} item dibuang karena sudah pernah dikirim sebelumnya.")
     return df_baru
 
+
 def _hitung_cosine_similarity(vektor_a: list, vektor_b: list) -> float:
-    """
-    Menghitung cosine similarity antara 2 vektor embedding secara manual
-    (tanpa numpy/scipy tambahan, cukup pakai operasi dasar Python untuk
-    menjaga dependency tetap minim untuk operasi sesederhana ini).
-    """
+    """Menghitung cosine similarity antara 2 vektor embedding."""
     dot_product = sum(a * b for a, b in zip(vektor_a, vektor_b))
     norma_a = sum(a * a for a in vektor_a) ** 0.5
     norma_b = sum(b * b for b in vektor_b) ** 0.5
@@ -51,47 +43,31 @@ def _hitung_cosine_similarity(vektor_a: list, vektor_b: list) -> float:
     return dot_product / (norma_a * norma_b)
 
 
-def _ambil_embedding(teks: str, model: str = "qwen3-embedding:0.6b") -> list:
-    """Memanggil Ollama untuk mendapatkan vektor embedding dari sebuah teks."""
-    respons = ollama.embeddings(model=model, prompt=teks)
-    return respons["embedding"]
+def _ambil_embedding(teks: str, model: str = None) -> list:
+    """Memanggil Gemini untuk mendapatkan vektor embedding dari sebuah teks."""
+    return GeminiEmbeddingAdapter.embed(teks)
 
 
 def deteksi_duplikat_hybrid(
     df: pd.DataFrame,
     kolom_judul: str = "judul",
     threshold_rapidfuzz_shortcut: int = 95,
-    threshold_embedding: float = 0.60,
-    model_embedding: str = "qwen3-embedding:0.6b",
+    threshold_embedding: float = 0.75,
+    model_embedding: str = None,
 ) -> pd.DataFrame:
     """
-    Deteksi duplikat berbasis EMBEDDING SEMANTIK sebagai penentu utama.
-    Rapidfuzz TIDAK dipakai sebagai penentu (terbukti dari kalibrasi
-    dengan data nyata: rentang skornya tumpang tindih antara kasus
-    duplikat dan non-duplikat, sehingga tidak valid untuk membedakan
-    keduanya untuk judul berita Bahasa Indonesia). Rapidfuzz hanya
-    dipakai sebagai shortcut hemat komputasi untuk kasus judul yang
-    identik/nyaris identik (skor sangat tinggi), untuk skip panggilan
-    embedding yang tidak perlu.
-
-    Threshold embedding 0.50 dikalibrasi dari data nyata: skor duplikat
-    asli berkisar 0.58-0.86, skor non-duplikat 0.27-0.32 - ada celah
-    besar di antaranya, 0.50 dipilih di titik tengah untuk margin aman.
+    Deteksi duplikat berbasis batch semantic embedding dan shortcut rapidfuzz.
+    Seluruh judul diproses dalam 1 panggilan batch resmi Google API.
     """
     if df.empty or len(df) <= 1:
         return df
 
     df = df.reset_index(drop=True)
 
-    # Hitung embedding untuk semua judul di awal (1x panggilan model per judul)
-    logger.info(f"Menghitung embedding untuk {len(df)} judul...")
-    daftar_embedding = []
-    for judul in df[kolom_judul]:
-        try:
-            daftar_embedding.append(_ambil_embedding(judul, model_embedding))
-        except Exception as e:
-            logger.warning(f"Gagal menghitung embedding untuk '{judul[:40]}...': {e}")
-            daftar_embedding.append(None)
+    # Batch embedding untuk seluruh judul sekaligus (1 pemanggilan API)
+    logger.info(f"Menghitung batch embedding untuk {len(df)} judul...")
+    daftar_judul = df[kolom_judul].astype(str).tolist()
+    daftar_embedding = GeminiEmbeddingAdapter.embed_batch(daftar_judul, batch_size=50)
 
     sudah_diproses = set()
     baris_hasil = []
@@ -109,21 +85,24 @@ def deteksi_duplikat_hybrid(
 
             judul_j = df.loc[j, kolom_judul]
 
-            # Lapis 1: cek cepat pakai rapidfuzz dulu
+            # Cek shortcut kesamaan string tinggi dengan rapidfuzz
             skor_fuzzy = fuzz.token_sort_ratio(judul_i, judul_j)
             if skor_fuzzy >= threshold_rapidfuzz_shortcut:
                 grup_mirip.append(j)
                 continue
 
-            # Lapis 2: kalau rapidfuzz tidak yakin, cek makna via embedding
-            if daftar_embedding[i] is not None and daftar_embedding[j] is not None:
-                skor_semantic = _hitung_cosine_similarity(daftar_embedding[i], daftar_embedding[j])
-                if skor_semantic >= threshold_embedding:
-                    grup_mirip.append(j)
-                    logger.debug(
-                        f"Duplikat terdeteksi via embedding (skor {skor_semantic:.2f}): "
-                        f"'{judul_i[:40]}...' ~ '{judul_j[:40]}...'"
-                    )
+            # Validasi makna semantik dengan embedding
+            if i < len(daftar_embedding) and j < len(daftar_embedding):
+                emb_i = daftar_embedding[i]
+                emb_j = daftar_embedding[j]
+                if emb_i is not None and emb_j is not None:
+                    skor_semantic = _hitung_cosine_similarity(emb_i, emb_j)
+                    if skor_semantic >= threshold_embedding:
+                        grup_mirip.append(j)
+                        logger.debug(
+                            f"Duplikat terdeteksi via embedding ({skor_semantic:.2f}): "
+                            f"'{judul_i[:40]}...' ~ '{judul_j[:40]}...'"
+                        )
 
         sudah_diproses.update(grup_mirip)
 

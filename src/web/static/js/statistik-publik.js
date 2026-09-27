@@ -8,9 +8,12 @@
  */
 
 import { simpanItemModal } from './modal.js';
+import { escapeHtml } from './utils.js';
 
 let chartAncaman = null;
 let chartVendor = null;
+let chartTimeline = null;
+let chartSebaranMedia = null;
 let kataTerpilih = null;
 
 
@@ -22,35 +25,20 @@ export async function muatTabStatistikPublik() {
 
     if (data.status !== "ok") throw new Error("Gagal mengambil data statistik publik");
 
-    // 1. Update 4 Insightful KPI Cards
-    if (data.kpi_insights && data.kpi_insights.length >= 4) {
-      const kpis = data.kpi_insights;
-      
-      const elVal1 = document.getElementById("pub-kpi-1-val");
-      const elDesc1 = document.getElementById("pub-kpi-1-desc");
-      if (elVal1) elVal1.textContent = kpis[0].nilai;
-      if (elDesc1) elDesc1.textContent = kpis[0].insight;
-
-      const elVal2 = document.getElementById("pub-kpi-2-val");
-      const elDesc2 = document.getElementById("pub-kpi-2-desc");
-      if (elVal2) elVal2.textContent = kpis[1].nilai;
-      if (elDesc2) elDesc2.textContent = kpis[1].insight;
-
-      const elVal3 = document.getElementById("pub-kpi-3-val");
-      const elDesc3 = document.getElementById("pub-kpi-3-desc");
-      if (elVal3) elVal3.textContent = kpis[2].nilai;
-      if (elDesc3) elDesc3.textContent = kpis[2].insight;
-
-      const elVal4 = document.getElementById("pub-kpi-4-val");
-      const elDesc4 = document.getElementById("pub-kpi-4-desc");
-      if (elVal4) elVal4.textContent = kpis[3].nilai;
-      if (elDesc4) elDesc4.textContent = kpis[3].insight;
+    // 1. Update Insightful KPI Cards (Fakta Murni)
+    if (data.kpi_insights && Array.isArray(data.kpi_insights)) {
+      data.kpi_insights.forEach((kpi, idx) => {
+        const elVal = document.getElementById(`pub-kpi-${idx + 1}-val`);
+        const elDesc = document.getElementById(`pub-kpi-${idx + 1}-desc`);
+        if (elVal && kpi.nilai) elVal.textContent = kpi.nilai;
+        if (elDesc && kpi.insight) elDesc.textContent = kpi.insight;
+      });
     }
 
-    // 2. Render Word Cloud Kasus Insiden Spesifik
+    // 2. Render Word Cloud Kasus Insiden Spesifik (7 Hari Terkini)
     renderWordCloud(data.word_cloud || []);
 
-    // 3. Render Chart Top Ancaman & Software Terpapar
+    // 3. Render Chart Top Ancaman dan Software Terpapar (Fakta Praktis)
     renderChartAncaman(data.top_ancaman || []);
     renderChartVendor(data.top_vendor || []);
 
@@ -175,14 +163,16 @@ function renderWordCloud(wordList) {
       const isAktif = kataTerpilih === item.kata.toLowerCase();
 
       // Desain murni tipografi: TANPA border, TANPA angka, TANPA background kotak
+      const safeKata = escapeHtml(item.kata);
       return `
         <button type="button"
-          onclick="window.pilihWordCloud('${item.kata}')"
-          data-kata="${item.kata.toLowerCase()}"
+          data-kata-raw="${safeKata}"
+          onclick="window.pilihWordCloud(this.getAttribute('data-kata-raw'))"
+          data-kata="${safeKata.toLowerCase()}"
           style="font-size: clamp(${Math.round(fontSize * 0.72)}px, ${fontSize * 0.08}vw + 12px, ${fontSize}px); color: ${color}; font-weight: ${fontWeight}; letter-spacing: ${letterSpacing}; ${isAktif ? 'text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 3px; transform: scale(1.2); opacity: 1;' : ''}"
           class="wordcloud-item inline-block font-sans cursor-pointer transition-all duration-200 hover:scale-115 p-1 leading-none whitespace-nowrap select-none focus-visible:outline-none"
-          title="Kasus: ${item.kata}">
-          ${item.kata}
+          title="Kasus: ${safeKata}">
+          ${safeKata}
         </button>
       `;
     })
@@ -279,7 +269,7 @@ function renderEdukasiList(edukasiList) {
   if (!container) return;
 
   if (!edukasiList || edukasiList.length === 0) {
-    container.innerHTML = `<div class="col-span-full py-8 text-center text-xs text-[#49769F]">Belum ada artikel edukasi terverifikasi.</div>`;
+    container.innerHTML = `<div class="col-span-full py-8 text-center text-xs text-[#49769F]">Belum ada artikel edukasi.</div>`;
     return;
   }
 
@@ -344,6 +334,7 @@ function renderChartAncaman(topAncaman) {
 
   const labels = topAncaman.map((a) => a.kategori);
   const values = topAncaman.map((a) => a.jumlah);
+  const totalKasus = values.reduce((a, b) => a + b, 0) || 1;
 
   const colors = ["#0A4174", "#49769F", "#4E8EA2", "#6EA2B3", "#7BBDE8", "#BDD8E9"];
 
@@ -373,7 +364,11 @@ function renderChartAncaman(topAncaman) {
           bodyFont: { family: "Inter", size: 12 },
           padding: 8,
           callbacks: {
-            label: (ctx) => ` ${ctx.parsed.y} Kasus Terlaporkan`,
+            label: (ctx) => {
+              const val = ctx.parsed.y;
+              const pct = Math.round((val / totalKasus) * 100);
+              return ` ${val} Kasus Terlaporkan (${pct}% dari total)`;
+            },
           },
         },
       },
@@ -434,7 +429,7 @@ function renderChartVendor(topVendor) {
           bodyFont: { family: "Inter", size: 11 },
           padding: 8,
           callbacks: {
-            label: (ctx) => ` ${ctx.parsed.x} Celah Kerentanan Kritis`,
+            label: (ctx) => ` ${ctx.parsed.x} Celah Kerentanan Kritis (CVSS ≥ 9.0)`,
           },
         },
       },
@@ -453,6 +448,162 @@ function renderChartVendor(topVendor) {
           ticks: {
             font: { family: "Inter", size: 10, weight: "600" },
             color: "#001D39",
+          },
+        },
+      },
+    },
+  });
+}
+
+function renderChartTimeline(timelineData) {
+  const ctx = document.getElementById("chart-timeline-publik");
+  if (!ctx || !timelineData || !timelineData.label || timelineData.label.length === 0) return;
+
+  if (chartTimeline) chartTimeline.destroy();
+
+  const formattedLabels = timelineData.label.map((tgl) => {
+    const parts = tgl.split("-");
+    return parts.length === 3 ? `${parts[2]}/${parts[1]}` : tgl;
+  });
+
+  const beritaVals = timelineData.berita || [];
+  const avgBerita = beritaVals.length ? (beritaVals.reduce((a, b) => a + b, 0) / beritaVals.length) : 0;
+
+  chartTimeline = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: formattedLabels,
+      datasets: [
+        {
+          label: "Berita Insiden",
+          data: beritaVals,
+          borderColor: "#0A4174",
+          backgroundColor: "rgba(10, 65, 116, 0.08)",
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: (ctx) => {
+            const val = ctx.raw;
+            return (val >= avgBerita * 1.8 && val > 2) ? "#b91c1c" : "#0A4174";
+          },
+          pointRadius: (ctx) => {
+            const val = ctx.raw;
+            return (val >= avgBerita * 1.8 && val > 2) ? 6 : 4;
+          },
+          pointHoverRadius: 7,
+          borderWidth: 2.5,
+        },
+        {
+          label: "CVE Kritis",
+          data: timelineData.cve || [],
+          borderColor: "#d97706",
+          backgroundColor: "rgba(217, 119, 6, 0.06)",
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: "#d97706",
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          borderWidth: 2.5,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: "index",
+        intersect: false,
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: "top",
+          align: "end",
+          labels: {
+            boxWidth: 12,
+            boxHeight: 12,
+            usePointStyle: true,
+            font: { family: "Inter", size: 11, weight: "600" },
+            color: "#001D39",
+          },
+        },
+        tooltip: {
+          backgroundColor: "#001D39",
+          titleFont: { family: "Inter", size: 12, weight: "bold" },
+          bodyFont: { family: "Inter", size: 11 },
+          padding: 10,
+          boxPadding: 4,
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: "#F0F4F8" },
+          ticks: {
+            font: { family: "Inter", size: 10, weight: "500" },
+            color: "#49769F",
+          },
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: "#E2EDF8" },
+          ticks: {
+            font: { family: "JetBrains Mono", size: 10 },
+            color: "#49769F",
+            precision: 0,
+          },
+        },
+      },
+    },
+  });
+}
+
+function renderSebaranMedia(sebaranMedia) {
+  const ctx = document.getElementById("chart-sebaran-media-publik");
+  if (!ctx || !sebaranMedia) return;
+
+  if (chartSebaranMedia) chartSebaranMedia.destroy();
+
+  const nas = sebaranMedia["Media Nasional"] || 0;
+  const intl = sebaranMedia["Media Global & CTI"] || 0;
+  const total = nas + intl || 1;
+  const pctNas = Math.round((nas / total) * 100);
+  const pctIntl = 100 - pctNas;
+
+  const elNas = document.getElementById("sebaran-media-nasional-val");
+  const elGlobal = document.getElementById("sebaran-media-global-val");
+  if (elNas) elNas.textContent = `${nas} berita (${pctNas}%)`;
+  if (elGlobal) elGlobal.textContent = `${intl} berita (${pctIntl}%)`;
+
+  chartSebaranMedia = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: ["Media Nasional", "Media Global & CTI"],
+      datasets: [
+        {
+          data: [nas, intl],
+          backgroundColor: ["#0A4174", "#4E8EA2"],
+          borderWidth: 2,
+          borderColor: "#ffffff",
+          hoverOffset: 4,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: "68%",
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: "#001D39",
+          titleFont: { family: "Inter", size: 12, weight: "bold" },
+          bodyFont: { family: "Inter", size: 11 },
+          padding: 8,
+          callbacks: {
+            label: (ctx) => {
+              const val = ctx.parsed;
+              const pct = Math.round((val / total) * 100);
+              return ` ${ctx.label}: ${val} artikel (${pct}%)`;
+            },
           },
         },
       },

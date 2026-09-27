@@ -165,8 +165,8 @@ export function bukaModalDetailKasus(wilayahKey) {
           <div class="flex items-center gap-1.5 flex-wrap mb-1">
             ${lokasiHtml}
             <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-[#0A4174] bg-[#EEF5FA] px-2.5 py-0.5 rounded border border-[#BDD8E9]">
-              <span class="material-symbols-outlined text-[11px]">verified</span>
-              Studi Kasus Terverifikasi
+              <span class="material-symbols-outlined text-[11px]">article</span>
+              Studi Kasus Insiden
             </span>
           </div>
           <h5 class="text-sm font-bold text-[#001D39] leading-snug">
@@ -182,7 +182,7 @@ export function bukaModalDetailKasus(wilayahKey) {
           <div class="flex items-center text-xs text-[#49769F] pt-1">
             <span class="inline-flex items-center gap-1 font-medium" title="${escapeHtml(item.sumber || '')}">
               <span class="material-symbols-outlined text-[13px] text-[#49769F] shrink-0">newspaper</span>
-              <span>${escapeHtml(item.sumber || 'Media Terverifikasi')}</span>
+              <span>${escapeHtml(item.sumber || 'Media Intelijen')}</span>
             </span>
           </div>
         </div>

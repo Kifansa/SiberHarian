@@ -4,16 +4,12 @@ import { escapeHtml } from './tren-utils.js';
  * Modul visualisasi analitik untuk Tab Tren
  */
 
-// Global chart instances untuk pengelolaan lifecycle & cleanup
-let chartVendorCve = null;
 let chartRadarVektor = null;
 let chartSektorTarget = null;
+let chartHarianAdmin = null;
+let chartKomposisiAdmin = null;
 
-/**
- * Menghancurkan instance grafik yang sedang aktif agar tidak memori bocor atau bentrok saat re-render
- */
 export function destroyCharts() {
-  if (chartVendorCve) { chartVendorCve.destroy(); chartVendorCve = null; }
   if (chartRadarVektor && typeof chartRadarVektor.destroy === 'function') {
     chartRadarVektor.destroy();
     chartRadarVektor = null;
@@ -21,6 +17,14 @@ export function destroyCharts() {
   if (chartSektorTarget && typeof chartSektorTarget.destroy === 'function') {
     chartSektorTarget.destroy();
     chartSektorTarget = null;
+  }
+  if (chartHarianAdmin && typeof chartHarianAdmin.destroy === 'function') {
+    chartHarianAdmin.destroy();
+    chartHarianAdmin = null;
+  }
+  if (chartKomposisiAdmin && typeof chartKomposisiAdmin.destroy === 'function') {
+    chartKomposisiAdmin.destroy();
+    chartKomposisiAdmin = null;
   }
 }
 
@@ -187,53 +191,159 @@ export function renderCharts(stat) {
     }
   }
 
-  // 3. Chart Vendor CVE Prioritas (Solid Horizontal Ranking Bar Chart)
-  const elVendor = document.getElementById('chart-vendor-cve');
-  if (elVendor) {
-    const labels = (stat.vendor_naik || []).map(item => item.vendor);
-    const counts = (stat.vendor_naik || []).map(item => item.jumlah_terkini);
-    const vendorSolidColors = ['#0A4174', '#4E8EA2', '#001D39', '#7BBDE8', '#49769F', '#6EA2B3', '#BDD8E9'];
 
-    chartVendorCve = new Chart(elVendor, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Total Kerentanan CVE',
-          data: counts,
-          backgroundColor: vendorSolidColors.slice(0, labels.length),
-          borderRadius: 8,
-          borderSkipped: false,
-          barThickness: 16,
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            ...tooltipStyle,
-            callbacks: {
-              label: (ctx) => ` ${ctx.raw} kerentanan CVE kritis`
-            }
-          }
-        },
-        scales: {
-          x: {
-            grid: { color: solidGridColor },
-            ticks: { color: solidTickColor, precision: 0 }
-          },
-          y: {
-            grid: { display: false },
-            ticks: {
-              color: '#001D39',
-              font: { family: 'Inter, sans-serif', weight: '600' }
-            }
-          }
-        }
-      }
-    });
+}
+
+function renderChartHarianAdmin(harianList) {
+  const ctx = document.getElementById('chart-tren-harian-admin');
+  if (!ctx || !harianList || harianList.length === 0) return;
+
+  if (chartHarianAdmin && typeof chartHarianAdmin.destroy === 'function') {
+    chartHarianAdmin.destroy();
   }
+
+  const labels = harianList.map((h) => {
+    const tgl = h.tanggal || '';
+    const parts = tgl.split('-');
+    return parts.length === 3 ? `${parts[2]}/${parts[1]}` : tgl;
+  });
+
+  const beritaData = harianList.map((h) => h.berita || 0);
+  const cveData = harianList.map((h) => h.cve || 0);
+
+  chartHarianAdmin = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Berita Insiden',
+          data: beritaData,
+          borderColor: '#0A4174',
+          backgroundColor: 'rgba(10, 65, 116, 0.08)',
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: '#0A4174',
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          borderWidth: 2.5,
+        },
+        {
+          label: 'CVE Kritis',
+          data: cveData,
+          borderColor: '#d97706',
+          backgroundColor: 'rgba(217, 119, 6, 0.06)',
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: '#d97706',
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          borderWidth: 2.5,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          align: 'end',
+          labels: {
+            boxWidth: 12,
+            boxHeight: 12,
+            usePointStyle: true,
+            font: { family: 'Inter', size: 11, weight: '600' },
+            color: '#001D39',
+          },
+        },
+        tooltip: {
+          backgroundColor: '#001D39',
+          titleFont: { family: 'Inter', size: 12, weight: 'bold' },
+          bodyFont: { family: 'Inter', size: 11 },
+          padding: 8,
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: '#F0F4F8' },
+          ticks: {
+            font: { family: 'Inter', size: 10, weight: '500' },
+            color: '#49769F',
+          },
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: '#E2EDF8' },
+          ticks: {
+            font: { family: 'JetBrains Mono', size: 10 },
+            color: '#49769F',
+            precision: 0,
+          },
+        },
+      },
+    },
+  });
+}
+
+function renderChartKomposisiAdmin(nasVsIntl, totalBerita) {
+  const ctx = document.getElementById('chart-komposisi-admin');
+  if (!ctx || !nasVsIntl) return;
+
+  if (chartKomposisiAdmin && typeof chartKomposisiAdmin.destroy === 'function') {
+    chartKomposisiAdmin.destroy();
+  }
+
+  const nas = nasVsIntl.nasional || 0;
+  const intl = nasVsIntl.internasional || 0;
+  const total = nas + intl || totalBerita || 1;
+  const pctNas = Math.round((nas / total) * 100);
+  const pctIntl = 100 - pctNas;
+
+  const elNas = document.getElementById('admin-cakupan-nasional-val');
+  const elGlobal = document.getElementById('admin-cakupan-global-val');
+  if (elNas) elNas.textContent = `${nas} insiden (${pctNas}%)`;
+  if (elGlobal) elGlobal.textContent = `${intl} insiden (${pctIntl}%)`;
+
+  chartKomposisiAdmin = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Isu Nasional', 'Isu Global / CTI'],
+      datasets: [
+        {
+          data: [nas, intl],
+          backgroundColor: ['#0A4174', '#4E8EA2'],
+          borderWidth: 2,
+          borderColor: '#ffffff',
+          hoverOffset: 4,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '68%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#001D39',
+          titleFont: { family: 'Inter', size: 12, weight: 'bold' },
+          bodyFont: { family: 'Inter', size: 11 },
+          padding: 8,
+          callbacks: {
+            label: (ctx) => {
+              const val = ctx.parsed;
+              const pct = Math.round((val / total) * 100);
+              return ` ${ctx.label}: ${val} artikel (${pct}%)`;
+            },
+          },
+        },
+      },
+    },
+  });
 }

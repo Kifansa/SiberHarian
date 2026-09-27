@@ -1,10 +1,7 @@
 import { bukaModal, tutupModal, tutupModalJikaLuar, salinTeksModal } from './modal.js';
-import { tampilkanBeranda, mulaiPipeline, batalkanPipeline, filterBerandaCards } from './beranda.js';
+import { tampilkanBeranda, mulaiPipeline, batalkanPipeline } from './beranda.js';
 import { muatTabArsip, muatUlangTabArsip, filterArsipCards } from './arsip.js';
-import { muatTabTren, muatUlangTabTren, eksporLaporanTren } from './tren.js';
-import { muatTabStatistikPublik } from './statistik-publik.js';
-import { debounce } from './utils.js';
-
+import { muatTabStatistikPublik } from './statistik-publik.js?v=8.5';
 
 // Expose handlers ke window untuk Alpine.js & atribut onclick
 window.bukaModal = bukaModal;
@@ -14,49 +11,16 @@ window.salinTeksModal = salinTeksModal;
 window.mulaiPipeline = mulaiPipeline;
 window.batalkanPipeline = batalkanPipeline;
 window.muatTabArsip = muatTabArsip;
-window.muatTabTren = muatTabTren;
-window.muatUlangTabTren = muatUlangTabTren;
-window.eksporLaporanTren = eksporLaporanTren;
 window.muatTabStatistikPublik = muatTabStatistikPublik;
 window.tampilkanBeranda = tampilkanBeranda;
 
 // Invalidate cache saat pipeline selesai jalan
 window.addEventListener('pipeline-selesai', () => {
     muatUlangTabArsip();
-    muatUlangTabTren();
 });
 
-// Setup Global Live Search & Keyboard Shortcuts
+// Setup Keyboard Shortcuts
 function inisialisasiPencarianDanShortcut() {
-    const searchInput = document.getElementById('global-search-input');
-    const searchClear = document.getElementById('global-search-clear');
-
-    if (searchInput) {
-        const executeFilter = debounce((val) => {
-            filterBerandaCards(val);
-            filterArsipCards(val);
-        }, 120);
-
-        searchInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            if (searchClear) {
-                searchClear.style.display = val ? 'flex' : 'none';
-            }
-            executeFilter(val);
-        });
-
-        if (searchClear) {
-            searchClear.addEventListener('click', () => {
-                searchInput.value = '';
-                searchClear.style.display = 'none';
-                filterBerandaCards('');
-                filterArsipCards('');
-                searchInput.focus();
-            });
-        }
-    }
-
-    // Keyboard Shortcuts: 1, 2, 3 untuk switch tab & / untuk fokus search
     window.addEventListener('keydown', (e) => {
         const isInputFocused = document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
 
@@ -82,7 +46,7 @@ function inisialisasiPencarianDanShortcut() {
             return;
         }
 
-        // Tab Switching via Angka 1, 2, 3 (hanya saat tidak mengetik di form)
+        // Tab Switching via Angka 1, 2 (hanya saat tidak mengetik di form)
         if (!isInputFocused && !e.ctrlKey && !e.metaKey && !e.altKey) {
             const bodyAlpine = document.body._x_dataStack ? document.body._x_dataStack[0] : null;
             if (bodyAlpine) {
@@ -91,9 +55,6 @@ function inisialisasiPencarianDanShortcut() {
                 } else if (e.key === '2') {
                     bodyAlpine.tabAktif = 'arsip';
                     muatTabArsip();
-                } else if (e.key === '3') {
-                    bodyAlpine.tabAktif = 'tren';
-                    muatTabTren();
                 }
             }
         }
@@ -120,4 +81,4 @@ if (document.readyState === 'loading') {
     window.addEventListener('DOMContentLoaded', inisialisasiAplikasi);
 } else {
     inisialisasiAplikasi();
-}
+}

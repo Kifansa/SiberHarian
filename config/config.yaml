@@ -1,5 +1,24 @@
+﻿# === Gemini API Configuration ===
+gemini:
+  api_key: ""
+  model_chain:
+    - "gemini-3.5-flash-lite"
+    - "gemini-3.5-flash"
+    - "gemini-3.6-flash"
+    - "gemini-3.7-flash"
+  embedding_model: "gemini-embedding-001"
+  temperature: 0.1
+  max_output_tokens: 500
+  rate_limits:
+    flash_lite_rpm: 12
+    flash_rpm: 4
+    embedding_rpm: 80
+  batch_sizes:
+    classification: 5
+    embedding: 50
+
 pipeline:
-  window_hours: 19
+  window_hours: 115
   request_delay_seconds: 1
   request_timeout: 15
   max_retry: 3
@@ -591,7 +610,7 @@ known_vendors:
 # === CTI Analysis Settings ===
 cti_analysis:
   llm:
-    model: "llama3.2"
+    model: "gemini-3.7-flash"
     temperature: 0.1
     num_predict:
       section_makro: 350
@@ -648,3 +667,4 @@ cti_analysis:
       - "-"
       - "(lihat deskripsi)"
       - "Lainnya / Belum Teridentifikasi"
+

@@ -330,18 +330,19 @@ def jalankan_evaluasi_semua_kasus():
         cid = cs["id"]
         nama = cs["nama"]
         # Generate output using LLM mock
-        def mock_ollama(prompt_sys, prompt_user, model, num_predict):
-            if "MAKRO" in prompt_sys or "ancaman siber MAKRO" in prompt_sys:
+        def mock_llm(prompt_sys, prompt_user, model=None, num_predict=None):
+            prompt_sys_str = str(prompt_sys or "")
+            if "MAKRO" in prompt_sys_str or "ancaman siber MAKRO" in prompt_sys_str or "section_1_makro" in prompt_sys_str:
                 return "Sektor Administrasi Pemerintahan diserang oleh Sindikat Anonim menggunakan Malware Baru yang menyebabkan kebocoran data."
-            elif "MIKRO" in prompt_sys or "Top 3" in prompt_sys and "alur" not in prompt_sys:
+            elif ("MIKRO" in prompt_sys_str or "Top 3" in prompt_sys_str) and "alur" not in prompt_sys_str:
                 return "- **" + cs["top3_mikro"][0]["nama_insiden"] + "**: Menyerang **sektor publik**. Penyerangan dilancarkan oleh **Aktor Anonim** menggunakan **Vektor Serangan**, yang menimbulkan dampak kerugian berupa **Dampak Kerugian Nyata**."
-            elif "VEKTOR" in prompt_sys or "alur kronologi" in prompt_sys:
+            elif "VEKTOR" in prompt_sys_str or "alur kronologi" in prompt_sys_str:
                 return "- **Alur Serangan " + cs["top3_mikro"][0]["nama_insiden"] + "**: Uraian penetrasi awal. Vektor ini terpetakan pada **MITRE ATT&CK T1190**."
-            elif "EMERGING" in prompt_sys or "sinyal ancaman siber baru" in prompt_sys:
+            elif "EMERGING" in prompt_sys_str or "sinyal ancaman siber baru" in prompt_sys_str or "ancaman baru" in prompt_sys_str:
                 return "**" + cs["ancaman_baru"]["nama"] + "** adalah ancaman baru pada Sektor Publik."
-            return ""
+            return "- Analisis sistem berjalan normal."
 
-        with patch("src.analytics.cti_agents._call_ollama_text", side_effect=mock_ollama):
+        with patch("src.analytics.cti_agents._call_llm_text", side_effect=mock_llm):
             sitrep, _ = jalankan_pipeline_multi_agent(cs["data_makro"], cs["top3_mikro"], cs["ancaman_baru"], mode="modular_llm")
         
         isu = evaluasi_kualitas_sitrep(sitrep, cs)

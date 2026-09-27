@@ -1,6 +1,6 @@
 <div class="space-y-8 pb-4">
   <!-- 1. Insightful KPI Cards (Memberikan Wawasan Berbasis Fakta, Bukan Angka Mentah) -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch" id="pub-kpi-container">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch" id="pub-kpi-container">
     
     <!-- Card 1: Modus Paling Mengintai -->
     <div class="bg-white rounded-lg border border-[#E2EDF8] p-5 sm:p-6 shadow-xs card-enterprise flex flex-col justify-between">
@@ -12,10 +12,10 @@
       </div>
       <div class="my-auto py-1">
         <div class="text-xl sm:text-2xl font-black text-[#001D39] tracking-tight font-sans leading-snug" id="pub-kpi-1-val">
-          Akun &amp; Phishing
+          {% if statistik and statistik.kpi_insights and statistik.kpi_insights|length > 0 %}{{ statistik.kpi_insights[0].nilai }}{% else %}<span class="inline-block w-32 h-6 bg-[#EEF5FA] rounded animate-pulse"></span>{% endif %}
         </div>
         <p class="text-xs text-slate-600 mt-2 leading-relaxed" id="pub-kpi-1-desc">
-          Sebanyak 54% insiden terpantau aktif menargetkan pencurian password akun dan pengurasan rekening digital warga.
+          {% if statistik and statistik.kpi_insights and statistik.kpi_insights|length > 0 %}{{ statistik.kpi_insights[0].insight }}{% else %}Menganalisis frekuensi laporan modus ancaman siber terkini...{% endif %}
         </p>
       </div>
       <div class="mt-3 pt-2.5 border-t border-[#E2EDF8] flex items-center gap-1.5 text-[11px] font-bold text-[#b45309]">
@@ -24,29 +24,7 @@
       </div>
     </div>
 
-    <!-- Card 2: Status Bahaya Kerentanan -->
-    <div class="bg-white rounded-lg border border-[#E2EDF8] p-5 sm:p-6 shadow-xs card-enterprise flex flex-col justify-between">
-      <div class="flex items-center justify-between gap-3 mb-2">
-        <span class="text-xs font-bold text-[#b91c1c] uppercase tracking-wider">Status Risiko Software</span>
-        <div class="w-8 h-8 rounded-md bg-red-50 text-[#b91c1c] flex items-center justify-center border border-red-200">
-          <span class="material-symbols-outlined text-lg">crisis_alert</span>
-        </div>
-      </div>
-      <div class="my-auto py-1">
-        <div class="text-xl sm:text-2xl font-black text-[#b91c1c] tracking-tight font-sans leading-snug" id="pub-kpi-2-val">
-          Kritis Ekstrem (9.5/10)
-        </div>
-        <p class="text-xs text-slate-600 mt-2 leading-relaxed" id="pub-kpi-2-desc">
-          100% celah software tergolong Kritis (CVSS &ge; 9.0), dengan 42 celah berstatus Darurat 10.0 yang wajib di-update.
-        </p>
-      </div>
-      <div class="mt-3 pt-2.5 border-t border-[#E2EDF8] flex items-center gap-1.5 text-[11px] font-bold text-[#b91c1c]">
-        <span class="material-symbols-outlined text-sm">security_update_warning</span>
-        <span>Perlu Update Segera</span>
-      </div>
-    </div>
-
-    <!-- Card 3: Software Paling Terpapar -->
+    <!-- Card 2: Software Paling Terpapar -->
     <div class="bg-white rounded-lg border border-[#E2EDF8] p-5 sm:p-6 shadow-xs card-enterprise flex flex-col justify-between">
       <div class="flex items-center justify-between gap-3 mb-2">
         <span class="text-xs font-bold text-[#49769F] uppercase tracking-wider">Software Terbanyak Celah</span>
@@ -55,11 +33,11 @@
         </div>
       </div>
       <div class="my-auto py-1">
-        <div class="text-xl sm:text-2xl font-black text-[#001D39] tracking-tight font-sans leading-snug" id="pub-kpi-3-val">
-          Microsoft &amp; Web CMS
+        <div class="text-xl sm:text-2xl font-black text-[#001D39] tracking-tight font-sans leading-snug" id="pub-kpi-2-val">
+          {% if statistik and statistik.kpi_insights and statistik.kpi_insights|length > 1 %}{{ statistik.kpi_insights[1].nilai }}{% else %}<span class="inline-block w-32 h-6 bg-[#EEF5FA] rounded animate-pulse"></span>{% endif %}
         </div>
-        <p class="text-xs text-slate-600 mt-2 leading-relaxed" id="pub-kpi-3-desc">
-          Celah keamanan tertinggi terkonsentrasi pada sistem operasi kerja (Windows) dan CMS website publik (WordPress).
+        <p class="text-xs text-slate-600 mt-2 leading-relaxed" id="pub-kpi-2-desc">
+          {% if statistik and statistik.kpi_insights and statistik.kpi_insights|length > 1 %}{{ statistik.kpi_insights[1].insight }}{% else %}Menganalisis ekosistem sistem operasi dan software terdampak...{% endif %}
         </p>
       </div>
       <div class="mt-3 pt-2.5 border-t border-[#E2EDF8] flex items-center gap-1.5 text-[11px] font-bold text-[#0A4174]">
@@ -68,7 +46,7 @@
       </div>
     </div>
 
-    <!-- Card 4: Fokus Wilayah Paparan -->
+    <!-- Card 3: Fokus Wilayah Paparan -->
     <div class="bg-white rounded-lg border border-[#E2EDF8] p-5 sm:p-6 shadow-xs card-enterprise flex flex-col justify-between">
       <div class="flex items-center justify-between gap-3 mb-2">
         <span class="text-xs font-bold text-[#15803d] uppercase tracking-wider">Fokus Wilayah Paparan</span>
@@ -77,15 +55,15 @@
         </div>
       </div>
       <div class="my-auto py-1">
-        <div class="text-xl sm:text-2xl font-black text-[#15803d] tracking-tight font-sans leading-snug" id="pub-kpi-4-val">
-          60% Isu Nasional
+        <div class="text-xl sm:text-2xl font-black text-[#15803d] tracking-tight font-sans leading-snug" id="pub-kpi-3-val">
+          {% if statistik and statistik.kpi_insights and statistik.kpi_insights|length > 2 %}{{ statistik.kpi_insights[2].nilai }}{% else %}<span class="inline-block w-32 h-6 bg-[#EEF5FA] rounded animate-pulse"></span>{% endif %}
         </div>
-        <p class="text-xs text-slate-600 mt-2 leading-relaxed" id="pub-kpi-4-desc">
-          Mayoritas artikel insiden dan panduan siber yang terverifikasi berdampak langsung pada ruang digital Indonesia.
+        <p class="text-xs text-slate-600 mt-2 leading-relaxed" id="pub-kpi-3-desc">
+          {% if statistik and statistik.kpi_insights and statistik.kpi_insights|length > 2 %}{{ statistik.kpi_insights[2].insight }}{% else %}Mengukur proporsi pemberitaan yang berdampak pada ruang digital Indonesia...{% endif %}
         </p>
       </div>
       <div class="mt-3 pt-2.5 border-t border-[#E2EDF8] flex items-center gap-1.5 text-[11px] font-bold text-[#15803d]">
-        <span class="material-symbols-outlined text-sm">verified</span>
+        <span class="material-symbols-outlined text-sm">policy</span>
         <span>Ruang Digital RI</span>
       </div>
     </div>
@@ -176,6 +154,8 @@
 
   </div>
 
+
+
   <!-- 4. Intisari Artikel Edukasi & Himbauan Keamanan Nyata (Dari Database) -->
   <div class="bg-white rounded-lg border border-[#E2EDF8] p-6 sm:p-7 shadow-xs">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-[#E2EDF8]">
@@ -185,11 +165,11 @@
           <h3 class="text-base sm:text-lg font-bold text-[#001D39]">Intisari Edukasi &amp; Himbauan Keamanan Siber</h3>
         </div>
         <p class="text-xs text-[#49769F]">
-          Panduan praktis dan himbauan pencegahan yang disarikan langsung dari artikel edukasi siber terverifikasi di database.
+          Panduan praktis dan himbauan pencegahan yang disarikan langsung dari artikel edukasi siber di database.
         </p>
       </div>
       <span class="text-[11px] font-semibold px-2.5 py-1 rounded bg-emerald-50 text-[#15803d] border border-emerald-200 w-fit shrink-0">
-        Fakta Edukasi Terverifikasi
+        Fakta Edukasi Siber
       </span>
     </div>
 

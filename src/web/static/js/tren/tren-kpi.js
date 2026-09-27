@@ -21,6 +21,8 @@ export function flashUpdatedCards() {
 export function renderKpiCards(stat, isAnimated = false) {
   if (!stat) return;
 
+
+
   // KPI 1: Insiden Berita
   const kpiBerita = document.getElementById('kpi-total-berita');
   const kpiBeritaGrowth = document.getElementById('kpi-berita-growth');
@@ -119,5 +121,91 @@ export function renderKpiCards(stat, isAnimated = false) {
     } else {
       elAncamanBaru.className = "text-2xl sm:text-3xl font-black text-[#001D39] tracking-tight font-sans leading-none uppercase truncate";
     }
+  }
+}
+
+/**
+ * Merender indikator komposit Indeks Postur Ancaman Siber Komparatif
+ * @param {Object} posture Data postur ancaman dari backend
+ * @param {boolean} isAnimated Apakah menggunakan animasi penghitungan angka
+ */
+export function renderThreatPosture(posture, isAnimated = false) {
+  if (!posture) return;
+
+  const elScore = document.getElementById('posture-score');
+  const elBadge = document.getElementById('posture-badge');
+  const elAdvice = document.getElementById('posture-advice');
+  const elGrowth = document.getElementById('posture-growth');
+  const elGrowthIcon = document.getElementById('posture-growth-icon');
+  const elGrowthWrap = document.getElementById('posture-growth-wrap');
+  const elStatus = document.getElementById('posture-status-tren');
+  const elAvgCvss = document.getElementById('posture-avg-cvss');
+  const elTotalInsiden = document.getElementById('posture-total-insiden');
+
+  const skor = posture.skor ?? 1.0;
+  if (elScore) {
+    if (isAnimated) {
+      animateNumber(elScore, Math.round(skor * 10) / 10, 450, 1);
+    } else {
+      elScore.textContent = Number(skor).toFixed(1);
+    }
+  }
+
+  // Level badge styling
+  const level = posture.level || 'SEDANG';
+  const label = posture.level_label || `${level}`;
+  if (elBadge) {
+    elBadge.textContent = label;
+    if (level === 'KRITIS') {
+      elBadge.className = 'px-2.5 py-0.5 rounded text-[11px] font-bold border font-mono bg-rose-50 text-rose-700 border-rose-200';
+    } else if (level === 'TINGGI') {
+      elBadge.className = 'px-2.5 py-0.5 rounded text-[11px] font-bold border font-mono bg-amber-50 text-amber-800 border-amber-200';
+    } else if (level === 'SEDANG') {
+      elBadge.className = 'px-2.5 py-0.5 rounded text-[11px] font-bold border font-mono bg-blue-50 text-blue-700 border-blue-200';
+    } else {
+      elBadge.className = 'px-2.5 py-0.5 rounded text-[11px] font-bold border font-mono bg-emerald-50 text-emerald-700 border-emerald-200';
+    }
+  }
+
+  // Contextual advice
+  if (elAdvice) {
+    if (level === 'KRITIS') {
+      elAdvice.textContent = 'Status Darurat: Terdeteksi eskalasi signifikan pada insiden aktif dan celah keamanan bernilai kritis. Prioritaskan isolasi perimeter dan eksekusi emergency patching.';
+    } else if (level === 'TINGGI') {
+      elAdvice.textContent = 'Status Waspada: Peningkatan volume insiden dan kemunculan celah sistem baru. Disarankan audit port perimeter, verifikasi integritas backup, dan sosialisasi pencegahan phishing ke OPD.';
+    } else if (level === 'SEDANG') {
+      elAdvice.textContent = 'Status Terkendali: Aktivitas ancaman siber terpantau stabil. Lanjutkan pemantauan log berkala dan penerapan pembaruan rutin pada sistem operasional instansi.';
+    } else {
+      elAdvice.textContent = 'Status Kondusif: Tidak ditemukan anomali lonjakan ancaman signifikan dalam 7 hari terakhir. Pertahankan kepatuhan keamanan preventif dan kebersihan kredensial.';
+    }
+  }
+
+  // Growth & Status Tren
+  const growth = posture.growth_persen ?? 0;
+  const statusTren = posture.status_tren || 'Stabil';
+  if (elGrowth) {
+    elGrowth.textContent = `${growth >= 0 ? '+' : ''}${growth}%`;
+  }
+  if (elStatus) {
+    elStatus.textContent = `${statusTren} vs baseline`;
+  }
+  if (elGrowthWrap) {
+    if (growth > 5) {
+      elGrowthWrap.className = 'flex items-center sm:justify-end gap-1 font-mono font-bold text-sm text-rose-600';
+      if (elGrowthIcon) elGrowthIcon.textContent = 'trending_up';
+    } else if (growth < -5) {
+      elGrowthWrap.className = 'flex items-center sm:justify-end gap-1 font-mono font-bold text-sm text-emerald-600';
+      if (elGrowthIcon) elGrowthIcon.textContent = 'trending_down';
+    } else {
+      elGrowthWrap.className = 'flex items-center sm:justify-end gap-1 font-mono font-bold text-sm text-[#49769F]';
+      if (elGrowthIcon) elGrowthIcon.textContent = 'trending_flat';
+    }
+  }
+
+  if (elAvgCvss) {
+    elAvgCvss.textContent = `${Number(posture.avg_cvss ?? 0).toFixed(1)} / 10`;
+  }
+  if (elTotalInsiden) {
+    elTotalInsiden.textContent = `${posture.total_insiden ?? 0} kasus`;
   }
 }

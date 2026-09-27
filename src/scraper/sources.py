@@ -1,4 +1,4 @@
-"""
+﻿"""
 Memuat konfigurasi dari config.yaml dan 
 menyiapkan struktur data yang dibutuhkan tahap pengumpulan berita.
 """
@@ -30,12 +30,14 @@ def bangun_daftar_feed_rss(config: dict) -> List[Tuple[str, str, bool, str]]:
     - "umum": media umum yang isinya campur topik -> wajib difilter.
     """
     daftar_feed = []
-    for sumber in config.get("rss_sources_international", []):
-        for url in sumber["feeds"]:
-            daftar_feed.append((url, sumber["nama"], False, "trusted_cyber"))
-    for sumber in config.get("rss_sources_indonesia", []):
-        for url in sumber["feeds"]:
-            daftar_feed.append((url, sumber["nama"], False, "umum"))
+    for sumber in SettingsManager.get_rss_sources("international"):
+        if sumber.get("active", True) is not False:
+            for url in sumber["feeds"]:
+                daftar_feed.append((url, sumber["nama"], False, "trusted_cyber"))
+    for sumber in SettingsManager.get_rss_sources("indonesia"):
+        if sumber.get("active", True) is not False:
+            for url in sumber["feeds"]:
+                daftar_feed.append((url, sumber["nama"], False, "umum"))
     return daftar_feed
 
 
@@ -65,9 +67,10 @@ def bangun_daftar_feed_google_news(config: dict) -> List[Tuple[str, str, bool, s
             daftar_feed.append((rss_url, "Google News", True, "umum"))
     return daftar_feed
 
+from src.utils.settings_manager import SettingsManager
+
 def _kumpulkan_semua_kata_kunci(config: dict) -> Dict[str, List[str]]:
-    """Mengambil seluruh kelompok kata kunci dari config.yaml sebagai dict terpisah."""
-    kw = config.get("keywords", {})
+    kw = SettingsManager.get_keywords()
     return {
         "english": kw.get("english", []),
         "mandiri": kw.get("indonesia_mandiri", []),
@@ -129,3 +132,4 @@ class FilterKataKunci:
     def temukan_kata_kunci(self, teks: str) -> List[str]:
         """Mengembalikan daftar unik kata kunci yang ditemukan (untuk kolom anotasi)."""
         return list(set(self.pola_semua.findall(teks)))
+

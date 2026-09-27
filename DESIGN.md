@@ -175,18 +175,20 @@ Menggabungkan wawasan intelijen dan berita hari terakhir dalam satu alur yang ko
 - Penelusuran data 7-14 hari dengan dropdown tanggal, filter kategori (Insiden Spesifik, Edukasi, CVE), dan kotak pencarian instan (*live search*).
 
 ### 3. Tab Tren Siber CTI (Khusus Admin Tim CTI)
-- **Komparatif Mingguan**: Analisis rolling 7 hari aktif vs 7 hari baseline untuk mengukur eskalasi ancaman siber secara matematis.
-- **SITREP CTI 5-Bagian Terstruktur**: 
+- **Indeks Postur Ancaman Siber Komparatif (Threat Posture)**: Banner eksekutif skor komposit 1.0 sampai 10.0 dengan normalisasi Min-Max scaling berimbang (Insiden 35%, CVE 25%, CVSS 40%), perbandingan terhadap baseline minggu lalu, badge tingkat keparahan (KRITIS / TINGGI / SEDANG / RENDAH), dan ringkasan arahan strategis pimpinan.
+- **Matriks Tindakan Ancaman Aktif (Remediation Checklist)**: Tabel taktis operasional SOC yang mengelompokkan ancaman ke dalam kategori, lonjakan kasus 7 hari, tingkat urgensi dengan badge semantik berkontras tinggi, fokus celah website OPD, dan tindakan taktis langsung.
+- **Dinamika Tren Deret Waktu 7 Hari**: Grafik garis ganda (dual-line chart) fluktuasi harian berita insiden vs CVE kritis, lengkap dengan donut chart komposisi sumber isu nasional vs global.
+- **SITREP CTI Modular Terstruktur**: 
   1. Tren Insiden Mingguan (Makro)
-  2. Lanskap & Entitas Ancaman (Mikro - klastering insiden multi-artikel dengan nama kampanye profesional dan mitigasi halusinasi peneliti)
+  2. Lanskap & Entitas Ancaman (Mikro: klastering multi-artikel dengan mitigasi halusinasi peneliti)
   3. Vektor Serangan & Pemetaan MITRE ATT&CK (1-to-1)
-  4. Rekomendasi Aksi Preskriptif (Injeksi deterministik dari Ensiklopedia Keamanan)
-  5. Prediksi & Sinyal Ancaman Masa Depan (Emerging Threats)
+  4. Rekomendasi Aksi Preskriptif (Injeksi deterministik dari Ensiklopedia D3FEND/NIST)
+  5. Sinyal Ancaman Baru (Emerging Threats, proyeksi replikasi risiko ke domain instansi)
+  6. SITREP CVE: Vendor Prioritas, Vektor Eksploitasi, Eksploitabilitas & PoC, serta Panduan Patching
 - **Taksonomi Terstandarisasi**:
   - **10 Sektor Standar Nasional**: Mengacu pada Perpres No. 82 Tahun 2022 tentang Infrastruktur Informasi Vital (IIV) + Sektor Pendidikan & Pengguna Digital.
   - **12 Taktik MITRE ATT&CK Enterprise Matrix**: Initial Access, Execution, Persistence, Privilege Escalation, Defense Evasion, Credential Access, Discovery, Lateral Movement, Collection, Command & Control, Exfiltration, Impact.
-- **Kasus Wilayah 3-Level (Internasional, Nasional, Jawa Timur)**: Visualisasi kartu insiden teramai dengan deteksi cerdas 29 kabupaten dan 9 kota di Jawa Timur.
-- **Matriks Mitigasi Proteksi Web & Sistem**: Rekomendasi teknis langsung untuk pengamanan portal instansi publik.
+- **Kasus Wilayah 3-Level (Internasional, Nasional, Jawa Timur)**: Visualisasi kartu insiden teramai dengan pendekatan BLUF (Bottom Line Up Front) dan analisis dampak domino lintas sektor.
 - **Ekspor Dokumen PDF Resmi**: Cetak dokumen SITREP mingguan bertata letak standar Diskominfo Jatim langsung dari peramban.
 
 ### 4. Pusat Ensiklopedia Standar Keamanan Siber

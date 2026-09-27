@@ -93,6 +93,8 @@
   <!-- 4. Main Content Container -->
   <div class="space-y-8 hidden transition-all duration-300 ease-out" id="tren-konten-container">
     
+
+
     <!-- EXECUTIVE SCORECARD GRID -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
       
@@ -200,6 +202,38 @@
       </div>
     </div>
 
+    <!-- MATRIKS TINDAKAN ANCAMAN AKTIF (Operational Remediation Checklist) -->
+    <div class="space-y-4">
+      <div class="border-b border-[#BDD8E9]/80 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold text-[#001D39] tracking-tight">Matriks Tindakan Ancaman Aktif</h3>
+          <p class="text-xs text-[#49769F] mt-0.5">Panduan prioritas proteksi dan mitigasi teknis untuk admin server dan pengelola website instansi.</p>
+        </div>
+        <span class="text-[11px] font-semibold text-[#0A4174] bg-[#EEF5FA] px-2.5 py-1 rounded border border-[#BDD8E9] shrink-0 w-fit">
+          Operasional SOC
+        </span>
+      </div>
+
+      <div class="overflow-x-auto rounded-lg border border-[#E2EDF8] shadow-2xs bg-white">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead class="bg-[#EEF4F8] border-b border-[#BDD8E9]">
+            <tr class="text-xs font-bold text-[#001D39] uppercase tracking-wider">
+              <th class="py-3 px-4 font-sans">Kategori Ancaman</th>
+              <th class="py-3 px-4 font-sans text-center">Lonjakan (7H)</th>
+              <th class="py-3 px-4 font-sans text-center">Tingkat Urgensi</th>
+              <th class="py-3 px-4 font-sans">Fokus Celah Website Instansi</th>
+              <th class="py-3 px-4 font-sans">Tindakan Taktis Rekomendasi</th>
+            </tr>
+          </thead>
+          <tbody id="tabel-matriks-tindakan-body" class="divide-y divide-[#E2EDF8] text-slate-700">
+            <tr>
+              <td colspan="5" class="py-6 text-center text-[#49769F]">Memuat matriks tindakan...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- AI INTELLIGENCE PREDICTIONS & MITIGATION ADVISORY -->
     <div class="chart-card bg-white border border-[#E2EDF8] rounded-lg p-6 sm:p-7 shadow-xs">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 border-b border-[#E2EDF8] pb-4">
@@ -222,6 +256,8 @@
         </div>
       </div>
     </div>
+
+
 
 
     <!-- GRAFIK ANALITIK STRATEGIS: Vektor Serangan & Sektor Target (Desain Referensi) -->

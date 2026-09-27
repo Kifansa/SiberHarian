@@ -25,6 +25,10 @@ HARI_PERIODE_TERKINI = 7
 THRESHOLD_DEDUP_TREN = 88  
 HARI_PERIODE_BASELINE = 7  # total window 14 hari (7 terkini + 7 baseline)
 
+_SUMBER_INTERNASIONAL = set(ConfigLoader.get_rules("sumber_internasional"))
+VEKTOR_RULES = ConfigLoader.get_rules("vektor_rules")
+SEKTOR_RULES = ConfigLoader.get_rules("sektor_rules")
+
 
 def _split_periode(df: pd.DataFrame, kolom_tanggal: str = "tanggal_publish") -> tuple:
     """Membagi df jadi 2 subset: periode terkini (7 tanggal unik terbaru) vs baseline (7 tanggal unik sebelumnya)."""
@@ -331,11 +335,7 @@ def hitung_tren_sektor_target(
 
 
 def hitung_skor_threat_posture(df_riwayat: pd.DataFrame) -> Dict:
-    """
-    SEKTOR_RULES = ConfigLoader.get_rules("sektor_rules")
-    VEKTOR_RULES = ConfigLoader.get_rules("vektor_rules")
-    Menghitung skor threat posture komparatif: 7 hari terkini vs 7 hari baseline.
-    """
+    """Menghitung skor threat posture komparatif: 7 hari terkini vs 7 hari baseline."""
     if df_riwayat.empty:
         return {
             "skor": 1.0,
@@ -362,8 +362,15 @@ def hitung_skor_threat_posture(df_riwayat: pd.DataFrame) -> Dict:
         n_insiden = int((df_b["kategori_relevansi"] == "insiden_spesifik").sum()) if not df_b.empty else 0
         n_cve = len(df_c)
         avg_c = round(float(df_c["skor_cvss"].dropna().mean()), 1) if not df_c.empty and df_c["skor_cvss"].notna().any() else 0.0
-        skor_raw = min(10.0, max(1.0, (n_insiden * 0.035) + (n_cve * 0.012) + (avg_c * 0.35)))
-        return round(skor_raw, 1), n_insiden, n_cve, avg_c
+        
+        # Normalisasi Min-Max fitur (skala 0.0 - 1.0)
+        norm_insiden = min(1.0, n_insiden / 30.0)
+        norm_cve = min(1.0, n_cve / 50.0)
+        norm_cvss = (avg_c / 10.0) if n_cve > 0 else 0.0
+        
+        # Skor komposit 1.0 - 10.0 dengan bobot berimbang: Insiden 35%, CVE 25%, CVSS 40%
+        skor_raw = 1.0 + (9.0 * ((norm_insiden * 0.35) + (norm_cve * 0.25) + (norm_cvss * 0.40)))
+        return round(min(10.0, max(1.0, skor_raw)), 1), n_insiden, n_cve, avg_c
 
     skor_terkini, total_insiden, total_cve, avg_cvss = _hitung_sub_posture(df_terkini)
     skor_baseline, total_insiden_base, total_cve_base, _ = _hitung_sub_posture(df_baseline)

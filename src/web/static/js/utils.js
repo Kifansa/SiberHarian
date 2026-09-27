@@ -38,15 +38,6 @@ export function formatTanggalIndonesia(tanggalIso) {
   return `${namaHari[tanggalObj.getDay()]}, ${tanggal} ${namaBulan[bulan - 1]} ${tahun}`;
 }
 
-export function formatTanggalSingkat(tanggalIso) {
-  if (!tanggalIso || tanggalIso === 'tanggal_tidak_diketahui') return tanggalIso;
-  const parts = tanggalIso.slice(0, 10).split('-').map(Number);
-  if (parts.length < 3) return tanggalIso;
-  const [, bulan, tanggal] = parts;
-  const namaBulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-  return `${tanggal} ${namaBulan[bulan - 1] || ''}`;
-}
-
 export function formatWaktuSekarang() {
   return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
 }

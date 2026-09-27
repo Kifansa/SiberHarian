@@ -8,27 +8,20 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
+DEFAULT_USER_AGENT = "News Project (+https://kifansa.my/id; kifansanf@gmail.com)"
+
 
 def buat_session_retry(
-    user_agent: str = (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/126.0.0.0 Safari/537.36"
-    ),
+    user_agent: str = DEFAULT_USER_AGENT,
     max_retry: int = 3,
     backoff_factor: float = 1.5,
 ) -> requests.Session:
-    """Membuat requests.Session dengan retry otomatis dan header browser-like."""
+    """Membuat requests.Session dengan retry otomatis dan identitas bot transparan."""
     session = requests.Session()
     session.headers.update({
         "User-Agent": user_agent,
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9,id;q=0.8",
-        "Referer": "https://www.google.com/",
-        "Sec-Fetch-Dest": "document",
-        "Sec-Fetch-Mode": "navigate",
-        "Sec-Fetch-Site": "cross-site",
-        "Upgrade-Insecure-Requests": "1",
+        "Accept-Language": "id,en;q=0.8",
         "Cache-Control": "no-cache",
         "Pragma": "no-cache",
     })

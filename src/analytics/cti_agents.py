@@ -1,10 +1,10 @@
 from src.utils.config_loader import ConfigLoader
+from src.utils.settings_manager import SettingsManager
 import json
 import logging
 import re
-from src.utils.config_loader import ConfigLoader
 from typing import Dict, Any, Optional, List, Tuple
-import ollama
+from src.utils.llm_adapter import GeminiLLMAdapter
 
 from src.analytics.encyclopedia_lookup import search_encyclopedia, search_encyclopedia_per_incident
 
@@ -19,24 +19,14 @@ logger = logging.getLogger(__name__)
 # =====================================================================
 
 
-def _call_ollama_text(system_prompt: str, user_prompt: str, model: str = None, num_predict: int = 400) -> str:
-    cfg = ConfigLoader.get_config().get("cti_analysis", {}).get("llm", {})
-    if not model: model = cfg.get("model", "llama3.2")
-    temperature = cfg.get("temperature", 0.1)
-    
-    try:
-        r = ollama.chat(
-            model=model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            options={"temperature": temperature, "num_predict": num_predict}
-        )
-        return resp.get("message", {}).get("content", "")
-    except Exception as e:
-        logger.error(f"Ollama Call Error: {e}")
-        return ""
+def _call_llm_text(system_prompt: str, user_prompt: str, model: str = None, num_predict: int = 400) -> str:
+    return GeminiLLMAdapter.chat(
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        max_tokens=num_predict
+    )
+
+_call_ollama_text = _call_llm_text
 
 
 def _bersihkan_tanggal_jika_ada(teks: str) -> str:
@@ -44,16 +34,16 @@ def _bersihkan_tanggal_jika_ada(teks: str) -> str:
     teks = re.sub(r'\b(pada tanggal|tanggal|pada)\s+\d{1,2}\s+(januari|februari|maret|april|mei|juni|juli|agustus|september|oktober|november|desember|jan|feb|mar|apr|mei|jun|jul|agu|sep|okt|nov|des)\s*\d{0,4}\b', '', teks, flags=re.IGNORECASE)
     return teks
 
-def _generate_section_1_makro(data_makro: dict, model: str = "llama3.2") -> str:
+def _generate_section_1_makro(data_makro: dict, model: str = None) -> str:
     pola_makro = data_makro.get("nama_pola", "Insiden Terkini")
     korpus = data_makro.get("korpus_artikel", "")
     user_prompt = f"Topik Dominan: {pola_makro}\nFakta Riil:\n{korpus[:1500]}\n\nInstruksi: Sintesis 1 paragraf mengalir sesuai pedoman."
-    hasil = _call_ollama_text(ConfigLoader.get_prompt("section_1_makro"), user_prompt, model, num_predict=ConfigLoader.get_config().get("cti_analysis", {}).get("llm", {}).get("num_predict", {}).get("section_makro", 350))
+    hasil = _call_llm_text(SettingsManager.get_prompt("section_1_makro"), user_prompt, model, num_predict=ConfigLoader.get_config().get("cti_analysis", {}).get("llm", {}).get("num_predict", {}).get("section_makro", 350))
     if not hasil or len(hasil) < 50:
         return f"Pola ancaman **{pola_makro}** mencatatkan eskalasi minggu ini."
     return re.sub(r'^#+.*\n+', '', _bersihkan_tanggal_jika_ada(hasil)).strip()
 
-def _generate_section_2_mikro(top3_mikro: list, model: str = "llama3.2") -> str:
+def _generate_section_2_mikro(top3_mikro: list, model: str = None) -> str:
     if not top3_mikro:
         return "- (Belum ada data insiden aktif minggu ini)"
     from src.analytics.trend_analyzer import _bersihkan_judul_dan_publisher
@@ -63,12 +53,12 @@ def _generate_section_2_mikro(top3_mikro: list, model: str = "llama3.2") -> str:
         fakta = inc.get("uraian_fakta", "")
         baris_input.append(f"{idx+1}. Kampanye: \"{nama_clean}\" ({inc.get('jumlah_artikel', 1)} laporan berita)\n   Detail: {fakta[:400]}")
     user_prompt = "Sintesiskan TEPAT 3 insiden berikut:\n\n" + "\n\n".join(baris_input)
-    hasil = _call_ollama_text(ConfigLoader.get_prompt("section_2_mikro"), user_prompt, model, num_predict=500)
+    hasil = _call_llm_text(SettingsManager.get_prompt("section_2_mikro"), user_prompt, model, num_predict=500)
     if not hasil or len(hasil) < 60:
         return "\n".join(f"- **{inc.get('nama_insiden', '')}**: {inc.get('uraian_fakta', '')[:100]}..." for inc in top3_mikro)
     return re.sub(r'^#+.*\n+', '', _bersihkan_tanggal_jika_ada(hasil)).strip()
 
-def _generate_section_3_vektor(top3_mikro: list, model: str = "llama3.2") -> str:
+def _generate_section_3_vektor(top3_mikro: list, model: str = None) -> str:
     if not top3_mikro:
         return "- (Belum ada vektor ancaman aktif yang dilaporkan)"
     from src.analytics.trend_analyzer import _bersihkan_judul_dan_publisher
@@ -78,18 +68,18 @@ def _generate_section_3_vektor(top3_mikro: list, model: str = "llama3.2") -> str
         fakta = inc.get("uraian_fakta", "")
         baris_input.append(f"{idx+1}. Kampanye: \"{nama_clean}\"\n   Detail Serangan: {fakta[:400]}")
     user_prompt = "Petakan alur teknis dan taktik MITRE ATT&CK dari insiden berikut:\n\n" + "\n\n".join(baris_input)
-    hasil = _call_ollama_text(ConfigLoader.get_prompt("section_3_vektor"), user_prompt, model, num_predict=450)
+    hasil = _call_llm_text(SettingsManager.get_prompt("section_3_vektor"), user_prompt, model, num_predict=450)
     if not hasil or len(hasil) < 60:
         return "\n".join(f"- **Alur Serangan {inc.get('nama_insiden', '')}**: {inc.get('uraian_fakta', '')[:100]}..." for inc in top3_mikro)
     return re.sub(r'^#+.*\n+', '', _bersihkan_tanggal_jika_ada(hasil)).strip()
 
-def _generate_section_5_emerging(ancaman_baru: dict, model: str = "llama3.2") -> str:
+def _generate_section_5_emerging(ancaman_baru: dict, model: str = None) -> str:
     nama_anc = ancaman_baru.get("nama", "Tidak Teridentifikasi")
     uraian_anc = ancaman_baru.get("uraian", "")
     if not ancaman_baru.get("ada"):
         return "Berdasarkan pemantauan korpus intelijen siber Jawa Timur minggu ini, tidak ditemukan sinyal anomali atau ancaman baru."
     user_prompt = f"Ancaman Baru Terdeteksi: {nama_anc}\nDetail Sinyal Ancaman:\n{uraian_anc[:1000]}\n\nInstruksi: Susun 1 paragraf analisis sinyal ancaman."
-    hasil = _call_ollama_text(ConfigLoader.get_prompt("section_5_emerging"), user_prompt, model, num_predict=300)
+    hasil = _call_llm_text(SettingsManager.get_prompt("section_5_emerging"), user_prompt, model, num_predict=300)
     if not hasil or len(hasil) < 50:
         return f"Terdeteksi sinyal ancaman baru berupa **{nama_anc}**. {uraian_anc[:200]}"
     return re.sub(r'^#+.*\n+', '', _bersihkan_tanggal_jika_ada(hasil)).strip()
@@ -115,7 +105,7 @@ def jalankan_pipeline_multi_agent(
     data_makro: dict,
     top3_mikro: List[dict],
     ancaman_baru: dict,
-    model: str = "llama3.2",
+    model: str = None,
     mode: str = "modular_llm"
 ) -> Tuple[str, dict]:
     """
@@ -191,9 +181,9 @@ def _build_cve_fallback(vendor_signifikan: List[dict], cve_context: str) -> str:
     )
 
     sec3 = (
-        "- **Integritas Token Sesi & Kredensial**: Risiko kompromi pada mekanisme validasi otentikasi dapat memicu pembajakan session cookie dan token akses administratif.\n"
-        "- **Paparan Kriptografi & Komunikasi**: Celah pada pustaka jaringan dapat melemahkan enkripsi kanal transfer data dan memicu serangan Man-in-the-Middle (MitM).\n"
-        "- **Ketahanan Database & File System**: Kompromi pada layer aplikasi membuka akses langsung terhadap integritas berkas data penting pemerintah."
+        "- **Ketersediaan Bukti Konsep (PoC)**: Deteksi skrip PoC publik di repositori terbuka meningkatkan risiko eksploitasi massal tanpa memerlukan keahlian teknis tingkat tinggi.\n"
+        "- **Kompleksitas Eksploitasi Rendah**: Mayoritas celah kritis pada perimeter gateway dapat dipicu dari jarak jauh tanpa autentikasi awal atau interaksi pengguna.\n"
+        "- **Potensi Integrasi Weaponization**: Nilai celah yang tinggi berisiko memicu adopsi cepat ke dalam modul toolkit penyerangan otomatis atau varian ransomware."
     )
 
     sec4 = _generate_cve_section_4_patching(vendor_signifikan, cve_context)
@@ -201,17 +191,17 @@ def _build_cve_fallback(vendor_signifikan: List[dict], cve_context: str) -> str:
     return (
         f"### 1. VENDOR & PRODUK PRIORITAS\n{sec1}\n\n"
         f"### 2. ANALISIS VEKTOR EKSPLOITASI\n{sec2}\n\n"
-        f"### 3. IMPLIKASI KRIPTOGRAFI & INTEGRITAS SISTEM\n{sec3}\n\n"
+        f"### 3. EKSPLOITABILITAS & WEAPONIZATION (POC)\n{sec3}\n\n"
         f"### 4. PANDUAN PATCHING & MITIGASI\n{sec4}"
     )
 
-def _generate_cve_sec1(vendor_signifikan: List[dict], model: str = "llama3.2") -> str:
+def _generate_cve_sec1(vendor_signifikan: List[dict], model: str = None) -> str:
     lines = []
     for v in vendor_signifikan[:4]:
         p_names = ", ".join(f"{p['produk']} ({p['jumlah']}x)" for p in v.get("top_produk", [])[:3])
         lines.append(f"- Vendor: {v['vendor']}, Lonjakan: +{int(v.get('growth_persen', 0))}%, Total: {v.get('jumlah_terkini', 0)} CVE. Produk: {p_names}")
     user_prompt = "Daftar Vendor & Produk dengan Lonjakan CVE Kritis:\n" + "\n".join(lines)
-    hasil = _call_ollama_text(ConfigLoader.get_prompt("cve_sec1_vendor"), user_prompt, model, num_predict=ConfigLoader.get_config().get("cti_analysis", {}).get("llm", {}).get("num_predict", {}).get("section_makro", 350))
+    hasil = _call_llm_text(SettingsManager.get_prompt("cve_sec1_vendor"), user_prompt, model, num_predict=ConfigLoader.get_config().get("cti_analysis", {}).get("llm", {}).get("num_predict", {}).get("section_makro", 350))
     if not hasil or len(hasil) < 40 or "- " not in hasil:
         lines_fallback = []
         for v in vendor_signifikan[:4]:
@@ -221,9 +211,9 @@ def _generate_cve_sec1(vendor_signifikan: List[dict], model: str = "llama3.2") -
     hasil_bersih = re.sub(r'^#+.*\n+', '', hasil).strip()
     return hasil_bersih
 
-def _generate_cve_sec2(vendor_signifikan: List[dict], cve_context: str, model: str = "llama3.2") -> str:
+def _generate_cve_sec2(vendor_signifikan: List[dict], cve_context: str, model: str = None) -> str:
     user_prompt = f"Konteks Kerentanan CVE Aktual:\n{cve_context[:1000]}\n\nInstruksi: Analisis tipe vektor eksploitasi dominan dalam butir poin."
-    hasil = _call_ollama_text(ConfigLoader.get_prompt("cve_sec2_vektor"), user_prompt, model, num_predict=ConfigLoader.get_config().get("cti_analysis", {}).get("llm", {}).get("num_predict", {}).get("section_makro", 350))
+    hasil = _call_llm_text(SettingsManager.get_prompt("cve_sec2_vektor"), user_prompt, model, num_predict=ConfigLoader.get_config().get("cti_analysis", {}).get("llm", {}).get("num_predict", {}).get("section_makro", 350))
     if not hasil or len(hasil) < 40 or "- " not in hasil:
         return (
             "- **Remote Code Execution (RCE)**: Mayoritas kerentanan kritis memungkinkan eksekusi perintah arbitrer dari jarak jauh tanpa autentikasi awal.\n"
@@ -233,14 +223,14 @@ def _generate_cve_sec2(vendor_signifikan: List[dict], cve_context: str, model: s
     hasil_bersih = re.sub(r'^#+.*\n+', '', hasil).strip()
     return hasil_bersih
 
-def _generate_cve_sec3(vendor_signifikan: List[dict], cve_context: str, model: str = "llama3.2") -> str:
-    user_prompt = f"Konteks Kerentanan CVE Aktual:\n{cve_context[:1000]}\n\nInstruksi: Ulas implikasi terhadap persandian, kriptografi, integritas token, dan server instansi dalam butir poin."
-    hasil = _call_ollama_text(ConfigLoader.get_prompt("cve_sec3_kripto"), user_prompt, model, num_predict=ConfigLoader.get_config().get("cti_analysis", {}).get("llm", {}).get("num_predict", {}).get("section_makro", 350))
+def _generate_cve_sec3(vendor_signifikan: List[dict], cve_context: str, model: str = None) -> str:
+    user_prompt = f"Konteks Kerentanan CVE Aktual:\n{cve_context[:1000]}\n\nInstruksi: Ulas eksploitabilitas, kemudahan weaponization, dan ketersediaan PoC publik dalam butir poin."
+    hasil = _call_llm_text(SettingsManager.get_prompt("cve_sec3_kripto"), user_prompt, model, num_predict=ConfigLoader.get_config().get("cti_analysis", {}).get("llm", {}).get("num_predict", {}).get("section_makro", 350))
     if not hasil or len(hasil) < 40 or "- " not in hasil:
         return (
-            "- **Integritas Token Sesi & Kredensial**: Risiko kompromi pada mekanisme otentikasi dapat memicu pembajakan session cookie dan token akses administratif.\n"
-            "- **Paparan Kriptografi & Komunikasi**: Celah pada protokol jaringan dapat memicu serangan Man-in-the-Middle (MitM) pada kanal data sensitif.\n"
-            "- **Ketahanan Basis Data & File System**: Kompromi pada layer aplikasi membuka akses langsung terhadap integritas data penting pemerintah."
+            "- **Ketersediaan Bukti Konsep (PoC)**: Deteksi skrip PoC publik meningkatkan risiko eksploitasi cepat oleh pelaku kejahatan siber.\n"
+            "- **Kompleksitas Eksploitasi**: Celah pada gateway perimeter memungkinkan penetrasi otomatis tanpa memerlukan interaksi pengguna.\n"
+            "- **Potensi Weaponization**: Tingginya nilai celah berisiko memicu integrasi ke dalam toolkit penyerangan komersial."
         )
     hasil_bersih = re.sub(r'^#+.*\n+', '', hasil).strip()
     return hasil_bersih
@@ -248,7 +238,7 @@ def _generate_cve_sec3(vendor_signifikan: List[dict], cve_context: str, model: s
 def jalankan_pipeline_cve_modular(
     statistik_cve: dict,
     df_riwayat: Optional[Any] = None,
-    model: str = "llama3.2",
+    model: str = None,
     mode: str = "modular_llm"
 ) -> str:
     """
@@ -279,7 +269,7 @@ def jalankan_pipeline_cve_modular(
     logger.info("[CVE Modul 2/4] Menghasilkan Bagian 2: Analisis Vektor Eksploitasi...")
     sec2 = _generate_cve_sec2(vendor_signifikan, cve_context, model=model)
 
-    logger.info("[CVE Modul 3/4] Menghasilkan Bagian 3: Implikasi Kriptografi & Integritas...")
+    logger.info("[CVE Modul 3/4] Menghasilkan Bagian 3: Eksploitabilitas & Weaponization (PoC)...")
     sec3 = _generate_cve_sec3(vendor_signifikan, cve_context, model=model)
 
     logger.info("[CVE Modul 4/4] Menginjeksi Bagian 4: Panduan Patching & Mitigasi Ensiklopedia...")
@@ -288,7 +278,7 @@ def jalankan_pipeline_cve_modular(
     return (
         f"### 1. VENDOR & PRODUK PRIORITAS\n{sec1}\n\n"
         f"### 2. ANALISIS VEKTOR EKSPLOITASI\n{sec2}\n\n"
-        f"### 3. IMPLIKASI KRIPTOGRAFI & INTEGRITAS SISTEM\n{sec3}\n\n"
+        f"### 3. EKSPLOITABILITAS & WEAPONIZATION (POC)\n{sec3}\n\n"
         f"### 4. PANDUAN PATCHING & MITIGASI\n{sec4}"
     )
 def _deteksi_sektor_spesifik(teks: str) -> str:
@@ -341,3 +331,6 @@ def _buat_fallback_sitrep_deterministik(data_makro: dict, top3_mikro: list, anca
     else:
         laporan.append('- Tidak ada sinyal ancaman baru yang terdeteksi minggu ini.')
     return '\n'.join(laporan)
+
+
+
