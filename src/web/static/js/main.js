@@ -1,7 +1,7 @@
 import { bukaModal, tutupModal, tutupModalJikaLuar, salinTeksModal } from './modal.js';
-import { tampilkanBeranda, mulaiPipeline, batalkanPipeline } from './beranda.js';
+import { tampilkanBeranda, mulaiPipeline, batalkanPipeline, filterBerandaCards } from './beranda.js';
 import { muatTabArsip, muatUlangTabArsip, filterArsipCards } from './arsip.js';
-import { muatTabStatistikPublik } from './statistik-publik.js?v=8.5';
+import { muatTabStatistikPublik } from './statistik-publik.js?v=8.7';
 
 // Expose handlers ke window untuk Alpine.js & atribut onclick
 window.bukaModal = bukaModal;
@@ -13,6 +13,7 @@ window.batalkanPipeline = batalkanPipeline;
 window.muatTabArsip = muatTabArsip;
 window.muatTabStatistikPublik = muatTabStatistikPublik;
 window.tampilkanBeranda = tampilkanBeranda;
+window.filterBerandaCards = filterBerandaCards;
 
 // Invalidate cache saat pipeline selesai jalan
 window.addEventListener('pipeline-selesai', () => {
@@ -25,16 +26,36 @@ function inisialisasiPencarianDanShortcut() {
         const isInputFocused = document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
 
         if (e.key === '/' && !isInputFocused) {
+            const berandaSearch = document.getElementById('beranda-search-input');
             const arsipSearch = document.getElementById('arsip-search-input');
+
+            // Cek tab mana yang sedang aktif dan terlihat
+            if (berandaSearch && berandaSearch.offsetParent !== null) {
+                e.preventDefault();
+                berandaSearch.focus();
+                berandaSearch.select();
+                return;
+            }
             if (arsipSearch && arsipSearch.offsetParent !== null) {
                 e.preventDefault();
                 arsipSearch.focus();
                 arsipSearch.select();
+                return;
             }
-            return;
         }
 
         if (e.key === 'Escape' && isInputFocused) {
+            const berandaSearch = document.getElementById('beranda-search-input');
+            if (berandaSearch && document.activeElement === berandaSearch) {
+                if (window.resetFilterBeranda) {
+                    window.resetFilterBeranda();
+                } else {
+                    berandaSearch.value = '';
+                }
+                berandaSearch.blur();
+                return;
+            }
+
             const arsipSearch = document.getElementById('arsip-search-input');
             if (arsipSearch && document.activeElement === arsipSearch) {
                 arsipSearch.value = '';
@@ -42,8 +63,8 @@ function inisialisasiPencarianDanShortcut() {
                 if (arsipClear) arsipClear.style.display = 'none';
                 filterArsipCards('');
                 arsipSearch.blur();
+                return;
             }
-            return;
         }
 
         // Tab Switching via Angka 1, 2 (hanya saat tidak mengetik di form)

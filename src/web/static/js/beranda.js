@@ -57,11 +57,11 @@ export async function tampilkanBeranda() {
         if (resultsDesc) resultsDesc.textContent = 'Gagal memuat data intelijen';
         if (emptyState) emptyState.style.display = 'none';
         cardContainer.innerHTML = `
-            <div class="text-center py-12 bg-red-50 rounded-lg border border-red-200/80 p-6 shadow-xs my-4">
+            <div class="text-center py-12 bg-red-50/70 rounded-xl border border-red-200 p-6 shadow-card my-4">
                 <span class="material-symbols-outlined text-3xl text-red-600 mb-2" aria-hidden="true">cloud_off</span>
                 <h3 class="text-base font-bold text-[#001D39] mb-1">Gagal Menghubungi Server CTI</h3>
                 <p class="text-xs text-[#49769F] mb-4 max-w-md mx-auto">Tidak dapat memuat ringkasan insiden terbaru (${escapeHtml(data.message || 'Koneksi terputus')}). Pastikan server backend aktif.</p>
-                <button onclick="window.tampilkanBeranda()" class="px-4 py-2 bg-white hover:bg-[#EEF5FA] text-[#0A4174] hover:text-[#001D39] font-bold text-xs rounded-md shadow-2xs transition-all duration-200 cursor-pointer inline-flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
+                <button onclick="window.tampilkanBeranda()" class="px-4 py-2 bg-white hover:bg-[#EEF5FA] text-[#0A4174] hover:text-[#001D39] font-bold text-xs rounded-xl border border-[#BDD8E9] shadow-2xs transition-all duration-200 cursor-pointer inline-flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
                     <span class="material-symbols-outlined text-base text-[#49769F]" aria-hidden="true">refresh</span> Coba Muat Ulang
                 </button>
             </div>`;
@@ -110,27 +110,42 @@ export async function tampilkanBeranda() {
     if (emptyState) emptyState.style.display = 'none';
     let html = '';
     html += buatSection('Insiden Spesifik', insiden.map(buatCardBerita).join(''), insiden.length,
-        { ikon: 'local_fire_department', kelas: 'bg-[#b91c1c] text-white' });
+        { ikon: 'local_fire_department', kelas: 'bg-[#b91c1c] text-white', kategori: 'insiden_spesifik' });
     html += buatSection('Edukasi / Evergreen', analisis.map(buatCardBerita).join(''), analisis.length,
-        { ikon: 'school', kelas: 'bg-[#0A4174] text-white' });
+        { ikon: 'school', kelas: 'bg-[#0A4174] text-white', kategori: 'edukasi' });
     html += buatSection('CVE Critical', cve.map(buatCardCve).join(''), cve.length,
-        { ikon: 'bug_report', kelas: 'bg-[#b45309] text-white' });
+        { ikon: 'bug_report', kelas: 'bg-[#b45309] text-white', kategori: 'cve' });
     cardContainer.innerHTML = html;
+
+    inisialisasiFilterBerandaToolbar();
 }
 
-export function filterBerandaCards(query) {
+let kategoriFilterAktif = 'semua';
+let queryFilterAktif = '';
+
+export function filterBerandaCards(query = null, kategori = null) {
+    if (query !== null) queryFilterAktif = (query || '').trim().toLowerCase();
+    if (kategori !== null) kategoriFilterAktif = kategori;
+
     const cardContainer = getEl('card-container');
     if (!cardContainer) return;
-    const q = (query || '').trim().toLowerCase();
     const sections = cardContainer.querySelectorAll('.section-wrapper');
     let totalVisible = 0;
 
     sections.forEach(sec => {
+        const secKat = sec.getAttribute('data-kategori') || '';
+        const isKatMatch = (kategoriFilterAktif === 'semua' || secKat === kategoriFilterAktif);
+
+        if (!isKatMatch) {
+            sec.style.display = 'none';
+            return;
+        }
+
         const cards = sec.querySelectorAll('article[data-search-text]');
         let countInSec = 0;
         cards.forEach(card => {
             const text = card.getAttribute('data-search-text') || '';
-            if (!q || text.includes(q)) {
+            if (!queryFilterAktif || text.includes(queryFilterAktif)) {
                 card.style.display = 'flex';
                 countInSec++;
                 totalVisible++;
@@ -143,26 +158,103 @@ export function filterBerandaCards(query) {
         sec.style.display = countInSec > 0 ? 'block' : 'none';
     });
 
+    // Update Counter Badge
+    const counterBadge = getEl('beranda-counter-badge');
+    if (counterBadge) {
+        counterBadge.textContent = `${totalVisible} Ditampilkan`;
+    }
+
+    // Toggle clear search button
+    const clearBtn = getEl('beranda-search-clear');
+    if (clearBtn) {
+        clearBtn.style.display = queryFilterAktif ? 'flex' : 'none';
+    }
+
     let searchEmptyNotice = document.getElementById('search-empty-notice');
-    if (totalVisible === 0 && q) {
+    if (totalVisible === 0) {
         if (!searchEmptyNotice) {
             searchEmptyNotice = document.createElement('div');
             searchEmptyNotice.id = 'search-empty-notice';
-            searchEmptyNotice.className = 'text-center py-12 bg-white rounded-lg border border-[#E2EDF8] p-6 shadow-xs';
-            searchEmptyNotice.innerHTML = `
-                <span class="material-symbols-outlined text-3xl text-[#49769F] mb-2" aria-hidden="true">search_off</span>
-                <h4 class="text-base font-bold text-[#001D39] mb-1">Tidak ada hasil pencarian</h4>
-                <p class="text-xs text-[#49769F]">Tidak ada artikel atau CVE yang cocok dengan kata kunci "<strong>${escapeHtml(q)}</strong>".</p>
-            `;
+            searchEmptyNotice.className = 'text-center py-12 bg-white rounded-xl border border-[#E2EDF8] p-6 shadow-card';
             cardContainer.appendChild(searchEmptyNotice);
-        } else {
-            searchEmptyNotice.style.display = 'block';
-            searchEmptyNotice.querySelector('strong').textContent = q;
         }
+        searchEmptyNotice.style.display = 'block';
+        searchEmptyNotice.innerHTML = `
+            <span class="material-symbols-outlined text-3xl text-[#49769F] mb-2" aria-hidden="true">search_off</span>
+            <h4 class="text-base font-bold text-[#001D39] mb-1">Tidak Ada Hasil Saringan</h4>
+            <p class="text-xs text-[#49769F] max-w-sm mx-auto mb-3">Tidak ditemukan artikel atau CVE yang cocok dengan kata kunci atau kategori aktif.</p>
+            <button type="button" onclick="window.resetFilterBeranda && window.resetFilterBeranda()" class="px-4 py-2 bg-[#EEF5FA] hover:bg-[#BDD8E9] text-[#0A4174] font-bold text-xs rounded-xl border border-[#BDD8E9] transition-all cursor-pointer inline-flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174]">
+                <span class="material-symbols-outlined text-sm" aria-hidden="true">refresh</span>
+                <span>Reset Saringan</span>
+            </button>
+        `;
     } else if (searchEmptyNotice) {
         searchEmptyNotice.style.display = 'none';
     }
 }
+
+function inisialisasiFilterBerandaToolbar() {
+    const searchInput = getEl('beranda-search-input');
+    const searchClear = getEl('beranda-search-clear');
+    const pillsContainer = getEl('beranda-kategori-pills');
+
+    if (searchInput && !searchInput.dataset.initialized) {
+        searchInput.dataset.initialized = '1';
+        searchInput.addEventListener('input', (e) => {
+            filterBerandaCards(e.target.value, null);
+        });
+    }
+
+    if (searchClear && !searchClear.dataset.initialized) {
+        searchClear.dataset.initialized = '1';
+        searchClear.addEventListener('click', () => {
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.focus();
+            }
+            filterBerandaCards('', null);
+        });
+    }
+
+    if (pillsContainer && !pillsContainer.dataset.initialized) {
+        pillsContainer.dataset.initialized = '1';
+        pillsContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('.beranda-pill-filter');
+            if (!btn) return;
+            const kat = btn.getAttribute('data-kategori');
+            
+            pillsContainer.querySelectorAll('.beranda-pill-filter').forEach(p => {
+                p.className = 'beranda-pill-filter px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap bg-[#EEF4F8] text-[#49769F] hover:text-[#001D39] hover:bg-[#E2EDF8]';
+            });
+            btn.className = 'beranda-pill-filter px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap bg-[#0A4174] text-white shadow-2xs';
+
+            filterBerandaCards(null, kat);
+        });
+    }
+}
+
+window.resetFilterBeranda = function() {
+    queryFilterAktif = '';
+    kategoriFilterAktif = 'semua';
+    const input = getEl('beranda-search-input');
+    if (input) input.value = '';
+    const clearBtn = getEl('beranda-search-clear');
+    if (clearBtn) clearBtn.style.display = 'none';
+
+    const pills = document.querySelectorAll('#beranda-kategori-pills .beranda-pill-filter');
+    pills.forEach(p => {
+        if (p.getAttribute('data-kategori') === 'semua') {
+            p.className = 'beranda-pill-filter px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap bg-[#0A4174] text-white shadow-2xs';
+        } else {
+            p.className = 'beranda-pill-filter px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap bg-[#EEF4F8] text-[#49769F] hover:text-[#001D39] hover:bg-[#E2EDF8]';
+        }
+    });
+
+    filterBerandaCards('', 'semua');
+    if (window.resetFilterWordCloud) {
+        window.resetFilterWordCloud();
+    }
+};
 
 export async function mulaiPipeline() {
     const konfirmasi = window.confirm(

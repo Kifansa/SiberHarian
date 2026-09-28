@@ -68,15 +68,15 @@ function renderCardUntukTanggalTerpilih() {
     
     if (tampilInsiden && semuaInsiden.length > 0) {
         html += buatSection('Insiden Spesifik', semuaInsiden.map(buatCardBerita).join(''), semuaInsiden.length,
-            { ikon: 'local_fire_department', kelas: 'bg-[#b91c1c] text-white' });
+            { ikon: 'local_fire_department', kelas: 'bg-[#b91c1c] text-white', kategori: 'insiden_spesifik' });
     }
     if (tampilEdukasi && semuaAnalisis.length > 0) {
         html += buatSection('Edukasi / Evergreen', semuaAnalisis.map(buatCardBerita).join(''), semuaAnalisis.length,
-            { ikon: 'school', kelas: 'bg-[#0A4174] text-white' });
+            { ikon: 'school', kelas: 'bg-[#0A4174] text-white', kategori: 'edukasi' });
     }
     if (tampilCve && semuaCve.length > 0) {
         html += buatSection('CVE Critical', semuaCve.map(buatCardCve).join(''), semuaCve.length,
-            { ikon: 'bug_report', kelas: 'bg-[#b45309] text-white' });
+            { ikon: 'bug_report', kelas: 'bg-[#b45309] text-white', kategori: 'cve' });
     }
     
     if (!html) {
@@ -118,7 +118,7 @@ export function filterArsipCards(query) {
         if (!searchEmptyNotice) {
             searchEmptyNotice = document.createElement('div');
             searchEmptyNotice.id = 'arsip-search-empty-notice';
-            searchEmptyNotice.className = 'text-center py-12 bg-white rounded-lg border border-[#E2EDF8] p-6 shadow-xs mt-6';
+            searchEmptyNotice.className = 'text-center py-12 bg-white rounded-xl border border-[#E2EDF8] p-6 shadow-card mt-6';
             searchEmptyNotice.innerHTML = `
                 <span class="material-symbols-outlined text-3xl text-[#49769F] mb-2" aria-hidden="true">search_off</span>
                 <h4 class="text-base font-bold text-[#001D39] mb-1">Tidak ada hasil pencarian arsip</h4>
@@ -134,9 +134,51 @@ export function filterArsipCards(query) {
     }
 }
 
+function inisialisasiQuickDatePills() {
+    const pillsContainer = document.getElementById('arsip-quick-date-pills');
+    if (!pillsContainer || pillsContainer.dataset.initialized) return;
+    pillsContainer.dataset.initialized = '1';
+
+    pillsContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.arsip-pill-date');
+        if (!btn) return;
+
+        let targetVal = btn.getAttribute('data-val');
+        const offset = btn.getAttribute('data-offset');
+
+        if (offset !== null) {
+            const idx = parseInt(offset, 10);
+            if (daftarHari[idx]) {
+                targetVal = daftarHari[idx].tanggal;
+            } else {
+                targetVal = 'semua';
+            }
+        }
+
+        if (!targetVal) targetVal = 'semua';
+
+        pillsContainer.querySelectorAll('.arsip-pill-date').forEach(p => {
+            p.className = 'arsip-pill-date px-3 py-1.5 rounded-lg text-xs font-bold bg-[#EEF4F8] text-[#49769F] hover:text-[#001D39] hover:bg-[#E2EDF8] transition-all cursor-pointer whitespace-nowrap active:scale-95';
+        });
+        btn.className = 'arsip-pill-date px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0A4174] text-white shadow-2xs transition-all cursor-pointer whitespace-nowrap active:scale-95';
+
+        if (tanggalSelect) {
+            tanggalSelect.value = targetVal;
+        }
+        tanggalTerpilih = targetVal;
+        renderCardUntukTanggalTerpilih();
+    });
+}
+
 if (tanggalSelect) {
     tanggalSelect.addEventListener('change', (e) => {
         tanggalTerpilih = e.target.value;
+        const pillsContainer = document.getElementById('arsip-quick-date-pills');
+        if (pillsContainer) {
+            pillsContainer.querySelectorAll('.arsip-pill-date').forEach(p => {
+                p.className = 'arsip-pill-date px-3 py-1.5 rounded-lg text-xs font-bold bg-[#EEF4F8] text-[#49769F] hover:text-[#001D39] hover:bg-[#E2EDF8] transition-all cursor-pointer whitespace-nowrap active:scale-95';
+            });
+        }
         renderCardUntukTanggalTerpilih();
     });
 }
@@ -203,6 +245,7 @@ export async function muatTabArsip() {
     tanggalTerpilih = 'semua';
     renderDropdownTanggal();
     renderCardUntukTanggalTerpilih();
+    inisialisasiQuickDatePills();
 }
 
 export function muatUlangTabArsip() {

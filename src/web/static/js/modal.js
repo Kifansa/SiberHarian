@@ -119,7 +119,7 @@ export function bukaModal(itemOrIdx, paramTeksLengkap, paramPillLabel, paramSumb
         elModalBox.classList.add('scale-100', 'opacity-100', 'translate-y-0');
 
         // Fokuskan tombol tutup untuk aksesibilitas keyboard
-        const closeBtn = elModalBox.querySelector('button[title]');
+        const closeBtn = elModalBox.querySelector('button[aria-label="Tutup dialog"]') || elModalBox.querySelector('button');
         if (closeBtn) closeBtn.focus();
       });
     });
@@ -180,10 +180,10 @@ export async function salinTeksModal(item) {
     }
 
     if (btnCopy) {
-      btnCopy.innerHTML = '<span class="material-symbols-outlined text-[16px] text-emerald-600" aria-hidden="true">check</span><span class="text-emerald-700 font-bold">Tersalin ke Clipboard!</span>';
+      btnCopy.innerHTML = '<span class="material-symbols-outlined text-base text-emerald-600" aria-hidden="true">check</span><span class="text-emerald-700 font-bold">Tersalin ke Clipboard!</span>';
       setTimeout(() => {
         if (btnCopy) {
-          btnCopy.innerHTML = '<span class="material-symbols-outlined text-[16px]" aria-hidden="true">content_copy</span><span>Salin Rangkuman</span>';
+          btnCopy.innerHTML = '<span class="material-symbols-outlined text-base" aria-hidden="true">content_copy</span><span>Salin Rangkuman</span>';
         }
       }, 2000);
     }

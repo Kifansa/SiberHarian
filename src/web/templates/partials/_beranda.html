@@ -1,16 +1,49 @@
-<div class="py-6 space-y-6">
-  <div class="flex justify-between items-center border-b border-[#BDD8E9]/80 pb-4">
-    <div>
-      <h2 class="text-xl sm:text-2xl font-black text-[#001D39] tracking-tight">Keamanan Siber Terbaru</h2>
-      <p class="text-xs sm:text-sm text-[#49769F] mt-1" id="results-desc">Memuat data intelijen...</p>
+<div id="feed-beranda-anchor" class="-mt-20 pt-20"></div>
+<div class="py-4 space-y-6">
+  <!-- Feed Header -->
+  <div class="border-b border-[#BDD8E9]/80 pb-4">
+    <h2 class="text-xl sm:text-2xl font-black text-[#001D39] tracking-tight">Keamanan Siber Terbaru</h2>
+    <p class="text-xs sm:text-sm text-[#49769F] mt-0.5" id="results-desc">Memuat data intelijen...</p>
+  </div>
+
+  <!-- Quick Filter Toolbar Feed Beranda -->
+  <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-[#BDD8E9]/80 shadow-card flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+    <!-- Quick Search Input -->
+    <div class="relative flex-1 max-w-lg">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#49769F] text-lg pointer-events-none" aria-hidden="true">search</span>
+      <input id="beranda-search-input"
+        class="pl-9 pr-14 py-2 rounded-lg bg-[#EEF4F8]/70 hover:bg-[#EEF4F8] focus:bg-white border border-[#BDD8E9] focus:border-[#0A4174] focus:ring-2 focus:ring-[#0A4174]/20 outline-none text-xs w-full transition-all duration-200 placeholder:text-[#49769F] text-[#001D39] font-medium shadow-2xs"
+        placeholder="Saring berita atau kode CVE hari ini..." type="text" aria-label="Saring feed harian" />
+      <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+        <kbd class="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] font-mono bg-white border border-[#BDD8E9] text-[#49769F] shadow-2xs select-none" title="Tekan / untuk mencari">/</kbd>
+        <button id="beranda-search-clear" style="display:none;" class="w-5 h-5 rounded-md bg-[#BDD8E9] hover:bg-[#A8CEE5] flex items-center justify-center text-[#001D39] text-xs cursor-pointer focus-visible:outline-none" title="Bersihkan saringan" aria-label="Bersihkan saringan">
+          <span class="material-symbols-outlined text-xs" aria-hidden="true">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Category Filter Pills -->
+    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0" id="beranda-kategori-pills" role="radiogroup" aria-label="Filter kategori">
+      <button type="button" data-kategori="semua" class="beranda-pill-filter px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap bg-[#0A4174] text-white shadow-2xs active:scale-95">
+        Semua
+      </button>
+      <button type="button" data-kategori="insiden_spesifik" class="beranda-pill-filter px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap bg-[#EEF4F8] text-[#49769F] hover:text-[#001D39] hover:bg-[#E2EDF8] active:scale-95">
+        Insiden Spesifik
+      </button>
+      <button type="button" data-kategori="edukasi" class="beranda-pill-filter px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap bg-[#EEF4F8] text-[#49769F] hover:text-[#001D39] hover:bg-[#E2EDF8] active:scale-95">
+        Edukasi &amp; Analisis
+      </button>
+      <button type="button" data-kategori="cve" class="beranda-pill-filter px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap bg-[#EEF4F8] text-[#49769F] hover:text-[#001D39] hover:bg-[#E2EDF8] active:scale-95">
+        CVE Kritis
+      </button>
     </div>
   </div>
 
-  <div class="text-center py-16 bg-white rounded-lg border border-[#E2EDF8] shadow-xs" id="empty-state">
-    <div class="text-[#49769F]">
-      <span class="material-symbols-outlined text-3xl" aria-hidden="true">policy</span>
+  <div class="text-center py-16 bg-white rounded-xl border border-[#E2EDF8] shadow-card" id="empty-state">
+    <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-[#EEF5FA] border border-[#BDD8E9] flex items-center justify-center text-[#49769F]">
+      <span class="material-symbols-outlined text-2xl" aria-hidden="true">policy</span>
     </div>
-    <h3 class="text-base font-bold text-[#001D39] mb-1">Belum ada data intelijen</h3>
+    <h3 class="text-base font-bold text-[#001D39] mb-1">Belum Ada Data Intelijen</h3>
     <p class="text-[#49769F] text-xs max-w-xs mx-auto">Hasil ringkasan berita dan CVE akan ditampilkan di sini setelah pipeline dijalankan.</p>
   </div>
 

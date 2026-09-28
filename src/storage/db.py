@@ -448,14 +448,26 @@ def ambil_statistik_publik(db_path: Path = DEFAULT_DB_PATH) -> dict:
         sorted_kws = sorted(counter_kws.items(), key=lambda x: x[1], reverse=True)[:32]
         word_cloud = [{"kata": item[0], "bobot": item[1]} for item in sorted_kws]
 
-        # 5. Daftar Intisari Artikel Edukasi Asli (Fakta Nyata dari Database)
+        # 5. Daftar Intisari Artikel Edukasi Asli (Jendela 7 Hari Terkini)
         rows_edukasi = cur.execute("""
             SELECT judul, sumber, ringkasan_atau_narasi, link, tanggal_publish
             FROM riwayat_tren 
-            WHERE kategori_relevansi = 'analisis_relevan' AND ringkasan_atau_narasi != ''
+            WHERE kategori_relevansi = 'analisis_relevan' 
+              AND ringkasan_atau_narasi != ''
+              AND substr(tanggal_publish, 1, 10) >= (
+                  SELECT date(max(substr(tanggal_publish, 1, 10)), '-7 days') 
+                  FROM riwayat_tren
+              )
             ORDER BY tanggal_publish DESC
-            LIMIT 6
         """).fetchall()
+        if not rows_edukasi:
+            rows_edukasi = cur.execute("""
+                SELECT judul, sumber, ringkasan_atau_narasi, link, tanggal_publish
+                FROM riwayat_tren 
+                WHERE kategori_relevansi = 'analisis_relevan' AND ringkasan_atau_narasi != ''
+                ORDER BY tanggal_publish DESC
+                LIMIT 20
+            """).fetchall()
 
         edukasi_list = [
             {

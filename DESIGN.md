@@ -32,37 +32,37 @@ colors:
   shadow-light: "rgba(0, 29, 57, 0.02)"
 typography:
   display:
-    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
     fontSize: "clamp(1.875rem, 4vw, 2.75rem)"
     fontWeight: 800
     lineHeight: 1.15
     letterSpacing: "-0.025em"
   headline:
-    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
     fontSize: "1.5rem"
     fontWeight: 700
     lineHeight: 1.3
     letterSpacing: "-0.02em"
   title:
-    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
     fontSize: "1.125rem"
     fontWeight: 700
     lineHeight: 1.4
     letterSpacing: "-0.01em"
   body:
-    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
     fontSize: "15px"
     fontWeight: 400
     lineHeight: 1.6
     letterSpacing: "normal"
   label:
-    fontFamily: "Inter, sans-serif"
+    fontFamily: "'Plus Jakarta Sans', sans-serif"
     fontSize: "0.75rem"
     fontWeight: 600
     lineHeight: 1.4
     letterSpacing: "0.01em"
   caption:
-    fontFamily: "Inter, sans-serif"
+    fontFamily: "'Plus Jakarta Sans', sans-serif"
     fontSize: "0.6875rem"
     fontWeight: 600
     lineHeight: 1.4

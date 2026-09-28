@@ -25,7 +25,7 @@ export async function muatTabStatistikPublik() {
 
     if (data.status !== "ok") throw new Error("Gagal mengambil data statistik publik");
 
-    // 1. Update Insightful KPI Cards (Fakta Murni)
+    // 1. Update Insightful KPI Cards (Fakta Murni dengan Deskripsi)
     if (data.kpi_insights && Array.isArray(data.kpi_insights)) {
       data.kpi_insights.forEach((kpi, idx) => {
         const elVal = document.getElementById(`pub-kpi-${idx + 1}-val`);
@@ -74,47 +74,45 @@ const PALET_WORDCLOUD_ORGANIK = [
 ];
 
 /**
- * Susun kata kunci ke dalam struktur awan organik (Archimedean clustering):
- * Menempatkan kata raksasa di zona tengah berdampingan dengan kata sedang/kecil,
- * serta kata-kata sedang dan kecil membingkai bagian atas dan bawah awan.
+ * Susun kata kunci ke dalam struktur awan konsentris:
+ * Mengumpulkan seluruh kata terbesar (inti topik) rapat di tengah canvas,
+ * sementara kata-kata pendukung berbobot sedang/kecil mengitari di sisi luar.
  */
 function susunAwanOrganik(wordList) {
   if (!wordList || wordList.length <= 4) return wordList;
 
+  // Urutkan dari bobot terbesar ke terkecil
   const sorted = [...wordList].sort((a, b) => b.bobot - a.bobot);
 
-  const giant = sorted.slice(0, 5);      // Top 5 kata terbesar (centerpiece)
-  const large = sorted.slice(5, 12);     // Kata-kata besar penyeimbang
-  const medium = sorted.slice(12, 21);   // Kata-kata menengah
-  const small = sorted.slice(21);        // Kata-kata kecil pengisi rongga
+  // Ambil kata-kata inti terbesar (Top 6-8 kata terbesar)
+  const giantCount = Math.min(8, Math.max(4, Math.floor(sorted.length * 0.28)));
+  const giants = sorted.slice(0, giantCount);
+  const remaining = sorted.slice(giantCount);
 
-  const topCluster = [];
-  const centerCluster = [];
-  const bottomCluster = [];
+  // Kata terbesar (giants) dikelompokkan rapat bersama-sama di tengah:
+  // Susun giants secara berselang-seling dari pusat (spiral concentric core)
+  const centerCore = [];
+  giants.forEach((item, idx) => {
+    if (idx % 2 === 0) {
+      centerCore.push(item);
+    } else {
+      centerCore.unshift(item);
+    }
+  });
 
-  // Frame atas awan
-  while (topCluster.length < 7 && (small.length > 0 || medium.length > 0)) {
-    if (small.length > 0) topCluster.push(small.pop());
-    if (medium.length > 0) topCluster.push(medium.shift());
-  }
+  // Kata-kata sisanya (medium & kecil) dibagi rata ke sisi luar (kiri/atas dan kanan/bawah)
+  const outerLeft = [];
+  const outerRight = [];
+  remaining.forEach((item, idx) => {
+    if (idx % 2 === 0) {
+      outerLeft.push(item);
+    } else {
+      outerRight.push(item);
+    }
+  });
 
-  // Jantung awan (kata raksasa bersanding dengan kata sedang & kecil)
-  while (giant.length > 0) {
-    if (large.length > 0) centerCluster.push(large.shift());
-    centerCluster.push(giant.shift());
-    if (small.length > 0) centerCluster.push(small.shift());
-    if (giant.length > 0) centerCluster.push(giant.shift());
-    if (large.length > 0) centerCluster.push(large.shift());
-  }
-
-  // Frame bawah awan
-  while (large.length > 0 || medium.length > 0 || small.length > 0) {
-    if (medium.length > 0) bottomCluster.push(medium.shift());
-    if (large.length > 0) bottomCluster.push(large.shift());
-    if (small.length > 0) bottomCluster.push(small.pop());
-  }
-
-  return [...topCluster, ...centerCluster, ...bottomCluster].filter(Boolean);
+  // Gabungkan: Outer kiri -> INTI KATA TERBESAR DI TENGAH -> Outer kanan
+  return [...outerLeft, ...centerCore, ...outerRight];
 }
 
 /**
@@ -169,9 +167,9 @@ function renderWordCloud(wordList) {
           data-kata-raw="${safeKata}"
           onclick="window.pilihWordCloud(this.getAttribute('data-kata-raw'))"
           data-kata="${safeKata.toLowerCase()}"
-          style="font-size: clamp(${Math.round(fontSize * 0.72)}px, ${fontSize * 0.08}vw + 12px, ${fontSize}px); color: ${color}; font-weight: ${fontWeight}; letter-spacing: ${letterSpacing}; ${isAktif ? 'text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 3px; transform: scale(1.2); opacity: 1;' : ''}"
-          class="wordcloud-item inline-block font-sans cursor-pointer transition-all duration-200 hover:scale-115 p-1 leading-none whitespace-nowrap select-none focus-visible:outline-none"
-          title="Kasus: ${safeKata}">
+          style="font-size: clamp(${Math.round(fontSize * 0.72)}px, ${fontSize * 0.08}vw + 12px, ${fontSize}px); color: ${color}; font-weight: ${fontWeight}; letter-spacing: ${letterSpacing}; ${isAktif ? 'background-color: #EEF5FA; outline: 2px solid #0A4174; border-radius: 8px; padding: 2px 8px; transform: scale(1.15); opacity: 1;' : ''}"
+          class="wordcloud-item inline-block font-sans cursor-pointer transition-all duration-200 hover:scale-110 hover:bg-[#EEF5FA]/80 px-2 py-1 leading-none whitespace-nowrap select-none focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none rounded-lg"
+          title="Saring kasus: ${safeKata}">
           ${safeKata}
         </button>
       `;
@@ -190,16 +188,19 @@ function sorotKataAktif(kata) {
     const itemKata = item.getAttribute("data-kata") || "";
     if (itemKata.toLowerCase() === kata.toLowerCase()) {
       item.style.opacity = "1";
-      item.style.transform = "scale(1.2)";
-      item.style.textDecoration = "underline";
-      item.style.textUnderlineOffset = "6px";
-      item.style.textDecorationThickness = "3px";
-      item.classList.add("z-10");
+      item.style.transform = "scale(1.15)";
+      item.style.backgroundColor = "#EEF5FA";
+      item.style.outline = "2px solid #0A4174";
+      item.style.borderRadius = "8px";
+      item.style.padding = "2px 8px";
+      item.classList.add("z-10", "shadow-xs");
     } else {
-      item.style.opacity = "0.32";
-      item.style.transform = "scale(0.95)";
-      item.style.textDecoration = "none";
-      item.classList.remove("z-10");
+      item.style.opacity = "0.35";
+      item.style.transform = "scale(0.96)";
+      item.style.backgroundColor = "transparent";
+      item.style.outline = "none";
+      item.style.padding = "2px 4px";
+      item.classList.remove("z-10", "shadow-xs");
     }
   });
 }
@@ -224,6 +225,12 @@ window.pilihWordCloud = function (kata) {
     labelActive.classList.remove("hidden");
   }
 
+  // Sinkronkan ke input search feed beranda
+  const berandaInput = document.getElementById("beranda-search-input");
+  if (berandaInput) {
+    berandaInput.value = kata;
+  }
+
   // Update visual item awan kata
   sorotKataAktif(kataLower);
 
@@ -233,9 +240,9 @@ window.pilihWordCloud = function (kata) {
   }
 
   // Scroll halus ke area kartu berita
-  const feedContainer = document.getElementById("card-container");
-  if (feedContainer) {
-    feedContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+  const feedAnchor = document.getElementById("feed-beranda-anchor") || document.getElementById("card-container");
+  if (feedAnchor) {
+    feedAnchor.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 };
 
@@ -247,13 +254,20 @@ window.resetFilterWordCloud = function () {
   const labelActive = document.getElementById("pub-wordcloud-active-label");
   if (labelActive) labelActive.classList.add("hidden");
 
+  const berandaInput = document.getElementById("beranda-search-input");
+  if (berandaInput && berandaInput.value) {
+    berandaInput.value = "";
+  }
+
   // Pulihkan seluruh kata ke kondisi normal
   const items = document.querySelectorAll("#pub-wordcloud-box .wordcloud-item");
   items.forEach((item) => {
     item.style.opacity = "1";
     item.style.transform = "scale(1)";
-    item.style.textDecoration = "none";
-    item.classList.remove("z-10");
+    item.style.backgroundColor = "transparent";
+    item.style.outline = "none";
+    item.style.padding = "2px 4px";
+    item.classList.remove("z-10", "shadow-xs");
   });
 
   if (window.filterBerandaCards) {
@@ -262,65 +276,57 @@ window.resetFilterWordCloud = function () {
 };
 
 /**
- * Render Intisari Artikel Edukasi Nyata dari Database
+ * Render Daftar Judul Edukasi Keamanan Siber (Title-Only, Scrollable, Detail saat Diklik)
  */
 function renderEdukasiList(edukasiList) {
   const container = document.getElementById("pub-edukasi-grid");
   if (!container) return;
 
+  const countBadge = document.getElementById("pub-edukasi-count");
+  if (countBadge) {
+    countBadge.textContent = `${edukasiList ? edukasiList.length : 0} Panduan`;
+  }
+
   if (!edukasiList || edukasiList.length === 0) {
-    container.innerHTML = `<div class="col-span-full py-8 text-center text-xs text-[#49769F]">Belum ada artikel edukasi.</div>`;
+    container.innerHTML = `<div class="col-span-full py-8 text-center text-xs text-[#49769F]">Belum ada artikel edukasi dalam 7 hari terakhir.</div>`;
     return;
   }
 
   container.innerHTML = edukasiList
     .map((item) => {
-      // Batasi ringkasan
-      const shortDesc = item.ringkasan && item.ringkasan.length > 170
-        ? item.ringkasan.slice(0, 170) + "..."
-        : item.ringkasan || "Tidak ada ringkasan.";
-
       const tanggalFormat = item.tanggal ? item.tanggal.slice(0, 10) : "Terkini";
+      const sumberLengkap = item.sumber
+        ? `${item.sumber} • ${tanggalFormat}`
+        : `CSIRT Jatim • ${tanggalFormat}`;
+
+      // Simpan seluruh data lengkap (rangkuman & metadata) ke registry modal
       const idx = simpanItemModal({
         judul: item.judul,
-        sumber: item.sumber || "CSIRT Jatim",
+        sumber: sumberLengkap,
         link: item.link || '',
-        teksLengkap: item.ringkasan || shortDesc,
-        pillClass: 'bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]',
-        pillLabel: 'Edukasi'
+        teksLengkap: item.ringkasan || "Tidak ada rangkuman detail tersedia.",
+        pillClass: 'bg-emerald-50 text-[#15803d] border border-emerald-200',
+        pillLabel: 'Edukasi Keamanan Siber'
       });
 
+      // Hanya tampilkan judul saja, rangkuman dan info lainnya muncul setelah diklik (modal)
       return `
-        <div class="bg-[#EEF5FA] rounded-lg border border-[#BDD8E9]/80 p-4 sm:p-5 flex flex-col justify-between shadow-2xs hover:shadow-xs transition-shadow">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-2 text-[11px] text-[#49769F]">
-              <span class="font-semibold text-[#0A4174] truncate max-w-[180px]">${item.sumber || "CSIRT Jatim"}</span>
-              <span class="font-mono">${tanggalFormat}</span>
-            </div>
-            <h4 class="font-bold text-sm text-[#001D39] leading-snug mb-2 hover:text-[#0A4174] transition-colors">
-              ${item.judul}
-            </h4>
-            <p class="text-xs text-slate-600 leading-relaxed">
-              ${shortDesc}
-            </p>
+        <button type="button" 
+          onclick="window.bukaModal ? window.bukaModal(${idx}) : bukaModal(${idx})"
+          class="w-full text-left bg-white hover:bg-[#EEF5FA] border border-[#E2EDF8] hover:border-[#BDD8E9] p-3 sm:p-3.5 rounded-xl transition-all flex items-center justify-between gap-3 group cursor-pointer shadow-2xs hover:shadow-xs active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
+          title="Klik untuk membaca rangkuman dan informasi lengkap">
+          <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-50 text-[#15803d] flex items-center justify-center shrink-0 group-hover:bg-emerald-100 group-hover:scale-105 transition-all">
+              <span class="material-symbols-outlined text-base sm:text-lg" aria-hidden="true">menu_book</span>
+            </span>
+            <span class="font-bold text-xs sm:text-sm text-[#001D39] group-hover:text-[#0A4174] transition-colors line-clamp-2 leading-snug">
+              ${escapeHtml(item.judul)}
+            </span>
           </div>
-
-          <div class="mt-4 pt-3 border-t border-[#BDD8E9]/60 flex items-center justify-between">
-            <button type="button" onclick="window.bukaModal ? window.bukaModal(${idx}) : bukaModal(${idx})"
-              class="text-xs font-bold text-[#0A4174] hover:underline flex items-center gap-1 cursor-pointer">
-              <span>Baca Intisari</span>
-              <span class="material-symbols-outlined text-sm">arrow_forward</span>
-            </button>
-            ${
-              item.link && item.link !== "#"
-                ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="text-[11px] text-[#49769F] hover:text-[#001D39] flex items-center gap-0.5" title="Buka sumber media asli">
-                    <span>Sumber Asli</span>
-                    <span class="material-symbols-outlined text-xs">open_in_new</span>
-                   </a>`
-                : ""
-            }
-          </div>
-        </div>
+          <span class="material-symbols-outlined text-slate-400 group-hover:text-[#0A4174] text-base sm:text-lg shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden="true">
+            arrow_forward
+          </span>
+        </button>
       `;
     })
     .join("");
