@@ -29,7 +29,7 @@ export function destroyCharts() {
 }
 
 /**
- * Merender analitik visual: Vektor Serangan Siber (Desain Referensi), Sektor Target (Desain Referensi), dan Top Vendor CVE
+ * Merender analitik visual: Vektor Serangan Siber (TTPs), Sektor Vital Terpapar (IIV), dan Tren Harian Insiden
  * @param {Object} stat Objek data statistik tren
  */
 export function renderCharts(stat) {
@@ -191,7 +191,80 @@ export function renderCharts(stat) {
     }
   }
 
+  // 3. Distribusi Taktik MITRE ATT&CK - Horizontal Progress Bar ala Desain Sapphire Oceanic
+  const elMitre = document.getElementById('chart-taktik-mitre');
+  if (elMitre) {
+    let containerMitre = elMitre;
+    if (containerMitre.tagName === 'CANVAS') {
+      const div = document.createElement('div');
+      div.id = containerMitre.id;
+      div.className = 'space-y-4 pt-1';
+      containerMitre.parentNode.replaceChild(div, containerMitre);
+      containerMitre = div;
+    }
 
+    const mitreList = stat.taktik_mitre || [];
+    let displayList = mitreList.filter(d => d.jumlah > 0);
+    if (displayList.length === 0) {
+      displayList = mitreList.slice(0, 6);
+    } else {
+      displayList = displayList.slice(0, 6);
+    }
+
+    if (!displayList.length) {
+      containerMitre.innerHTML = `<div class="text-[#49769F] text-xs py-8 text-center font-sans">Belum ada pemetaan taktik MITRE untuk rentang waktu ini.</div>`;
+    } else {
+      const maxMitre = Math.max(...displayList.map(d => d.jumlah), 1);
+      const totalTaktik = displayList.reduce((acc, curr) => acc + curr.jumlah, 0) || 1;
+
+      // Palet Sapphire Oceanic yang selaras dengan taktik CTI
+      const taktikColorMap = {
+        'Initial Access': { bar: '#0A4174', text: '#0A4174' },
+        'Execution': { bar: '#dc2626', text: '#dc2626' },
+        'Persistence': { bar: '#4E8EA2', text: '#0e7490' },
+        'Privilege Escalation': { bar: '#b91c1c', text: '#b91c1c' },
+        'Defense Evasion': { bar: '#49769F', text: '#1e40af' },
+        'Credential Access': { bar: '#7BBDE8', text: '#0284c7' },
+        'Discovery': { bar: '#6EA2B3', text: '#0891b2' },
+        'Lateral Movement': { bar: '#001D39', text: '#001D39' },
+        'Collection': { bar: '#4E8EA2', text: '#0e7490' },
+        'Command and Control': { bar: '#0284c7', text: '#0369a1' },
+        'Exfiltration': { bar: '#dc2626', text: '#dc2626' },
+        'Impact': { bar: '#991b1b', text: '#991b1b' },
+      };
+      const defaultTaktikColors = [
+        { bar: '#0A4174', text: '#0A4174' },
+        { bar: '#4E8EA2', text: '#0e7490' },
+        { bar: '#001D39', text: '#001D39' },
+        { bar: '#49769F', text: '#1e40af' },
+        { bar: '#7BBDE8', text: '#0284c7' },
+      ];
+
+      containerMitre.innerHTML = displayList.map((item, idx) => {
+        const colorObj = taktikColorMap[item.taktik] || defaultTaktikColors[idx % defaultTaktikColors.length];
+        const barColor = colorObj.bar;
+        const textColor = colorObj.text;
+        const widthPct = item.jumlah > 0 ? Math.max(Math.min(Math.round((item.jumlah / maxMitre) * 100), 100), 3) : 0;
+        const pctTaktik = item.persen !== undefined ? item.persen : Math.round((item.jumlah / totalTaktik) * 100);
+
+        return `
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-xs font-sans">
+              <div class="min-w-0 pr-2">
+                <span class="text-[#001D39] font-medium truncate">${escapeHtml(item.taktik)}</span>
+              </div>
+              <div class="shrink-0 font-bold" style="color: ${textColor};">
+                ${item.jumlah} indikasi <span class="font-semibold text-[11px] opacity-90">(${pctTaktik}%)</span>
+              </div>
+            </div>
+            <div class="w-full bg-[#EEF4F8] rounded h-2 overflow-hidden border border-[#E2EDF8]">
+              <div class="h-full rounded transition-all duration-700 ease-out" style="width: ${widthPct}%; background-color: ${barColor};"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
 }
 
 function renderChartHarianAdmin(harianList) {
@@ -209,7 +282,6 @@ function renderChartHarianAdmin(harianList) {
   });
 
   const beritaData = harianList.map((h) => h.berita || 0);
-  const cveData = harianList.map((h) => h.cve || 0);
 
   chartHarianAdmin = new Chart(ctx, {
     type: 'line',
@@ -224,18 +296,6 @@ function renderChartHarianAdmin(harianList) {
           fill: true,
           tension: 0.35,
           pointBackgroundColor: '#0A4174',
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          borderWidth: 2.5,
-        },
-        {
-          label: 'CVE Kritis',
-          data: cveData,
-          borderColor: '#d97706',
-          backgroundColor: 'rgba(217, 119, 6, 0.06)',
-          fill: true,
-          tension: 0.35,
-          pointBackgroundColor: '#d97706',
           pointRadius: 4,
           pointHoverRadius: 6,
           borderWidth: 2.5,

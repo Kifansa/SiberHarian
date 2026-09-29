@@ -245,7 +245,7 @@
           if (currentPercent < 50) {
             statusDesc.textContent = 'Menghubungkan data CTI...';
           } else if (currentPercent < 95) {
-            statusDesc.textContent = 'Menyusun analitik & postur...';
+            statusDesc.textContent = 'Menyusun intelijen & analitik siber...';
           } else {
             statusDesc.textContent = 'Sistem siap!';
           }
@@ -316,14 +316,12 @@
             :class="tabAktif === 'beranda' ? 'tab-nav-active' : 'text-[#49769F] hover:text-[#001D39] hover:bg-white/70'">
             <span class="material-symbols-outlined text-base" aria-hidden="true">dashboard</span>
             <span>Dashboard</span>
-            <kbd class="hidden lg:inline-block ml-0.5 px-1 py-0.2 rounded text-[10px] font-mono opacity-70" :class="tabAktif === 'beranda' ? 'bg-white/20 text-white' : 'bg-[#E2EDF8] text-[#49769F]'">1</kbd>
           </a>
           <a href="#arsip" @click.prevent="tabAktif = 'arsip'; muatTabArsip()" role="tab" :aria-selected="tabAktif === 'arsip'"
             class="px-3.5 py-1.5 rounded-lg font-bold text-xs sm:text-sm transition-all duration-200 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none cursor-pointer"
             :class="tabAktif === 'arsip' ? 'tab-nav-active' : 'text-[#49769F] hover:text-[#001D39] hover:bg-white/70'">
             <span class="material-symbols-outlined text-base" aria-hidden="true">inventory_2</span>
-            <span>Arsip Intelijen</span>
-            <kbd class="hidden lg:inline-block ml-0.5 px-1 py-0.2 rounded text-[10px] font-mono opacity-70" :class="tabAktif === 'arsip' ? 'bg-white/20 text-white' : 'bg-[#E2EDF8] text-[#49769F]'">2</kbd>
+            <span>Arsip Berita</span>
           </a>
         </nav>
 
@@ -355,7 +353,7 @@
 
     <main class="max-w-container-max mx-auto px-gutter py-6">
       <h2 class="sr-only">Informasi Publik dan Feed Intelijen</h2>
-      <!-- Tab 1: Dashboard (Statistik Fakta + Feed Berita & CVE Hari Terakhir) -->
+      <!-- Tab 1: Dashboard (Statistik Fakta + Feed Berita Harian) -->
       <section x-show="tabAktif === 'beranda'" x-cloak
         x-transition:enter="transition ease-out duration-300 transform"
         x-transition:enter-start="opacity-0 translate-y-2"
@@ -367,7 +365,7 @@
             Portal Informasi &amp; Peringatan Keamanan Siber
           </h1>
           <p class="text-[#49769F] text-xs sm:text-sm md:text-base max-w-2xl mx-auto leading-relaxed font-normal">
-            Diseminasi terpadu intelijen ancaman siber, rangkuman insiden harian terverifikasi, dan mitigasi celah keamanan kritis di Jawa Timur.
+            Diseminasi terpadu intelijen ancaman siber, rangkuman insiden harian terverifikasi, dan edukasi pencegahan keamanan digital di Jawa Timur.
           </p>
 
           <!-- Hero Action Jump Links (Strict 2 CTAs) -->
@@ -390,7 +388,7 @@
           {% include "partials/_statistik_publik.html" %}
         </div>
 
-        <!-- Feed Berita Insiden & Kerentanan CVE Hari Terakhir -->
+        <!-- Feed Berita Insiden Hari Terakhir -->
         {% include "partials/_beranda.html" %}
       </section>
 

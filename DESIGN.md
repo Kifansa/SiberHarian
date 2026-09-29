@@ -1,6 +1,6 @@
 ---
 name: SiberHarian
-description: Cyber Threat Intelligence & Vulnerability Analytics Platform (CSIRT Diskominfo Jawa Timur) - Sapphire Oceanic Edition
+description: Cyber Threat Intelligence & Incident Analytics Platform (CSIRT Diskominfo Jawa Timur) - Sapphire Oceanic Edition
 colors:
   # The 7 Reference Palette Colors:
   ref-navy: "#001D39"      # 1. Midnight Navy (Headings, primary hero dark card, primary chart bars)
@@ -144,7 +144,7 @@ Desain ini melayani **Dua Persona Pengguna (Dual-User Experience)**:
 2. **Deep Midnight Navy Text (`#001D39`)**: Tipografi tajam berkontras tinggi (rasio kontras > 14:1) dengan warna teks navy gelap alami, bebas dari efek lelah mata.
 3. **Sapphire Primary Action (`#0A4174`, hover `#001D39`)**: Aksen biru berwibawa khas identitas Pemprov Jawa Timur untuk tombol aksi utama dan status terpilih.
 4. **Natural Human Copywriting**: Seluruh teks, label, dan grafik menggunakan bahasa Indonesia baku, jelas, dan lugas. Menghilangkan seluruh AI-slop buzzwords (*unlock, elevate, revolutionize, seamless*).
-5. **Targeted Monospace Usage**: Font `JetBrains Mono` digunakan secara disiplin hanya untuk data teknis numerik (kode CVE ID, skor CVSS, persentase, tanggal teknis, dan terminal log). Teks judul dan narasi menggunakan font `Inter`.
+5. **Targeted Monospace Usage**: Font `JetBrains Mono` digunakan secara disiplin hanya untuk data teknis numerik (persentase, metrik numerik, tanggal teknis, dan terminal log). Teks judul dan narasi menggunakan font `Inter` / `Plus Jakarta Sans`.
 
 ---
 
@@ -165,28 +165,27 @@ Terletak di sisi kanan header portal, memberikan toggle halus dan jelas:
 
 ### 1. Tab Beranda & Statistik (Sisi Publik)
 Menggabungkan wawasan intelijen dan berita hari terakhir dalam satu alur yang kohesif:
-- **Insightful KPI Cards**: 4 kartu wawasan fakta bermakna (*Modus Paling Mengintai: Akun & Phishing 54%*, *Status Risiko Software: Kritis Ekstrem 9.5/10*, *Software Terbanyak Celah: Microsoft & Web CMS*, *Fokus Wilayah: 60% Isu Nasional*).
+- **Insightful KPI Cards**: 4 kartu wawasan fakta bermakna (*Modus Paling Mengintai: Akun & Phishing 54%*, *Sektor Sasaran Terbanyak: Administrasi Pemerintahan*, *Status Risiko Ancaman: Waspada*, *Fokus Wilayah: Isu Nasional & Internasional*).
 - **Word Cloud Kasus Insiden Spesifik (Interaktif)**: Diekstrak eksklusif dari berita `insiden_spesifik`. Ukuran font dinamis (12px–26px) dengan palet Sapphire Oceanic. Mengklik kata kunci akan langsung memfilter kartu berita kejadian terkait di bawahnya.
-- **Grafik Fakta Empiris**: Bar chart sebaran modus ancaman dan horizontal bar chart software populer terpapar celah kritis.
+- **Grafik Fakta Empiris**: Bar chart sebaran modus ancaman dan horizontal bar chart sebaran sektor sasaran serangan (IIV).
 - **Intisari Artikel Edukasi Asli**: Daftar himbauan pencegahan yang disarikan langsung dari artikel edukasi siber terverifikasi di database (`kategori_relevansi == 'analisis_relevan'`) lengkap dengan link ke sumber berita asli.
-- **Feed Berita & CVE Hari Terakhir**: Kartu berita dan CVE terkini dengan modal pop-up pembaca ringkasan lengkap.
+- **Feed Berita Intelijen Hari Terakhir**: Kartu berita intelijen siber terkini dengan modal pop-up pembaca ringkasan lengkap.
 
 ### 2. Tab Arsip (Publik & Admin)
-- Penelusuran data 7-14 hari dengan dropdown tanggal, filter kategori (Insiden Spesifik, Edukasi, CVE), dan kotak pencarian instan (*live search*).
+- Penelusuran data 7-14 hari dengan dropdown tanggal, filter kategori (Insiden Spesifik, Analisis & Edukasi), dan kotak pencarian instan (*live search*).
 
 ### 3. Tab Tren Siber CTI (Khusus Admin Tim CTI)
-- **Indeks Postur Ancaman Siber Komparatif (Threat Posture)**: Banner eksekutif skor komposit 1.0 sampai 10.0 dengan normalisasi Min-Max scaling berimbang (Insiden 35%, CVE 25%, CVSS 40%), perbandingan terhadap baseline minggu lalu, badge tingkat keparahan (KRITIS / TINGGI / SEDANG / RENDAH), dan ringkasan arahan strategis pimpinan.
+- **Indeks Postur Ancaman Siber Komparatif (Threat Posture)**: Banner eksekutif skor komposit 1.0 sampai 10.0 dengan normalisasi Min-Max scaling berimbang (Insiden 45%, Vektor Serangan 30%, Sektor Vital IIV 25%), perbandingan terhadap baseline minggu lalu, badge tingkat keparahan (KRITIS / TINGGI / SEDANG / RENDAH), dan ringkasan arahan strategis pimpinan.
 - **Matriks Tindakan Ancaman Aktif (Remediation Checklist)**: Tabel taktis operasional SOC yang mengelompokkan ancaman ke dalam kategori, lonjakan kasus 7 hari, tingkat urgensi dengan badge semantik berkontras tinggi, fokus celah website OPD, dan tindakan taktis langsung.
-- **Dinamika Tren Deret Waktu 7 Hari**: Grafik garis ganda (dual-line chart) fluktuasi harian berita insiden vs CVE kritis, lengkap dengan donut chart komposisi sumber isu nasional vs global.
+- **Dinamika Tren Deret Waktu 7 Hari**: Grafik deret waktu harian fluktuasi berita insiden, lengkap dengan grafik komposisi sumber isu nasional vs global.
 - **SITREP CTI Modular Terstruktur**: 
   1. Tren Insiden Mingguan (Makro)
   2. Lanskap & Entitas Ancaman (Mikro: klastering multi-artikel dengan mitigasi halusinasi peneliti)
   3. Vektor Serangan & Pemetaan MITRE ATT&CK (1-to-1)
   4. Rekomendasi Aksi Preskriptif (Injeksi deterministik dari Ensiklopedia D3FEND/NIST)
   5. Sinyal Ancaman Baru (Emerging Threats, proyeksi replikasi risiko ke domain instansi)
-  6. SITREP CVE: Vendor Prioritas, Vektor Eksploitasi, Eksploitabilitas & PoC, serta Panduan Patching
 - **Taksonomi Terstandarisasi**:
-  - **10 Sektor Standar Nasional**: Mengacu pada Perpres No. 82 Tahun 2022 tentang Infrastruktur Informasi Vital (IIV) + Sektor Pendidikan & Pengguna Digital.
+  - **10 Sektor Standar Nasional**: Mengacu pada Perpres No. 82 Tahun 2022 tentang Infrastruktur Informasi Vital (IIV).
   - **12 Taktik MITRE ATT&CK Enterprise Matrix**: Initial Access, Execution, Persistence, Privilege Escalation, Defense Evasion, Credential Access, Discovery, Lateral Movement, Collection, Command & Control, Exfiltration, Impact.
 - **Kasus Wilayah 3-Level (Internasional, Nasional, Jawa Timur)**: Visualisasi kartu insiden teramai dengan pendekatan BLUF (Bottom Line Up Front) dan analisis dampak domino lintas sektor.
 - **Ekspor Dokumen PDF Resmi**: Cetak dokumen SITREP mingguan bertata letak standar Diskominfo Jatim langsung dari peramban.

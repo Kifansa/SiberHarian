@@ -1,12 +1,12 @@
 import { ambilBeranda, mulaiPipelineRequest, batalkanPipelineRequest, bukaStreamLog } from './api.js';
 import { escapeHtml, formatWaktuScraping } from './utils.js';
-import { buatCardBerita, buatCardCve, buatSection } from './cards.js';
+import { buatCardBerita } from './cards.js';
 import { resetDataLengkap } from './modal.js';
 
 function getEl(id) { return document.getElementById(id); }
 
 let sumberAktif = null; // EventSource yang sedang berjalan
-let dataBerandaTersimpan = { berita: [], cve: [] };
+let dataBerandaTersimpan = { berita: [] };
 
 
 function tambahBarisLog(item) {
@@ -82,87 +82,56 @@ export async function tampilkanBeranda() {
     }
 
     const berita = data.berita || [];
-    const cve = data.cve || [];
-    dataBerandaTersimpan = { berita, cve };
-    const insiden = berita.filter(b => b.kategori === 'insiden_spesifik');
-    const analisis = berita.filter(b => b.kategori !== 'insiden_spesifik');
+    dataBerandaTersimpan = { berita };
+    // Saring hanya berita intelijen siber aktual (edukasi disajikan khusus pada Edukasi Keamanan Siber)
+    const daftarBerita = berita.filter(b => b.kategori !== 'analisis_relevan' && b.kategori !== 'edukasi');
     
     if (resultsDesc) {
-        if (data.waktu_terakhir_scraping) {
-            resultsDesc.textContent = `Diperbarui pada ${formatWaktuScraping(data.waktu_terakhir_scraping)}`;
-        } else {
-            resultsDesc.textContent = 'Belum ada riwayat pembaruan';
-        }
+        const infoWaktu = data.waktu_terakhir_scraping ? `Diperbarui pada ${formatWaktuScraping(data.waktu_terakhir_scraping)}` : 'Pantauan intelijen terkini';
+        resultsDesc.textContent = `${daftarBerita.length} Berita Terpantau • ${infoWaktu}`;
     }
 
-    if (berita.length === 0 && cve.length === 0) {
+    if (daftarBerita.length === 0) {
         if (emptyState) {
             emptyState.style.display = 'block';
             const h3 = emptyState.querySelector('h3');
-            if (h3) h3.textContent = 'Tidak ada data pada tanggal terbaru';
+            if (h3) h3.textContent = 'Tidak ada berita pada tanggal terbaru';
             const p = emptyState.querySelector('p');
-            if (p) p.textContent = 'Tidak ditemukan berita atau CVE CRITICAL pada tanggal ini.';
+            if (p) p.textContent = 'Tidak ditemukan berita siber pada tanggal ini.';
         }
         cardContainer.innerHTML = '';
         return;
     }
 
     if (emptyState) emptyState.style.display = 'none';
-    let html = '';
-    html += buatSection('Insiden Spesifik', insiden.map(buatCardBerita).join(''), insiden.length,
-        { ikon: 'local_fire_department', kelas: 'bg-[#b91c1c] text-white', kategori: 'insiden_spesifik' });
-    html += buatSection('Edukasi / Evergreen', analisis.map(buatCardBerita).join(''), analisis.length,
-        { ikon: 'school', kelas: 'bg-[#0A4174] text-white', kategori: 'edukasi' });
-    html += buatSection('CVE Critical', cve.map(buatCardCve).join(''), cve.length,
-        { ikon: 'bug_report', kelas: 'bg-[#b45309] text-white', kategori: 'cve' });
-    cardContainer.innerHTML = html;
+    cardContainer.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="beranda-cards-grid">
+            ${daftarBerita.map(buatCardBerita).join('')}
+        </div>
+    `;
 
     inisialisasiFilterBerandaToolbar();
 }
 
-let kategoriFilterAktif = 'semua';
 let queryFilterAktif = '';
 
-export function filterBerandaCards(query = null, kategori = null) {
+export function filterBerandaCards(query = null) {
     if (query !== null) queryFilterAktif = (query || '').trim().toLowerCase();
-    if (kategori !== null) kategoriFilterAktif = kategori;
 
     const cardContainer = getEl('card-container');
     if (!cardContainer) return;
-    const sections = cardContainer.querySelectorAll('.section-wrapper');
+    const cards = cardContainer.querySelectorAll('article[data-search-text]');
     let totalVisible = 0;
 
-    sections.forEach(sec => {
-        const secKat = sec.getAttribute('data-kategori') || '';
-        const isKatMatch = (kategoriFilterAktif === 'semua' || secKat === kategoriFilterAktif);
-
-        if (!isKatMatch) {
-            sec.style.display = 'none';
-            return;
+    cards.forEach(card => {
+        const text = card.getAttribute('data-search-text') || '';
+        if (!queryFilterAktif || text.includes(queryFilterAktif)) {
+            card.style.display = 'flex';
+            totalVisible++;
+        } else {
+            card.style.display = 'none';
         }
-
-        const cards = sec.querySelectorAll('article[data-search-text]');
-        let countInSec = 0;
-        cards.forEach(card => {
-            const text = card.getAttribute('data-search-text') || '';
-            if (!queryFilterAktif || text.includes(queryFilterAktif)) {
-                card.style.display = 'flex';
-                countInSec++;
-                totalVisible++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-        const badge = sec.querySelector('.count-badge');
-        if (badge) badge.textContent = countInSec;
-        sec.style.display = countInSec > 0 ? 'block' : 'none';
     });
-
-    // Update Counter Badge
-    const counterBadge = getEl('beranda-counter-badge');
-    if (counterBadge) {
-        counterBadge.textContent = `${totalVisible} Ditampilkan`;
-    }
 
     // Toggle clear search button
     const clearBtn = getEl('beranda-search-clear');
@@ -181,11 +150,11 @@ export function filterBerandaCards(query = null, kategori = null) {
         searchEmptyNotice.style.display = 'block';
         searchEmptyNotice.innerHTML = `
             <span class="material-symbols-outlined text-3xl text-[#49769F] mb-2" aria-hidden="true">search_off</span>
-            <h4 class="text-base font-bold text-[#001D39] mb-1">Tidak Ada Hasil Saringan</h4>
-            <p class="text-xs text-[#49769F] max-w-sm mx-auto mb-3">Tidak ditemukan artikel atau CVE yang cocok dengan kata kunci atau kategori aktif.</p>
+            <h4 class="text-base font-bold text-[#001D39] mb-1">Tidak Ada Hasil Pencarian</h4>
+            <p class="text-xs text-[#49769F] max-w-sm mx-auto mb-3">Tidak ditemukan artikel berita siber yang cocok dengan kata kunci pencarian.</p>
             <button type="button" onclick="window.resetFilterBeranda && window.resetFilterBeranda()" class="px-4 py-2 bg-[#EEF5FA] hover:bg-[#BDD8E9] text-[#0A4174] font-bold text-xs rounded-xl border border-[#BDD8E9] transition-all cursor-pointer inline-flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174]">
                 <span class="material-symbols-outlined text-sm" aria-hidden="true">refresh</span>
-                <span>Reset Saringan</span>
+                <span>Reset Pencarian</span>
             </button>
         `;
     } else if (searchEmptyNotice) {
@@ -196,12 +165,11 @@ export function filterBerandaCards(query = null, kategori = null) {
 function inisialisasiFilterBerandaToolbar() {
     const searchInput = getEl('beranda-search-input');
     const searchClear = getEl('beranda-search-clear');
-    const pillsContainer = getEl('beranda-kategori-pills');
 
     if (searchInput && !searchInput.dataset.initialized) {
         searchInput.dataset.initialized = '1';
         searchInput.addEventListener('input', (e) => {
-            filterBerandaCards(e.target.value, null);
+            filterBerandaCards(e.target.value);
         });
     }
 
@@ -212,45 +180,19 @@ function inisialisasiFilterBerandaToolbar() {
                 searchInput.value = '';
                 searchInput.focus();
             }
-            filterBerandaCards('', null);
-        });
-    }
-
-    if (pillsContainer && !pillsContainer.dataset.initialized) {
-        pillsContainer.dataset.initialized = '1';
-        pillsContainer.addEventListener('click', (e) => {
-            const btn = e.target.closest('.beranda-pill-filter');
-            if (!btn) return;
-            const kat = btn.getAttribute('data-kategori');
-            
-            pillsContainer.querySelectorAll('.beranda-pill-filter').forEach(p => {
-                p.className = 'beranda-pill-filter px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap bg-[#EEF4F8] text-[#49769F] hover:text-[#001D39] hover:bg-[#E2EDF8]';
-            });
-            btn.className = 'beranda-pill-filter px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap bg-[#0A4174] text-white shadow-2xs';
-
-            filterBerandaCards(null, kat);
+            filterBerandaCards('');
         });
     }
 }
 
 window.resetFilterBeranda = function() {
     queryFilterAktif = '';
-    kategoriFilterAktif = 'semua';
     const input = getEl('beranda-search-input');
     if (input) input.value = '';
     const clearBtn = getEl('beranda-search-clear');
     if (clearBtn) clearBtn.style.display = 'none';
 
-    const pills = document.querySelectorAll('#beranda-kategori-pills .beranda-pill-filter');
-    pills.forEach(p => {
-        if (p.getAttribute('data-kategori') === 'semua') {
-            p.className = 'beranda-pill-filter px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap bg-[#0A4174] text-white shadow-2xs';
-        } else {
-            p.className = 'beranda-pill-filter px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap bg-[#EEF4F8] text-[#49769F] hover:text-[#001D39] hover:bg-[#E2EDF8]';
-        }
-    });
-
-    filterBerandaCards('', 'semua');
+    filterBerandaCards('');
     if (window.resetFilterWordCloud) {
         window.resetFilterWordCloud();
     }
@@ -259,7 +201,7 @@ window.resetFilterBeranda = function() {
 export async function mulaiPipeline() {
     const konfirmasi = window.confirm(
         'Jalankan pipeline pengumpulan intelijen siber sekarang?\n\n' +
-        'Proses ini akan mengambil feed berita RSS, data CVE terbaru dari NVD, dan memperbarui analisis tren.'
+        'Proses ini akan mengambil feed berita RSS intelijen siber, menganalisis sektor sasaran, dan memperbarui tren ancaman.'
     );
     if (!konfirmasi) return;
 

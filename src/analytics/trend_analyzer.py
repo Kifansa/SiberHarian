@@ -9,10 +9,11 @@ Prinsip pembagian periode: window 14 hari dibagi jadi
 - periode BASELINE: 7 hari sebelumnya
 Growth dihitung dari rata-rata HARIAN (bukan total mentah).
 """
-from rapidfuzz import fuzz
+from collections import Counter
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
 import re
+from typing import Any, Dict, List, Optional
+from rapidfuzz import fuzz
 
 import pandas as pd
 from src.utils.config_loader import ConfigLoader
@@ -52,15 +53,18 @@ def _split_periode(df: pd.DataFrame, kolom_tanggal: str = "tanggal_publish") -> 
 
 def _hitung_growth(jumlah_terkini: int, jumlah_baseline: int) -> float:
     """
-    Persentase growth dari rata-rata harian baseline ke rata-rata harian
-    terkini. Kalau baseline 0 tapi terkini > 0, growth dianggap 100%
-    (kemunculan baru) - bukan infinity, supaya tetap bisa diurutkan wajar.
+    Persentase growth dari rata-rata harian baseline ke rata-rata harian terkini.
+    Mengatasi small-base distortion:
+    - Jika baseline == 0 dan terkini >= 2, dihitung sebagai kemunculan baru terkonfirmasi (100% per unit tambahan, maks 500%).
+    - Jika baseline == 0 dan terkini < 2 (hanya 1 artikel terisolasi), dihitung 0.0% agar tidak menimbulkan alarm lonjakan palsu.
     """
     rata_terkini = jumlah_terkini / HARI_PERIODE_TERKINI
     rata_baseline = jumlah_baseline / HARI_PERIODE_BASELINE
 
     if rata_baseline == 0:
-        return 100.0 if rata_terkini > 0 else 0.0
+        if jumlah_terkini >= 2:
+            return round(min(100.0 * (jumlah_terkini - 1), 500.0), 1)
+        return 0.0
     return round(((rata_terkini - rata_baseline) / rata_baseline) * 100, 1)
 
 def _dedup_ringan_lintas_hari(df_berita: pd.DataFrame, kolom_judul: str = "judul") -> pd.DataFrame:
@@ -77,7 +81,7 @@ def _dedup_ringan_lintas_hari(df_berita: pd.DataFrame, kolom_judul: str = "judul
     tren mencerminkan kapan topik itu mulai muncul.
 
     Pakai rapidfuzz (perbandingan string murah), BUKAN embedding LLM -
-    supaya tidak menambah beban ke Ollama tiap kali statistik dihitung.
+    supaya tidak menambah beban komputasi API tiap kali statistik dihitung.
     """
     if df_berita.empty or len(df_berita) <= 1:
         return df_berita
@@ -157,7 +161,7 @@ def hitung_tren_kata_kunci_berita(
             "growth_persen": _hitung_growth(jumlah_terkini, jumlah_baseline),
         })
 
-    hasil.sort(key=lambda x: (x["growth_persen"], x["jumlah_terkini"]), reverse=True)
+    hasil.sort(key=lambda x: (x["growth_persen"] > 0, x["growth_persen"], x["jumlah_terkini"]), reverse=True)
     return hasil[:top_n]
 
 
@@ -222,58 +226,6 @@ def ambil_sampel_judul_insiden(
     ]
 
 
-def hitung_tren_vendor_cve(df_riwayat: pd.DataFrame, top_n: int = 10, top_produk_per_vendor: int = 3) -> List[Dict]:
-    df_cve = df_riwayat[df_riwayat["kategori"] == "cve"].copy()
-    df_cve = df_cve[df_cve["vendor"].notna() & (df_cve["vendor"] != "Lainnya / Belum Teridentifikasi")]
-    if df_cve.empty:
-        return []
-
-    # Pastikan setiap row memiliki nama produk yang bersih & valid
-    from src.scraper.cve_fetcher import ekstrak_produk_cve
-
-    produk_list = []
-    for _, row in df_cve.iterrows():
-        p = str(row.get("produk", "")).strip()
-        if not p or p in ["-", "(lihat deskripsi)", "None", "nan", "Lainnya / Belum Teridentifikasi"]:
-            narasi = str(row.get("ringkasan_atau_narasi", ""))
-            vendor = str(row.get("vendor", ""))
-            p = ekstrak_produk_cve(narasi_id=narasi, vendor=vendor)
-        produk_list.append(p)
-    df_cve["produk"] = produk_list
-
-    df_terkini, df_baseline = _split_periode(df_cve)
-    hitung_terkini = df_terkini.groupby("vendor").size().to_dict()
-    hitung_baseline = df_baseline.groupby("vendor").size().to_dict()
-
-    semua_vendor = set(hitung_terkini) | set(hitung_baseline)
-    hasil = []
-    for vendor in semua_vendor:
-        jumlah_terkini = hitung_terkini.get(vendor, 0)
-        if jumlah_terkini == 0:
-            continue
-        jumlah_baseline = hitung_baseline.get(vendor, 0)
-        df_vendor_terkini = df_terkini[df_terkini["vendor"] == vendor]
-
-        # Breakdown produk spesifik yang terdampak (filter keluar nilai invalid)
-        produk_valid = df_vendor_terkini["produk"].dropna()
-        produk_valid = produk_valid[~produk_valid.isin(["-", "(lihat deskripsi)", "None", "nan", "Lainnya / Belum Teridentifikasi", ""])]
-
-        if produk_valid.empty:
-            top_produk = [{"produk": vendor.split('/')[0].strip(), "jumlah": int(jumlah_terkini)}]
-        else:
-            hitung_produk = produk_valid.value_counts().head(top_produk_per_vendor)
-            top_produk = [{"produk": p, "jumlah": int(j)} for p, j in hitung_produk.items()]
-
-        hasil.append({
-            "vendor": vendor,
-            "jumlah_terkini": jumlah_terkini,
-            "jumlah_baseline": jumlah_baseline,
-            "top_produk": top_produk,
-            "growth_persen": _hitung_growth(jumlah_terkini, jumlah_baseline),
-        })
-
-    hasil.sort(key=lambda x: (x["growth_persen"], x["jumlah_terkini"]), reverse=True)
-    return hasil[:top_n]
 
 
 
@@ -307,6 +259,147 @@ def hitung_tren_vektor_serangan(
     return hasil
 
 
+def hitung_distribusi_taktik_mitre(
+    df_riwayat: pd.DataFrame, df_berita_dedup: Optional[pd.DataFrame] = None
+) -> List[Dict[str, Any]]:
+    """
+    Menghitung distribusi pemetaan taktik MITRE ATT&CK dari korpus insiden terkini.
+    Mengelompokkan indikator ke dalam taktik standar industri keamanan siber.
+    """
+    if df_berita_dedup is not None:
+        df_berita = df_berita_dedup
+    else:
+        df_berita = df_riwayat[df_riwayat["kategori"] == "berita"].copy()
+        if df_berita.empty:
+            return []
+        df_berita = _dedup_ringan_lintas_hari(df_berita)
+
+    if df_berita.empty:
+        return []
+
+    df_terkini, _ = _split_periode(df_berita)
+    if df_terkini.empty:
+        df_terkini = df_berita
+
+    from src.analytics.encyclopedia_lookup import load_encyclopedia
+    mitre_db = load_encyclopedia("mitre.json")
+
+    taktik_counter: Dict[str, int] = Counter()
+
+    for _, row in df_terkini.iterrows():
+        teks = f"{row.get('judul', '')} {row.get('ringkasan_atau_narasi', '')} {row.get('kata_kunci', '')}".lower()
+        taktik_ditemukan = set()
+        for entry in mitre_db:
+            taktik = entry.get("tactic", "Initial Access")
+            taktik_list = [t.strip() for t in taktik.split("/")]
+            kws = entry.get("keywords", [])
+            if any(k in teks for k in kws):
+                for t in taktik_list:
+                    taktik_ditemukan.add(t)
+
+        for t in taktik_ditemukan:
+            taktik_counter[t] += 1
+
+    if not taktik_counter:
+        taktik_counter["Initial Access"] = max(1, len(df_terkini))
+
+    total = sum(taktik_counter.values()) or 1
+    hasil = []
+    for taktik, count in taktik_counter.most_common(6):
+        hasil.append({
+            "taktik": taktik,
+            "jumlah": count,
+            "persen": round((count / total) * 100, 1)
+        })
+    return hasil
+
+
+def ekstrak_radar_cve_watchlist(
+    df_riwayat: pd.DataFrame, df_berita_dedup: Optional[pd.DataFrame] = None
+) -> List[Dict[str, Any]]:
+    """
+    Mengekstrak kerentanan aktif (CVE, Zero-Day, RCE, Eksploitasi Celah)
+    yang terekam dalam korpus berita insiden 7 hari terakhir.
+    """
+    if df_berita_dedup is not None:
+        df_berita = df_berita_dedup
+    else:
+        df_berita = df_riwayat[df_riwayat["kategori"] == "berita"].copy()
+        if df_berita.empty:
+            return []
+        df_berita = _dedup_ringan_lintas_hari(df_berita)
+
+    if df_berita.empty:
+        return []
+
+    df_terkini, _ = _split_periode(df_berita)
+    if df_terkini.empty:
+        df_terkini = df_berita
+
+    cve_regex = re.compile(r'\b(CVE-\d{4}-\d{4,7})\b', re.IGNORECASE)
+    software_keywords = [
+        "fortinet", "palo alto", "ivanti", "cisco", "microsoft", "windows", "exchange",
+        "linux", "apache", "nginx", "laravel", "wordpress", "vmware", "citrix",
+        "checkpoint", "openssl", "roundcube", "zimbra", "google chrome", "android", "ios", "vpn"
+    ]
+
+    temuan = {}
+
+    for _, row in df_terkini.iterrows():
+        judul = str(row.get("judul", ""))
+        narasi = str(row.get("ringkasan_atau_narasi", ""))
+        sumber = str(row.get("sumber", "Media Intelijen"))
+        teks_gabung = f"{judul} {narasi}"
+
+        cve_matches = cve_regex.findall(teks_gabung)
+        for cve in cve_matches:
+            cve_upper = cve.upper()
+            app_target = "Komponen Server / Gateway"
+            teks_lower = teks_gabung.lower()
+            for sw in software_keywords:
+                if sw in teks_lower:
+                    app_target = sw.title()
+                    break
+
+            if cve_upper not in temuan:
+                temuan[cve_upper] = {
+                    "cve_id": cve_upper,
+                    "aplikasi_terdampak": app_target,
+                    "status_urgensi": "Eksploitasi Aktif",
+                    "jumlah_laporan": 1,
+                    "sumber_terakhir": sumber,
+                    "contoh_kasus": judul[:90]
+                }
+            else:
+                temuan[cve_upper]["jumlah_laporan"] += 1
+
+        teks_lower = teks_gabung.lower()
+        if not cve_matches and any(term in teks_lower for term in ["zero-day", "0-day", "rce", "remote code execution", "celah kritis"]):
+            label = "Kerentanan Zero-Day" if "zero-day" in teks_lower or "0-day" in teks_lower else "Celah Kritis RCE"
+            app_target = "Layanan Web Publik"
+            for sw in software_keywords:
+                if sw in teks_lower:
+                    app_target = sw.title()
+                    break
+
+            key = f"{label} ({app_target})"
+            if key not in temuan:
+                temuan[key] = {
+                    "cve_id": label,
+                    "aplikasi_terdampak": app_target,
+                    "status_urgensi": "Pantauan Eksploitasi",
+                    "jumlah_laporan": 1,
+                    "sumber_terakhir": sumber,
+                    "contoh_kasus": judul[:90]
+                }
+            else:
+                temuan[key]["jumlah_laporan"] += 1
+
+    daftar_cve = list(temuan.values())
+    daftar_cve.sort(key=lambda x: x["jumlah_laporan"], reverse=True)
+    return daftar_cve[:6]
+
+
 def hitung_tren_sektor_target(
     df_riwayat: pd.DataFrame, df_berita_dedup: Optional[pd.DataFrame] = None
 ) -> List[Dict]:
@@ -321,171 +414,46 @@ def hitung_tren_sektor_target(
     if df_berita.empty:
         return []
 
-    sektor_counts = {s: 0 for s in SEKTOR_RULES}
-    for _, row in df_berita.iterrows():
-        teks = (str(row.get("judul", "")) + " " + str(row.get("ringkasan_atau_narasi", "")) + " " + str(row.get("kata_kunci", ""))).lower()
-        for s_nama, s_words in SEKTOR_RULES.items():
-            if any(w in teks for w in s_words):
-                sektor_counts[s_nama] += 1
+    df_terkini, df_baseline = _split_periode(df_berita)
 
-    hasil = [{"sektor": s, "jumlah": c} for s, c in sektor_counts.items()]
-    hasil.sort(key=lambda x: x["jumlah"], reverse=True)
+    def _hitung_sektor(df_sub: pd.DataFrame) -> Dict[str, int]:
+        counts = {s: 0 for s in SEKTOR_RULES}
+        if df_sub.empty:
+            return counts
+        for _, row in df_sub.iterrows():
+            teks = (str(row.get("judul", "")) + " " + str(row.get("ringkasan_atau_narasi", "")) + " " + str(row.get("kata_kunci", ""))).lower()
+            for s_nama, s_words in SEKTOR_RULES.items():
+                if any(w in teks for w in s_words):
+                    counts[s_nama] += 1
+        return counts
+
+    hitung_terkini = _hitung_sektor(df_terkini)
+    hitung_baseline = _hitung_sektor(df_baseline)
+    hitung_total = _hitung_sektor(df_berita)
+    total_semua = max(sum(hitung_total.values()), 1)
+
+    hasil = []
+    for s in SEKTOR_RULES:
+        c_tot = hitung_total[s]
+        c_cur = hitung_terkini[s]
+        c_base = hitung_baseline[s]
+        growth = _hitung_growth(c_cur, c_base)
+        pct = round((c_tot / total_semua) * 100, 1)
+        hasil.append({
+            "sektor": s,
+            "jumlah": c_tot,
+            "jumlah_terkini": c_cur,
+            "jumlah_baseline": c_base,
+            "growth_persen": growth,
+            "persen_total": pct
+        })
+
+    hasil.sort(key=lambda x: (x["jumlah"], x["growth_persen"]), reverse=True)
     return hasil
 
 
 
-def hitung_skor_threat_posture(df_riwayat: pd.DataFrame) -> Dict:
-    """Menghitung skor threat posture komparatif: 7 hari terkini vs 7 hari baseline."""
-    if df_riwayat.empty:
-        return {
-            "skor": 1.0,
-            "skor_baseline": 1.0,
-            "level": "RENDAH",
-            "level_label": "RENDAH (Low)",
-            "warna": "green",
-            "growth_persen": 0.0,
-            "status_tren": "Stabil",
-            "avg_cvss": 0.0,
-            "total_insiden": 0,
-            "total_cve": 0,
-            "total_insiden_baseline": 0,
-            "total_cve_baseline": 0,
-        }
 
-    df_terkini, df_baseline = _split_periode(df_riwayat)
-
-    def _hitung_sub_posture(df_sub: pd.DataFrame) -> tuple:
-        if df_sub.empty:
-            return 1.0, 0, 0, 0.0
-        df_b = df_sub[df_sub["kategori"] == "berita"]
-        df_c = df_sub[df_sub["kategori"] == "cve"]
-        n_insiden = int((df_b["kategori_relevansi"] == "insiden_spesifik").sum()) if not df_b.empty else 0
-        n_cve = len(df_c)
-        avg_c = round(float(df_c["skor_cvss"].dropna().mean()), 1) if not df_c.empty and df_c["skor_cvss"].notna().any() else 0.0
-        
-        # Normalisasi Min-Max fitur (skala 0.0 - 1.0)
-        norm_insiden = min(1.0, n_insiden / 30.0)
-        norm_cve = min(1.0, n_cve / 50.0)
-        norm_cvss = (avg_c / 10.0) if n_cve > 0 else 0.0
-        
-        # Skor komposit 1.0 - 10.0 dengan bobot berimbang: Insiden 35%, CVE 25%, CVSS 40%
-        skor_raw = 1.0 + (9.0 * ((norm_insiden * 0.35) + (norm_cve * 0.25) + (norm_cvss * 0.40)))
-        return round(min(10.0, max(1.0, skor_raw)), 1), n_insiden, n_cve, avg_c
-
-    skor_terkini, total_insiden, total_cve, avg_cvss = _hitung_sub_posture(df_terkini)
-    skor_baseline, total_insiden_base, total_cve_base, _ = _hitung_sub_posture(df_baseline)
-
-    growth = _hitung_growth(int(skor_terkini * 10), int(skor_baseline * 10))
-    if growth > 5.0:
-        status_tren = "Meningkat"
-    elif growth < -5.0:
-        status_tren = "Menurun"
-    else:
-        status_tren = "Stabil"
-
-    if skor_terkini >= 8.0:
-        level = "KRITIS"
-        level_label = "KRITIS (Critical)"
-        warna = "red"
-    elif skor_terkini >= 6.0:
-        level = "TINGGI"
-        level_label = "TINGGI (Elevated)"
-        warna = "amber"
-    elif skor_terkini >= 4.0:
-        level = "SEDANG"
-        level_label = "SEDANG (Moderate)"
-        warna = "blue"
-    else:
-        level = "RENDAH"
-        level_label = "RENDAH (Low)"
-        warna = "green"
-
-    return {
-        "skor": skor_terkini,
-        "skor_baseline": skor_baseline,
-        "level": level,
-        "level_label": level_label,
-        "warna": warna,
-        "growth_persen": growth,
-        "status_tren": status_tren,
-        "avg_cvss": avg_cvss,
-        "total_insiden": total_insiden,
-        "total_cve": total_cve,
-        "total_insiden_baseline": total_insiden_base,
-        "total_cve_baseline": total_cve_base,
-        "cve_growth": _hitung_growth(total_cve, total_cve_base),
-    }
-
-
-
-def hitung_matriks_tindakan_ancaman(
-    df_riwayat: pd.DataFrame, df_berita_dedup: Optional[pd.DataFrame] = None
-) -> List[Dict]:
-    """
-    Menyusun Matriks Tindakan Ancaman Mingguan untuk proteksi website dan sistem:
-    Memetakan kategori ancaman spesifik, status tren lonjakan, dan tindakan taktis.
-    """
-    if df_berita_dedup is not None:
-        df_terkini_dedup, df_baseline_dedup = _split_periode(df_berita_dedup)
-    else:
-        df_berita = df_riwayat[df_riwayat["kategori"] == "berita"].copy()
-        if df_berita.empty:
-            return []
-        df_terkini, df_baseline = _split_periode(df_berita)
-        df_terkini_dedup = _dedup_ringan_lintas_hari(df_terkini)
-        df_baseline_dedup = _dedup_ringan_lintas_hari(df_baseline)
-
-    kategori_ancaman_definisi = ConfigLoader.get_rules("kategori_ancaman")
-
-
-    matriks = []
-    for item in kategori_ancaman_definisi:
-        kws = item["keywords"]
-
-        def _hitung_frekuensi(df_sub: pd.DataFrame) -> int:
-            if df_sub.empty:
-                return 0
-            cnt = 0
-            for _, r in df_sub.iterrows():
-                t = f"{r.get('judul', '')} {r.get('ringkasan_atau_narasi', '')} {r.get('kata_kunci', '')}".lower()
-                if any(kw in t for kw in kws):
-                    cnt += 1
-            return cnt
-
-        cnt_terkini = _hitung_frekuensi(df_terkini_dedup)
-        cnt_baseline = _hitung_frekuensi(df_baseline_dedup)
-        growth = _hitung_growth(cnt_terkini, cnt_baseline)
-
-        urg_cfg = ConfigLoader.get_config().get("cti_analysis", {}).get("threat_posture", {}).get("urgency", {"kritis_count": 4, "kritis_growth": 50.0})
-        if cnt_terkini >= urg_cfg["kritis_count"] or growth >= urg_cfg["kritis_growth"]:
-            level_urgensi = "KRITIS"
-            badge_warna = "red"
-        elif cnt_terkini >= 2 or growth > 0:
-            level_urgensi = "TINGGI"
-            badge_warna = "amber"
-        elif cnt_terkini > 0:
-            level_urgensi = "SEDANG"
-            badge_warna = "blue"
-        else:
-            level_urgensi = "MONITOR"
-            badge_warna = "slate"
-
-        matriks.append({
-            "id": item["id"],
-            "kategori": item["kategori"],
-            "ikon": item["ikon"],
-            "warna": item["warna"],
-            "jumlah_terkini": cnt_terkini,
-            "jumlah_baseline": cnt_baseline,
-            "growth_persen": growth,
-            "level_urgensi": level_urgensi,
-            "badge_warna": badge_warna,
-            "fokus_website": item["fokus_website"],
-            "tindakan_taktis": item["tindakan_taktis"],
-        })
-
-    matriks.sort(key=lambda x: (x["level_urgensi"] in ["KRITIS", "TINGGI"], x["growth_persen"], x["jumlah_terkini"]), reverse=True)
-    return matriks
 
 
 # Media Cybersecurity Internasional (RSS Resmi Luar Negeri)
@@ -548,7 +516,7 @@ def _deteksi_tag_insiden(text: str) -> str:
         return "Malware"
     if any(k in t for k in ["phishing", "scam", "penipuan", "tautan palsu"]):
         return "Phishing"
-    if any(k in t for k in ["zero-day", "celah", "vulnerability", "exploit", "cve"]):
+    if any(k in t for k in ["zero-day", "celah", "vulnerability", "exploit"]):
         return "Eksploitasi Celah"
     return "Insiden Siber"
 
@@ -711,18 +679,8 @@ def susun_ringkasan_statistik_tren(df_riwayat: pd.DataFrame) -> Dict:
         logger.info("riwayat_tren kosong, tidak ada statistik tren yang bisa dihitung.")
         return {
             "berita": {},
-            "cve": {},
             "vektor_serangan": [],
             "sektor_target": [],
-            "threat_posture": {
-                "skor": 1.0,
-                "level": "RENDAH",
-                "level_label": "RENDAH (Low)",
-                "warna": "green",
-                "growth_persen": 0.0,
-                "status_tren": "Stabil",
-            },
-            "matriks_tindakan": [],
             "kasus_wilayah": {"internasional": [], "nasional": [], "jawa_timur": []},
         }
 
@@ -735,21 +693,15 @@ def susun_ringkasan_statistik_tren(df_riwayat: pd.DataFrame) -> Dict:
             "tren_kategori": hitung_tren_kategori_berita(df_riwayat, df_berita_dedup=df_berita_dedup),
             "sampel_judul_insiden": ambil_sampel_judul_insiden(df_riwayat, df_berita_dedup=df_berita_dedup),
         },
-        "cve": {
-            "vendor_naik": hitung_tren_vendor_cve(df_riwayat, top_n=10),
-        },
         "vektor_serangan": hitung_tren_vektor_serangan(df_riwayat, df_berita_dedup=df_berita_dedup),
+        "taktik_mitre": hitung_distribusi_taktik_mitre(df_riwayat, df_berita_dedup=df_berita_dedup),
+        "cve_watchlist": ekstrak_radar_cve_watchlist(df_riwayat, df_berita_dedup=df_berita_dedup),
         "sektor_target": hitung_tren_sektor_target(df_riwayat, df_berita_dedup=df_berita_dedup),
-        "threat_posture": hitung_skor_threat_posture(df_riwayat),
-        "matriks_tindakan": hitung_matriks_tindakan_ancaman(df_riwayat, df_berita_dedup=df_berita_dedup),
         "kasus_wilayah": hitung_kasus_insiden_wilayah(df_riwayat),
     }
 
     logger.info(
         f"Statistik tren mingguan tersusun: {len(statistik['berita']['kata_kunci_naik'])} kata kunci naik, "
-        f"{len(statistik['cve']['vendor_naik'])} vendor CVE naik, "
-        f"Threat Posture {statistik['threat_posture']['level_label']} ({statistik['threat_posture']['skor']}/10 - {statistik['threat_posture']['status_tren']}), "
-        f"{len(statistik['matriks_tindakan'])} kategori matriks tindakan, "
         f"Kasus Wilayah: Intl={len(statistik['kasus_wilayah']['internasional'])}, Nas={len(statistik['kasus_wilayah']['nasional'])}, Jatim={len(statistik['kasus_wilayah']['jawa_timur'])}."
     )
     return statistik
@@ -761,14 +713,13 @@ def susun_statistik_dashboard(df_riwayat: pd.DataFrame, statistik_tren: Optional
     Dihitung sekali saat pipeline pasca-proses selesai dan disimpan ke database agar tampilan web instan.
     """
     statistik_kosong = {
-        "total_berita": 0, "total_cve": 0, "total_vendor_cve": 0, "avg_cvss": 0,
-        "kata_kunci_naik": [], "vendor_naik": [], "sampel_judul_insiden": [],
-        "tren_kategori": {}, "severity_breakdown": {}, "harian": [],
-        "distribusi_cvss": [], "distribusi_sumber": [],
+        "total_berita": 0, "total_insiden_kritis": 0,
+        "kata_kunci_naik": [], "top_sektor": [], "sampel_judul_insiden": [],
+        "tren_kategori": {}, "harian": [],
+        "distribusi_sumber": [],
         "nasional_vs_internasional": {"nasional": 0, "internasional": 0},
         "komposisi_jenis": {}, "harian_sumber": [], "vektor_serangan": [],
-        "matriks_tindakan": [],
-        "threat_posture": {"skor": 1.0, "skor_baseline": 1.0, "level": "RENDAH", "level_label": "RENDAH (Low)", "warna": "green", "growth_persen": 0.0, "status_tren": "Stabil"},
+        "taktik_mitre": [], "cve_watchlist": [],
         "kasus_wilayah": {"internasional": [], "nasional": [], "jawa_timur": []},
     }
     if df_riwayat.empty:
@@ -784,14 +735,9 @@ def susun_statistik_dashboard(df_riwayat: pd.DataFrame, statistik_tren: Optional
 
     df_7 = df_temp[df_temp["tgl"].isin(tanggal_unik_terbaru)].copy()
     df_berita = df_7[df_7["kategori"] == "berita"]
-    df_cve = df_7[df_7["kategori"] == "cve"]
 
     total_berita = len(df_berita)
-    total_cve = len(df_cve)
-    total_vendor_cve = len(df_cve["vendor"].dropna().unique()) if not df_cve.empty and "vendor" in df_cve.columns else 0
-    avg_cvss = round(float(df_cve["skor_cvss"].dropna().mean()), 1) if not df_cve.empty and df_cve["skor_cvss"].notna().any() else 0.0
-
-    severity_counts = df_cve["severity"].dropna().value_counts().to_dict() if not df_cve.empty else {}
+    total_insiden_kritis = int((df_berita["kategori_relevansi"] == "insiden_spesifik").sum()) if not df_berita.empty else 0
 
     # Chart Harian
     harian_list = []
@@ -800,18 +746,7 @@ def susun_statistik_dashboard(df_riwayat: pd.DataFrame, statistik_tren: Optional
         harian_list.append({
             "tanggal": tgl,
             "berita": int((df_tgl["kategori"] == "berita").sum()),
-            "cve": int((df_tgl["kategori"] == "cve").sum()),
         })
-
-    # Distribusi CVSS
-    cvss_bins = []
-    if not df_cve.empty:
-        cvss_vals = df_cve["skor_cvss"].dropna()
-        cvss_bins = [
-            {"label": "10.0", "jumlah": int((cvss_vals == 10.0).sum())},
-            {"label": "9.5 - 9.9", "jumlah": int(((cvss_vals >= 9.5) & (cvss_vals < 10.0)).sum())},
-            {"label": "9.0 - 9.4", "jumlah": int(((cvss_vals >= 9.0) & (cvss_vals < 9.5)).sum())},
-        ]
 
     # Distribusi Sumber
     sumber_counts = df_berita["sumber"].value_counts().to_dict() if not df_berita.empty else {}
@@ -846,26 +781,21 @@ def susun_statistik_dashboard(df_riwayat: pd.DataFrame, statistik_tren: Optional
 
     return {
         "total_berita": total_berita,
-        "total_cve": total_cve,
-        "total_vendor_cve": total_vendor_cve,
-        "cve_growth": statistik.get("threat_posture", {}).get("cve_growth", 0.0),
-        "avg_cvss": avg_cvss,
+        "total_insiden_kritis": total_insiden_kritis,
         "ancaman_baru": ancaman_baru,
         "kata_kunci_naik": statistik.get("berita", {}).get("kata_kunci_naik", []),
-        "vendor_naik": statistik.get("cve", {}).get("vendor_naik", []),
+        "top_sektor": statistik.get("sektor_target", []),
         "sampel_judul_insiden": statistik.get("berita", {}).get("sampel_judul_insiden", []),
         "tren_kategori": statistik.get("berita", {}).get("tren_kategori", {}),
-        "threat_posture": statistik.get("threat_posture", {"skor": 1.0, "skor_baseline": 1.0, "level": "RENDAH", "level_label": "RENDAH (Low)", "warna": "green", "growth_persen": 0.0, "status_tren": "Stabil"}),
         "sektor_target": statistik.get("sektor_target", []),
-        "severity_breakdown": severity_counts,
         "harian": harian_list,
-        "distribusi_cvss": cvss_bins,
         "distribusi_sumber": distribusi_sumber,
         "nasional_vs_internasional": {"nasional": nasional_count, "internasional": internasional_count},
         "komposisi_jenis": komposisi_jenis,
         "harian_sumber": harian_sumber,
         "vektor_serangan": statistik.get("vektor_serangan", []),
-        "matriks_tindakan": statistik.get("matriks_tindakan", []),
+        "taktik_mitre": statistik.get("taktik_mitre", []),
+        "cve_watchlist": statistik.get("cve_watchlist", []),
         "kasus_wilayah": statistik.get("kasus_wilayah", {"internasional": [], "nasional": [], "jawa_timur": []}),
         "prediksi_pola_serangan": pola_serangan,
     }
@@ -885,6 +815,6 @@ if __name__ == "__main__":
     print("\n=== TREN KATEGORI BERITA ===")
     print(hasil["berita"]["tren_kategori"])
 
-    print("\n=== VENDOR CVE NAIK ===")
-    for v in hasil["cve"]["vendor_naik"]:
-        print(f"  {v['vendor']}: {v['jumlah_terkini']} (baseline {v['jumlah_baseline']}) growth {v['growth_persen']}%")
+    print("\n=== SEKTOR TARGET TERPAPAR ===")
+    for s in hasil["sektor_target"]:
+        print(f"  {s['sektor']}: {s['jumlah']}")

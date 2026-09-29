@@ -1,5 +1,5 @@
 """
-Utility pembersihan output mentah dari LLM lokal (Ollama) - dipisah
+Utility pembersihan output mentah dari model AI CTI - dipisah
 sebagai modul independen (bukan bagian dari llm_summarizer.py) supaya
 modul lain yang juga generate teks via LLM (mis. trend_predictor.py)
 bisa memakainya tanpa menyebabkan circular import.
@@ -25,7 +25,7 @@ def bersihkan_output_llm(teks: Optional[str], judul_atau_id: str = "") -> Option
     Membersihkan output LLM dari pelanggaran format yang terbukti masih
     lolos meski sudah dilarang di system prompt:
     1. Kalimat pembuka generik ("Berikut ringkasan...", "Tentu,", dst).
-    2. Pengulangan judul/CVE ID verbatim di awal kalimat pertama.
+    2. Pengulangan judul/identitas insiden verbatim di awal kalimat pertama.
     """
     if not teks:
         return teks

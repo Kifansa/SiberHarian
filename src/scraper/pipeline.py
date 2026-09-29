@@ -3,10 +3,6 @@ Orkestrasi pipeline pengumpulan berita cybersecurity dari seluruh
 sumber RSS (media internasional, media Indonesia, Google News).
 Alur: kumpulkan entri RSS -> filter window waktu 24 jam -> filter
 kata kunci -> ekstraksi konten lengkap.
-
-Catatan: sumber CVE (NVD API) TIDAK melalui pipeline ini karena
-formatnya API/JSON, bukan RSS. Lihat src/scraper/cve_fetcher.py
-(langkah berikutnya) untuk itu.
 """
 import re
 import time as time_module

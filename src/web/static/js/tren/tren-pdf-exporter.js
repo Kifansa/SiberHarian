@@ -82,10 +82,8 @@ export function eksporLaporanTren(lastTrenData) {
   }
 
   const stat = lastTrenData.statistik;
-  const postur = stat.threat_posture || {};
   const tglCetak = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const jamCetak = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-  const isPosturTinggi = (postur.level || '').toUpperCase().includes('SIAGA') || (postur.level || '').toUpperCase().includes('KRITIS') || (postur.skor && postur.skor >= 7);
 
   const htmlContent = `<!DOCTYPE html>
 <html lang="id">
@@ -150,9 +148,9 @@ export function eksporLaporanTren(lastTrenData) {
       text-align: right;
     }
     .posture-banner {
-      background: ${isPosturTinggi ? '#fef2f2' : '#f0fdf4'};
-      border: 1px solid ${isPosturTinggi ? '#fecaca' : '#bbf7d0'};
-      border-left: 4.5px solid ${isPosturTinggi ? '#b91c1c' : '#15803d'};
+      background: #EEF5FA;
+      border: 1px solid #BDD8E9;
+      border-left: 4.5px solid #0A4174;
       padding: 9px 12px;
       border-radius: 6px;
       margin-bottom: 14px;
@@ -163,7 +161,7 @@ export function eksporLaporanTren(lastTrenData) {
     .posture-banner .posture-title {
       font-size: 9.5pt;
       font-weight: 800;
-      color: ${isPosturTinggi ? '#991b1b' : '#166534'};
+      color: #001D39;
       margin: 0;
     }
     .posture-banner .posture-meta {
@@ -172,7 +170,7 @@ export function eksporLaporanTren(lastTrenData) {
       margin-top: 1px;
     }
     .posture-badge {
-      background: ${isPosturTinggi ? '#b91c1c' : '#15803d'};
+      background: #0A4174;
       color: #ffffff;
       padding: 3px 8px;
       border-radius: 4px;
@@ -182,8 +180,8 @@ export function eksporLaporanTren(lastTrenData) {
     }
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
       margin-bottom: 14px;
     }
     .kpi-box {
@@ -322,7 +320,7 @@ export function eksporLaporanTren(lastTrenData) {
     <div>
       <div class="instansi">Pemerintah Provinsi Jawa Timur &bull; Diskominfo &bull; CSIRT</div>
       <h1>Laporan Resmi Intelijen Ancaman Siber Mingguan</h1>
-      <div class="subjudul">Analisis Komparatif 7 Hari Terkini vs Baseline &amp; Matriks Tindakan Proteksi Website</div>
+      <div class="subjudul">Analisis Komparatif 7 Hari Terkini vs Baseline &amp; Rekomendasi Mitigasi Taktis</div>
     </div>
     <div class="badge-gov">
       <div>KLASIFIKASI: TLP:AMBER</div>
@@ -338,23 +336,39 @@ export function eksporLaporanTren(lastTrenData) {
     <div class="posture-badge">RESMI</div>
   </div>
 
-  <div class="kpi-grid">
-    <div class="kpi-box">
-      <div class="label">Total Insiden Berita (7H)</div>
-      <div class="val">${stat.total_berita || 0}</div>
-      <div class="sub">Artikel Insiden Terkini</div>
+  ${(() => {
+    const sektorList = stat.top_sektor || stat.sektor_target || [];
+    const topSektorObj = sektorList[0] || {};
+    const topSektorName = topSektorObj.sektor || stat.top_focus || 'Infrastruktur Vital';
+    const topSektorGrowth = topSektorObj.growth_persen ?? 0;
+    const polaName = (stat.prediksi_pola_serangan?.pola || 'Belum Ada Data').replace(/^TREN LONJAKAN:\s*/i, '').trim();
+    const ancamanName = (stat.ancaman_baru || 'Kondisi Stabil').trim();
+
+    return `
+    <div class="kpi-grid">
+      <div class="kpi-box">
+        <div class="label">Total Berita Insiden (7H)</div>
+        <div class="val">${stat.total_berita || 0}</div>
+        <div class="sub">Artikel Insiden Terkini</div>
+      </div>
+      <div class="kpi-box">
+        <div class="label">Sektor Paling Terdampak</div>
+        <div class="val" style="font-size:9pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(topSektorName)}">${escapeHtml(topSektorName)}</div>
+        <div class="sub">${topSektorGrowth >= 0 ? '+' : ''}${topSektorGrowth}% vs minggu lalu</div>
+      </div>
+      <div class="kpi-box">
+        <div class="label">Tren Insiden Mingguan</div>
+        <div class="val" style="font-size:9pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(polaName)}">${escapeHtml(polaName)}</div>
+        <div class="sub">Lonjakan Pola Tercepat</div>
+      </div>
+      <div class="kpi-box">
+        <div class="label">Prediksi Ancaman Baru</div>
+        <div class="val" style="font-size:9pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(ancamanName)}">${escapeHtml(ancamanName)}</div>
+        <div class="sub">Sinyal Dini Intelijen CSIRT</div>
+      </div>
     </div>
-    <div class="kpi-box">
-      <div class="label">Total Kerentanan CVE (7H)</div>
-      <div class="val">${stat.total_cve || 0}</div>
-      <div class="sub">${stat.total_vendor_cve || 0} Vendor Terdampak</div>
-    </div>
-    <div class="kpi-box">
-      <div class="label">Top Vendor Prioritas</div>
-      <div class="val" style="font-size:10.5pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(stat.top_focus || '-')}</div>
-      <div class="sub">Fokus Utama Patching</div>
-    </div>
-  </div>
+    `;
+  })()}
 
   <!-- 1. Kasus Insiden Siber Teramai -->
   <div class="section-title">1. Kasus Insiden Siber Teramai</div>
@@ -363,7 +377,7 @@ export function eksporLaporanTren(lastTrenData) {
       <tr>
         <th style="width:16%;">Lingkup Wilayah</th>
         <th style="width:14%;">Kategori</th>
-        <th style="width:40%;">Kasus Insiden Terpilih (Ollama AI)</th>
+        <th style="width:40%;">Kasus Insiden Terpilih (Model AI CTI)</th>
         <th style="width:30%;">Analisis Urgensi &amp; Potensi Ancaman</th>
       </tr>
     </thead>
@@ -457,15 +471,12 @@ export function eksporLaporanTren(lastTrenData) {
     </tbody>
   </table>
 
-  <div class="section-title">2. Ringkasan Intelijen Ancaman &amp; Rekomendasi Mitigasi Berita</div>
+  <div class="section-title">2. SITREP Intelijen Ancaman &amp; Rekomendasi Mitigasi</div>
   ${parseMarkdownToHtmlForPdf(lastTrenData.prediksi_berita)}
-
-  <div class="section-title">3. Rekomendasi Prioritas Kerentanan &amp; Patching CVE</div>
-  ${parseMarkdownToHtmlForPdf(lastTrenData.prediksi_cve)}
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;page-break-inside:avoid;">
     <div>
-      <div class="section-title" style="margin-top:0;">4. Kata Kunci Lonjakan Tertinggi</div>
+      <div class="section-title" style="margin-top:0;">3. Kata Kunci Lonjakan Tertinggi</div>
       <table class="data-table">
         <thead>
           <tr>
@@ -486,21 +497,21 @@ export function eksporLaporanTren(lastTrenData) {
       </table>
     </div>
     <div>
-      <div class="section-title" style="margin-top:0;">5. Vendor Kerentanan Prioritas</div>
+      <div class="section-title" style="margin-top:0;">4. Sektor Sasaran Terpapar (IIV)</div>
       <table class="data-table">
         <thead>
           <tr>
-            <th>Vendor</th>
-            <th style="text-align:center;">Total CVE</th>
-            <th style="text-align:right;">Growth</th>
+            <th>Sektor Vital</th>
+            <th style="text-align:center;">Total Insiden</th>
+            <th style="text-align:right;">Status</th>
           </tr>
         </thead>
         <tbody>
-          ${(stat.vendor_naik || []).slice(0, 6).map(v => `
+          ${(stat.top_sektor || stat.sektor_target || []).slice(0, 6).map(s => `
             <tr>
-              <td><strong>${escapeHtml(v.vendor)}</strong></td>
-              <td style="text-align:center;font-weight:600;">${v.jumlah_terkini}</td>
-              <td style="text-align:right;"><span style="display:inline-block;background:#b91c1c;color:#ffffff;padding:2px 8px;border-radius:4px;font-weight:bold;font-size:10.5px;">+${v.growth_persen}%</span></td>
+              <td><strong>${escapeHtml(s.sektor)}</strong></td>
+              <td style="text-align:center;font-weight:600;">${s.jumlah || 0}</td>
+              <td style="text-align:right;"><span style="display:inline-block;background:#0A4174;color:#ffffff;padding:2px 8px;border-radius:4px;font-weight:bold;font-size:10.5px;">PRIORITAS</span></td>
             </tr>
           `).join('')}
         </tbody>

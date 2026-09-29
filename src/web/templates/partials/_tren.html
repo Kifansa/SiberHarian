@@ -7,7 +7,7 @@
         <span id="tren-desc">Pemantauan Ancaman Siber Aktif</span>
       </div>
       <h2 class="text-xl sm:text-2xl font-extrabold text-[#001D39] tracking-tight">Dashboard Intelijen Ancaman Siber</h2>
-      <p class="text-xs sm:text-sm text-[#49769F] mt-1">Pemantauan komparatif postur risiko, lonjakan insiden, dan prioritas kerentanan Diskominfo Jatim.</p>
+      <p class="text-xs sm:text-sm text-[#49769F] mt-1">Pemantauan komparatif tren insiden, lonjakan ancaman, dan prioritas mitigasi taktis Diskominfo Jatim.</p>
     </div>
     
     <div class="flex items-center gap-2.5 flex-wrap">
@@ -35,7 +35,7 @@
       </div>
       <h3 class="text-base sm:text-lg font-bold text-[#001D39] mb-1">Menganalisis Data Tren &amp; Intelijen Siber</h3>
       <p class="text-xs sm:text-sm text-[#49769F] max-w-md mx-auto leading-relaxed">
-        Mengolah data insiden 7 hari terakhir, menghitung pertumbuhan baseline, dan memetakan prioritas kerentanan CVE...
+        Mengolah data insiden 7 hari terakhir, menghitung pertumbuhan baseline, dan memetakan vektor serangan serta sektor vital...
       </p>
       <div class="w-56 sm:w-72 h-1.5 bg-[#EEF4F8] rounded-full overflow-hidden mx-auto mt-5 relative border border-[#BDD8E9]/60">
         <div class="h-full bg-[#4E8EA2] rounded-full w-1/2 animate-indeterminate"></div>
@@ -85,7 +85,7 @@
       <span class="material-symbols-outlined text-2xl" aria-hidden="true">insights</span>
     </div>
     <h3 class="text-base font-bold text-[#001D39] mb-1">Belum Ada Data Tren</h3>
-    <p class="text-[#49769F] text-xs max-w-md mx-auto mb-5">Jalankan pipeline harian untuk mengumpulkan artikel insiden siber dan data kerentanan CVE.</p>
+    <p class="text-[#49769F] text-xs max-w-md mx-auto mb-5">Jalankan pipeline harian untuk mengumpulkan artikel insiden siber dan menyusun intelijen ancaman.</p>
     <button onclick="window.mulaiPipeline()" class="bg-[#0A4174] hover:bg-[#001D39] text-white font-bold px-5 py-2.5 rounded-xl text-xs active:scale-95 inline-flex items-center gap-1.5 cursor-pointer shadow-sm focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
       <span class="material-symbols-outlined text-base" aria-hidden="true">play_arrow</span> Jalankan Pipeline
     </button>
@@ -117,22 +117,22 @@
         </div>
       </div>
 
-      <!-- Card 2: Total Kerentanan CVE -->
+      <!-- Card 2: Sektor Paling Terdampak -->
       <div class="kpi-card bg-white rounded-xl border border-[#E2EDF8] p-5 sm:p-6 shadow-card hover:shadow-card-hover card-enterprise flex flex-col justify-between">
         <div class="flex items-center justify-between gap-3">
-          <h4 class="text-[11px] sm:text-xs font-bold text-[#49769F] uppercase tracking-wider leading-tight">Total Kerentanan CVE</h4>
-          <div class="w-8 h-8 rounded-lg bg-[#EEF5FA] text-[#4E8EA2] flex items-center justify-center border border-[#BDD8E9] shadow-2xs">
-            <span class="material-symbols-outlined text-lg" aria-hidden="true">bug_report</span>
+          <h4 class="text-[11px] sm:text-xs font-bold text-[#49769F] uppercase tracking-wider leading-tight">Sektor Paling Terdampak</h4>
+          <div class="w-8 h-8 rounded-lg bg-[#EEF5FA] text-[#0A4174] flex items-center justify-center border border-[#BDD8E9] shadow-2xs">
+            <span class="material-symbols-outlined text-lg" aria-hidden="true">domain</span>
           </div>
         </div>
         <div class="my-auto py-2 space-y-1">
-          <div class="text-3xl sm:text-4xl font-extrabold text-[#001D39] tracking-tight leading-none" id="kpi-total-cve">-</div>
+          <div class="text-xl sm:text-2xl font-extrabold text-[#001D39] tracking-tight leading-tight break-words" id="kpi-top-sektor" title="Sektor Paling Terdampak">-</div>
           <div class="pt-0.5 flex items-center gap-1.5 flex-wrap">
-            <div class="inline-flex items-center gap-1 text-xs sm:text-sm font-bold font-mono text-emerald-600" id="kpi-cve-growth">
-              <span class="material-symbols-outlined text-base leading-none">trending_up</span>
-              <span>+0%</span>
+            <div class="inline-flex items-center gap-1 text-xs sm:text-sm font-bold font-mono text-emerald-600" id="kpi-sektor-badge">
+              <span class="material-symbols-outlined text-base leading-none" id="kpi-sektor-icon">trending_up</span>
+              <span id="kpi-sektor-growth">+0%</span>
             </div>
-            <span class="text-xs text-[#49769F] font-sans font-medium">vs minggu lalu</span>
+            <span class="text-xs text-[#49769F] font-sans font-medium" id="kpi-sektor-subtext">vs minggu lalu</span>
           </div>
         </div>
       </div>
@@ -146,7 +146,7 @@
           </div>
         </div>
         <div class="my-auto py-2 space-y-1">
-          <div class="text-2xl sm:text-3xl font-extrabold text-[#001D39] tracking-tight leading-none uppercase truncate" id="kpi-pola-serangan" title="Tren Insiden">-</div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-[#001D39] tracking-tight leading-tight break-words" id="kpi-pola-serangan" title="Tren Insiden">-</div>
           <div class="pt-0.5 flex items-center gap-1.5 flex-wrap">
             <div class="inline-flex items-center gap-1 text-xs sm:text-sm font-bold font-mono text-emerald-600" id="kpi-pola-badge">
               <span class="material-symbols-outlined text-base leading-none" id="kpi-pola-icon">trending_up</span>
@@ -166,7 +166,7 @@
           </div>
         </div>
         <div class="my-auto py-2 space-y-1">
-          <div class="text-2xl sm:text-3xl font-extrabold text-[#001D39] tracking-tight leading-none uppercase truncate" id="kpi-ancaman-baru" title="Ancaman Baru">-</div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-[#001D39] tracking-tight leading-tight break-words" id="kpi-ancaman-baru" title="Ancaman Baru">-</div>
           <div class="pt-0.5 flex items-center gap-1.5 flex-wrap">
             <span class="text-xs text-rose-600 font-sans font-bold flex items-center gap-1">
               <span class="material-symbols-outlined text-sm">warning</span> Sinyal Dini
@@ -201,64 +201,27 @@
       </div>
     </div>
 
-    <!-- MATRIKS TINDAKAN ANCAMAN AKTIF (Operational Remediation Checklist) -->
-    <div class="space-y-4">
-      <div class="border-b border-[#BDD8E9]/80 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div>
-          <h3 class="text-base sm:text-lg font-extrabold text-[#001D39] tracking-tight">Matriks Tindakan Ancaman Aktif</h3>
-          <p class="text-xs text-[#49769F] mt-0.5">Panduan prioritas proteksi dan mitigasi teknis untuk admin server dan pengelola website instansi.</p>
-        </div>
-        <span class="text-[11px] font-bold text-[#0A4174] bg-[#EEF5FA] px-3 py-1 rounded-full border border-[#BDD8E9] shrink-0 w-fit">
-          Operasional SOC
-        </span>
-      </div>
-
-      <div class="overflow-x-auto rounded-xl border border-[#E2EDF8] shadow-card bg-white">
-        <table class="w-full text-left border-collapse text-xs">
-          <thead class="bg-[#EEF4F8] border-b border-[#BDD8E9]">
-            <tr class="text-xs font-bold text-[#001D39] uppercase tracking-wider">
-              <th class="py-3.5 px-4 font-sans">Kategori Ancaman</th>
-              <th class="py-3.5 px-4 font-sans text-center">Lonjakan (7H)</th>
-              <th class="py-3.5 px-4 font-sans text-center">Tingkat Urgensi</th>
-              <th class="py-3.5 px-4 font-sans">Fokus Celah Website Instansi</th>
-              <th class="py-3.5 px-4 font-sans">Tindakan Taktis Rekomendasi</th>
-            </tr>
-          </thead>
-          <tbody id="tabel-matriks-tindakan-body" class="divide-y divide-[#E2EDF8] text-slate-700">
-            <tr>
-              <td colspan="5" class="py-6 text-center text-[#49769F]">Memuat matriks tindakan...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- AI INTELLIGENCE PREDICTIONS & MITIGATION ADVISORY -->
+    <!-- AI INTELLIGENCE SITREP & MITIGATION ADVISORY -->
     <div class="chart-card bg-white border border-[#E2EDF8] rounded-xl p-6 sm:p-7 shadow-card">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 border-b border-[#E2EDF8] pb-4">
         <div>
-          <h3 class="text-base sm:text-lg font-extrabold text-[#001D39] tracking-tight">Ringkasan Analisis &amp; Rekomendasi Mitigasi</h3>
-          <p class="text-xs text-[#49769F] mt-0.5">Analisis proyeksi dan prioritas mitigasi terangkum otomatis oleh model AI CTI.</p>
+          <h3 class="text-base sm:text-lg font-extrabold text-[#001D39] tracking-tight">SITREP Intelijen Siber &amp; Rekomendasi Mitigasi</h3>
+          <p class="text-xs text-[#49769F] mt-0.5">Analisis proyeksi ancaman, vektor serangan, dan mitigasi taktis terangkum otomatis oleh model AI CTI.</p>
         </div>
-        <div class="flex items-center gap-1 bg-[#EEF4F8] p-1 rounded-xl border border-[#BDD8E9] w-fit shadow-inner">
-          <button id="tab-ai-berita-btn" type="button" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-[#0A4174] text-white shadow-2xs cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">Berita</button>
-          <button id="tab-ai-cve-btn" type="button" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-[#49769F] hover:text-[#001D39] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">CVE</button>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]">
+          <span class="material-symbols-outlined text-xs">neurology</span>
+          <span>5 Modul Intelijen</span>
         </div>
       </div>
       <div id="ai-tab-berita">
         <div id="prediksi-berita-cards" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <div class="text-[#49769F] text-sm col-span-full py-6 text-center">Memuat laporan analisis berita...</div>
-        </div>
-      </div>
-      <div id="ai-tab-cve" class="hidden">
-        <div id="prediksi-cve-cards" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <div class="text-[#49769F] text-sm col-span-full py-6 text-center">Memuat ringkasan prioritas CVE...</div>
+          <div class="text-[#49769F] text-sm col-span-full py-6 text-center">Memuat laporan SITREP intelijen siber...</div>
         </div>
       </div>
     </div>
 
-    <!-- GRAFIK ANALITIK STRATEGIS: Vektor Serangan & Sektor Target (Desain Referensi) -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+    <!-- GRAFIK ANALITIK STRATEGIS: Vektor Serangan, Sektor Target, & Taktik MITRE ATT&CK -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
       <div class="chart-card bg-white rounded-xl border border-[#E2EDF8] p-6 sm:p-7 shadow-card">
         <div class="mb-5 flex items-center justify-between">
           <div>
@@ -288,9 +251,24 @@
           <div class="text-[#49769F] text-xs py-8 text-center font-sans">Memuat sektor terpapar...</div>
         </div>
       </div>
+
+      <div class="chart-card bg-white rounded-xl border border-[#E2EDF8] p-6 sm:p-7 shadow-card">
+        <div class="mb-5 flex items-center justify-between">
+          <div>
+            <h4 class="text-base font-extrabold text-[#001D39] tracking-tight">Distribusi Taktik MITRE ATT&amp;CK</h4>
+            <p class="text-xs text-[#49769F] mt-0.5">Pemetaan taktik dan siklus serangan siber aktif.</p>
+          </div>
+          <span class="w-8 h-8 rounded-lg bg-[#EEF5FA] text-[#0A4174] flex items-center justify-center border border-[#BDD8E9] shadow-2xs">
+            <span class="material-symbols-outlined text-lg" aria-hidden="true">alt_route</span>
+          </span>
+        </div>
+        <div id="chart-taktik-mitre" class="space-y-4 pt-1">
+          <div class="text-[#49769F] text-xs py-8 text-center font-sans">Memuat taktik MITRE...</div>
+        </div>
+      </div>
     </div>
 
-    <!-- DATA RANKING TABLES: Kata Kunci & Vendor CVE -->
+    <!-- DATA RANKING TABLES: Kata Kunci & Sektor IIV -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="chart-card bg-white rounded-xl border border-[#E2EDF8] p-5 sm:p-6 shadow-card flex flex-col justify-between">
         <div class="mb-3.5 flex items-center justify-between gap-2">
@@ -313,29 +291,62 @@
 
       <div class="chart-card bg-white rounded-xl border border-[#E2EDF8] p-5 sm:p-6 shadow-card flex flex-col justify-between">
         <div class="mb-3.5 flex items-center justify-between gap-2">
-          <h4 class="text-base font-extrabold text-[#001D39] tracking-tight">Vendor CVE Prioritas</h4>
-          <span class="text-[11px] font-bold text-[#0A4174] bg-[#EEF5FA] px-2.5 py-0.5 rounded-full border border-[#BDD8E9]">Top 10 Vendor</span>
+          <h4 class="text-base font-extrabold text-[#001D39] tracking-tight">Sektor Sasaran Terpapar (IIV)</h4>
+          <span class="text-[11px] font-bold text-[#0A4174] bg-[#EEF5FA] px-2.5 py-0.5 rounded-full border border-[#BDD8E9]">Infrastruktur Vital</span>
         </div>
         <div class="overflow-auto max-h-[330px] custom-scrollbar rounded-xl border border-[#E2EDF8] shadow-2xs relative">
           <table class="w-full text-left border-collapse text-xs">
             <thead class="bg-[#EEF4F8] border-b border-[#BDD8E9] sticky top-0 z-10 shadow-2xs">
               <tr class="text-xs font-bold text-[#001D39] uppercase tracking-wider">
-                <th class="py-2.5 px-3.5 font-sans bg-[#EEF4F8]">Vendor</th>
-                <th class="py-2.5 px-3.5 text-center font-sans bg-[#EEF4F8]">Total CVE</th>
-                <th class="py-2.5 px-3.5 font-sans bg-[#EEF4F8]">Produk Terdampak Utama</th>
-                <th class="py-2.5 px-3.5 text-right font-sans bg-[#EEF4F8]">Growth</th>
+                <th class="py-2.5 px-3.5 font-sans bg-[#EEF4F8]">Sektor Vital</th>
+                <th class="py-2.5 px-3.5 text-center font-sans bg-[#EEF4F8]">Total Insiden</th>
+                <th class="py-2.5 px-3.5 font-sans bg-[#EEF4F8]">Proporsi Ancaman</th>
+                <th class="py-2.5 px-3.5 text-right font-sans bg-[#EEF4F8]">Urgensi</th>
               </tr>
             </thead>
-            <tbody id="tabel-vendor-body" class="text-sm text-slate-700 bg-white"></tbody>
+            <tbody id="tabel-sektor-body" class="text-sm text-slate-700 bg-white"></tbody>
           </table>
         </div>
+      </div>
+    </div>
+
+    <!-- RADAR KERENTANAN & CVE WATCHLIST (Active Exploitation In The Wild) -->
+    <div class="chart-card bg-white rounded-xl border border-[#E2EDF8] p-5 sm:p-6 shadow-card space-y-4">
+      <div class="border-b border-[#BDD8E9]/80 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h4 class="text-base sm:text-lg font-extrabold text-[#001D39] tracking-tight">Radar Kerentanan &amp; CVE Watchlist</h4>
+          <p class="text-xs text-[#49769F] mt-0.5">Identifikasi celah keamanan (CVE), zero-day, dan kerentanan software yang dieksploitasi aktif di alam liar.</p>
+        </div>
+        <span class="text-[11px] font-bold text-rose-700 bg-rose-50 px-3 py-1 rounded-full border border-rose-200 shrink-0 w-fit flex items-center gap-1">
+          <span class="material-symbols-outlined text-xs">radar</span>
+          <span>Eksploitasi Aktif</span>
+        </span>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl border border-[#E2EDF8] shadow-2xs bg-white">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead class="bg-[#EEF4F8] border-b border-[#BDD8E9]">
+            <tr class="text-xs font-bold text-[#001D39] uppercase tracking-wider">
+              <th class="py-3 px-3.5 font-sans">Identifikasi Celah / CVE</th>
+              <th class="py-3 px-3.5 font-sans">Aplikasi / Komponen Sasaran</th>
+              <th class="py-3 px-3.5 font-sans text-center">Status Eksploitasi</th>
+              <th class="py-3 px-3.5 font-sans text-center">Laporan (7H)</th>
+              <th class="py-3 px-3.5 font-sans">Sumber Intelijen Terakhir</th>
+            </tr>
+          </thead>
+          <tbody id="tabel-cve-watchlist-body" class="divide-y divide-[#E2EDF8] text-slate-700">
+            <tr>
+              <td colspan="5" class="py-6 text-center text-[#49769F]">Memuat radar kerentanan...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
   </div>
 </div>
 
-<!-- Clean Modern Modal Detail Ancaman (Desain Serupa Ringkasan Berita & CVE) -->
+<!-- Clean Modern Modal Detail Ancaman (Desain Serupa Ringkasan Berita) -->
 <div class="fixed inset-0 bg-[#001D39]/70 backdrop-blur-sm z-[100] hidden items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-200 ease-out"
   id="modal-detail-ancaman-overlay" onclick="window.tutupModalJikaLuarKasus(event)" aria-hidden="true">
   <div class="bg-white rounded-2xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-7 relative border border-[#BDD8E9] shadow-elevated transform scale-95 opacity-0 translate-y-4 transition-all duration-200 ease-out font-sans"

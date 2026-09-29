@@ -106,7 +106,7 @@
         <div class="border-b border-enterprise-border pb-3 mb-4">
             <h3 class="text-base font-bold text-ref-navy flex items-center gap-2">
                 <span class="material-symbols-outlined text-ref-teal">psychology</span>
-                Template Prompt Sistem CTI (10 Modul Aktif)
+                Template Prompt Sistem CTI (6 Modul Aktif)
             </h3>
             <p class="text-xs text-ref-slate mt-1">Prompt disusun modular per-bagian agar hasil inferensi akurat, bebas halusinasi, dan dapat disesuaikan kebutuhan analisis Diskominfo Jawa Timur.</p>
         </div>
@@ -191,7 +191,7 @@
                         <thead class="bg-enterprise-subtle text-ref-navy">
                             <tr>
                                 <th class="px-4 py-2.5 font-bold">Nama Sumber</th>
-                                <th class="px-4 py-2.5 font-bold">URL Feed Utama</th>
+                                <th class="px-4 py-2.5 font-bold">URL Feed (RSS/Atom)</th>
                                 <th class="px-4 py-2.5 font-bold text-center">Status</th>
                                 <th class="px-4 py-2.5 font-bold text-center" x-show="role === 'superadmin'">Aksi</th>
                             </tr>
@@ -200,7 +200,14 @@
                             <template x-for="(s, idx) in rss.international" :key="'int-'+idx">
                                 <tr class="border-t border-enterprise-border hover:bg-enterprise-subtle/50 transition-colors">
                                     <td class="px-4 py-2 font-semibold text-ref-navy" x-text="s.nama"></td>
-                                    <td class="px-4 py-2 font-mono text-[11px] text-ref-slate truncate max-w-xs" x-text="s.feeds[0]"></td>
+                                    <td class="px-4 py-2 font-mono text-[11px] text-ref-slate max-w-sm">
+                                        <template x-for="(fUrl, fIdx) in s.feeds" :key="fIdx">
+                                            <div class="truncate flex items-center gap-1.5" :title="fUrl">
+                                                <span x-show="s.feeds.length > 1" class="text-[10px] text-ref-sapphire font-bold shrink-0" x-text="'[' + (fIdx + 1) + ']'"></span>
+                                                <span class="truncate" x-text="fUrl"></span>
+                                            </div>
+                                        </template>
+                                    </td>
                                     <td class="px-4 py-2 text-center">
                                         <span x-show="s.active !== false" class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded-full">Aktif</span>
                                         <span x-show="s.active === false" class="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold rounded-full">Nonaktif</span>
@@ -229,7 +236,7 @@
                         <thead class="bg-enterprise-subtle text-ref-navy">
                             <tr>
                                 <th class="px-4 py-2.5 font-bold">Nama Sumber</th>
-                                <th class="px-4 py-2.5 font-bold">URL Feed Utama</th>
+                                <th class="px-4 py-2.5 font-bold">URL Feed (RSS/Atom)</th>
                                 <th class="px-4 py-2.5 font-bold text-center">Status</th>
                                 <th class="px-4 py-2.5 font-bold text-center" x-show="role === 'superadmin'">Aksi</th>
                             </tr>
@@ -238,7 +245,14 @@
                             <template x-for="(s, idx) in rss.indonesia" :key="'id-'+idx">
                                 <tr class="border-t border-enterprise-border hover:bg-enterprise-subtle/50 transition-colors">
                                     <td class="px-4 py-2 font-semibold text-ref-navy" x-text="s.nama"></td>
-                                    <td class="px-4 py-2 font-mono text-[11px] text-ref-slate truncate max-w-xs" x-text="s.feeds[0]"></td>
+                                    <td class="px-4 py-2 font-mono text-[11px] text-ref-slate max-w-sm">
+                                        <template x-for="(fUrl, fIdx) in s.feeds" :key="fIdx">
+                                            <div class="truncate flex items-center gap-1.5" :title="fUrl">
+                                                <span x-show="s.feeds.length > 1" class="text-[10px] text-ref-sapphire font-bold shrink-0" x-text="'[' + (fIdx + 1) + ']'"></span>
+                                                <span class="truncate" x-text="fUrl"></span>
+                                            </div>
+                                        </template>
+                                    </td>
                                     <td class="px-4 py-2 text-center">
                                         <span x-show="s.active !== false" class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded-full">Aktif</span>
                                         <span x-show="s.active === false" class="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold rounded-full">Nonaktif</span>
@@ -332,7 +346,7 @@ document.addEventListener('alpine:init', () => {
         keywords: { mandiri: '', data: '', aset: '' },
 
         promptsData: [],
-        promptCategories: ['Pipeline Harian', 'SITREP Tren Berita', 'SITREP Tren Kerentanan CVE'],
+        promptCategories: ['Pipeline Harian', 'SITREP Tren Berita'],
         selectedPromptId: null,
         selectedPromptMeta: null,
         promptContent: '',
@@ -374,8 +388,14 @@ document.addEventListener('alpine:init', () => {
 
                 // Simpan metadata prompts terstruktur
                 this.promptsData = Array.isArray(data.prompts) ? data.prompts : [];
-                if (this.promptsData.length > 0 && !this.selectedPromptId) {
-                    this.selectPrompt(this.promptsData[0]);
+                if (this.promptsData.length > 0) {
+                    const dynamicCats = [...new Set(this.promptsData.map(p => p.kategori))].filter(Boolean);
+                    if (dynamicCats.length > 0) {
+                        this.promptCategories = dynamicCats;
+                    }
+                    if (!this.selectedPromptId) {
+                        this.selectPrompt(this.promptsData[0]);
+                    }
                 }
 
                 this.rss.international = data.rss_sources_international || [];

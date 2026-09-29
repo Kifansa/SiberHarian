@@ -21,6 +21,7 @@ logger = setup_logger(__name__)
 DEFAULT_DB_PATH = Path(__file__).resolve().parents[2] / "data" / "state.db"
 
 _EMBEDDING_CACHE: Dict[str, List[float]] = {}
+_MITRE_EMBEDDING_CACHE: Dict[str, List[float]] = {}
 
 
 def _cosine_similarity(vec_a: List[float], vec_b: List[float]) -> float:
@@ -39,6 +40,87 @@ def _cosine_similarity(vec_a: List[float], vec_b: List[float]) -> float:
     return dot / (math.sqrt(sum_a) * math.sqrt(sum_b))
 
 
+def extract_threat_entity_organic(judul: str, narasi: str = "", kata_kunci: str = "") -> str:
+    """
+    Mengekstrak nama spesifik malware, exploit, zero-day, backdoor, botnet, atau modus serangan
+    secara langsung dan organik dari teks berita tanpa menggunakan klasifikasi kaku.
+    Contoh output:
+    - 'Backdoor TASK#STOMP'
+    - 'NetScaler Zero-Day'
+    - 'Ransomware LockBit'
+    - 'Trojan RemControl'
+    - 'Botnet CARBONATO'
+    - 'Phishing APK'
+    - 'Penipuan Online'
+    - 'Pencurian Kripto'
+    """
+    judul_clean = re.sub(r'[\"\'\`“”‘’]', '', str(judul or "")).strip()
+    narasi_clean = re.sub(r'[\"\'\`“”‘’]', '', str(narasi or "")).strip()
+    teks = f"{judul_clean}. {narasi_clean}"
+
+    STOP_TERMS = {
+        'pada', 'pencuri', 'yang', 'dan', 'untuk', 'dengan', 'dari', 'tersebut', 'kini',
+        'baru', 'aktif', 'menyerang', 'seperti', 'antara', 'uses', 'hides', 'gives',
+        'steals', 'from', 'terintegrasi', 'berbahaya', 'dalam', 'bisa', 'akan', 'hacks',
+        'sistem', 'server', 'komputer', 'perangkat', 'jaringan', 'terhadap', 'adalah',
+        'sejumlah', 'banyak', 'beberapa', 'sebuah', 'suatu', 'the', 'a', 'an', 'of', 'in',
+        'on', 'at', 'to', 'for', 'ini', 'itu', 'atas', 'oleh', 'di', 'ke', 'juga', 'tagar'
+    }
+
+    # 1. Pola Malware/Backdoor/Ransomware/Trojan/Infostealer/Botnet/Spyware + Nama Entitas Spesifik
+    m_malware = re.search(
+        r'\b(Backdoor|Malware|Ransomware|Trojan|Infostealer|Stealer|Botnet|Spyware)\s+([A-Z0-9#@_\-\.]{3,25}|[A-Z][a-z0-9]+(?:\s+[A-Z0-9][a-z0-9]+)?)\b',
+        teks, re.IGNORECASE
+    )
+    if m_malware:
+        tipe = m_malware.group(1).title()
+        nama = m_malware.group(2).strip()
+        if nama.lower() not in STOP_TERMS and len(nama) > 2:
+            return f"{tipe} {nama}"
+
+    # 2. Pola Zero-Day atau CVE Produk / Vendor spesifik
+    m_zero = re.search(r'\b([A-Z][a-zA-Z0-9]+(?:\s+[A-Z][a-zA-Z0-9]+)?)\s+(?:Zero-Days?|0-Days?)\b', teks, re.IGNORECASE)
+    if m_zero and m_zero.group(1).lower() not in STOP_TERMS:
+        return f"{m_zero.group(1)} Zero-Day"
+
+    m_cve = re.search(r'\b(CVE-\d{4}-\d{4,7})\b', teks, re.IGNORECASE)
+    if m_cve:
+        m_prod = re.search(r'\b([A-Z][a-zA-Z0-9]+(?:\s+[A-Z][a-zA-Z0-9]+)?)\s+(?:Zero-Days?|0-Days?|Celah|Kerentanan|CVE)', judul_clean, re.IGNORECASE)
+        if m_prod and m_prod.group(1).lower() not in STOP_TERMS:
+            return f"{m_prod.group(1)} ({m_cve.group(1).upper()})"
+        return m_cve.group(1).upper()
+
+    # 3. APT / Aktor Ancaman Terorganisir
+    m_apt = re.search(r'\b(APT[0-9]+|[A-Z][a-z0-9]+\s+(?:Typhoon|Spider|Blizzard|Bear|Panda|Chollima|Kitten|Jackal)|Lazarus|ShinyHunters|RansomHub|LockBit)\b', teks, re.IGNORECASE)
+    if m_apt:
+        return f"Aktor {m_apt.group(1).title()}"
+
+    # 4. Modus Serangan dengan Preposisi (misal: "Peretasan terhadap FBI" -> "Peretasan FBI")
+    m_prep = re.search(r'\b(Peretasan|Pencurian|Kebocoran|Pembobolan)\s+(?:terhadap|pada|oleh|di|ke|dari|untuk|dan|yang)\s+([A-Z0-9][a-zA-Z0-9\.\#\-]+(?:\s+[A-Z0-9][a-zA-Z0-9\.\#\-]+)?)', teks, re.IGNORECASE)
+    if m_prep:
+        target = m_prep.group(2).strip()
+        first_w = target.split()[0].lower()
+        if first_w not in STOP_TERMS and len(target) > 2:
+            return f"{m_prep.group(1).title()} {target.title()}"
+
+    # 5. Pola Serangan / Modus Spesifik Lainnya
+    m_modus = re.search(
+        r'\b(Judi\s+Online|Pencurian\s+Kripto|Penipuan\s+Online|Situs\s+Palsu|Phishing\s+APK|Data\s+Breach\s+[A-Z][a-zA-Z0-9]+|Kartu\s+Kredit\s+Dibobol|Kebocoran\s+Data\s+[A-Z][a-zA-Z0-9]+|Peretasan\s+[A-Z][a-zA-Z0-9]+)\b',
+        teks, re.IGNORECASE
+    )
+    if m_modus:
+        val = m_modus.group(1).title()
+        words = val.split()
+        if len(words) > 1 and words[1].lower() not in STOP_TERMS:
+            return val
+
+    # 6. Fallback ke subjek utama judul yang bersih
+    clean_j = re.sub(r'^[0-9\.\,\s]+', '', judul_clean)
+    clean_j = re.sub(r'\s*-\s*[A-Za-z0-9\.\s]+$', '', clean_j)
+    words = [w for w in clean_j.split() if w.lower() not in STOP_TERMS][:3]
+    return " ".join(words).title() if words else "Insiden Siber"
+
+
 class RAGEngine:
     """
     Engine RAG sederhana dan teroptimasi untuk mengambil korpus berita riil
@@ -48,7 +130,6 @@ class RAGEngine:
     def __init__(self, df_riwayat: Optional[pd.DataFrame] = None):
         self.df_riwayat = df_riwayat if df_riwayat is not None else pd.DataFrame()
         self.df_berita = pd.DataFrame()
-        self.df_cve = pd.DataFrame()
 
         if not self.df_riwayat.empty:
             if "kategori" in self.df_riwayat.columns:
@@ -56,7 +137,6 @@ class RAGEngine:
                     (self.df_riwayat["kategori"] == "berita") & 
                     (self.df_riwayat["kategori_relevansi"] == "insiden_spesifik")
                 ].copy()
-                self.df_cve = self.df_riwayat[self.df_riwayat["kategori"] == "cve"].copy()
 
     def _extract_top_keywords(self, df: pd.DataFrame, top_n: int = 10) -> List[str]:
         """Ekstrak kata kunci dominan dari dataset secara dinamis."""
@@ -122,6 +202,93 @@ class RAGEngine:
         except Exception as e:
             logger.debug(f"Semantic embedding search bypassed: {e}")
             return []
+
+    def map_incident_to_mitre_semantic(
+        self,
+        incident_title: str,
+        incident_narrative: str = "",
+        keywords: Optional[List[str]] = None,
+        top_k: int = 2
+    ) -> List[Dict[str, Any]]:
+        """
+        Memetakan insiden siber ke taktik dan teknik MITRE ATT&CK secara semantik (Hybrid Multi-Stage RAG).
+        Tahap 1: Mengambil taktik & teknik dari data/encyclopedia/mitre.json.
+        Tahap 2: Menghitung vector similarity teks insiden terhadap teknik MITRE via text-embedding-004.
+        Tahap 3: Fallback anggun ke RapidFuzz token matching jika embedding offline / kuota limit tercapai.
+        Mengembalikan daftar taktik & teknik MITRE terverifikasi dengan skor keyakinan tertinggi.
+        """
+        from src.analytics.encyclopedia_lookup import load_encyclopedia
+        from rapidfuzz import fuzz
+
+        mitre_db = load_encyclopedia("mitre.json")
+        if not mitre_db:
+            return []
+
+        query_text = f"{incident_title}. {incident_narrative}".strip()
+        if keywords:
+            query_text += f" Kata kunci: {', '.join(keywords)}"
+
+        results = []
+
+        # 1. Semantic Vector Retrieval menggunakan text-embedding-004 & Cosine Similarity
+        try:
+            query_emb = GeminiLLMAdapter.embed_text(query_text[:1000])
+            if query_emb:
+                missing_keys = []
+                missing_texts = []
+                for entry in mitre_db:
+                    tid = entry.get("id", "")
+                    if tid and tid not in _MITRE_EMBEDDING_CACHE:
+                        doc_text = f"MITRE {tid} {entry.get('technique', '')} ({entry.get('tactic', '')}). {', '.join(entry.get('keywords', []))}"
+                        missing_keys.append(tid)
+                        missing_texts.append(doc_text)
+
+                if missing_texts:
+                    batch_embs = GeminiLLMAdapter.embed_documents(missing_texts, batch_size=30)
+                    for k, emb in zip(missing_keys, batch_embs):
+                        if emb:
+                            _MITRE_EMBEDDING_CACHE[k] = emb
+
+                for entry in mitre_db:
+                    tid = entry.get("id", "")
+                    doc_emb = _MITRE_EMBEDDING_CACHE.get(tid)
+                    if doc_emb:
+                        sim = _cosine_similarity(query_emb, doc_emb)
+                        results.append({
+                            "id": tid,
+                            "tactic": entry.get("tactic", "Enterprise"),
+                            "technique": entry.get("technique", ""),
+                            "score": round(sim, 3),
+                            "method": "semantic_vector"
+                        })
+        except Exception as e:
+            logger.debug(f"MITRE vector embedding search bypassed: {e}")
+
+        # 2. Fallback Deterministik RapidFuzz Lexical Scoring
+        if not results or (results and max(r["score"] for r in results) < 0.40):
+            fuzzy_results = []
+            q_lower = query_text.lower()
+            for entry in mitre_db:
+                kw_str = " ".join(entry.get("keywords", [])).lower()
+                target_text = f"{entry.get('technique', '').lower()} {entry.get('tactic', '').lower()} {kw_str}"
+                score_ratio = fuzz.token_set_ratio(q_lower, target_text) / 100.0
+
+                for kw in entry.get("keywords", []):
+                    if kw.lower() in q_lower:
+                        score_ratio = min(1.0, score_ratio + 0.15)
+                        break
+
+                fuzzy_results.append({
+                    "id": entry.get("id", ""),
+                    "tactic": entry.get("tactic", "Enterprise"),
+                    "technique": entry.get("technique", ""),
+                    "score": round(score_ratio, 3),
+                    "method": "lexical_fuzzy"
+                })
+            results = fuzzy_results
+
+        results.sort(key=lambda x: x["score"], reverse=True)
+        return results[:top_k]
 
     def retrieve_berita_context(
         self,
@@ -221,35 +388,7 @@ class RAGEngine:
 
         return "\n".join(chunks)
 
-    def retrieve_cve_context(self, top_vendors: List[str], limit: int = 5) -> str:
-        """
-        Mengambil sampel entri kerentanan CVE kritis yang relevan dengan vendor lonjakan tertinggi.
-        """
-        if self.df_cve.empty:
-            return "(Tidak ada data CVE pada database)"
 
-        vendor_set = [v.lower().strip() for v in top_vendors if v]
-        cve_chunks = []
-        cve_terpilih = set()
-
-        for _, row in self.df_cve.iterrows():
-            cve_id = str(row.get("identifier", "-")).strip()
-            vendor = str(row.get("vendor", "")).strip()
-            produk = str(row.get("produk", "")).strip()
-            ringkasan = str(row.get("ringkasan_atau_narasi", "")).strip()
-            cvss = row.get("skor_cvss", "-")
-
-            if any(v in vendor.lower() for v in vendor_set):
-                if cve_id in cve_terpilih:
-                    continue
-                cve_terpilih.add(cve_id)
-                ringkas_teks = ringkasan[:ConfigLoader.get_config().get("cti_analysis", {}).get("rag", {}).get("truncation", {}).get("regional_preview", 180)] + ("..." if len(ringkasan) > 180 else "") if ringkasan else f"Kerentanan pada {produk}"
-                cve_chunks.append(f"- [{cve_id}] {vendor} - {produk} (CVSS: {cvss}): {ringkas_teks}")
-
-                if len(cve_chunks) >= limit:
-                    break
-
-        return "\n".join(cve_chunks) if cve_chunks else "(Volume CVE vendor stabil)"
 
     def retrieve_regional_context(self, cluster_items: List[Dict], wilayah_label: str, limit: int = 10) -> str:
         """
@@ -279,9 +418,8 @@ class RAGEngine:
 
     def hitung_prediksi_pola_serangan(self) -> Dict[str, Any]:
         """
-        Menganalisis data historis 14 hari menggunakan RAG lonjakan makro
-        untuk mengidentifikasi 1 pola insiden yang mengalami eskalasi paling pesat.
-        Semua bersifat dinamis berbasis frekuensi kata kunci dataset.
+        Menganalisis data historis untuk mengidentifikasi 1 pola insiden yang sedang naik
+        dibandingkan minggu kemarin secara organik dari berita tanpa klasifikasi kaku.
         """
         fallback = {
             "pola": "Insiden Dominan",
@@ -295,15 +433,12 @@ class RAGEngine:
             return fallback
 
         spiking = self.ambil_data_tren_makro_spiking()
-        nama_pola = spiking.get("nama_pola", "Insiden Siber")
-        
-        # Ekstrak kata yang paling representatif dari nama pola (dinamis)
-        pola_singkat = nama_pola[:20].strip().title() if nama_pola else "Insiden Dominan"
+        nama_pola = spiking.get("nama_pola", "Insiden Dominan").strip()
         growth = spiking.get("growth_persen", 0.0)
         jml = spiking.get("jumlah_artikel", 0)
 
         return {
-            "pola": pola_singkat,
+            "pola": nama_pola,
             "pola_lengkap": nama_pola,
             "growth_persen": int(growth),
             "jumlah_terkini": jml,
@@ -313,8 +448,8 @@ class RAGEngine:
 
     def hitung_prediksi_ancaman_baru(self) -> str:
         """
-        Menganalisis data empiris RAG untuk mengidentifikasi 1-2 kata sinyal lemah (Emerging Threat).
-        Dibuat sepenuhnya dinamis berdasar kata kunci yang tidak lazim / baru muncul.
+        Mengembalikan nama spesifik ancaman/malware/kasus baru dari berita
+        tanpa diklasifikasikan ke kategori kaku.
         """
         if self.df_berita.empty:
             return "Kondisi Stabil"
@@ -323,20 +458,12 @@ class RAGEngine:
         if not ancaman.get("ada"):
             return "Kondisi Stabil"
 
-        nama = ancaman.get("nama", "")
-        # Ekstrak representasi ringkas untuk UI / sinyal alert
-        words = re.findall(r'[A-Za-z]{4,}', nama)
-        if len(words) >= 2:
-            return f"{words[0]} {words[1]}".upper()
-        elif len(words) == 1:
-            return words[0].upper()
-        
-        return "SIGNAL ALERT"
+        return ancaman.get("nama") or ancaman.get("jenis_serangan") or "Kondisi Stabil"
 
     def ambil_data_tren_makro_spiking(self) -> Dict[str, Any]:
         """
         Mengidentifikasi pola insiden mingguan yang melonjak paling cepat (growth spike tertinggi)
-        secara dinamis berdasarkan klaster kata kunci.
+        dibandingkan minggu kemarin secara dinamis langsung dari berita tanpa patokan klasifikasi.
         """
         if self.df_berita.empty:
             return {
@@ -354,43 +481,38 @@ class RAGEngine:
         if df_terkini.empty:
             df_terkini = df_dedup
 
-        # Bangun pola dinamis berdasarkan kata kunci paling top di df_terkini
-        top_kws = self._extract_top_keywords(df_terkini, top_n=6)
-        
+        # Ekstrak pola entitas serangan secara organik untuk seluruh artikel terkini & baseline
+        entity_terkini = {}
+        for _, r in df_terkini.iterrows():
+            ent = extract_threat_entity_organic(r.get("judul", ""), r.get("ringkasan_atau_narasi", ""), r.get("kata_kunci", ""))
+            entity_terkini.setdefault(ent, []).append(r)
+
+        entity_baseline = Counter()
+        for _, r in df_baseline.iterrows():
+            ent = extract_threat_entity_organic(r.get("judul", ""), r.get("ringkasan_atau_narasi", ""), r.get("kata_kunci", ""))
+            entity_baseline[ent] += 1
+
         kandidat = []
-        for kw in top_kws:
-            matching_terkini = []
-            for _, r in df_terkini.iterrows():
-                teks = f"{r.get('judul', '')} {r.get('ringkasan_atau_narasi', '')} {r.get('kata_kunci', '')}".lower()
-                if kw in teks:
-                    matching_terkini.append(r)
+        for ent, arts in entity_terkini.items():
+            cnt_cur = len(arts)
+            cnt_base = entity_baseline.get(ent, 0)
+            growth = _hitung_growth(cnt_cur, cnt_base)
+            kandidat.append({
+                "nama_pola": ent,
+                "growth_persen": growth,
+                "jumlah_artikel": cnt_cur,
+                "artikel": arts
+            })
 
-            matching_baseline = []
-            for _, r in df_baseline.iterrows():
-                teks = f"{r.get('judul', '')} {r.get('ringkasan_atau_narasi', '')} {r.get('kata_kunci', '')}".lower()
-                if kw in teks:
-                    matching_baseline.append(r)
-
-            cnt_terkini = len(matching_terkini)
-            cnt_baseline = len(matching_baseline)
-            growth = _hitung_growth(cnt_terkini, cnt_baseline)
-
-            if cnt_terkini > 0:
-                kandidat.append({
-                    "nama_pola": f"Tren Lonjakan: {kw.title()}",
-                    "growth_persen": growth,
-                    "jumlah_terkini": cnt_terkini,
-                    "artikel": matching_terkini
-                })
-
-        kandidat.sort(key=lambda x: (x["growth_persen"] > 0, x["growth_persen"], x["jumlah_terkini"]), reverse=True)
+        # Urutkan berdasarkan lonjakan growth tertinggi dan volume artikel
+        kandidat.sort(key=lambda x: (x["growth_persen"] > 0, x["growth_persen"], x["jumlah_artikel"]), reverse=True)
         top_spiking = kandidat[0] if kandidat else None
 
         if not top_spiking:
             top_spiking = {
                 "nama_pola": "Insiden Siber Terkini",
                 "growth_persen": 0.0,
-                "jumlah_terkini": len(df_terkini),
+                "jumlah_artikel": len(df_terkini),
                 "artikel": [r for _, r in df_terkini.head(5).iterrows()]
             }
 
@@ -403,7 +525,7 @@ class RAGEngine:
         return {
             "nama_pola": top_spiking["nama_pola"],
             "growth_persen": top_spiking["growth_persen"],
-            "jumlah_artikel": top_spiking["jumlah_terkini"],
+            "jumlah_artikel": top_spiking.get("jumlah_artikel", len(top_spiking.get("artikel", []))),
             "korpus_artikel": "\n\n".join(cuplikan)
         }
 
@@ -500,6 +622,12 @@ class RAGEngine:
 
             gabungan_narasi = "\n".join(semua_teks[:4])
             mitigasi_list = search_encyclopedia_per_incident(cl["nama_kampanye"], list(kata_kunci_set))
+            mitre_mapping = self.map_incident_to_mitre_semantic(
+                incident_title=cl["nama_kampanye"],
+                incident_narrative=gabungan_narasi,
+                keywords=list(kata_kunci_set),
+                top_k=2
+            )
 
             hasil_top3.append({
                 "urutan": idx + 1,
@@ -508,6 +636,7 @@ class RAGEngine:
                 "uraian_fakta": gabungan_narasi,
                 "kata_kunci": list(kata_kunci_set),
                 "mitigasi_ensiklopedia": mitigasi_list,
+                "mitre_mapping": mitre_mapping,
                 "artikel_list": cl["artikel_list"]
             })
 
@@ -515,48 +644,72 @@ class RAGEngine:
 
     def ambil_berita_ancaman_baru(self) -> Dict[str, Any]:
         """
-        Mengambil berita yang memberitakan ancaman siber baru (emerging threats, zero-day, malware varian baru).
-        Mengekstrak secara dinamis artikel paling relevan berdasarkan fitur/kata kunci TF-IDF style yang langka/baru.
+        Mengidentifikasi sinyal ancaman baru (emerging threats, novel malware, zero-day)
+        dari korpus berita terkini dan mengekstrak entitas spesifiknya langsung dari teks berita
+        secara organik tanpa patokan klasifikasi kaku.
         """
         if self.df_berita.empty:
-            return {"ada": False, "nama": "Menunggu Sinyal", "uraian": "(Tidak ada ancaman baru)", "sumber": "-"}
-
-        from src.analytics.trend_analyzer import _split_periode
-        df_terkini, df_baseline = _split_periode(self.df_berita)
-        if df_terkini.empty:
-            df_terkini = self.df_berita
-
-        # Cari kata kunci yang ADA di terkini, tapi TIDAK ADA di baseline (atau frekuensinya melonjak dari 0)
-        kw_baseline = set()
-        for _, r in df_baseline.iterrows():
-            for k in str(r.get("kata_kunci", "")).split(","):
-                if len(k.strip()) > 3:
-                    kw_baseline.add(k.strip().lower())
-                    
-        # Filter artikel terkini yang memiliki kata kunci baru
-        kandidat = []
-        for _, r in df_terkini.iterrows():
-            kws = [k.strip().lower() for k in str(r.get("kata_kunci", "")).split(",") if len(k.strip()) > 3]
-            baru = sum(1 for k in kws if k not in kw_baseline)
-            if baru > 0:
-                kandidat.append((baru, r))
-                
-        if kandidat:
-            kandidat.sort(key=lambda x: x[0], reverse=True)
-            top_baru = kandidat[0][1]
             return {
-                "ada": True,
-                "nama": str(top_baru.get("judul", "Ancaman Baru Terdeteksi")),
-                "uraian": str(top_baru.get("ringkasan_atau_narasi", "")),
-                "sumber": str(top_baru.get("sumber", "Media Intelijen"))
+                "ada": False,
+                "nama": "Menunggu Sinyal",
+                "jenis_serangan": "Kondisi Stabil",
+                "uraian": "(Tidak ada ancaman baru)",
+                "sumber": "-"
             }
 
-        # Fallback jika tidak ada kata kunci yang benar-benar baru
+        from src.analytics.trend_analyzer import _split_periode, _dedup_ringan_lintas_hari
+        df_dedup = _dedup_ringan_lintas_hari(self.df_berita)
+        df_terkini, df_baseline = _split_periode(df_dedup)
+        if df_terkini.empty:
+            df_terkini = df_dedup
+
+        # Cari artikel yang melaporkan kasus ancaman/malware baru di periode terkini
+        kandidat = []
+        for _, r in df_terkini.iterrows():
+            judul = str(r.get("judul", ""))
+            narasi = str(r.get("ringkasan_atau_narasi", ""))
+            kw = str(r.get("kata_kunci", ""))
+            teks = f"{judul} {narasi} {kw}".lower()
+
+            entitas = extract_threat_entity_organic(judul, narasi, kw)
+            
+            # Bobot indikator kebaruan & jenis ancaman (malware/exploit/zero-day)
+            is_novel = any(w in teks for w in [
+                "baru", "novel", "emerging", "modus baru", "zero-day", "0-day",
+                "warning", "peringatan", "lonjakan", "kritis", "cve-2026", "cve-"
+            ])
+            has_malware = any(w in teks for w in [
+                "malware", "backdoor", "trojan", "ransomware", "stealer", "botnet", "exploit", "cve"
+            ])
+
+            has_specific_threat = any(entitas.startswith(prefix) for prefix in [
+                "Backdoor", "Malware", "Trojan", "Ransomware", "Infostealer", "Botnet", "Zero-Day", "CVE-"
+            ])
+            skor = (2.5 if is_novel else 1.0) * (2.0 if has_malware else 1.0) * (3.0 if has_specific_threat else 1.0)
+            kandidat.append((skor, entitas, r))
+
+        if kandidat:
+            kandidat.sort(key=lambda x: x[0], reverse=True)
+            top_skor, top_entitas, top_row = kandidat[0]
+            judul = str(top_row.get("judul", "-"))
+
+            return {
+                "ada": True,
+                "nama": top_entitas,
+                "jenis_serangan": top_entitas,
+                "uraian": str(top_row.get("ringkasan_atau_narasi", "")),
+                "sumber": str(top_row.get("sumber", "Media Intelijen")),
+                "judul": judul
+            }
+
         row_first = df_terkini.iloc[0]
+        ent = extract_threat_entity_organic(row_first.get("judul", ""), row_first.get("ringkasan_atau_narasi", ""), row_first.get("kata_kunci", ""))
         return {
             "ada": True,
-            "nama": str(row_first.get("judul", "-")),
+            "nama": ent,
+            "jenis_serangan": ent,
             "uraian": str(row_first.get("ringkasan_atau_narasi", "")),
-            "sumber": str(row_first.get("sumber", "Media Intelijen"))
+            "sumber": str(row_first.get("sumber", "Media Intelijen")),
+            "judul": str(row_first.get("judul", "-"))
         }
 

@@ -1,8 +1,8 @@
 """
 Modul penyimpanan state persisten menggunakan SQLite. Menyimpan histori
-artikel & CVE yang sudah pernah dikirim ke channel notifikasi, supaya
+artikel insiden & intelijen yang sudah pernah dikirim ke channel notifikasi, supaya
 pipeline yang jalan otomatis tiap hari tidak mengirim ulang konten yang
-sama meskipun RSS/API sumber terlambat update atau di-scrape ulang.
+sama meskipun RSS sumber terlambat update atau di-scrape ulang.
 """
 import pandas as pd
 import sqlite3
@@ -126,7 +126,7 @@ def _seed_admin_default(conn):
 
 def ambil_identifier_terkirim(kategori: str, db_path: Path = DEFAULT_DB_PATH) -> set:
     """
-    Mengambil seluruh identifier (URL untuk berita, cve_id untuk CVE)
+    Mengambil seluruh identifier (URL artikel)
     yang sudah pernah tercatat terkirim untuk kategori tertentu.
     Dipanggil sekali di awal pipeline harian untuk keperluan filter cepat.
     """
@@ -218,13 +218,12 @@ def _tambah_kolom_jika_belum_ada(conn: sqlite3.Connection, tabel: str, kolom: st
 def ambil_riwayat_dikelompokkan_per_hari(hari: int = 14, db_path: Path = DEFAULT_DB_PATH) -> dict:
     """
     Mengambil riwayat_tren dan mengelompokkannya PER TANGGAL PUBLIKASI
-    artikel (bukan tanggal pipeline dijalankan), dipisah lagi per kategori
-    (berita/cve). Dikelompokkan berdasarkan tanggal_publish supaya satu run
-    scraping besar (mis. window 7 hari) langsung terdistribusi ke hari yang
+    artikel (bukan tanggal pipeline dijalankan). Dikelompokkan berdasarkan tanggal_publish
+    supaya satu run scraping besar langsung terdistribusi ke hari yang
     benar - bukan numpuk di satu hari berdasarkan kapan pipeline dijalankan.
 
     Returns: dict terurut dari tanggal TERBARU ke TERLAMA, contoh:
-        {"2026-08-19": {"berita": [...], "cve": [...]}, "2026-08-18": {...}, ...}
+        {"2026-08-19": {"berita": [...]}, "2026-08-18": {...}, ...}
     """
     with _koneksi(db_path) as conn:
         conn.row_factory = sqlite3.Row
@@ -242,7 +241,7 @@ def ambil_riwayat_dikelompokkan_per_hari(hari: int = 14, db_path: Path = DEFAULT
         tanggal_bucket = tanggal_publish[:10] if len(tanggal_publish) >= 10 else "tanggal_tidak_diketahui"
 
         if tanggal_bucket not in hasil:
-            hasil[tanggal_bucket] = {"berita": [], "cve": []}
+            hasil[tanggal_bucket] = {"berita": []}
 
         if item["kategori"] == "berita":
             hasil[tanggal_bucket]["berita"].append({
@@ -253,25 +252,17 @@ def ambil_riwayat_dikelompokkan_per_hari(hari: int = 14, db_path: Path = DEFAULT
                 "link": item["link"],
                 "kategori": item["kategori_relevansi"],
             })
-        elif item["kategori"] == "cve":
-            hasil[tanggal_bucket]["cve"].append({
-                "vendor": item["vendor"],
-                "cve_id": item["identifier"],
-                "severity": item["severity"],
-                "skor_cvss": item["skor_cvss"],
-                "narasi": item["ringkasan_atau_narasi"],
-                "link": item["link"],
-            })
 
     hasil = dict(list(hasil.items())[:hari])
     return hasil
 
 def simpan_prediksi_tren(
     prediksi_berita: str,
-    prediksi_cve: str,
     db_path: Path = DEFAULT_DB_PATH,
+    *,
     kasus_wilayah_ai: Optional[str] = None,
     statistik_json: Optional[str] = None,
+    prediksi_cve: str = "",
 ) -> None:
     """Menyimpan/menimpa prediksi tren terakhir (selalu 1 baris saja) beserta analisis kasus wilayah AI dan statistik dashboard."""
     tanggal = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -343,31 +334,22 @@ def ambil_waktu_terakhir_scraping(db_path: Path = DEFAULT_DB_PATH) -> Optional[s
 
 def ambil_data_terbaru_per_kategori(hari: int = 7, db_path: Path = DEFAULT_DB_PATH) -> dict:
     """
-    Data untuk Beranda, tanggal terbaru DIPISAH per kategori (bukan
-    dipaksa 1 tanggal yang sama) - karena rangkaian waktu publikasi
-    berita & CVE independen (CVE dari NVD kadang 'tanggal publish'-nya
-    tidak secepat berita yang terus update tiap jam). Kalau dipaksa 1
-    tanggal gabungan, salah satu kategori bisa tampil kosong padahal
-    datanya ada di tanggal yang sedikit berbeda.
+    Data untuk Beranda mengambil kelompok berita terbaru dari database.
     """
     grup_per_tanggal = ambil_riwayat_dikelompokkan_per_hari(hari, db_path)  # sudah urut terbaru -> terlama
 
     tanggal_berita, daftar_berita = None, []
-    tanggal_cve, daftar_cve = None, []
 
     for tanggal, isi in grup_per_tanggal.items():
-        if tanggal_berita is None and isi["berita"]:
+        if tanggal_berita is None and isi.get("berita"):
             tanggal_berita, daftar_berita = tanggal, isi["berita"]
-        if tanggal_cve is None and isi["cve"]:
-            tanggal_cve, daftar_cve = tanggal, isi["cve"]
-        if tanggal_berita is not None and tanggal_cve is not None:
             break
 
     waktu_scraping = ambil_waktu_terakhir_scraping(db_path)
 
     return {
-        "tanggal_berita": tanggal_berita, "berita": daftar_berita,
-        "tanggal_cve": tanggal_cve, "cve": daftar_cve,
+        "tanggal_berita": tanggal_berita,
+        "berita": daftar_berita,
         "waktu_terakhir_scraping": waktu_scraping,
     }
 
@@ -386,9 +368,6 @@ def ambil_statistik_publik(db_path: Path = DEFAULT_DB_PATH) -> dict:
 
         # 1. Hitung Dasar
         total_berita = cur.execute("SELECT count(*) FROM riwayat_tren WHERE kategori = 'berita'").fetchone()[0] or 1
-        total_cve = cur.execute("SELECT count(*) FROM riwayat_tren WHERE kategori = 'cve'").fetchone()[0] or 1
-        cve_darurat_10 = cur.execute("SELECT count(*) FROM riwayat_tren WHERE kategori = 'cve' AND skor_cvss >= 10.0").fetchone()[0]
-        avg_cvss = cur.execute("SELECT AVG(skor_cvss) FROM riwayat_tren WHERE kategori = 'cve'").fetchone()[0] or 9.5
         total_edukasi = cur.execute("SELECT count(*) FROM riwayat_tren WHERE kategori_relevansi = 'analisis_relevan'").fetchone()[0]
 
         # 2. Distribusi Kategori Ancaman Populer
@@ -414,7 +393,7 @@ def ambil_statistik_publik(db_path: Path = DEFAULT_DB_PATH) -> dict:
 
         # 3. Word Cloud Khusus Kasus Insiden Spesifik (Jendela 7 Hari Terkini)
         rows_insiden = cur.execute("""
-            SELECT kata_kunci 
+            SELECT kata_kunci, judul, sumber 
             FROM riwayat_tren 
             WHERE kategori_relevansi = 'insiden_spesifik'
               AND substr(tanggal_publish, 1, 10) >= (
@@ -424,7 +403,7 @@ def ambil_statistik_publik(db_path: Path = DEFAULT_DB_PATH) -> dict:
         """).fetchall()
         if not rows_insiden:
             rows_insiden = cur.execute("""
-                SELECT kata_kunci 
+                SELECT kata_kunci, judul, sumber 
                 FROM riwayat_tren 
                 WHERE kategori_relevansi = 'insiden_spesifik'
                 ORDER BY tanggal_publish DESC
@@ -433,20 +412,31 @@ def ambil_statistik_publik(db_path: Path = DEFAULT_DB_PATH) -> dict:
 
         stop_words = set(ConfigLoader.get_rules("publik_statistik").get("stop_words", []))
 
-        kws_list = []
+        kws_sample = {}
+        counter_kws = {}
         for r in rows_insiden:
-            if r[0]:
-                for k in r[0].split(","):
+            raw_kws, judul, sumber = r[0], r[1], r[2]
+            if raw_kws:
+                for k in raw_kws.split(","):
                     clean_k = k.strip().lower()
                     if clean_k and len(clean_k) > 2 and clean_k not in stop_words:
-                        kws_list.append(clean_k)
-
-        counter_kws = {}
-        for kw in kws_list:
-            counter_kws[kw] = counter_kws.get(kw, 0) + 1
+                        counter_kws[clean_k] = counter_kws.get(clean_k, 0) + 1
+                        if clean_k not in kws_sample and judul:
+                            kws_sample[clean_k] = {
+                                "judul": str(judul).strip(),
+                                "sumber": str(sumber or "Media Siber").strip()
+                            }
 
         sorted_kws = sorted(counter_kws.items(), key=lambda x: x[1], reverse=True)[:32]
-        word_cloud = [{"kata": item[0], "bobot": item[1]} for item in sorted_kws]
+        word_cloud = [
+            {
+                "kata": item[0],
+                "bobot": item[1],
+                "contoh_judul": kws_sample.get(item[0], {}).get("judul", f"Kasus terkait {item[0]}"),
+                "sumber": kws_sample.get(item[0], {}).get("sumber", "Laporan Media")
+            }
+            for item in sorted_kws
+        ]
 
         # 5. Daftar Intisari Artikel Edukasi Asli (Jendela 7 Hari Terkini)
         rows_edukasi = cur.execute("""
@@ -480,16 +470,22 @@ def ambil_statistik_publik(db_path: Path = DEFAULT_DB_PATH) -> dict:
             for r in rows_edukasi
         ]
 
-        # 6. Top Vendor & Software Populer Terpapar CVE Kritis
-        rows_vendor = cur.execute("""
-            SELECT vendor, count(*) as cnt 
-            FROM riwayat_tren 
-            WHERE kategori = 'cve' AND vendor != 'Lainnya / Belum Teridentifikasi' AND vendor != ''
-            GROUP BY vendor 
-            ORDER BY cnt DESC 
-            LIMIT 7
-        """).fetchall()
-        top_vendor = [{"vendor": r[0], "total_cve": r[1]} for r in rows_vendor]
+        # 6. Sektor Vital Sasaran Serangan (IIV Perpres 82/2022)
+        sektor_rules = ConfigLoader.get_rules("sektor_rules")
+        sektor_counts = {s: 0 for s in sektor_rules}
+        for judul, kata_kunci in rows_berita:
+            teks = f"{judul or ''} {kata_kunci or ''}".lower()
+            for s_nama, s_words in sektor_rules.items():
+                if any(w in teks for w in s_words):
+                    sektor_counts[s_nama] += 1
+
+        top_sektor = [
+            {"sektor": s, "jumlah": c}
+            for s, c in sorted(sektor_counts.items(), key=lambda x: x[1], reverse=True)
+            if c > 0
+        ]
+        if not top_sektor:
+            top_sektor = [{"sektor": s, "jumlah": 0} for s in list(sektor_rules.keys())[:5]]
 
         # 7. Fluktuasi Pantauan Harian (10 Hari Terakhir)
         r_berita_tgl = dict(cur.execute("""
@@ -499,18 +495,9 @@ def ambil_statistik_publik(db_path: Path = DEFAULT_DB_PATH) -> dict:
             GROUP BY tgl ORDER BY tgl DESC LIMIT 10
         """).fetchall())
 
-        r_cve_tgl = dict(cur.execute("""
-            SELECT substr(tanggal_publish, 1, 10) as tgl, count(*) 
-            FROM riwayat_tren 
-            WHERE kategori = 'cve' AND tgl IS NOT NULL AND tgl != ''
-            GROUP BY tgl ORDER BY tgl DESC LIMIT 10
-        """).fetchall())
-
-        tanggal_gabungan = sorted(list(set(list(r_berita_tgl.keys()) + list(r_cve_tgl.keys()))))
         timeline_harian = {
-            "label": tanggal_gabungan,
-            "berita": [r_berita_tgl.get(d, 0) for d in tanggal_gabungan],
-            "cve": [r_cve_tgl.get(d, 0) for d in tanggal_gabungan],
+            "label": list(r_berita_tgl.keys()),
+            "berita": list(r_berita_tgl.values()),
         }
 
         # 8. Sebaran Media Pelapor (Nasional vs Global)
@@ -532,8 +519,20 @@ def ambil_statistik_publik(db_path: Path = DEFAULT_DB_PATH) -> dict:
         top_cat = top_ancaman[0] if top_ancaman and top_ancaman[0]["jumlah"] > 0 else {"kategori": "Nihil Anomali", "jumlah": 0}
         persen_top = round((top_cat["jumlah"] / total_ancaman_count) * 100) if top_cat["jumlah"] > 0 else 0
 
-        vendor_names = [v["vendor"] for v in top_vendor[:2]] if top_vendor else []
-        vendor_str = " & ".join(vendor_names) if vendor_names else "Terdistribusi Merata"
+        # Ambil sampel judul nyata dari kategori ancaman teratas untuk insight publik anti-halusinasi
+        sample_headline = ""
+        if top_cat["jumlah"] > 0:
+            row_sample = cur.execute("""
+                SELECT judul FROM riwayat_tren 
+                WHERE kategori = 'berita' AND (kata_kunci LIKE ? OR judul LIKE ?)
+                ORDER BY tanggal_publish DESC LIMIT 1
+            """, (f"%{top_cat['kategori']}%", f"%{top_cat['kategori']}%")).fetchone()
+            if row_sample and row_sample[0]:
+                sample_clean = str(row_sample[0]).strip()
+                sample_headline = f" Teranyar melibatkan insiden: \"{sample_clean[:75]}...\"" if len(sample_clean) > 75 else f" Teranyar melibatkan insiden: \"{sample_clean}\"."
+
+        sektor_utama = top_sektor[0]["sektor"] if top_sektor and top_sektor[0]["jumlah"] > 0 else "Infrastruktur Vital"
+        sektor_jml = top_sektor[0]["jumlah"] if top_sektor else 0
 
         total_media = sum(sebaran_media.values()) or 1
         nasional_count = sebaran_media.get("Media Nasional", 0)
@@ -544,17 +543,17 @@ def ambil_statistik_publik(db_path: Path = DEFAULT_DB_PATH) -> dict:
                 "id": "top_target",
                 "judul": "Modus Paling Mengintai",
                 "nilai": f"{top_cat['kategori']}" if top_cat["jumlah"] > 0 else "Kondisi Terkendali",
-                "insight": f"Mencakup {persen_top}% ({top_cat['jumlah']} laporan) dari pantauan ancaman aktif yang dilaporkan media.",
+                "insight": f"Mencakup {persen_top}% ({top_cat['jumlah']} laporan) dari pantauan ancaman siber aktif.{sample_headline}",
                 "badge": "Top Target Warga",
                 "icon": "warning",
             },
             {
-                "id": "top_vendor",
-                "judul": "Software Terbanyak Celah",
-                "nilai": vendor_str,
-                "insight": f"Celah keamanan tertinggi terkonsentrasi pada software dan produk dari {vendor_str}.",
-                "badge": "Ekosistem Populer",
-                "icon": "devices",
+                "id": "top_sektor",
+                "judul": "Sektor Sasaran Utama",
+                "nilai": sektor_utama,
+                "insight": f"Sektor {sektor_utama} mencatat paparan tertinggi dengan {sektor_jml} insiden siber aktif.",
+                "badge": "Infrastruktur Vital",
+                "icon": "domain",
             },
             {
                 "id": "fokus_wilayah",
@@ -566,20 +565,25 @@ def ambil_statistik_publik(db_path: Path = DEFAULT_DB_PATH) -> dict:
             },
         ]
 
+        takeaway_chart = (
+            f"Kategori {top_cat['kategori']} mendominasi ruang ancaman publik dengan proporsi {persen_top}% "
+            f"({top_cat['jumlah']} kasus terpantau). Pengamanan diprioritaskan pada verifikasi berkas digital dan proteksi kredensial."
+        ) if top_cat["jumlah"] > 0 else (
+            "Aktivitas ancaman digital terpantau stabil tanpa anomali lonjakan masif pada periode pemantauan terkini."
+        )
+
         return {
             "status": "ok",
             "total_berita": total_berita,
-            "total_cve": total_cve,
-            "avg_cvss": round(float(avg_cvss), 1) if avg_cvss else 0.0,
-            "cve_darurat_10": cve_darurat_10 or 0,
             "total_edukasi": total_edukasi or 0,
             "kpi_insights": kpi_insights,
             "word_cloud": word_cloud,
             "edukasi_list": edukasi_list,
             "top_ancaman": top_ancaman,
-            "top_vendor": top_vendor,
+            "top_sektor": top_sektor,
             "timeline_harian": timeline_harian,
             "sebaran_media": sebaran_media,
+            "takeaway_chart": takeaway_chart,
             "waktu_terakhir_update": ambil_waktu_terakhir_scraping(db_path),
         }
 

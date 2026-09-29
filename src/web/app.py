@@ -290,16 +290,14 @@ async def batalkan_pipeline(request: Request):
 
 @app.get("/api/beranda")
 async def ambil_beranda():
-    """Tab Beranda / Dashboard: berita & CVE, MASING-MASING dari tanggal terbarunya sendiri."""
+    """Tab Beranda: berita intelijen & insiden dari tanggal terbarunya."""
     data = ambil_data_terbaru_per_kategori(hari=7)
-    ada_data = bool(data["berita"]) or bool(data["cve"])
+    ada_data = bool(data.get("berita"))
     return {
         "status": "ok" if ada_data else "kosong",
-        "tanggal_berita": data["tanggal_berita"],
-        "tanggal_cve": data["tanggal_cve"],
+        "tanggal_berita": data.get("tanggal_berita"),
         "waktu_terakhir_scraping": data.get("waktu_terakhir_scraping"),
-        "berita": data["berita"],
-        "cve": data["cve"],
+        "berita": data.get("berita", []),
     }
 
 
@@ -308,7 +306,7 @@ async def ambil_arsip():
     """Tab Arsip: seluruh grup tanggal (7 hari terakhir), terurut terbaru -> terlama."""
     grup_per_tanggal = ambil_riwayat_dikelompokkan_per_hari(hari=7)
     daftar_hari = [
-        {"tanggal": tanggal, "berita": isi["berita"], "cve": isi["cve"]}
+        {"tanggal": tanggal, "berita": isi.get("berita", [])}
         for tanggal, isi in grup_per_tanggal.items()
     ]
     return {"status": "ok" if daftar_hari else "kosong", "hari": daftar_hari}
@@ -319,7 +317,7 @@ async def ambil_tren():
     """Tab Tren Siber: membaca prediksi tren dan agregat visualisasi statistik langsung dari database."""
     prediksi = ambil_prediksi_tren_terakhir()
     if not prediksi:
-        return {"status": "kosong", "prediksi_berita": "", "prediksi_cve": "", "tanggal_dihitung": None, "statistik": None}
+        return {"status": "kosong", "prediksi_berita": "", "tanggal_dihitung": None, "statistik": None}
 
     statistik = None
     raw_stat = dict(prediksi).get("statistik_json")
@@ -329,13 +327,43 @@ async def ambil_tren():
         except Exception:
             statistik = None
 
+    if statistik:
+        # Bersihkan field usang yang sudah dihapus
+        statistik.pop("threat_posture", None)
+        statistik.pop("matriks_tindakan", None)
+        statistik.pop("skor_threat_posture", None)
+
+        # Pastikan fitur baru taktik_mitre dan cve_watchlist tersedia
+        perlu_simpan_ulang = False
+        if "taktik_mitre" not in statistik or "cve_watchlist" not in statistik:
+            from src.analytics.trend_analyzer import hitung_distribusi_taktik_mitre, ekstrak_radar_cve_watchlist
+            df_14 = ambil_riwayat_tren(hari=14)
+            if not df_14.empty:
+                if "taktik_mitre" not in statistik:
+                    statistik["taktik_mitre"] = hitung_distribusi_taktik_mitre(df_14)
+                if "cve_watchlist" not in statistik:
+                    statistik["cve_watchlist"] = ekstrak_radar_cve_watchlist(df_14)
+            else:
+                statistik.setdefault("taktik_mitre", [])
+                statistik.setdefault("cve_watchlist", [])
+            perlu_simpan_ulang = True
+
+        if perlu_simpan_ulang or (raw_stat and ("threat_posture" in raw_stat or "matriks_tindakan" in raw_stat)):
+            try:
+                simpan_prediksi_tren(
+                    prediksi["prediksi_berita"],
+                    kasus_wilayah_ai=dict(prediksi).get("kasus_wilayah_ai"),
+                    statistik_json=json.dumps(statistik, ensure_ascii=False),
+                )
+            except Exception as err:
+                logging.getLogger().error(f"Gagal memperbarui cache statistik ke DB: {err}")
+
     if not statistik:
         df_14 = ambil_riwayat_tren(hari=14)
         statistik = susun_statistik_dashboard(df_14)
         try:
             simpan_prediksi_tren(
                 prediksi["prediksi_berita"],
-                prediksi["prediksi_cve"],
                 kasus_wilayah_ai=dict(prediksi).get("kasus_wilayah_ai"),
                 statistik_json=json.dumps(statistik, ensure_ascii=False),
             )
@@ -355,9 +383,8 @@ async def ambil_tren():
 
     return {
         "status": "ok",
-        "prediksi_berita": prediksi["prediksi_berita"],
-        "prediksi_cve": prediksi["prediksi_cve"],
-        "tanggal_dihitung": prediksi["tanggal_dihitung"],
+        "prediksi_berita": dict(prediksi).get("prediksi_berita", ""),
+        "tanggal_dihitung": dict(prediksi).get("tanggal_dihitung"),
         "statistik": statistik,
     }
 

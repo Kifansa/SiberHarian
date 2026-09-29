@@ -26,8 +26,6 @@ def _call_llm_text(system_prompt: str, user_prompt: str, model: str = None, num_
         max_tokens=num_predict
     )
 
-_call_ollama_text = _call_llm_text
-
 
 def _bersihkan_tanggal_jika_ada(teks: str) -> str:
     import re
@@ -66,11 +64,33 @@ def _generate_section_3_vektor(top3_mikro: list, model: str = None) -> str:
     for idx, inc in enumerate(top3_mikro):
         nama_clean, _ = _bersihkan_judul_dan_publisher(inc.get("nama_insiden", ""), "")
         fakta = inc.get("uraian_fakta", "")
-        baris_input.append(f"{idx+1}. Kampanye: \"{nama_clean}\"\n   Detail Serangan: {fakta[:400]}")
-    user_prompt = "Petakan alur teknis dan taktik MITRE ATT&CK dari insiden berikut:\n\n" + "\n\n".join(baris_input)
+        mitre_list = inc.get("mitre_mapping", [])
+        if mitre_list:
+            top_m = mitre_list[0]
+            mitre_ref = f"MITRE ATT&CK [{top_m.get('id', '')}]: {top_m.get('technique', '')} (Taktik: {top_m.get('tactic', '')})"
+        else:
+            mitre_ref = "MITRE ATT&CK [T1190]: Exploit Public-Facing Application (Taktik: Initial Access)"
+
+        baris_input.append(
+            f"{idx+1}. Kampanye: \"{nama_clean}\"\n"
+            f"   Rujukan Terverifikasi: {mitre_ref}\n"
+            f"   Detail Serangan: {fakta[:350]}"
+        )
+    user_prompt = (
+        "Petakan alur teknis dan taktik MITRE ATT&CK dari insiden berikut.\n"
+        "WAJIB sebutkan TEPAT teknik MITRE ATT&CK yang terverifikasi untuk masing-masing kampanye. "
+        "DILARANG mengarang kode teknik fiktif:\n\n"
+        + "\n\n".join(baris_input)
+    )
     hasil = _call_llm_text(SettingsManager.get_prompt("section_3_vektor"), user_prompt, model, num_predict=450)
     if not hasil or len(hasil) < 60:
-        return "\n".join(f"- **Alur Serangan {inc.get('nama_insiden', '')}**: {inc.get('uraian_fakta', '')[:100]}..." for inc in top3_mikro)
+        fallback_lines = []
+        for inc in top3_mikro:
+            nama_clean, _ = _bersihkan_judul_dan_publisher(inc.get("nama_insiden", ""), "")
+            m_list = inc.get("mitre_mapping", [])
+            m_tag = f"[{m_list[0]['id']} {m_list[0]['technique']}]" if m_list else "[T1190 Exploit Public-Facing Application]"
+            fallback_lines.append(f"- **Alur Serangan {nama_clean}**: Menggunakan taktik dan teknik {m_tag}. Dampak teknis: {inc.get('uraian_fakta', '')[:120]}...")
+        return "\n".join(fallback_lines)
     return re.sub(r'^#+.*\n+', '', _bersihkan_tanggal_jika_ada(hasil)).strip()
 
 def _generate_section_5_emerging(ancaman_baru: dict, model: str = None) -> str:
@@ -152,135 +172,6 @@ def jalankan_pipeline_multi_agent(
     return laporan_final, {"mode": "modular_llm"}
 
 
-# =====================================================================
-# MODULAR CVE SECTION GENERATORS (DIRECT MARKDOWN - NO JSON BRITTLE)
-# =====================================================================
-
-def _generate_cve_section_4_patching(vendor_signifikan: List[dict], cve_context: str = "") -> str:
-    poin = []
-    top_vendors = [v["vendor"] for v in vendor_signifikan[:3]] if vendor_signifikan else ["Vendor Terpapar"]
-    v_str = ", ".join(top_vendors)
-    poin.append(f"- **Pembaruan Keamanan Prioritas**: Segera terapkan security update dan patch resmi dari vendor ({v_str}) pada seluruh server produksi dan gateway jaringan.")
-    poin.append(f"- **[D3-WAF] Isolasi & Virtual Patching**: Terapkan virtual patching rule pada Web Application Firewall (WAF) dan batasi akses antarmuka administratif hanya melalui jaringan VPN internal.")
-    poin.append(f"- **[D3-EDR] Pemindaian & Audit Integritas**: Jalankan vulnerability scan terfokus dan aktifkan File Integrity Monitoring (FIM) untuk mendeteksi indikasi eksploitasi pasca-rilis celah.")
-    return "\n".join(poin)
-
-def _build_cve_fallback(vendor_signifikan: List[dict], cve_context: str) -> str:
-    lines_sec1 = []
-    for v in vendor_signifikan[:4]:
-        p_names = ", ".join(f"{p['produk']} ({p['jumlah']}x)" for p in v.get("top_produk", [])[:3])
-        lines_sec1.append(
-            f"- **{v['vendor']} (+{int(v.get('growth_persen', 0))}%)**: Terdeteksi {v.get('jumlah_terkini', 0)} kerentanan CVE CRITICAL (baseline: {v.get('jumlah_baseline', 0)}). Produk terdampak utama mencakup {p_names or 'komponen sistem terkait'}."
-        )
-    sec1 = "\n".join(lines_sec1) if lines_sec1 else "- **Kerentanan Terdistribusi**: Belum terdeteksi vendor tunggal dengan lonjakan CVE kritis yang signifikan minggu ini."
-
-    sec2 = (
-        "- **Remote Code Execution (RCE)**: Mayoritas kerentanan kritis memungkinkan penyerang mengeksekusi kode arbitrer dari jarak jauh tanpa autentikasi awal, mengkompromikan perimeter host.\n"
-        "- **Authentication Bypass & Privilege Escalation**: Celah pada antarmuka manajemen memungkinkan eskalasi hak akses dari akun pengguna biasa menjadi superadmin/root.\n"
-        "- **Denial of Service (DoS)**: Kerentanan alokasi memori berisiko menyebabkan crash berulang pada layanan vital instansi."
-    )
-
-    sec3 = (
-        "- **Ketersediaan Bukti Konsep (PoC)**: Deteksi skrip PoC publik di repositori terbuka meningkatkan risiko eksploitasi massal tanpa memerlukan keahlian teknis tingkat tinggi.\n"
-        "- **Kompleksitas Eksploitasi Rendah**: Mayoritas celah kritis pada perimeter gateway dapat dipicu dari jarak jauh tanpa autentikasi awal atau interaksi pengguna.\n"
-        "- **Potensi Integrasi Weaponization**: Nilai celah yang tinggi berisiko memicu adopsi cepat ke dalam modul toolkit penyerangan otomatis atau varian ransomware."
-    )
-
-    sec4 = _generate_cve_section_4_patching(vendor_signifikan, cve_context)
-
-    return (
-        f"### 1. VENDOR & PRODUK PRIORITAS\n{sec1}\n\n"
-        f"### 2. ANALISIS VEKTOR EKSPLOITASI\n{sec2}\n\n"
-        f"### 3. EKSPLOITABILITAS & WEAPONIZATION (POC)\n{sec3}\n\n"
-        f"### 4. PANDUAN PATCHING & MITIGASI\n{sec4}"
-    )
-
-def _generate_cve_sec1(vendor_signifikan: List[dict], model: str = None) -> str:
-    lines = []
-    for v in vendor_signifikan[:4]:
-        p_names = ", ".join(f"{p['produk']} ({p['jumlah']}x)" for p in v.get("top_produk", [])[:3])
-        lines.append(f"- Vendor: {v['vendor']}, Lonjakan: +{int(v.get('growth_persen', 0))}%, Total: {v.get('jumlah_terkini', 0)} CVE. Produk: {p_names}")
-    user_prompt = "Daftar Vendor & Produk dengan Lonjakan CVE Kritis:\n" + "\n".join(lines)
-    hasil = _call_llm_text(SettingsManager.get_prompt("cve_sec1_vendor"), user_prompt, model, num_predict=ConfigLoader.get_config().get("cti_analysis", {}).get("llm", {}).get("num_predict", {}).get("section_makro", 350))
-    if not hasil or len(hasil) < 40 or "- " not in hasil:
-        lines_fallback = []
-        for v in vendor_signifikan[:4]:
-            p_names = ", ".join(f"{p['produk']} ({p['jumlah']}x)" for p in v.get("top_produk", [])[:3])
-            lines_fallback.append(f"- **{v['vendor']} (+{int(v.get('growth_persen', 0))}%)**: Terdeteksi {v.get('jumlah_terkini', 0)} kerentanan CVE CRITICAL. Produk terdampak: {p_names or 'komponen sistem'}.")
-        return "\n".join(lines_fallback) if lines_fallback else "- **Kerentanan Terdistribusi**: Belum terdeteksi vendor dengan lonjakan CVE kritis yang signifikan minggu ini."
-    hasil_bersih = re.sub(r'^#+.*\n+', '', hasil).strip()
-    return hasil_bersih
-
-def _generate_cve_sec2(vendor_signifikan: List[dict], cve_context: str, model: str = None) -> str:
-    user_prompt = f"Konteks Kerentanan CVE Aktual:\n{cve_context[:1000]}\n\nInstruksi: Analisis tipe vektor eksploitasi dominan dalam butir poin."
-    hasil = _call_llm_text(SettingsManager.get_prompt("cve_sec2_vektor"), user_prompt, model, num_predict=ConfigLoader.get_config().get("cti_analysis", {}).get("llm", {}).get("num_predict", {}).get("section_makro", 350))
-    if not hasil or len(hasil) < 40 or "- " not in hasil:
-        return (
-            "- **Remote Code Execution (RCE)**: Mayoritas kerentanan kritis memungkinkan eksekusi perintah arbitrer dari jarak jauh tanpa autentikasi awal.\n"
-            "- **Authentication Bypass & Privilege Escalation**: Celah pada antarmuka otentikasi memicu potensi eskalasi akun biasa menjadi administrator.\n"
-            "- **Denial of Service (DoS)**: Kerentanan alokasi memori berisiko menyebabkan kelumpuhan layanan portal publik."
-        )
-    hasil_bersih = re.sub(r'^#+.*\n+', '', hasil).strip()
-    return hasil_bersih
-
-def _generate_cve_sec3(vendor_signifikan: List[dict], cve_context: str, model: str = None) -> str:
-    user_prompt = f"Konteks Kerentanan CVE Aktual:\n{cve_context[:1000]}\n\nInstruksi: Ulas eksploitabilitas, kemudahan weaponization, dan ketersediaan PoC publik dalam butir poin."
-    hasil = _call_llm_text(SettingsManager.get_prompt("cve_sec3_kripto"), user_prompt, model, num_predict=ConfigLoader.get_config().get("cti_analysis", {}).get("llm", {}).get("num_predict", {}).get("section_makro", 350))
-    if not hasil or len(hasil) < 40 or "- " not in hasil:
-        return (
-            "- **Ketersediaan Bukti Konsep (PoC)**: Deteksi skrip PoC publik meningkatkan risiko eksploitasi cepat oleh pelaku kejahatan siber.\n"
-            "- **Kompleksitas Eksploitasi**: Celah pada gateway perimeter memungkinkan penetrasi otomatis tanpa memerlukan interaksi pengguna.\n"
-            "- **Potensi Weaponization**: Tingginya nilai celah berisiko memicu integrasi ke dalam toolkit penyerangan komersial."
-        )
-    hasil_bersih = re.sub(r'^#+.*\n+', '', hasil).strip()
-    return hasil_bersih
-
-def jalankan_pipeline_cve_modular(
-    statistik_cve: dict,
-    df_riwayat: Optional[Any] = None,
-    model: str = None,
-    mode: str = "modular_llm"
-) -> str:
-    """
-    Menjalankan Pipeline CTI CVE Modular:
-    - Mode 'instant_rag': Mengembalikan SITREP CVE dalam < 0.1s.
-    - Mode 'modular_llm': Mengenerate 4 bagian CVE secara terpisah sekuensial.
-    """
-    vendor_naik = statistik_cve.get("vendor_naik", [])
-    vendor_signifikan = [v for v in vendor_naik if v.get("jumlah_terkini", 0) >= 2 and v.get("growth_persen", 0) >= 15.0]
-    if not vendor_signifikan:
-        vendor_signifikan = vendor_naik[:4]
-
-    cve_context = ""
-    if df_riwayat is not None:
-        try:
-            from src.analytics.rag_engine import RAGEngine
-            rag = RAGEngine(df_riwayat)
-            cve_context = rag.retrieve_cve_context([v["vendor"] for v in vendor_signifikan[:4]])
-        except Exception:
-            pass
-
-    if mode == "instant_rag":
-        return _build_cve_fallback(vendor_signifikan, cve_context)
-
-    logger.info("[CVE Modul 1/4] Menghasilkan Bagian 1: Vendor & Produk Prioritas...")
-    sec1 = _generate_cve_sec1(vendor_signifikan, model=model)
-
-    logger.info("[CVE Modul 2/4] Menghasilkan Bagian 2: Analisis Vektor Eksploitasi...")
-    sec2 = _generate_cve_sec2(vendor_signifikan, cve_context, model=model)
-
-    logger.info("[CVE Modul 3/4] Menghasilkan Bagian 3: Eksploitabilitas & Weaponization (PoC)...")
-    sec3 = _generate_cve_sec3(vendor_signifikan, cve_context, model=model)
-
-    logger.info("[CVE Modul 4/4] Menginjeksi Bagian 4: Panduan Patching & Mitigasi Ensiklopedia...")
-    sec4 = _generate_cve_section_4_patching(vendor_signifikan, cve_context)
-
-    return (
-        f"### 1. VENDOR & PRODUK PRIORITAS\n{sec1}\n\n"
-        f"### 2. ANALISIS VEKTOR EKSPLOITASI\n{sec2}\n\n"
-        f"### 3. EKSPLOITABILITAS & WEAPONIZATION (POC)\n{sec3}\n\n"
-        f"### 4. PANDUAN PATCHING & MITIGASI\n{sec4}"
-    )
 def _deteksi_sektor_spesifik(teks: str) -> str:
     teks = teks.lower()
     if any(k in teks for k in ['pemerintah', 'pemprov', 'pemkab', 'pemkot', 'dinas']): return 'Sektor Administrasi Pemerintahan'
@@ -294,7 +185,7 @@ def _deteksi_senjata_spesifik(teks: str) -> str:
     if 'ransomware' in teks: return 'Ransomware / File Encryptor'
     if 'phishing' in teks or 'apk' in teks: return 'Social Engineering & Malware APK'
     if 'deface' in teks or 'judi' in teks or 'slot' in teks: return 'Webshell & Defacement'
-    if 'cve' in teks or 'rce' in teks: return 'Eksploitasi Celah Keamanan (RCE)'
+    if 'celah' in teks or 'rce' in teks or 'vulnerability' in teks or 'exploit' in teks: return 'Eksploitasi Celah Keamanan (RCE)'
     return 'Akses Ilegal & Eksploitasi Web'
 
 def _deteksi_dampak_spesifik(teks: str) -> str:
@@ -312,7 +203,7 @@ def _buat_fallback_sitrep_deterministik(data_makro: dict, top3_mikro: list, anca
     laporan.append('### 1. LANSKAP & POLA ANCAMAN')
     laporan.append(f'- **Peningkatan Aktivitas {pola}**: Terdeteksi peningkatan ancaman sebesar {growth}% dalam seminggu terakhir.')
     laporan.append('\n### 2. VEKTOR SERANGAN & SEKTOR')
-    laporan.append('### 3. IMPLIKASI PERSANDIAN & KEAMANAN')
+    laporan.append('### 3. VEKTOR SERANGAN & MITRE ATT&CK')
     laporan.append('### 4. REKOMENDASI AKSI')
     for idx, inc in enumerate(top3_mikro):
         nama, _ = _bersihkan_judul_dan_publisher(inc.get('nama_insiden', f'Insiden {idx+1}'), '')
@@ -320,7 +211,14 @@ def _buat_fallback_sitrep_deterministik(data_makro: dict, top3_mikro: list, anca
         sektor = _deteksi_sektor_spesifik(fakta)
         senjata = _deteksi_senjata_spesifik(fakta)
         laporan[1] += f'\n- **Target {sektor}**: Menggunakan metode {senjata} pada kasus {nama}.'
-        laporan[2] += f'\n- **Risiko Sistem**: {fakta[:150]}...'
+        
+        mitre_list = inc.get("mitre_mapping", [])
+        if mitre_list:
+            m = mitre_list[0]
+            laporan[2] += f'\n- **Alur Serangan {nama}**: Terpetakan pada taktik **{m["tactic"]}** via teknik **[{m["id"]}] {m["technique"]}** (keyakinan: {int(m["score"]*100)}%). Dampak: {fakta[:120]}...'
+        else:
+            laporan[2] += f'\n- **Alur Serangan {nama}**: Terpetakan pada taktik Initial Access via eksploitasi celah web. Dampak: {fakta[:120]}...'
+
         mitigasi = inc.get('mitigasi_ensiklopedia', [])
         if mitigasi:
             laporan[3] += f'\n- **Mitigasi untuk {nama}**: {mitigasi[0]}'

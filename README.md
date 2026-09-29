@@ -1,4 +1,4 @@
-# SiberHarian: Cyber Threat Intelligence & Publikasi Berita/CVE
+# SiberHarian: Cyber Threat Intelligence & Publikasi Berita Insiden Siber
 ### Portal Resmi CSIRT Dinas Komunikasi dan Informatika Provinsi Jawa Timur
 **Website Integrasi:** [csirt.jatimprov.go.id](https://csirt.jatimprov.go.id/)
 
@@ -8,8 +8,8 @@
 
 **SiberHarian** adalah platform intelijen ancaman siber (*Cyber Threat Intelligence* / CTI) dan edukasi keamanan siber terpadu berbasis *Cloud-Accelerated Intelligence* dengan Google Gemini API. Dikembangkan untuk diintegrasikan ke dalam ekosistem portal resmi **CSIRT Provinsi Jawa Timur**, platform ini menjalankan dua peran strategis:
 
-1. **Operasional Internal (Admin Tim CTI CSIRT)**: Menyediakan instrumen pemantauan harian, orkestrasi pengumpulan data otomatis, audit kerentanan software CVE kritis, pemetaan ancaman taktis berbasis kerangka **MITRE ATT&CK & D3FEND**, indeks postur ancaman komparatif, matriks tindakan remediasi, serta generator **Laporan PDF Resmi Mingguan** untuk briefing pimpinan dan Organisasi Perangkat Daerah (OPD).
-2. **Layanan Publik (Masyarakat Umum & Pengelola OPD)**: Menyediakan jendela informasi terkurasi mengenai insiden siber terkini, arsip kerentanan, serta **Tab Statistik Publik** interaktif berbasis 100% fakta empiris untuk meningkatkan literasi dan kewaspadaan siber (*cyber awareness*) masyarakat Jawa Timur.
+1. **Operasional Internal (Admin Tim CTI CSIRT)**: Menyediakan instrumen pemantauan harian, orkestrasi pengumpulan data otomatis, analisis paparan sektor vital (IIV), pemetaan ancaman taktis berbasis kerangka **MITRE ATT&CK & D3FEND**, indeks postur ancaman komparatif, matriks tindakan remediasi, serta generator **Laporan PDF Resmi Mingguan** untuk briefing pimpinan dan Organisasi Perangkat Daerah (OPD).
+2. **Layanan Publik (Masyarakat Umum & Pengelola OPD)**: Menyediakan jendela informasi terkurasi mengenai insiden siber terkini, arsip intelijen siber, serta **Tab Statistik Publik** interaktif berbasis 100% fakta empiris untuk meningkatkan literasi dan kewaspadaan siber (*cyber awareness*) masyarakat Jawa Timur.
 
 ---
 
@@ -17,8 +17,8 @@
 
 | Fitur / Halaman | Pengguna Publik (Masyarakat Umum & Pengelola Web) | Admin Tim CTI (CSIRT Diskominfo Jatim) |
 |---|---|---|
-| **Tujuan Utama** | Membaca berita siber, memeriksa celah software, literasi pencegahan | Triage insiden harian, audit kerentanan, analisis CTI strategis |
-| **Tab 1: Beranda** | **Berita & Statistik**: Wawasan KPI dinamis, Word Cloud kasus insiden spesifik, grafik fakta siber, timeline 10 hari, sebaran sumber media, intisari edukasi asli, dan feed berita terkini | **Dashboard Operasional**: Feed berita/CVE + **Floating Terminal Monitor SSE** (*Run Pipeline*, *Stop*) |
+| **Tujuan Utama** | Membaca berita siber, memeriksa sektor terpapar, literasi pencegahan | Triage insiden harian, analisis sektor vital IIV, analisis CTI strategis |
+| **Tab 1: Beranda** | **Berita & Statistik**: Wawasan KPI dinamis, Word Cloud kasus insiden spesifik, grafik fakta siber, timeline 10 hari, sebaran sumber media, intisari edukasi asli, dan feed berita terkini | **Dashboard Operasional**: Feed berita intelijen + **Floating Terminal Monitor SSE** (*Run Pipeline*, *Stop*) |
 | **Tab 2: Arsip** | Menjelajahi riwayat 7 sampai 14 hari dengan filter tanggal dan pencarian instan | Menjelajahi riwayat lengkap dengan audit metadata teknis |
 | **Tab 3: Fitur Khusus** | *(Terpadu di Tab Beranda)* | **Tren Siber CTI**: Indeks Postur Ancaman (1.0-10.0), Matriks Tindakan Taktis, Dinamika Deret Waktu 7 Hari, Laporan CTI AI mendalam, kasus wilayah 3 kolom, dan Ekspor PDF Resmi |
 | **Tab 4: Pengaturan** | *(Tidak tersedia untuk publik)* | **Panel Pengaturan**: Manajemen sumber RSS, kata kunci pencarian & filter, template prompt LLM, dan konfigurasi Gemini API (khusus Superadmin) |
@@ -32,7 +32,6 @@ flowchart TD
     subgraph DataSources["Sumber Data Eksternal"]
         RSS_INT["Feed Berita Global\n(BleepingComputer, THN, CISA, dll.)"]
         RSS_NAS["Feed Berita Nasional\n(Google News Indonesia)"]
-        NVD["NVD NIST API 2.0\n(CVE CVSS >= 7.0)"]
     end
 
     subgraph Compliance["Kepatuhan & Integritas Data"]
@@ -49,7 +48,7 @@ flowchart TD
 
     subgraph CloudAI["Inferensi AI (Google Gemini API)"]
         LLM_SUM["LLM Summarizer\n(Parafrase Faktual & Ekstraksi TTPs)"]
-        CTI_AGENT["Multi-Agent CTI Modular\n(SITREP Berita & CVE)"]
+        CTI_AGENT["Multi-Agent CTI Modular\n(SITREP CTI 5 Modul & Analisis Wilayah)"]
         EMBED["Vector Embeddings\n(text-embedding-004 Semantic RAG)"]
     end
 
@@ -64,7 +63,6 @@ flowchart TD
 
     RSS_INT --> ROBOTS --> SCRAPER
     RSS_NAS --> ROBOTS --> SCRAPER
-    NVD --> SCRAPER
 
     SCRAPER --> CLASSIFIER --> DEDUP
     DEDUP --> LLM_SUM
@@ -87,18 +85,18 @@ Pemrosesan teks, klasifikasi, perangkuman, dan sintesis intelijen ditenagai oleh
 
 ### 2. Tab Statistik Publik (Fakta Empiris Tanpa Halusinasi)
 Menyajikan data riil yang disederhanakan untuk masyarakat luas tanpa generalisasi berlebih:
-- **Insightful KPI Cards Dinamis**: Dihitung langsung dari database SQLite (kategori ancaman dominan, status keparahan celah software, vendor paling terpapar, dan persentase isu nasional).
-- **Word Cloud Kasus Insiden Riil**: Menampilkan 32 kata kunci kasus insiden teratas yang dapat diklik langsung untuk memfilter feed berita.
+- **Insightful KPI Cards Dinamis**: Dihitung langsung dari database SQLite (kategori ancaman dominan, sektor sasaran utama IIV, dan persentase isu nasional).
+- **Word Cloud Kasus Insiden Riil**: Menampilkan kata kunci kasus insiden teratas yang dapat diklik langsung untuk memfilter feed berita.
 - **Sebaran Modus Ancaman Siber**: Grafik batang interaktif kategori kejahatan digital lengkap dengan persentase proporsi kasus.
-- **Software Populer Terpapar**: Informasi vendor dan software umum yang sedang memiliki celah keamanan kritis (CVSS >= 9.0) dengan himbauan pembaruan segera.
-- **Tren Pantauan Harian & Sebaran Sumber**: Grafik garis 10 hari pemantauan insiden dan donut chart perbandingan media nasional vs media global / CTI.
+- **Sebaran Sektor Sasaran Serangan (IIV)**: Distribusi paparan insiden siber pada 10 sektor Infrastruktur Informasi Vital sesuai Perpres No. 82 Tahun 2022.
+- **Tren Pantauan Harian & Sebaran Sumber**: Grafik garis pemantauan insiden dan donut chart perbandingan media nasional vs media global / CTI.
 - **Intisari Edukasi & Himbauan Keamanan**: Disarikan dari artikel analisis relevan di database untuk panduan pencegahan praktis warga.
 
 ### 3. Tren Siber CTI & Ekspor PDF Resmi (Khusus Tim CTI)
 - **Indeks Postur Ancaman Siber Komparatif**: Skor risiko terbobot 1.0 sampai 10.0 yang membandingkan 7 hari terkini terhadap 7 hari baseline sebelumnya, lengkap dengan status tren (Meningkat / Stabil / Menurun) dan rekomendasi tindakan pimpinan.
 - **Matriks Tindakan Ancaman Aktif**: Tabel tindakan taktis yang mengelompokkan insiden ke dalam kategori ancaman, tingkat urgensi (KRITIS, TINGGI, SEDANG, MONITOR), fokus kerentanan website instansi, serta langkah mitigasi konkret.
-- **Dinamika Deret Waktu 7 Hari & Komposisi Sumber**: Grafik fluktuasi harian berita insiden vs CVE kritis serta perbandingan volume ancaman domestik vs internasional.
-- **SITREP Modular 9 Bagian**: Terbagi menjadi 5 modul berita (Makro, Top 3 Insiden, Vektor MITRE ATT&CK, Rekomendasi D3FEND deterministik, Sinyal Ancaman Baru) dan 4 modul CVE (Vendor Prioritas, Tipe Vektor, Eksploitabilitas & PoC, Panduan Patching deterministik).
+- **Dinamika Deret Waktu 7 Hari & Komposisi Sumber**: Grafik deret waktu fluktuasi harian berita insiden serta perbandingan volume ancaman domestik vs internasional.
+- **SITREP Modular 5 Bagian**: Terbagi menjadi 5 modul terstruktur (Makro Tren Insiden, Lanskap Mikro & Aktor, Vektor Serangan & MITRE ATT&CK, Rekomendasi Preskriptif D3FEND/NIST deterministik, dan Sinyal Ancaman Baru).
 - **Kasus Wilayah 3 Kolom**: Klastering insiden wilayah Jawa Timur, Nasional, dan Global dengan sintesis BLUF (Bottom Line Up Front) dan analisis dampak domino lintas sektor.
 - **Laporan PDF Resmi**: Generator dokumen intelijen mingguan berformat standar CSIRT Pemerintah Provinsi Jawa Timur yang siap diunduh dan dicetak.
 
@@ -179,9 +177,9 @@ python -m src.pipeline_harian
 ```
 NOTIFIKASI-BERITA/
 ├── config/
-│   ├── config.yaml             # Konfigurasi dasar RSS feed, query Google News, NVD API, keyword filter
+│   ├── config.yaml             # Konfigurasi dasar RSS feed, query Google News, dan keyword filter
 │   ├── rules/                  # Aturan klasifikasi, pemetaan sektor IIV, dan pemetaan statistik publik
-│   └── prompts/                # 10 Template Prompt CTI modular (klasifikasi, ringkas, SITREP)
+│   └── prompts/                # 6 Template Prompt CTI modular (klasifikasi, ringkas, SITREP)
 ├── data/
 │   ├── state.db                # Database SQLite (riwayat tren, pengguna admin, pengaturan dinamis)
 │   └── encyclopedia/           # 12 Kerangka Kerja Keamanan Siber Resmi (165 entitas JSON)
@@ -190,9 +188,9 @@ NOTIFIKASI-BERITA/
 │   ├── analytics/              # Analisis tren, CTI multi-agent, kalkulasi lonjakan, RAG engine, cti_agents
 │   ├── classifier/             # Klasifikasi relevansi artikel siber (insiden vs analisis)
 │   ├── dedup/                  # Algoritma deduplikasi hybrid (URL hash + text similarity)
-│   ├── scraper/                # Pengambil RSS global, Google News, API NVD NIST, dan robots.txt checker
+│   ├── scraper/                # Pengambil RSS global, Google News, dan robots.txt checker
 │   ├── storage/                # Modul koneksi dan query SQLite (db.py)
-│   ├── summarizer/             # Peringkas artikel dan CVE menggunakan Google Gemini API
+│   ├── summarizer/             # Peringkas artikel intelijen siber menggunakan Google Gemini API
 │   ├── utils/                  # Utilitas adapter LLM, settings manager, HTTP client, logger
 │   ├── web/                    # Backend FastAPI, static assets, dan template Jinja2
 │   │   ├── app.py              # Server FastAPI, rute auth, & API endpoint
@@ -218,7 +216,7 @@ NOTIFIKASI-BERITA/
 | `POST` | `/api/login` | Publik | Otentikasi admin (mengembalikan token sesi) |
 | `POST` | `/api/logout` | Admin | Keluar dari sesi admin |
 | `GET` | `/admin` | Admin | Dashboard operasional dan analitik Tim CTI CSIRT |
-| `GET` | `/api/beranda` | Publik | Mengambil data berita dan CVE terbaru untuk tab Beranda |
+| `GET` | `/api/beranda` | Publik | Mengambil data berita intelijen siber terbaru untuk tab Beranda |
 | `GET` | `/api/arsip` | Publik | Mengambil daftar riwayat 7 sampai 14 hari terakhir per tanggal |
 | `GET` | `/api/tren` | Admin | Mengambil metrik analitik CTI, postur ancaman, matriks tindakan, dan prediksi AI |
 | `GET` | `/api/statistik-publik` | Publik | Mengambil data agregat fakta siber untuk grafik ramah publik |

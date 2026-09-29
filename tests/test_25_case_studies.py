@@ -209,7 +209,7 @@ CRUEL_CASES = [
     ("Judul Identik Beda Tahun", "Dua artikel dengan judul persis sama tapi beda 5 tahun kejadiannya", "Identical Titles"),
     ("Berita Debunking Phishing", "Artikel membantah adanya serangan, namun AI mengiranya sebagai serangan", "Debunking Fake"),
     ("APT Group Named 'No Attack'", "Aktor ancaman menggunakan nama 'No Attack Group' agar lolos deteksi NLP", "Semantics Trick"),
-    ("CVE-1999-0001 Re-exploited", "Pemberitaan celah purba yang tiba-tiba dikaitkan dengan cloud modern", "Old CVE"),
+    ("Celah Keamanan Lawas Dieksploitasi Ulang", "Pemberitaan celah purba yang tiba-tiba dikaitkan dengan cloud modern", "Old Exploit"),
     ("Ransomware Simulator vs Real", "Simulasi latihan ransomware dilaporkan media sebagai insiden nyata", "Drill vs Real"),
     ("Vendor Patch Gagal", "Pembaruan keamanan justru membuka pintu belakang baru yang lebih besar", "Bad Patch"),
     ("AI Mengkritik AI", "Artikel tentang AI yang mendeteksi cacat AI lain tanpa ada serangan siber", "AI Critics"),

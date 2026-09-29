@@ -9,7 +9,7 @@ from src.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
-# Registri 10 prompt aktif dengan nama ramah pengguna, kategori, dan deskripsi
+# Registri prompt aktif dengan nama ramah pengguna, kategori, dan deskripsi
 PROMPT_METADATA: Dict[str, Dict[str, str]] = {
     "klasifikasi": {
         "nama": "Klasifikasi Relevansi Berita",
@@ -21,45 +21,25 @@ PROMPT_METADATA: Dict[str, Dict[str, str]] = {
         "kategori": "Pipeline Harian",
         "deskripsi": "Meringkas artikel insiden siber jadi 2-3 kalimat Bahasa Indonesia untuk digest.",
     },
-    "ringkas_cve": {
-        "nama": "Narasi Kerentanan CVE",
-        "kategori": "Pipeline Harian",
-        "deskripsi": "Menerjemahkan dan menarasikan CVE kritis dari NVD ke bahasa Indonesia.",
-    },
     "section_1_makro": {
-        "nama": "SITREP Berita - 1. Lanskap Makro",
+        "nama": "SITREP CTI - 1. Lanskap Makro",
         "kategori": "SITREP Tren Berita",
         "deskripsi": "Sintesis pola ancaman makro berdasarkan lonjakan insiden riil mingguan.",
     },
     "section_2_mikro": {
-        "nama": "SITREP Berita - 2. Insiden Mikro",
+        "nama": "SITREP CTI - 2. Insiden Mikro",
         "kategori": "SITREP Tren Berita",
         "deskripsi": "Analisis mendalam terhadap top 3 insiden dominan dalam 7 hari terakhir.",
     },
     "section_3_vektor": {
-        "nama": "SITREP Berita - 3. Vektor Serangan",
+        "nama": "SITREP CTI - 3. Vektor Serangan",
         "kategori": "SITREP Tren Berita",
         "deskripsi": "Pemetaan metode serangan teknis dan sektor sasaran yang terdampak.",
     },
     "section_5_emerging": {
-        "nama": "SITREP Berita - 4. Ancaman Baru",
+        "nama": "SITREP CTI - 5. Ancaman Baru",
         "kategori": "SITREP Tren Berita",
         "deskripsi": "Deteksi varian malware baru, taktik mutakhir, atau kelompok peretas baru.",
-    },
-    "cve_sec1_vendor": {
-        "nama": "SITREP CVE - 1. Vendor & Produk Prioritas",
-        "kategori": "SITREP Tren Kerentanan CVE",
-        "deskripsi": "Analisis vendor perangkat lunak dan produk dengan lonjakan CVE kritis tertinggi.",
-    },
-    "cve_sec2_vektor": {
-        "nama": "SITREP CVE - 2. Vektor Eksploitasi",
-        "kategori": "SITREP Tren Kerentanan CVE",
-        "deskripsi": "Analisis tipe kerentanan dominan (Remote Code Execution, Auth Bypass, DoS).",
-    },
-    "cve_sec3_kripto": {
-        "nama": "SITREP CVE - 3. Eksploitabilitas & Weaponization (PoC)",
-        "kategori": "SITREP Tren Kerentanan CVE",
-        "deskripsi": "Analisis ketersediaan exploit publik, kemudahan weaponization, dan bukti konsep (PoC).",
     },
 }
 
@@ -129,25 +109,21 @@ class SettingsManager:
 
     @classmethod
     def get_keywords(cls) -> dict:
-        """Membaca semua grup kata kunci: DB override, YAML fallback."""
-        yaml_kw = ConfigLoader.get_config().get("keywords", {})
+        """Membaca semua grup kata kunci langsung dari database SQLite (tabel pengaturan)."""
         return {
-            grup: cls.get(f"keywords.{grup}", yaml_kw.get(grup, []))
+            grup: cls.get(f"keywords.{grup}", [])
             for grup in ["english", "indonesia_mandiri", "objek_data_sensitif",
                          "objek_aset_digital", "indikator_insiden", "ambigu_butuh_konteks"]
         }
 
     @classmethod
     def get_prompt(cls, nama: str) -> str:
-        """Baca prompt: DB override, file fallback."""
-        db_val = cls.get(f"prompt.{nama}")
-        if db_val:
-            return db_val
-        return ConfigLoader.get_prompt(nama)
+        """Membaca template prompt CTI langsung dari database SQLite (tabel pengaturan)."""
+        return cls.get(f"prompt.{nama}", "")
 
     @classmethod
     def get_all_prompts_info(cls) -> List[dict]:
-        """Mengembalikan daftar 10 prompt aktif dengan metadata nama, kategori, dan deskripsi."""
+        """Mengembalikan daftar 6 prompt aktif dengan metadata nama, kategori, dan deskripsi dari database."""
         prompts_info = []
         for prompt_id, meta in PROMPT_METADATA.items():
             isi = cls.get_prompt(prompt_id)
@@ -162,14 +138,10 @@ class SettingsManager:
 
     @classmethod
     def get_rss_sources(cls, tipe: str) -> list:
-        """Baca RSS sources: DB override, YAML fallback. tipe = 'international' atau 'indonesia'."""
+        """Membaca sumber feed RSS langsung dari database SQLite (tabel pengaturan)."""
         key = f"rss_sources_{tipe}"
-        db_val = cls.get(key)
-        if db_val is not None:
-            return db_val
-
-        yaml_sources = ConfigLoader.get_config().get(key, [])
-        for s in yaml_sources:
+        sources = cls.get(key, [])
+        for s in sources:
             if "active" not in s:
                 s["active"] = True
-        return yaml_sources
+        return sources

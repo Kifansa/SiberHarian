@@ -102,16 +102,9 @@ export async function muatTabTren(isManualReload = false) {
       trenDesc.textContent = `Diperbarui pada ${formatWaktuSekarang()}`;
     }
 
-    // 1. Delegasi ke tren-ai-cards
+    // 1. Delegasi ke tren-ai-cards (SITREP CTI AI 5 Modul)
     const containerBerita = document.getElementById('prediksi-berita-cards');
-    const containerCve = document.getElementById('prediksi-cve-cards');
     if (containerBerita) renderLaporanCards(containerBerita, data.prediksi_berita, 'berita');
-    if (containerCve) renderLaporanCards(containerCve, data.prediksi_cve, 'cve');
-
-    const btnBerita = document.getElementById('tab-ai-berita-btn');
-    const btnCve = document.getElementById('tab-ai-cve-btn');
-    if (btnBerita) btnBerita.onclick = () => window.tampilAiTab('berita');
-    if (btnCve) btnCve.onclick = () => window.tampilAiTab('cve');
 
     // 2. Delegasi ke submodul analitik
     const stat = data.statistik;

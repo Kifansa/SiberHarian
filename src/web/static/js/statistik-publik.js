@@ -11,7 +11,6 @@ import { simpanItemModal } from './modal.js';
 import { escapeHtml } from './utils.js';
 
 let chartAncaman = null;
-let chartVendor = null;
 let chartTimeline = null;
 let chartSebaranMedia = null;
 let kataTerpilih = null;
@@ -25,22 +24,26 @@ export async function muatTabStatistikPublik() {
 
     if (data.status !== "ok") throw new Error("Gagal mengambil data statistik publik");
 
-    // 1. Update Insightful KPI Cards (Fakta Murni dengan Deskripsi)
-    if (data.kpi_insights && Array.isArray(data.kpi_insights)) {
-      data.kpi_insights.forEach((kpi, idx) => {
-        const elVal = document.getElementById(`pub-kpi-${idx + 1}-val`);
-        const elDesc = document.getElementById(`pub-kpi-${idx + 1}-desc`);
-        if (elVal && kpi.nilai) elVal.textContent = kpi.nilai;
-        if (elDesc && kpi.insight) elDesc.textContent = kpi.insight;
-      });
+    // 1. Update Highlight KPI Publik (Modus Paling Mengintai)
+    if (data.kpi_insights && Array.isArray(data.kpi_insights) && data.kpi_insights.length > 0) {
+      const kpi = data.kpi_insights[0];
+      const elVal = document.getElementById("pub-kpi-1-val");
+      const elDesc = document.getElementById("pub-kpi-1-desc");
+      if (elVal && kpi.nilai) elVal.textContent = kpi.nilai;
+      if (elDesc && kpi.insight) elDesc.textContent = kpi.insight;
     }
 
     // 2. Render Word Cloud Kasus Insiden Spesifik (7 Hari Terkini)
     renderWordCloud(data.word_cloud || []);
 
-    // 3. Render Chart Top Ancaman dan Software Terpapar (Fakta Praktis)
+    // 3. Render Chart Top Ancaman (Fakta Praktis 1 Kolom Penuh)
     renderChartAncaman(data.top_ancaman || []);
-    renderChartVendor(data.top_vendor || []);
+
+    // 3B. Render Analisis Takeaway Chart
+    const elTakeaway = document.getElementById("pub-chart-takeaway");
+    if (elTakeaway && data.takeaway_chart) {
+      elTakeaway.textContent = data.takeaway_chart;
+    }
 
     // 4. Render Intisari Artikel Edukasi Nyata
     renderEdukasiList(data.edukasi_list || []);
@@ -162,10 +165,14 @@ function renderWordCloud(wordList) {
 
       // Desain murni tipografi: TANPA border, TANPA angka, TANPA background kotak
       const safeKata = escapeHtml(item.kata);
+      const safeContoh = escapeHtml(item.contoh_judul || '');
+      const safeSumber = escapeHtml(item.sumber || '');
       return `
         <button type="button"
           data-kata-raw="${safeKata}"
-          onclick="window.pilihWordCloud(this.getAttribute('data-kata-raw'))"
+          data-contoh-judul="${safeContoh}"
+          data-sumber="${safeSumber}"
+          onclick="window.pilihWordCloud(this.getAttribute('data-kata-raw'), this)"
           data-kata="${safeKata.toLowerCase()}"
           style="font-size: clamp(${Math.round(fontSize * 0.72)}px, ${fontSize * 0.08}vw + 12px, ${fontSize}px); color: ${color}; font-weight: ${fontWeight}; letter-spacing: ${letterSpacing}; ${isAktif ? 'background-color: #EEF5FA; outline: 2px solid #0A4174; border-radius: 8px; padding: 2px 8px; transform: scale(1.15); opacity: 1;' : ''}"
           class="wordcloud-item inline-block font-sans cursor-pointer transition-all duration-200 hover:scale-110 hover:bg-[#EEF5FA]/80 px-2 py-1 leading-none whitespace-nowrap select-none focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none rounded-lg"
@@ -206,7 +213,7 @@ function sorotKataAktif(kata) {
 }
 
 // Interaktivitas: Memfilter berita di halaman Beranda berdasarkan kata kunci Word Cloud
-window.pilihWordCloud = function (kata) {
+window.pilihWordCloud = function (kata, btnEl = null) {
   const kataLower = (kata || "").trim().toLowerCase();
 
   // Jika kata yang sama diklik lagi, batalkan saringan (toggle)
@@ -225,6 +232,24 @@ window.pilihWordCloud = function (kata) {
     labelActive.classList.remove("hidden");
   }
 
+  // Tampilkan Callout Kontekstual Interaktif (Empiris Riil)
+  const elCallout = document.getElementById("pub-wordcloud-callout");
+  const elCalloutKata = document.getElementById("callout-kata");
+  const elCalloutDesc = document.getElementById("callout-deskripsi");
+
+  if (elCallout && elCalloutKata && elCalloutDesc) {
+    elCalloutKata.textContent = kata;
+    const contohJudul = btnEl ? btnEl.getAttribute("data-contoh-judul") : "";
+    const sumber = btnEl ? btnEl.getAttribute("data-sumber") : "";
+
+    if (contohJudul && contohJudul.trim()) {
+      elCalloutDesc.innerHTML = `Terdeteksi dalam laporan insiden: <strong>"${escapeHtml(contohJudul)}"</strong> (${escapeHtml(sumber || 'Media Siber')}). Seluruh artikel terkait isu ini telah disaring pada feed Beranda di bawah.`;
+    } else {
+      elCalloutDesc.innerHTML = `Menampilkan seluruh laporan insiden yang memuat kata kunci <strong>"${escapeHtml(kata)}"</strong> pada feed Beranda di bawah.`;
+    }
+    elCallout.classList.remove("hidden");
+  }
+
   // Sinkronkan ke input search feed beranda
   const berandaInput = document.getElementById("beranda-search-input");
   if (berandaInput) {
@@ -238,12 +263,11 @@ window.pilihWordCloud = function (kata) {
   if (window.filterBerandaCards) {
     window.filterBerandaCards(kataLower);
   }
+};
 
-  // Scroll halus ke area kartu berita
-  const feedAnchor = document.getElementById("feed-beranda-anchor") || document.getElementById("card-container");
-  if (feedAnchor) {
-    feedAnchor.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+window.tutupWordCloudCallout = function () {
+  const elCallout = document.getElementById("pub-wordcloud-callout");
+  if (elCallout) elCallout.classList.add("hidden");
 };
 
 window.resetFilterWordCloud = function () {
@@ -253,6 +277,8 @@ window.resetFilterWordCloud = function () {
 
   const labelActive = document.getElementById("pub-wordcloud-active-label");
   if (labelActive) labelActive.classList.add("hidden");
+
+  window.tutupWordCloudCallout();
 
   const berandaInput = document.getElementById("beranda-search-input");
   if (berandaInput && berandaInput.value) {
@@ -315,14 +341,9 @@ function renderEdukasiList(edukasiList) {
           onclick="window.bukaModal ? window.bukaModal(${idx}) : bukaModal(${idx})"
           class="w-full text-left bg-white hover:bg-[#EEF5FA] border border-[#E2EDF8] hover:border-[#BDD8E9] p-3 sm:p-3.5 rounded-xl transition-all flex items-center justify-between gap-3 group cursor-pointer shadow-2xs hover:shadow-xs active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
           title="Klik untuk membaca rangkuman dan informasi lengkap">
-          <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-50 text-[#15803d] flex items-center justify-center shrink-0 group-hover:bg-emerald-100 group-hover:scale-105 transition-all">
-              <span class="material-symbols-outlined text-base sm:text-lg" aria-hidden="true">menu_book</span>
-            </span>
-            <span class="font-bold text-xs sm:text-sm text-[#001D39] group-hover:text-[#0A4174] transition-colors line-clamp-2 leading-snug">
-              ${escapeHtml(item.judul)}
-            </span>
-          </div>
+          <span class="font-bold text-xs sm:text-sm text-[#001D39] group-hover:text-[#0A4174] transition-colors line-clamp-2 leading-snug min-w-0 pr-2">
+            ${escapeHtml(item.judul)}
+          </span>
           <span class="material-symbols-outlined text-slate-400 group-hover:text-[#0A4174] text-base sm:text-lg shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden="true">
             arrow_forward
           </span>
@@ -400,66 +421,6 @@ function renderChartAncaman(topAncaman) {
   });
 }
 
-function renderChartVendor(topVendor) {
-  const ctx = document.getElementById("chart-vendor-publik");
-  if (!ctx) return;
-
-  if (chartVendor) chartVendor.destroy();
-
-  const labels = topVendor.map((v) => v.vendor);
-  const values = topVendor.map((v) => v.total_cve);
-
-  chartVendor = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          axis: "y",
-          label: "Total CVE Kritis",
-          data: values,
-          backgroundColor: "#0A4174",
-          borderRadius: 4,
-        },
-      ],
-    },
-    options: {
-      indexAxis: "y",
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: "#001D39",
-          titleFont: { family: "Inter", size: 12, weight: "bold" },
-          bodyFont: { family: "Inter", size: 11 },
-          padding: 8,
-          callbacks: {
-            label: (ctx) => ` ${ctx.parsed.x} Celah Kerentanan Kritis (CVSS ≥ 9.0)`,
-          },
-        },
-      },
-      scales: {
-        x: {
-          beginAtZero: true,
-          grid: { color: "#E2EDF8" },
-          ticks: {
-            font: { family: "JetBrains Mono", size: 10 },
-            color: "#49769F",
-            precision: 0,
-          },
-        },
-        y: {
-          grid: { display: false },
-          ticks: {
-            font: { family: "Inter", size: 10, weight: "600" },
-            color: "#001D39",
-          },
-        },
-      },
-    },
-  });
-}
 
 function renderChartTimeline(timelineData) {
   const ctx = document.getElementById("chart-timeline-publik");
@@ -496,18 +457,6 @@ function renderChartTimeline(timelineData) {
             return (val >= avgBerita * 1.8 && val > 2) ? 6 : 4;
           },
           pointHoverRadius: 7,
-          borderWidth: 2.5,
-        },
-        {
-          label: "CVE Kritis",
-          data: timelineData.cve || [],
-          borderColor: "#d97706",
-          backgroundColor: "rgba(217, 119, 6, 0.06)",
-          fill: true,
-          tension: 0.35,
-          pointBackgroundColor: "#d97706",
-          pointRadius: 4,
-          pointHoverRadius: 6,
           borderWidth: 2.5,
         },
       ],

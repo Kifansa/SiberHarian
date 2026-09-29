@@ -1,7 +1,7 @@
 """
 Unit test untuk modul statistik publik (db.py - ambil_statistik_publik)
 Memastikan:
-1. Menghasilkan tepat 3 KPI cards (Top Target, Software Terpapar, Fokus Wilayah)
+1. Menghasilkan tepat 3 KPI cards (Top Target, Sektor Sasaran IIV, Fokus Wilayah)
 2. Kartu Status Risiko Software (CVSS bias) sudah dieliminasi
 3. Query word cloud memfilter data 7 hari terkini
 """
@@ -23,7 +23,7 @@ class TestStatistikPublik(unittest.TestCase):
 
         ids = [k["id"] for k in kpis]
         self.assertIn("top_target", ids)
-        self.assertIn("top_vendor", ids)
+        self.assertIn("top_sektor", ids)
         self.assertIn("fokus_wilayah", ids)
 
         # 2. Pastikan tidak ada CVSS 9.5 / Kritis Ekstrem di KPI publik
@@ -39,10 +39,17 @@ class TestStatistikPublik(unittest.TestCase):
             self.assertIn("bobot", wc[0])
             self.assertGreater(wc[0]["bobot"], 0)
 
-        # 4. Pastikan komponen edukasi dan top vendor ada
+        # 4. Pastikan komponen edukasi, top sektor, dan takeaway chart ada
         self.assertIn("edukasi_list", stat)
         self.assertIn("top_ancaman", stat)
-        self.assertIn("top_vendor", stat)
+        self.assertIn("top_sektor", stat)
+        self.assertIn("takeaway_chart", stat)
+        self.assertTrue(len(stat["takeaway_chart"]) > 10)
+
+        # 5. Pastikan word cloud memiliki atribut kontekstual empiris
+        if wc:
+            self.assertIn("contoh_judul", wc[0])
+            self.assertIn("sumber", wc[0])
 
 if __name__ == "__main__":
     unittest.main()

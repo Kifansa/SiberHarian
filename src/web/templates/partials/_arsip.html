@@ -1,21 +1,13 @@
 <div class="py-4 space-y-6">
   <div class="border-b border-[#BDD8E9]/80 pb-5 flex flex-col md:flex-row md:items-end justify-between gap-4">
     <div>
-      <div class="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#0A4174] bg-[#EEF5FA] border border-[#BDD8E9] px-2.5 py-0.5 rounded-full mb-2 shadow-2xs">
-        <span class="material-symbols-outlined text-xs">history</span>
-        <span>Riwayat Intelijen 7 Hari Terakhir</span>
-      </div>
-      <h2 class="text-xl sm:text-2xl font-extrabold text-[#001D39] tracking-tight">Arsip Informasi &amp; Kerentanan Siber</h2>
-      <p class="text-xs sm:text-sm text-[#49769F] mt-1" id="arsip-desc">Pilih tanggal penerbitan dan saring kategori untuk meninjau riwayat laporan.</p>
+      <h2 class="text-xl sm:text-2xl font-extrabold text-[#001D39] tracking-tight">Arsip Insiden Siber</h2>
+      <p class="text-xs sm:text-sm text-[#49769F] mt-1" id="arsip-desc">Pilih tanggal penerbitan untuk meninjau riwayat laporan intelijen siber.</p>
     </div>
   </div>
 
   <!-- Quick Date Range Pills (1-Click Access) -->
   <div class="flex items-center gap-2 overflow-x-auto pb-1" id="arsip-quick-date-pills" role="radiogroup" aria-label="Pilihan tanggal cepat">
-    <span class="text-xs font-bold text-[#49769F] shrink-0 mr-1 flex items-center gap-1">
-      <span class="material-symbols-outlined text-sm text-[#0A4174]" aria-hidden="true">date_range</span>
-      <span>Rentang:</span>
-    </span>
     <button type="button" data-val="semua" class="arsip-pill-date px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0A4174] text-white shadow-2xs transition-all cursor-pointer whitespace-nowrap active:scale-95">
       Semua Riwayat (7 Hari)
     </button>
@@ -32,7 +24,7 @@
 
   <!-- Unified Filter Toolbar -->
   <div class="bg-white p-4 sm:p-5 rounded-xl border border-[#BDD8E9]/80 shadow-card flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3.5">
-    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+    <div class="flex items-center gap-3 flex-1">
       <!-- Select Tanggal -->
       <div class="relative flex-1 sm:max-w-xs">
         <select id="arsip-tanggal-select" class="appearance-none w-full pl-4 pr-10 py-2.5 rounded-lg bg-[#EEF4F8]/70 hover:bg-[#EEF4F8] border border-[#BDD8E9] text-[#001D39] text-xs font-bold shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#0A4174] cursor-pointer transition-colors">
@@ -40,27 +32,15 @@
         </select>
         <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#49769F] text-lg" aria-hidden="true">calendar_today</span>
       </div>
-      
-      <!-- Select Kategori -->
-      <div class="relative sm:w-48">
-        <select id="arsip-kategori-select" class="appearance-none w-full pl-4 pr-10 py-2.5 rounded-lg bg-[#EEF4F8]/70 hover:bg-[#EEF4F8] border border-[#BDD8E9] text-[#001D39] text-xs font-bold shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#0A4174] cursor-pointer transition-colors">
-          <option value="semua">Semua Kategori</option>
-          <option value="insiden_spesifik">Insiden Spesifik</option>
-          <option value="edukasi">Edukasi / Evergreen</option>
-          <option value="cve">CVE Critical</option>
-        </select>
-        <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#49769F] text-lg" aria-hidden="true">filter_list</span>
-      </div>
     </div>
 
     <!-- Search Input -->
     <div class="relative md:w-72">
       <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#49769F] text-lg pointer-events-none" aria-hidden="true">search</span>
       <input id="arsip-search-input"
-        class="pl-9 pr-14 py-2.5 rounded-lg bg-[#EEF4F8]/70 hover:bg-[#EEF4F8] focus:bg-white border border-[#BDD8E9] focus:border-[#0A4174] focus:ring-2 focus:ring-[#0A4174]/20 outline-none text-xs w-full transition-all duration-200 placeholder:text-[#49769F] text-[#001D39] font-medium shadow-2xs"
+        class="pl-9 pr-10 py-2.5 rounded-lg bg-[#EEF4F8]/70 hover:bg-[#EEF4F8] focus:bg-white border border-[#BDD8E9] focus:border-[#0A4174] focus:ring-2 focus:ring-[#0A4174]/20 outline-none text-xs w-full transition-all duration-200 placeholder:text-[#49769F] text-[#001D39] font-medium shadow-2xs"
         placeholder="Cari kata kunci dalam arsip..." type="text" aria-label="Cari arsip" />
-      <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-        <kbd class="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] font-mono bg-white border border-[#BDD8E9] text-[#49769F] shadow-2xs select-none" title="Tekan / untuk mencari">/</kbd>
+      <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center">
         <button id="arsip-search-clear" style="display:none;" class="w-5 h-5 rounded-md bg-[#BDD8E9] hover:bg-[#A8CEE5] flex items-center justify-center text-[#001D39] text-xs cursor-pointer focus-visible:outline-none" title="Bersihkan pencarian" aria-label="Bersihkan pencarian">
           <span class="material-symbols-outlined text-xs" aria-hidden="true">close</span>
         </button>
@@ -74,7 +54,7 @@
       <span class="material-symbols-outlined text-2xl" aria-hidden="true">calendar_month</span>
     </div>
     <h3 class="text-base font-bold text-[#001D39] mb-1">Belum Ada Data Arsip</h3>
-    <p class="text-[#49769F] text-xs max-w-sm mx-auto">Riwayat artikel dan CVE akan otomatis tercatat setiap kali pipeline harian dijalankan.</p>
+    <p class="text-[#49769F] text-xs max-w-sm mx-auto">Riwayat artikel dan laporan intelijen akan otomatis tercatat setiap kali pipeline harian dijalankan.</p>
   </div>
 
   <div id="arsip-card-container"></div>

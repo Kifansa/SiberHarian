@@ -109,7 +109,7 @@ export function formatPoinModalHtml(text) {
 }
 
 /**
- * Membuka modal popup detail analisis ancaman (desain identik dengan modal ringkasan berita & CVE)
+ * Membuka modal popup detail analisis ancaman
  * @param {string} wilayahKey 'intl' | 'nas' | 'jatim'
  */
 export function bukaModalDetailKasus(wilayahKey) {
@@ -201,7 +201,7 @@ export function bukaModalDetailKasus(wilayahKey) {
     }
   }
 
-  // Buka modal dengan transisi persis seperti modal berita & CVE di index.html
+  // Buka modal dengan transisi persis seperti modal berita di index.html
   overlay.classList.remove('hidden');
   overlay.classList.add('flex');
   overlay.setAttribute('aria-hidden', 'false');
@@ -325,7 +325,7 @@ export function renderKasusInsidenWilayah(stat) {
 
   if (!stat) return;
 
-  // Ambil hasil sintesis insiden per wilayah dari LLM/Ollama atau fallback
+  // Ambil hasil sintesis insiden per wilayah dari Model AI CTI atau fallback
   const aiData = stat.kasus_wilayah_ai || {};
   const intlItem = aiData.internasional || (stat.kasus_wilayah?.internasional?.[0] ? {
     ada_kejadian: true,

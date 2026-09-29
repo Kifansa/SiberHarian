@@ -1,6 +1,6 @@
 """
 Deteksi dan penghapusan duplikat:
-1. Duplikat lintas hari - artikel/CVE yang sudah pernah dikirim sebelumnya.
+1. Duplikat lintas hari - artikel yang sudah pernah dikirim sebelumnya.
 2. Duplikat dalam hari yang sama - dideteksi lewat kemiripan judul (rapidfuzz & batch semantic embedding).
 """
 from pathlib import Path

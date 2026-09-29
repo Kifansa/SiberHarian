@@ -49,67 +49,18 @@ def _susun_item_arsip_berita(df_berita_ringkas) -> List[Dict]:
     return df[cols].to_dict('records')
 
 
-import re
-from src.scraper.cve_fetcher import _ATURAN_EKOSISTEM_VENDOR, ekstrak_produk_cve
-
-
-def _susun_item_arsip_cve(cve_struktur: Dict) -> List[Dict]:
-    """Meratakan struktur CVE (sudah ada 'narasi') jadi list dict siap disimpan."""
-    if cve_struktur.get("mode") != "ada_critical":
-        return []
-    hasil = []
-    for grup in cve_struktur["grup_critical"]:
-        for cve in grup["cve_list"]:
-            vendor = grup.get("vendor", "")
-            narasi = cve.get("narasi", "")
-            produk = cve.get("produk", "")
-
-            # Fallback cerdas: jika vendor masih belum teridentifikasi, cek dari narasi LLM
-            if not vendor or vendor == "Lainnya / Belum Teridentifikasi":
-                teks_cari = f"{produk} {narasi}"
-                for pola, vendor_name in _ATURAN_EKOSISTEM_VENDOR:
-                    if re.search(pola, teks_cari, re.IGNORECASE):
-                        vendor = vendor_name
-                        break
-
-            # Fallback produk jika masih kosong atau (lihat deskripsi) / -
-            if not produk or produk in ConfigLoader.get_config().get("cti_analysis", {}).get("pasca_proses", {}).get("blacklist_values", ["-", "(lihat deskripsi)", "Lainnya / Belum Teridentifikasi"]):
-                produk = ekstrak_produk_cve(narasi_id=narasi, vendor=vendor)
-
-            hasil.append({
-                "kategori": "cve",
-                "identifier": cve["cve_id"],
-                "judul": cve["cve_id"],
-                "sumber": "NVD",
-                "kata_kunci": "",
-                "kategori_relevansi": "",
-                "severity": cve.get("severity", ""),
-                "vendor": vendor if vendor else "Lainnya / Belum Teridentifikasi",
-                "tanggal_publish": cve.get("tanggal_publish", ""),
-                "ringkasan_atau_narasi": narasi,
-                "link": cve["link"],
-                "skor_cvss": cve.get("skor_cvss"),
-                "produk": produk,
-            })
-    return hasil
-
-
 def proses_arsip_dan_tren(hasil_ringkas: Dict, db_path: Path = DEFAULT_DB_PATH) -> Dict:
     """
     Titik masuk utama: menerima hasil dari proses_summarization_harian()
-    (berita + cve_struktur yang SUDAH ada ringkasan/narasi), mencatatnya ke
-    riwayat_tren untuk Arsip, menghitung statistik tren, lalu meminta LLM
-    menarasikan prediksi tren. Mengembalikan hasil_ringkas yang sama, plus
-    key baru 'prediksi_tren'.
+    (berita yang SUDAH ada ringkasan), mencatatnya ke riwayat_tren untuk
+    Arsip, menghitung statistik tren, lalu meminta LLM menarasikan prediksi
+    tren. Mengembalikan hasil_ringkas yang sama, plus key baru 'prediksi_tren'.
     """
     logger.info("=" * 60)
     logger.info("MENCATAT ARSIP & MENGHITUNG TREN")
     logger.info("=" * 60)
 
-    item_arsip = (
-        _susun_item_arsip_berita(hasil_ringkas["berita"])
-        + _susun_item_arsip_cve(hasil_ringkas["cve_struktur"])
-    )
+    item_arsip = _susun_item_arsip_berita(hasil_ringkas["berita"])
 
     # Bersihkan data > 14 hari DULU, baru catat data hari ini - supaya window
     # arsip & tren selalu "bergeser" (rolling), bukan menumpuk selamanya.
@@ -122,20 +73,14 @@ def proses_arsip_dan_tren(hasil_ringkas: Dict, db_path: Path = DEFAULT_DB_PATH) 
 
     # Tandai semua item run ini sebagai "sudah diproses", supaya run
     # berikutnya (filter_belum_terkirim di pipeline_harian.py) tidak
-    # mengambil & memproses ulang artikel/CVE yang sama selama masih
+    # mengambil & memproses ulang artikel yang sama selama masih
     # dalam window waktu.
     item_berita = [i for i in item_arsip if i["kategori"] == "berita"]
-    item_cve = [i for i in item_arsip if i["kategori"] == "cve"]
 
     if item_berita:
         catat_terkirim(
             [{"identifier": i["identifier"], "judul": i["judul"], "sumber": i["sumber"]} for i in item_berita],
             kategori="berita", db_path=db_path,
-        )
-    if item_cve:
-        catat_terkirim(
-            [{"identifier": i["identifier"], "judul": i["judul"], "sumber": i["sumber"]} for i in item_cve],
-            kategori="cve", db_path=db_path,
         )
 
     df_riwayat = ambil_riwayat_tren(hari=14, db_path=db_path)
@@ -158,7 +103,6 @@ def proses_arsip_dan_tren(hasil_ringkas: Dict, db_path: Path = DEFAULT_DB_PATH) 
     statistik_json = json.dumps(statistik_dashboard, ensure_ascii=False)
     simpan_prediksi_tren(
         prediksi_tren["prediksi_berita"],
-        prediksi_tren["prediksi_cve"],
         db_path,
         kasus_wilayah_ai=kasus_wilayah_ai_json,
         statistik_json=statistik_json,

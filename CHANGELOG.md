@@ -4,6 +4,18 @@ Semua perubahan penting pada proyek **SiberHarian (CSIRT Dinas Komunikasi dan In
 
 ---
 
+## [3.0.0] - 2026-09-28
+
+### Perubahan Fundamental (Arsitektur Pivot CTI & IIV)
+- **Eradikasi Total Kerentanan CVE & NVD API:** Platform dialihkan sepenuhnya dari pelacakan unpatched CVE software pihak ketiga menjadi murni **Cyber Threat Intelligence (CTI) & Publikasi Berita Insiden Siber**.
+- **Adopsi 10 Sektor Infrastruktur Informasi Vital (IIV):** Mengganti seluruh kartu dan grafik vendor CVE dengan metrik paparan sektor sasaran serangan siber nasional mengacu pada Perpres No. 82 Tahun 2022.
+- **Formula Threat Posture Murni CTI:** Menghitung skor postur ancaman siber 1.0 sampai 10.0 berbasis normalisasi Min-Max scaling terbobot: `0.45 * Frekuensi Insiden + 0.30 * Vektor Serangan (TTPs) + 0.25 * Paparan Sektor Vital (IIV)`.
+- **SITREP CTI 5 Modul Terpadu:** Merestrukturisasi laporan AI menjadi 5 bagian terintegrasi (Makro Tren Insiden, Lanskap Mikro & Aktor, Vektor Serangan & MITRE ATT&CK, Rekomendasi Preskriptif D3FEND/NIST, dan Sinyal Ancaman Baru) tanpa tab pemisah Berita vs CVE.
+- **Streamlining Pipeline & Konfigurasi:** Menghapus seluruh prompt CVE, konfigurasi NVD, merampingkan `config/config.yaml` dari 671 baris menjadi 330 baris, serta mengeliminasi kode fallback yang mustahil (*impossible fallbacks*) dan audit *over-engineering*.
+- **Pembersihan Antarmuka & Laporan PDF:** Menghapus seluruh filter, card, grafik vendor, dan tabel CVE di Beranda, Arsip, Statistik Publik, Tren CTI, serta Dokumen Ekspor PDF Resmi CSIRT Jatim.
+
+---
+
 ## [2.3.0] - 2026-09-25
 
 ### Ditambahkan

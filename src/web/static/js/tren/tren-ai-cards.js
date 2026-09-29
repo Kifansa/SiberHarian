@@ -1,31 +1,13 @@
 import { escapeHtml } from './tren-utils.js';
 
 /**
- * Pengganti tab switcher Berita vs CVE pada kartu rekomendasi AI
- * @param {'berita' | 'cve'} tab 
+ * Deprecated: Tab switcher Berita vs CVE telah dihapus.
+ * SITREP CTI kini disajikan langsung terpadu tanpa tab terpisah.
  */
-export function tampilAiTab(tab) {
-  const btnBerita = document.getElementById('tab-ai-berita-btn');
-  const btnCve = document.getElementById('tab-ai-cve-btn');
-  const boxBerita = document.getElementById('ai-tab-berita');
-  const boxCve = document.getElementById('ai-tab-cve');
-
-  if (!btnBerita || !btnCve || !boxBerita || !boxCve) return;
-
-  if (tab === 'berita') {
-    boxBerita.classList.remove('hidden');
-    boxCve.classList.add('hidden');
-    btnBerita.className = 'px-4 py-1.5 rounded-md text-xs font-bold transition-all bg-[#7BBDE8] text-white shadow-2xs cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none';
-    btnCve.className = 'px-4 py-1.5 rounded-md text-xs font-semibold transition-all text-[#49769F] hover:text-[#001D39] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none';
-  } else {
-    boxBerita.classList.add('hidden');
-    boxCve.classList.remove('hidden');
-    btnCve.className = 'px-4 py-1.5 rounded-md text-xs font-bold transition-all bg-[#7BBDE8] text-white shadow-2xs cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none';
-    btnBerita.className = 'px-4 py-1.5 rounded-md text-xs font-semibold transition-all text-[#49769F] hover:text-[#001D39] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none';
-  }
+export function tampilAiTab() {
+  // No-op for backwards compatibility
 }
 
-// Pasang langsung ke window agar interaksi tombol di HTML selalu responsif
 if (typeof window !== 'undefined') {
   window.tampilAiTab = tampilAiTab;
 }
@@ -74,7 +56,7 @@ export function isMainSectionHeader(line) {
 
   const upper = clean.toUpperCase();
 
-  // Kata kunci penanda 5 section berita dan 4 section CVE
+  // Kata kunci penanda section laporan SITREP CTI
   const mainKeywords = [
     // Berita 0: Tren Insiden
     'TREN INSIDEN MINGGUAN', 'MAKRO',
@@ -89,15 +71,7 @@ export function isMainSectionHeader(line) {
     // Berita 5: Rekomendasi Mitigasi
     'REKOMENDASI MITIGASI', 'MITIGASI BERTINGKAT', 'MATRIKS MITIGASI', 'REKOMENDASI ANTISIPASI', 'REKOMENDASI AKSI', 'REKOMENDASI',
     // Berita 6: Prediksi & Ancaman Masa Depan
-    'PREDIKSI', 'ANCAMAN MASA DEPAN', 'EMERGING THREATS',
-    // CVE 1: Vendor & Produk Prioritas
-    'VENDOR & PRODUK', 'PRODUK PRIORITAS', 'VENDOR PRIORITAS', 'VENDOR',
-    // CVE 2: Analisis Vektor Eksploitasi
-    'ANALISIS VEKTOR', 'VEKTOR EKSPLOITASI', 'EKSPLOITASI & DAMPAK',
-    // CVE 3: Implikasi Kriptografi & Integritas Sistem
-    'IMPLIKASI KRIPTOGRAFI', 'KRIPTOGRAFI & INTEGRITAS', 'INTEGRITAS SISTEM',
-    // CVE 4: Panduan Patching
-    'PANDUAN PATCHING', 'PRIORITAS PATCHING & MITIGASI', 'PATCHING & MITIGASI'
+    'PREDIKSI', 'ANCAMAN MASA DEPAN', 'EMERGING THREATS'
   ];
 
   for (const kw of mainKeywords) {
@@ -156,47 +130,11 @@ export function getSectionMeta(title, index = 0, totalSections = 5) {
     };
   }
 
-  // Berita Section 5 / CVE Section Terakhir: PREDIKSI & ANCAMAN BARU
+  // Berita Section 5: PREDIKSI & ANCAMAN BARU
   if (t.includes('prediksi') || t.includes('masa depan') || t.includes('emerging')) {
     return {
       number: '5',
       numClass: 'bg-[#059669] text-white', // Emerald theme
-      cardBorder: 'border-emerald-300'
-    };
-  }
-
-  // CVE Section 1: VENDOR & PRODUK PRIORITAS
-  if (t.includes('vendor') || t.includes('produk')) {
-    return {
-      number: '1',
-      numClass: 'bg-[#E0F2FE] text-[#0369A1]',
-      cardBorder: 'border-[#E2EDF8]'
-    };
-  }
-
-  // CVE Section 2: ANALISIS VEKTOR EKSPLOITASI
-  if (t.includes('eksploitasi') || (t.includes('vektor') && (t.includes('dampak') || t.includes('analisis')))) {
-    return {
-      number: '2',
-      numClass: 'bg-[#EEF2FF] text-[#4338CA]',
-      cardBorder: 'border-[#E2EDF8]'
-    };
-  }
-
-  // CVE Section 3: IMPLIKASI KRIPTOGRAFI & INTEGRITAS SISTEM
-  if (t.includes('integritas') || (t.includes('implikasi') && t.includes('kripto'))) {
-    return {
-      number: '3',
-      numClass: 'bg-[#EEF5FA] text-[#0A4174]',
-      cardBorder: 'border-[#BDD8E9]'
-    };
-  }
-
-  // CVE Section 4: PANDUAN PATCHING & MITIGASI
-  if (t.includes('patching') || t.includes('panduan')) {
-    return {
-      number: String(totalSections || 4),
-      numClass: 'bg-[#059669] text-white',
       cardBorder: 'border-emerald-300'
     };
   }
@@ -214,9 +152,8 @@ export function getSectionMeta(title, index = 0, totalSections = 5) {
  * Mem-parsing teks mentah Markdown laporan AI menjadi kartu-kartu HTML terstruktur
  * @param {HTMLElement} container Elemen DOM kontainer kartu
  * @param {string} rawText Teks Markdown dari LLM
- * @param {'berita' | 'cve'} defaultType Tipe fallback
  */
-export function renderLaporanCards(container, rawText, defaultType = 'berita') {
+export function renderLaporanCards(container, rawText) {
   if (!container) return;
   if (!rawText || !rawText.trim()) {
     container.innerHTML = '<div class="text-[#49769F] text-sm italic col-span-full py-6 text-center">Belum ada data ringkasan yang tercatat.</div>';
@@ -251,7 +188,7 @@ export function renderLaporanCards(container, rawText, defaultType = 'berita') {
 
   // Fallback bila format tidak memiliki heading eksplisit
   if (sections.length === 0) {
-    const fallbackTitle = defaultType === 'berita' ? 'Analisis Lanskap & Rekomendasi' : 'Prioritas Kerentanan & Mitigasi';
+    const fallbackTitle = 'SITREP Analisis Lanskap & Rekomendasi';
     sections.push({ title: fallbackTitle, lines });
   }
 

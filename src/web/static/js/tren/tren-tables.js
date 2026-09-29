@@ -1,7 +1,7 @@
 import { escapeHtml } from './tren-utils.js';
 
 /**
- * Merender tabel lonjakan kata kunci dan tabel vendor CVE prioritas (Top 10)
+ * Merender tabel lonjakan kata kunci dan tabel sektor vital IIV terpapar (Top 10)
  * @param {Object} stat Objek data statistik tren
  */
 export function renderTables(stat) {
@@ -41,27 +41,39 @@ export function renderTables(stat) {
     }
   }
 
-  // 2. Table Vendor (Top 10)
-  const tbodyVendor = document.getElementById('tabel-vendor-body');
-  if (tbodyVendor) {
-    tbodyVendor.innerHTML = '';
-    const vendors = (stat.vendor_naik || []).slice(0, 10);
-    if (vendors.length === 0) {
-      tbodyVendor.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-[#49769F] text-sm">Tidak ada lonjakan vendor CVE saat ini.</td></tr>';
+  // 2. Table Sektor Sasaran Terpapar (IIV)
+  const tbodySektor = document.getElementById('tabel-sektor-body') || document.getElementById('tabel-vendor-body');
+  if (tbodySektor) {
+    tbodySektor.innerHTML = '';
+    const sektorList = stat.top_sektor || stat.sektor_target || [];
+    const items = sektorList.slice(0, 10);
+    if (items.length === 0) {
+      tbodySektor.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-[#49769F] text-sm">Tidak ada data sektor terpapar saat ini.</td></tr>';
     } else {
-      vendors.forEach((v, index) => {
-        const topProdukList = (v.top_produk || []).filter(p => p.produk && p.produk !== '-' && p.produk !== '(lihat deskripsi)' && p.produk !== 'Lainnya / Belum Teridentifikasi');
-        const fallbackVendor = v.vendor ? v.vendor.split('/')[0].trim() : 'Lainnya';
-        
-        const topProdukHtml = topProdukList.length > 0
-          ? `<div class="flex flex-wrap items-center gap-1.5 py-0.5">` +
-              topProdukList.map(p => `
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#EEF5FA] text-[#0A4174] text-xs font-medium border border-[#BDD8E9]">
-                  <span class="font-semibold text-[#001D39]">${escapeHtml(p.produk)}</span>
-                  <span class="text-[10px] text-[#49769F] font-mono font-bold">(${p.jumlah}x)</span>
-                </span>
-              `).join('') + `</div>`
-          : `<span class="text-[#49769F] text-xs sm:text-sm">${escapeHtml(fallbackVendor)}</span>`;
+      const totalSemua = items.reduce((acc, curr) => acc + (curr.jumlah || 0), 0) || 1;
+      items.forEach((s, index) => {
+        const proporsi = Math.round(((s.jumlah || 0) / totalSemua) * 100);
+        let badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
+        let urgensi = 'SEDANG';
+        if (proporsi >= 30) {
+          badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
+          urgensi = 'KRITIS';
+        } else if (proporsi >= 15) {
+          badgeClass = 'bg-amber-50 text-amber-800 border-amber-200';
+          urgensi = 'TINGGI';
+        }
+
+        let subKlasterBadge = '';
+        const sektorLower = (s.sektor || '').toLowerCase();
+        if (sektorLower.includes('pemerintah')) {
+          subKlasterBadge = '<span class="text-[10px] text-[#0A4174] bg-[#EEF5FA] border border-[#BDD8E9] px-1.5 py-0.5 rounded font-sans block mt-1 w-fit">Portal OPD &amp; Pemda</span>';
+        } else if (sektorLower.includes('kesehatan')) {
+          subKlasterBadge = '<span class="text-[10px] text-teal-700 bg-teal-50 border border-teal-200 px-1.5 py-0.5 rounded font-sans block mt-1 w-fit">RSUD &amp; Faskes Daerah</span>';
+        } else if (sektorLower.includes('pendidikan')) {
+          subKlasterBadge = '<span class="text-[10px] text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded font-sans block mt-1 w-fit">SIAKAD &amp; Kampus</span>';
+        } else if (sektorLower.includes('keuangan')) {
+          subKlasterBadge = '<span class="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded font-sans block mt-1 w-fit">BPR &amp; Keuangan Daerah</span>';
+        }
 
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-[#EEF5FA]/60 transition-colors border-b border-[#E2EDF8] last:border-b-0';
@@ -69,84 +81,75 @@ export function renderTables(stat) {
           <td class="py-2.5 px-3.5 font-semibold text-[#001D39] align-middle">
             <span class="inline-flex items-center gap-2">
               <span class="text-[11px] font-mono font-bold text-[#49769F] w-4 shrink-0 text-right">${index + 1}.</span>
-              <span>${escapeHtml(v.vendor)}</span>
+              <span>${escapeHtml(s.sektor)}</span>
             </span>
+            ${subKlasterBadge}
           </td>
           <td class="py-2.5 px-3.5 text-center align-middle font-mono">
-            <span class="font-bold text-[#001D39] text-sm">${v.jumlah_terkini}</span>
-            <span class="block text-[10px] font-normal text-[#49769F] font-sans">baseline: ${v.jumlah_baseline}</span>
+            <span class="font-bold text-[#001D39] text-sm">${s.jumlah || 0}</span>
+            <span class="block text-[10px] font-normal text-[#49769F] font-sans">insiden</span>
           </td>
-          <td class="py-2.5 px-3.5 align-middle whitespace-normal break-words leading-relaxed max-w-[300px] sm:max-w-[380px]">
-            ${topProdukHtml}
+          <td class="py-2.5 px-3.5 align-middle whitespace-normal break-words leading-relaxed max-w-[300px]">
+            <div class="flex items-center gap-2">
+              <div class="w-24 bg-[#EEF4F8] rounded h-1.5 overflow-hidden border border-[#E2EDF8]">
+                <div class="h-full rounded bg-[#0A4174]" style="width: ${proporsi}%"></div>
+              </div>
+              <span class="text-xs font-mono font-bold text-[#0A4174]">${proporsi}%</span>
+            </div>
           </td>
           <td class="py-2.5 px-3.5 text-right align-middle font-mono">
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#b91c1c] text-white font-mono font-bold text-xs shadow-xs">
-              <span class="material-symbols-outlined text-[13px] leading-none" aria-hidden="true">arrow_upward</span>
-              <span>+${v.growth_persen}%</span>
+            <span class="inline-block px-2.5 py-0.5 rounded text-[11px] font-bold border font-mono ${badgeClass}">
+              ${urgensi}
             </span>
           </td>
         `;
-        tbodyVendor.appendChild(tr);
+        tbodySektor.appendChild(tr);
       });
     }
   }
 
-  // 3. Matriks Tindakan Ancaman Aktif
-  renderMatriksTindakan(stat.matriks_tindakan || []);
+  // 3. Radar Kerentanan & CVE Watchlist
+  renderCveWatchlist(stat.cve_watchlist || []);
 }
 
 /**
- * Merender tabel matriks tindakan taktis CTI (Remediation Checklist)
- * @param {Array} matriksList Daftar data matriks tindakan
+ * Merender tabel Radar Kerentanan & CVE Watchlist
+ * @param {Array} cveList Daftar kerentanan yang dieksploitasi aktif
  */
-export function renderMatriksTindakan(matriksList) {
-  const tbody = document.getElementById('tabel-matriks-tindakan-body');
+export function renderCveWatchlist(cveList) {
+  const tbody = document.getElementById('tabel-cve-watchlist-body');
   if (!tbody) return;
 
-  if (!matriksList || matriksList.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-[#49769F]">Nihil anomali ancaman khusus yang memerlukan tindakan darurat minggu ini.</td></tr>';
+  if (!cveList || cveList.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-[#49769F] text-xs">Nihil kerentanan CVE kritis atau zero-day baru yang dilaporkan tereksploitasi aktif minggu ini.</td></tr>';
     return;
   }
 
   tbody.innerHTML = '';
-  matriksList.forEach((m) => {
+  cveList.forEach((cve) => {
     const tr = document.createElement('tr');
     tr.className = 'hover:bg-[#EEF5FA]/60 transition-colors border-b border-[#E2EDF8] last:border-b-0';
-
-    const urgensi = m.level_urgensi || 'SEDANG';
-    let badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
-    if (urgensi === 'KRITIS') {
-      badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
-    } else if (urgensi === 'TINGGI') {
-      badgeClass = 'bg-amber-50 text-amber-800 border-amber-200';
-    } else if (urgensi === 'MONITOR' || urgensi === 'RENDAH') {
-      badgeClass = 'bg-slate-50 text-slate-700 border-slate-200';
-    }
-
-    const growth = m.growth_persen ?? 0;
-    const isUp = growth > 0;
-
     tr.innerHTML = `
-      <td class="py-3 px-4 font-semibold text-[#001D39] whitespace-nowrap align-top">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-base text-[#0A4174]">${m.ikon || 'security'}</span>
-          <span>${escapeHtml(m.kategori)}</span>
+      <td class="py-3 px-3.5 font-bold font-mono text-[#001D39] align-top whitespace-nowrap">
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-rose-600 text-base" aria-hidden="true">bug_report</span>
+          <span>${escapeHtml(cve.cve_id)}</span>
         </div>
       </td>
-      <td class="py-3 px-4 text-center font-mono align-top whitespace-nowrap">
-        <span class="font-bold text-[#001D39]">${m.jumlah_terkini}</span>
-        <span class="text-[11px] font-semibold text-[#49769F] block">${isUp ? '+' : ''}${growth}%</span>
+      <td class="py-3 px-3.5 font-semibold text-[#0A4174] align-top">
+        ${escapeHtml(cve.aplikasi_terdampak)}
       </td>
-      <td class="py-3 px-4 text-center align-top whitespace-nowrap">
-        <span class="inline-block px-2.5 py-0.5 rounded text-[11px] font-bold border font-mono ${badgeClass}">
-          ${urgensi}
+      <td class="py-3 px-3.5 text-center align-top whitespace-nowrap">
+        <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold border font-mono bg-rose-50 text-rose-700 border-rose-200">
+          ${escapeHtml(cve.status_urgensi)}
         </span>
       </td>
-      <td class="py-3 px-4 text-xs text-[#001D39] leading-relaxed max-w-[280px] align-top">
-        ${escapeHtml(m.fokus_website || '-')}
+      <td class="py-3 px-3.5 text-center font-mono font-bold text-[#001D39] align-top">
+        ${cve.jumlah_laporan}
       </td>
-      <td class="py-3 px-4 text-xs text-slate-700 font-medium leading-relaxed max-w-[340px] align-top">
-        ${escapeHtml(m.tindakan_taktis || '-')}
+      <td class="py-3 px-3.5 text-xs text-[#49769F] align-top">
+        <span class="font-semibold text-slate-700 block">${escapeHtml(cve.sumber_terakhir)}</span>
+        <span class="text-[11px] text-[#49769F] line-clamp-1">${escapeHtml(cve.contoh_kasus || '')}</span>
       </td>
     `;
     tbody.appendChild(tr);

@@ -1,11 +1,13 @@
-﻿# === Gemini API Configuration ===
+# === Gemini API Configuration ===
 gemini:
   api_key: ""
   model_chain:
+    - "gemini-3.1-flash-lite"
     - "gemini-3.5-flash-lite"
     - "gemini-3.5-flash"
     - "gemini-3.6-flash"
     - "gemini-3.7-flash"
+    - "gemini-3.8-flash"
   embedding_model: "gemini-embedding-001"
   temperature: 0.1
   max_output_tokens: 500
@@ -18,7 +20,7 @@ gemini:
     embedding: 50
 
 pipeline:
-  window_hours: 115
+  window_hours: 26
   request_delay_seconds: 1
   request_timeout: 15
   max_retry: 3
@@ -29,101 +31,8 @@ analytics:
   timeout_per_section_detik: 45
 
 
-# MEDIA CYBERSECURITY INTERNASIONAL
-rss_sources_international:
-  - nama: "The Hacker News"
-    feeds: ["http://feeds.feedburner.com/TheHackersNews"]
-  - nama: "BleepingComputer"
-    feeds: ["https://www.bleepingcomputer.com/feed/"]
-  - nama: "Krebs on Security"
-    feeds: ["https://krebsonsecurity.com/feed/"]
-  - nama: "Dark Reading"
-    feeds: ["https://www.darkreading.com/rss.xml"]
-  - nama: "SecurityWeek"
-    feeds: ["https://www.securityweek.com/feed/"]
-  - nama: "The Record"
-    feeds: ["https://therecord.media/feed"]
-  - nama: "CyberScoop"
-    feeds: ["https://cyberscoop.com/feed/"]
-  - nama: "Infosecurity Magazine"
-    feeds: ["https://www.infosecurity-magazine.com/rss/news/"]
-  - nama: "The Register Security"
-    feeds: ["https://www.theregister.com/security/headlines.atom"]
-  - nama: "Security Affairs"
-    feeds: ["https://securityaffairs.com/feed"]
-  - nama: "Help Net Security"
-    feeds: ["https://www.helpnetsecurity.com/feed/"]
-  - nama: "SANS ISC"
-    feeds: ["https://isc.sans.edu/rssfeed.xml"]
-  - nama: "CISA News"
-    feeds:
-      - "https://www.cisa.gov/news.xml"
-      - "https://www.cisa.gov/cybersecurity-advisories/all.xml" 
-  - nama: "Unit 42"
-    feeds: ["https://unit42.paloaltonetworks.com/feed/"]
-  - nama: "Trend Micro ZDI"
-    feeds: ["https://www.zerodayinitiative.com/blog?format=rss"]
-  - nama: "Microsoft Security"
-    feeds: ["https://www.microsoft.com/en-us/security/blog/feed/"]
-  - nama: "Cisco Talos"
-    feeds: ["https://blog.talosintelligence.com/rss/"]
-  - nama: "WeLiveSecurity"
-    feeds: ["https://www.welivesecurity.com/feed/"]
-  - nama: "Malwarebytes Labs"
-    feeds: ["https://www.malwarebytes.com/blog/feed/index.xml"]
-  - nama: "Kaspersky Securelist"
-    feeds: ["https://securelist.com/feed/"]
-  - nama: "Wired Security"
-    feeds: ["https://www.wired.com/feed/category/security/latest/rss"]
-  - nama: "Red Canary"
-    feeds: ["https://redcanary.com/blog/feed/"]
-  - nama: "Tenable Blog"
-    feeds: ["https://www.tenable.com/blog/feed"]
-  - nama: "Qualys Blog"
-    feeds: ["https://blog.qualys.com/feed"]
-
-# MEDIA NASIONAL INDONESIA
-rss_sources_indonesia:
-  - nama: "CNN Indonesia"
-    feeds:
-      - "https://www.cnnindonesia.com/teknologi/rss"
-      - "https://www.cnnindonesia.com/nasional/rss"
-  - nama: "CNBC Indonesia"
-    feeds:
-      - "https://www.cnbcindonesia.com/tech/rss"
-      - "https://www.cnbcindonesia.com/news/rss"
-  - nama: "Detikcom"
-    feeds:
-      - "https://inet.detik.com/rss"
-  - nama: "Antara News"
-    feeds:
-      - "https://www.antaranews.com/rss/terkini"
-      - "https://www.antaranews.com/rss/hukum"
-      - "https://www.antaranews.com/rss/tekno.xml"
-      - "https://www.antaranews.com/rss/ekonomi.xml"
-  - nama: "Tempo.co"
-    feeds:
-      - "https://rss.tempo.co/"
-      - "https://rss.tempo.co/nasional"
-      - "https://rss.tempo.co/tekno"
-      - "https://rss.tempo.co/bisnis"
-  - nama: "Katadata"
-    feeds:
-      - "https://katadata.co.id/rss/digital"
-      - "https://katadata.co.id/rss"
-  - nama: "Liputan6"
-    feeds:
-      - "https://feed.liputan6.com/rss/tekno"
-  - nama: "Sindonews"
-    feeds:
-      - "https://nasional.sindonews.com/rss"
-      - "https://tekno.sindonews.com/rss"
-  - nama: "Republika"
-    feeds:
-      - "https://www.republika.co.id/rss"
-  - nama: "Media Indonesia"
-    feeds:
-      - "https://mediaindonesia.com/feed"
+# SUMBER RSS FEED (Dikelola penuh secara dinamis di database state.db tabel 'pengaturan')
+# Untuk menambah/mengedit sumber, gunakan panel web /admin -> Sumber Berita & RSS.
 
 
 google_news:
@@ -147,12 +56,6 @@ google_news:
     - "varian baru ransomware"
     - "aktor ancaman siber"
     - "APT hacker"
-
-cve_source:
-  nama: "NVD (National Vulnerability Database)"
-  base_url: "https://services.nvd.nist.gov/rest/json/cves/2.0"
-  min_cvss_score: 7.0
-  request_timeout: 30
 
 # FILTER KATA KUNCI
 keywords:
@@ -288,325 +191,6 @@ keywords:
     - "judol"
     - "situs judi"
 
-# CVE Vendor (Kamus Vendor & Software Dikenal)
-known_vendors:
-  # Big Tech & OS
-  - Microsoft
-  - Apple
-  - Google
-  - Linux
-  - Android
-  - Samsung
-  - Huawei
-  - Dell
-  - HP
-  - Lenovo
-  - Asus
-  - Xiaomi
-
-  # Enterprise Software & Cloud
-  - Oracle
-  - IBM
-  - SAP
-  - VMware
-  - Citrix
-  - Salesforce
-  - ServiceNow
-  - Atlassian
-  - JetBrains
-  - Zoom
-  - Adobe
-
-  # Network, Security & IoT Hardware
-  - Cisco
-  - Fortinet
-  - Palo Alto
-  - SonicWall
-  - Ivanti
-  - Check Point
-  - F5
-  - Juniper
-  - MikroTik
-  - Ubiquiti
-  - Zyxel
-  - TP-Link
-  - D-Link
-  - Netgear
-  - Tenda
-  - Wavlink
-  - TRENDnet
-  - ipTIME
-  - Dahua
-  - Hikvision
-  - Trueview
-  - Zebra
-  - DJI
-  - Baylan
-  - WatchGuard
-  - TOTOLINK
-  - LB-link
-  - Ebyte
-  - Zbtlink
-  - Aruba
-  - Rockwell Automation
-  - Phison
-  - QVidium
-  - Xiiaozet
-  - NetStaX
-  - OpenRISC
-  - Colorful
-  - DENX
-  - Shinobi
-  - ASE2000
-  - ZTE
-  - Sauter Controls
-  - Team Password Manager
-  - Funiture
-  - Cyrus IMAP
-  - Enterprise ERP
-  - Veeam
-
-  # Storage, Cloud & DevOps
-  - Kubernetes
-  - Submariner
-  - StackGres
-  - Docker
-  - QNAP
-  - Synology
-  - OSNEXUS
-  - Incus
-  - OpenStack
-  - Proxmox
-  - TrueNAS
-  - OpenWrt
-  - pfSense
-  - OpenVPN
-  - WireGuard
-  - GitLab
-  - GitHub
-  - Jenkins
-  - Kyverno
-  - Wazuh
-  - Ceph
-  - LibreNMS
-  - Argo
-  - JFrog
-  - Redpanda
-  - NebulaGraph
-  - Liman
-  - Liderahenk
-  - super-diamond
-  - disconf
-  - JetLinks
-  - DWSurvey
-  - Zyplayer
-  - Hulumi
-
-  # Databases & Web Servers
-  - Apache
-  - Nginx
-  - PostgreSQL
-  - MySQL
-  - MongoDB
-  - Redis
-  - ArcadeDB
-  - Datiphy
-  - Elastic
-  - Splunk
-  - Grafana
-  - SolarWinds
-  - Logsign
-  - Zimbra
-
-  # CMS, Portals & Web Frameworks
-  - WordPress
-  - WooCommerce
-  - CleanTalk
-  - Joomla
-  - Drupal
-  - Magento
-  - Grav CMS
-  - Craft CMS
-  - Strapi
-  - Ghost
-  - Directus
-  - Qcms
-  - siYuan
-  - Halo
-  - Mahara
-  - Moodle
-  - Chamilo
-  - Stud.IP
-  - MyBB
-  - phpBB
-  - Discourse
-  - vBulletin
-  - Roundcube
-  - Nextcloud
-  - ownCloud
-  - OpnForm
-  - vsDesk
-  - SPIP
-  - EverShop
-  - Jet Admin
-  - BookStack
-  - Plone
-  - SOY CMS
-  - AVideo
-  - Trilium
-  - Cloud Commander
-  - Slim Framework
-  - TARS
-  - Dassault Systemes
-  - Eclipse
-  - Talassoft
-  - Teracity
-  - TRtek
-  - Klemsan
-  - Epayco
-  - Flowintel
-  - Fluent Boards
-
-  # AI, LLM & Agent Platforms
-  - Cohere
-  - FastGPT
-  - BerriAI
-  - gpt-researcher
-  - Kotaemon
-  - Hermes Agent
-  - Yu AI
-  - 23blocks
-  - MCP
-  - Onyx AI
-  - MemOS
-  - CodeWhale
-  - Omnigent
-  - Xinference
-
-  # Dev Libraries & Open Source Tools
-  - Mozilla
-  - OpenSSL
-  - Bouncy Castle
-  - better-auth
-  - Rodauth
-  - EFence
-  - FreeIPA
-  - Kerberos
-  - authentik
-  - Bastillion
-  - SpiderFoot
-  - AzuraCast
-  - JeecgBoot
-  - xdocreport
-  - OSSRS
-  - Brainformatik
-  - Frappe / ERPNext
-  - DataHub
-  - Lemur
-  - S2OPC
-  - GAPTEQ
-  - Squirro
-  - T-Systems
-  - SteelSeries
-  - Node.js
-  - exceljs
-  - Nodemailer
-  - Python
-  - PyAthena
-  - JustHTML
-  - unstructured
-  - PHP
-  - ADOdb
-  - Rust
-  - Golang
-  - JSONata
-  - PTC
-  - Mongoose
-  - libevent
-  - libre
-  - Nezha
-  - Paperclip
-  - FUXA
-  - GBIF
-  - Capella
-  - openHiTLS
-  - samly
-  - OpenRGB
-  - qTox
-  - NUMail
-  - Pocket
-  - Siemens
-  - NEC
-  - Hitachi
-  - ConnectWise
-  - Commvault
-  - N-able
-  - Auth0
-  - DeepSeek
-  - Traefik Labs
-  - Netis
-  - Voltronic Power
-  - MBS-Solutions
-  - SmartIT
-  - Next4Biz
-  - XenForo
-  - WCFM
-  - GeoDirectory
-  - VikAppointments
-  - Bricksforge
-  - Snipe-IT
-  - Coolify
-  - Webstudio
-  - Lara Dashboard
-  - OpenPanel
-  - Nango
-  - Fastify
-  - OCS
-  - Authorizer
-  - FIDO Alliance
-  - Joro
-  - Prevail
-  - MapLibre
-  - PowerJob
-  - FreeIPMI
-  - DocsGPT
-  - MISP
-  - IXON
-  - MOOS-IvP
-  - Taipy
-  - CPTrans
-  - FastChat
-  - SadTalker
-  - TEN Framework
-  - AimStack
-  - zerox
-  - xiaobei
-  - sift.js
-  - SQL Chat
-  - Cua
-  - MicroXR
-  - Hawtio
-  - curl
-  - FreeType
-  - MojoX
-  - Digital-Infrastructure
-  - Movie_Recommend
-  - BiHayat
-  - knowns
-  - OpenIDC
-  - OpenMAIC
-  - Tranquil IT
-  - WAPT
-  - Perl
-  - Menulux
-  - osTicket
-  - OpenEMR
-  - Telenia Software
-  - Krayin
-  - Tenable
-  - Misskey
-  - Emlog
-
 # === CTI Analysis Settings ===
 cti_analysis:
   llm:
@@ -617,12 +201,10 @@ cti_analysis:
       section_mikro: 500
       section_vektor: 450
       section_emerging: 300
-      section_cve: 400
     truncation:
       korpus_max: 1500
       fakta_max: 400
       uraian_ancaman_max: 1000
-      cve_context_max: 1000
     validation:
       min_length_default: 50
       min_length_mikro: 60
@@ -640,31 +222,7 @@ cti_analysis:
       min_word_length: 4
       growth_threshold: 20.0
     truncation:
-      berita_preview: 220
-      cve_preview: 200
-      regional_preview: 180
-  threat_posture:
-    formula:
-      incident_coeff: 0.035
-      cve_coeff: 0.012
-      cvss_coeff: 0.35
-    levels:
-      kritis: 8.0
-      tinggi: 6.0
-      sedang: 4.0
-    trend_thresholds:
-      meningkat: 5.0
-      menurun: -5.0
-    urgency:
-      kritis_count: 4
-      kritis_growth: 50.0
-  vendor_significance:
-    min_count: 2
-    min_growth: 15.0
   pasca_proses:
     retention_days: 14
-    blacklist_values:
-      - "-"
-      - "(lihat deskripsi)"
-      - "Lainnya / Belum Teridentifikasi"
+
 

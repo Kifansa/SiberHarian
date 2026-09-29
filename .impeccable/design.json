@@ -54,7 +54,7 @@
       },
       "label": {
         "displayName": "Label / Technical",
-        "purpose": "CVSS scores, CVE IDs, growth percentages, and log output."
+        "purpose": "Growth percentages, metrics, sectors, and log output."
       }
     },
     "shadows": [

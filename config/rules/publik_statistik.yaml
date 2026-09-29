@@ -48,15 +48,16 @@ kategori_map:
     - infostealer
     icon: app_blocking
     desc: Pencurian akses M-Banking dan OTP lewat aplikasi palsu di HP.
-  Kerentanan Sistem (CVE):
+  Eksploitasi Celah Keamanan:
     keywords:
-    - cve
     - 0-day
+    - zero-day
     - rce
     - kerentanan
     - celah keamanan
+    - eksploitasi
     icon: bug_report
-    desc: Kelemahan pada sistem operasi, website, atau software yang belum diperbarui.
+    desc: Eksploitasi kelemahan pada aplikasi, website instansi, atau infrastruktur server.
 stop_words:
 - sistem
 - situs
@@ -75,7 +76,7 @@ kpi_insights:
   desc: Serangan Social Engineering via Chat
   value: Akun & Phishing
   icon: warning
-- title: Temuan Celah Sistem Nasional
-  desc: Didominasi Keterlambatan Pembaruan (Patch)
+- title: Fokus Ruang Digital Nasional
+  desc: Didominasi isu insiden ruang siber domestik
   value: 60% Isu Nasional
-  icon: security_update_warning
+  icon: policy
