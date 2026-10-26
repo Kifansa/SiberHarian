@@ -42,7 +42,7 @@ gemini:
     embedding: 50
 
 pipeline:
-  window_hours: 19
+  window_hours: 20
   request_delay_seconds: 1
   request_timeout: 15
   max_retry: 3
