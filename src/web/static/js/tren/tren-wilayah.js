@@ -1,29 +1,29 @@
 import { escapeHtml } from './tren-utils.js';
 
 /**
- * Metadata visual untuk masing-masing wilayah
+ * Metadata visual untuk masing-masing wilayah (CSIRT Jatim Cyber-HUD Style)
  */
 const WILAYAH_META = {
   intl: {
     label: 'Internasional',
     icon: 'public',
-    iconColor: 'text-[#0A4174]',
-    badgeBg: 'bg-[#EEF5FA]',
-    badgeText: 'text-[#0A4174]'
+    iconColor: 'text-[#00d4ff]',
+    badgeBg: 'bg-[#0d2137]',
+    badgeText: 'text-[#00d4ff]'
   },
   nas: {
     label: 'Nasional',
     icon: 'flag',
-    iconColor: 'text-[#4E8EA2]',
-    badgeBg: 'bg-[#EEF7FA]',
-    badgeText: 'text-[#4E8EA2]'
+    iconColor: 'text-[#00ff88]',
+    badgeBg: 'bg-[#0d2137]',
+    badgeText: 'text-[#00ff88]'
   },
   jatim: {
     label: 'Jawa Timur',
     icon: 'location_on',
-    iconColor: 'text-[#001D39]',
-    badgeBg: 'bg-[#EEF5FA]',
-    badgeText: 'text-[#001D39]'
+    iconColor: 'text-[#ff8800]',
+    badgeBg: 'bg-[#0d2137]',
+    badgeText: 'text-[#ff8800]'
   }
 };
 
@@ -37,36 +37,36 @@ let currentKasusData = {
 };
 
 /**
- * Helper pembuat badge kategori / jenis insiden
+ * Helper pembuat badge kategori / jenis insiden (Tactical HUD)
  * @param {string} tag 
  * @returns {string} HTML string
  */
 export function getTagBadge(tag) {
   const t = (tag || '').toLowerCase();
   if (t.includes('ransomware')) {
-    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-50 text-[#b91c1c] border border-red-200">Ransomware</span>';
+    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#0d2137] text-[#ff3366] border border-[#ff3366]/40">[ Ransomware ]</span>';
   } else if (t.includes('bocor') || t.includes('data')) {
-    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]">Kebocoran Data</span>';
+    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#0d2137] text-[#00d4ff] border border-[#00d4ff]/40">[ Kebocoran Data ]</span>';
   } else if (t.includes('peretasan') || t.includes('deface') || t.includes('slot')) {
-    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF7FA] text-[#4E8EA2] border border-[#BDD8E9]">Peretasan Web</span>';
+    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#0d2137] text-[#00ff88] border border-[#00ff88]/40">[ Peretasan Web ]</span>';
   } else if (t.includes('malware')) {
-    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF5FA] text-[#001D39] border border-[#BDD8E9]">Malware</span>';
+    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#0d2137] text-[#a78bfa] border border-[#a78bfa]/40">[ Malware ]</span>';
   } else if (t.includes('phishing')) {
-    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF5FA] text-[#49769F] border border-[#BDD8E9]">Phishing</span>';
+    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#0d2137] text-[#38bdf8] border border-[#38bdf8]/40">[ Phishing ]</span>';
   } else if (t.includes('celah') || t.includes('zero-day')) {
-    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]">Eksploitasi Celah</span>';
+    return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#0d2137] text-[#ff8800] border border-[#ff8800]/40">[ Eksploitasi Celah ]</span>';
   }
-  return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]">' + escapeHtml(tag || 'Insiden Siber') + '</span>';
+  return '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#0d2137] text-[#00d4ff] border border-[#00d4ff]/40">[ ' + escapeHtml(tag || 'Insiden Siber') + ' ]</span>';
 }
 
 /**
- * Memformat teks analisis (yang mungkin berisi bullet points dan teks tebal) menjadi HTML rapi
+ * Memformat teks analisis menjadi HTML rapi bertema dark
  * @param {string} text 
  * @returns {string}
  */
 export function formatPoinModalHtml(text) {
   if (!text || text === '-' || text === 'None') {
-    return '<p class="text-xs text-[#49769F] italic">Tidak ada catatan data.</p>';
+    return '<p class="text-xs text-[#7d8ca6] italic font-mono">Tidak ada catatan data.</p>';
   }
 
   let lines = [];
@@ -74,7 +74,6 @@ export function formatPoinModalHtml(text) {
     lines = text.map(l => String(l).trim()).filter(l => l.length > 0);
   } else {
     let rawStr = String(text).trim();
-    // Jika data adalah string representasi list Python "['item 1', 'item 2']"
     if (rawStr.startsWith('[') && rawStr.endsWith(']')) {
       rawStr = rawStr.slice(1, -1).trim();
       lines = rawStr.split(/',\s*'/).map(l => l.replace(/^['"]|['"]$/g, '').trim()).filter(l => l.length > 0);
@@ -89,13 +88,12 @@ export function formatPoinModalHtml(text) {
     const listItems = lines.map(line => {
       let cleanLine = line.replace(/^[-*•]\s+/, '').replace(/^\d+\.\s+/, '').trim();
       cleanLine = cleanLine.replace(/^['"]+|['"]+$/g, '').trim();
-      // Bersihkan bintang berlebih seperti **** menjadi **
       cleanLine = cleanLine.replace(/\*{3,}/g, '**');
 
-      const formatted = escapeHtml(cleanLine).replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-[#001D39]">$1</strong>');
+      const formatted = escapeHtml(cleanLine).replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-[#00d4ff]">$1</strong>');
       return `
-        <li class="flex items-start gap-2.5 text-xs text-slate-700 leading-relaxed">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#0A4174] shrink-0 mt-1.5 shadow-2xs"></span>
+        <li class="flex items-start gap-2.5 text-xs text-[#e0f0ff] leading-relaxed">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#00d4ff] shrink-0 mt-1.5 shadow-[0_0_6px_#00d4ff]"></span>
           <span class="flex-1">${formatted}</span>
         </li>
       `;
@@ -104,8 +102,8 @@ export function formatPoinModalHtml(text) {
   }
 
   let raw = (lines[0] || String(text)).replace(/\*{3,}/g, '**');
-  const formatted = escapeHtml(raw).replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-[#001D39]">$1</strong>');
-  return `<p class="text-xs text-slate-700 leading-relaxed">${formatted}</p>`;
+  const formatted = escapeHtml(raw).replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-[#00d4ff]">$1</strong>');
+  return `<p class="text-xs text-[#e0f0ff] leading-relaxed">${formatted}</p>`;
 }
 
 /**
@@ -133,9 +131,9 @@ export function bukaModalDetailKasus(wilayahKey) {
   if (titleEl) titleEl.textContent = `Analisis Ancaman Wilayah: ${meta.label}`;
   if (sumberEl) {
       sumberEl.innerHTML = `
-      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[11px] font-semibold bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]">
-        <span class="material-symbols-outlined text-[13px] text-[#0A4174]">travel_explore</span>
-        Sintesis Intelijen RAG: ${escapeHtml(meta.label)} (${escapeHtml(isuName)})
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[11px] font-mono font-bold bg-[#0d2137] text-[#00d4ff] border border-[#00d4ff]/40 shadow-[0_0_10px_rgba(0,212,255,0.2)]">
+        <span class="material-symbols-outlined text-[13px] text-[#00d4ff]">travel_explore</span>
+        [ Sintesis Intelijen RAG: ${escapeHtml(meta.label)} (${escapeHtml(isuName)}) ]
       </span>
     `;
   }
@@ -147,41 +145,41 @@ export function bukaModalDetailKasus(wilayahKey) {
   // Render sampel contoh kejadian relevan di dalam modal
   if (sampelContentEl) {
     if (isKosong) {
-      sampelContentEl.innerHTML = '<p class="text-xs text-[#49769F] italic">Nihil laporan insiden siber aktif pada wilayah ini dalam 7 hari terakhir.</p>';
+      sampelContentEl.innerHTML = '<p class="text-xs text-[#7d8ca6] italic font-mono">Nihil laporan insiden siber aktif pada wilayah ini dalam 7 hari terakhir.</p>';
     } else {
       const hasLink = item.link && item.link !== '#' && !item.link.startsWith('javascript:');
       const lokasiHtml = item.lokasi && item.lokasi !== '-' ? `
-        <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-[#49769F] bg-white px-2.5 py-0.5 rounded border border-[#BDD8E9]">
-          <span class="material-symbols-outlined text-[11px] text-[#4E8EA2]">location_on</span>
+        <span class="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-[#8892b0] bg-[#0d2137] px-2.5 py-0.5 rounded border border-[#1a3a5c]">
+          <span class="material-symbols-outlined text-[11px] text-[#00d4ff]">location_on</span>
           ${escapeHtml(item.lokasi)}
         </span>
       ` : '';
       const ringkasanHtml = item.ringkasan_kasus ? `
-        <p class="text-slate-600 text-xs leading-relaxed pt-1">${escapeHtml(item.ringkasan_kasus)}</p>
+        <p class="text-[#8892b0] text-xs leading-relaxed pt-1 font-sans">${escapeHtml(item.ringkasan_kasus)}</p>
       ` : '';
 
       sampelContentEl.innerHTML = `
         <div class="space-y-1.5">
           <div class="flex items-center gap-1.5 flex-wrap mb-1">
             ${lokasiHtml}
-            <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-[#0A4174] bg-[#EEF5FA] px-2.5 py-0.5 rounded border border-[#BDD8E9]">
+            <span class="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-[#00ff88] bg-[#0d2137] px-2.5 py-0.5 rounded border border-[#00ff88]/30">
               <span class="material-symbols-outlined text-[11px]">article</span>
-              Studi Kasus Insiden
+              [ Studi Kasus ]
             </span>
           </div>
-          <h5 class="text-sm font-bold text-[#001D39] leading-snug">
+          <h5 class="text-sm font-bold text-[#e0f0ff] leading-snug font-['Sora']">
             ${hasLink 
-              ? `<a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="hover:text-[#0A4174] hover:underline inline-flex items-baseline gap-1" title="Buka tautan berita sumber">
+              ? `<a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="hover:text-[#00d4ff] hover:underline inline-flex items-baseline gap-1" title="Buka tautan berita sumber">
                    <span>${escapeHtml(item.nama_kejadian)}</span>
-                   <span class="material-symbols-outlined text-[13px] text-[#49769F] shrink-0" aria-hidden="true">open_in_new</span>
+                   <span class="material-symbols-outlined text-[13px] text-[#00d4ff] shrink-0" aria-hidden="true">open_in_new</span>
                  </a>`
               : escapeHtml(item.nama_kejadian)
             }
           </h5>
           ${ringkasanHtml}
-          <div class="flex items-center text-xs text-[#49769F] pt-1">
+          <div class="flex items-center text-xs text-[#7d8ca6] pt-1 font-mono">
             <span class="inline-flex items-center gap-1 font-medium" title="${escapeHtml(item.sumber || '')}">
-              <span class="material-symbols-outlined text-[13px] text-[#49769F] shrink-0">newspaper</span>
+              <span class="material-symbols-outlined text-[13px] text-[#00d4ff] shrink-0">newspaper</span>
               <span>${escapeHtml(item.sumber || 'Media Intelijen')}</span>
             </span>
           </div>
@@ -201,7 +199,7 @@ export function bukaModalDetailKasus(wilayahKey) {
     }
   }
 
-  // Buka modal dengan transisi persis seperti modal berita di index.html
+  // Buka modal dengan transisi
   overlay.classList.remove('hidden');
   overlay.classList.add('flex');
   overlay.setAttribute('aria-hidden', 'false');
@@ -284,32 +282,31 @@ export function renderSingleIncidentCard(item, wilayahKey) {
 
   return `
     <!-- Top Header KPI Style: Wilayah Left, Icon Right -->
-    <div class="flex items-center justify-between gap-3 pb-3 border-b border-[#E2EDF8]">
+    <div class="flex items-center justify-between gap-3 pb-3 border-b border-[#1a3a5c]">
       <div>
-        <h4 class="text-[11px] sm:text-xs font-bold text-[#49769F] uppercase tracking-wider leading-tight">${escapeHtml(meta.label)}</h4>
+        <h4 class="text-[11px] sm:text-xs font-mono font-bold text-[#8892b0] uppercase tracking-wider leading-tight">[ ${escapeHtml(meta.label.toUpperCase())} ]</h4>
       </div>
       <div class="${meta.iconColor}">
         <span class="material-symbols-outlined text-lg sm:text-xl" aria-hidden="true">${meta.icon}</span>
       </div>
     </div>
 
-    <!-- Main Metric: Threat Issue Keyword (Tanpa label tambahan) -->
+    <!-- Main Metric: Threat Issue Keyword -->
     <div class="my-auto py-4 space-y-1">
-      <div class="text-2xl sm:text-3xl font-black text-[#001D39] tracking-tight font-sans leading-tight">
+      <div class="text-xl sm:text-2xl font-extrabold text-[#e0f0ff] tracking-tight font-['Sora'] leading-tight break-words min-w-0">
         ${escapeHtml(isuUtama)}
       </div>
     </div>
 
-    <!-- Bottom Footer: Tombol Detail Ancaman -->
-    <div class="pt-3 border-t border-[#E2EDF8] flex items-center justify-between">
+    <!-- Bottom Footer: Tombol Detail Ancaman Chamfered -->
+    <div class="pt-3 border-t border-[#1a3a5c] flex items-center justify-between gap-2 flex-wrap">
       <button type="button" 
         onclick="window.bukaModalDetailKasus('${wilayahKey}')"
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold bg-[#EEF5FA] hover:bg-[#0A4174] text-[#0A4174] hover:text-white border border-[#BDD8E9] transition-all cursor-pointer shadow-2xs group focus:outline-none focus:ring-2 focus:ring-[#0A4174]"
+        class="btn-chamfer text-xs whitespace-nowrap shrink-0" style="height:32px;padding:0 12px;"
         title="Buka rincian analisis ancaman ${escapeHtml(meta.label)}">
-        <span>Detail Ancaman</span>
-        <span class="material-symbols-outlined text-[15px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+        <span>[ DETAIL ANALISIS → ]</span>
       </button>
-      ${isKosong ? '<span class="text-[11px] font-medium text-[#49769F]">Nihil Insiden</span>' : ''}
+      ${isKosong ? '<span class="text-[11px] font-mono font-medium text-[#7d8ca6] whitespace-nowrap shrink-0">[ Nihil Insiden ]</span>' : ''}
     </div>
   `;
 }
@@ -325,7 +322,6 @@ export function renderKasusInsidenWilayah(stat) {
 
   if (!stat) return;
 
-  // Ambil hasil sintesis insiden per wilayah dari Model AI CTI atau fallback
   const aiData = stat.kasus_wilayah_ai || {};
   const intlItem = aiData.internasional || (stat.kasus_wilayah?.internasional?.[0] ? {
     ada_kejadian: true,
@@ -363,12 +359,10 @@ export function renderKasusInsidenWilayah(stat) {
     link: stat.kasus_wilayah.jawa_timur[0].link,
   } : null);
 
-  // Simpan ke memori untuk akses popup modal
   currentKasusData.intl = intlItem;
   currentKasusData.nas = nasItem;
   currentKasusData.jatim = jatimItem;
 
-  // Render masing-masing kartu KPI
   if (cardIntl) cardIntl.innerHTML = renderSingleIncidentCard(intlItem, 'intl');
   if (cardNas) cardNas.innerHTML = renderSingleIncidentCard(nasItem, 'nas');
   if (cardJatim) cardJatim.innerHTML = renderSingleIncidentCard(jatimItem, 'jatim');

@@ -1,7 +1,7 @@
 import { bukaModal, tutupModal, tutupModalJikaLuar, salinTeksModal } from './modal.js';
 import { mulaiPipeline, batalkanPipeline } from './beranda.js';
 import { muatTabArsip, muatUlangTabArsip, filterArsipCards } from './arsip.js';
-import { muatTabTren, muatUlangTabTren, eksporLaporanTren } from './tren.js';
+import { muatTabTren, muatUlangTabTren } from './tren.js?v=9.2';
 
 // Expose handlers ke window untuk Alpine.js & atribut onclick
 window.bukaModal = bukaModal;
@@ -13,7 +13,6 @@ window.batalkanPipeline = batalkanPipeline;
 window.muatTabArsip = muatTabArsip;
 window.muatTabTren = muatTabTren;
 window.muatUlangTabTren = muatUlangTabTren;
-window.eksporLaporanTren = eksporLaporanTren;
 
 // Handler Logout Admin
 window.logoutAdmin = async function() {

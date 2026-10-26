@@ -6,9 +6,9 @@ import { animateNumber } from '../utils.js';
 export function flashUpdatedCards() {
   const cards = document.querySelectorAll('.kpi-card, .chart-card');
   cards.forEach(card => {
-    card.classList.add('ring-2', 'ring-[#7BBDE8]/60', 'ring-offset-1');
+    card.classList.add('ring-2', 'ring-[#00d4ff]/60', 'ring-offset-1', 'ring-offset-[#0a1628]');
     setTimeout(() => {
-      card.classList.remove('ring-2', 'ring-[#7BBDE8]/60', 'ring-offset-1');
+      card.classList.remove('ring-2', 'ring-[#00d4ff]/60', 'ring-offset-1', 'ring-offset-[#0a1628]');
     }, 800);
   });
 }
@@ -24,7 +24,6 @@ export function adjustKpiFontSize(element, text, options = {}) {
   const str = String(text || '').trim();
   const len = str.length;
 
-  // Hapus semua kelas ukuran font dan leading sebelumnya
   element.classList.remove(
     'text-3xl', 'sm:text-4xl',
     'text-2xl', 'sm:text-3xl',
@@ -41,19 +40,16 @@ export function adjustKpiFontSize(element, text, options = {}) {
   const medMax = options.medMax ?? 20;
 
   if (len <= shortMax) {
-    // Teks pendek: besar, tebal, mencolok
-    element.classList.add('text-2xl', 'sm:text-3xl', 'font-extrabold', 'leading-none');
+    element.classList.add('text-2xl', 'sm:text-3xl', 'font-extrabold', 'leading-tight', 'break-words');
   } else if (len <= medMax) {
-    // Teks sedang: proporsional, rapi
-    element.classList.add('text-lg', 'sm:text-xl', 'font-bold', 'leading-snug');
+    element.classList.add('text-lg', 'sm:text-xl', 'font-bold', 'leading-snug', 'break-words');
   } else {
-    // Teks panjang: kompak, rapat, wrap tanpa terpotong elipsis
     element.classList.add('text-sm', 'sm:text-base', 'font-bold', 'leading-tight', 'break-words');
   }
 }
 
 /**
- * Merender metrik angka, persentase pertumbuhan, dan status pada kartu KPI eksekutif
+ * Merender metrik angka, persentase pertumbuhan, dan status pada kartu KPI eksekutif (CSIRT Jatim Cyber-HUD Style)
  * @param {Object} stat Data statistik tren dari backend
  * @param {boolean} isAnimated Apakah menggunakan animasi penghitungan angka
  */
@@ -76,8 +72,8 @@ export function renderKpiCards(stat, isAnimated = false) {
   if (kpiBeritaGrowth) {
     const isUp = insidenGrowth >= 0;
     const icon = isUp ? 'trending_up' : 'trending_down';
-    const colorClass = isUp ? 'text-emerald-600' : 'text-rose-600';
-    kpiBeritaGrowth.className = `inline-flex items-center gap-1 text-xs sm:text-sm font-bold font-mono ${colorClass}`;
+    const colorClass = isUp ? 'text-[#00ff88]' : 'text-[#ff3366]';
+    kpiBeritaGrowth.className = `inline-flex items-center gap-1 text-xs sm:text-sm font-bold font-mono whitespace-nowrap shrink-0 ${colorClass}`;
     kpiBeritaGrowth.innerHTML = `
       <span class="material-symbols-outlined text-base leading-none">${icon}</span>
       <span>${isUp ? '+' : ''}${insidenGrowth}%</span>
@@ -103,8 +99,8 @@ export function renderKpiCards(stat, isAnimated = false) {
     const growthSektor = topSektor.growth_persen ?? 0;
     const isUp = growthSektor >= 0;
     const icon = isUp ? 'trending_up' : 'trending_down';
-    const colorClass = isUp ? 'text-emerald-600' : 'text-rose-600';
-    kpiSektorBadge.className = `inline-flex items-center gap-1 text-xs sm:text-sm font-bold font-mono ${colorClass}`;
+    const colorClass = isUp ? 'text-[#00ff88]' : 'text-[#ff3366]';
+    kpiSektorBadge.className = `inline-flex items-center gap-1 text-xs sm:text-sm font-bold font-mono whitespace-nowrap shrink-0 ${colorClass}`;
     kpiSektorBadge.innerHTML = `
       <span class="material-symbols-outlined text-base leading-none" id="kpi-sektor-icon">${icon}</span>
       <span id="kpi-sektor-growth">${isUp ? '+' : ''}${growthSektor}%</span>
@@ -141,21 +137,22 @@ export function renderKpiCards(stat, isAnimated = false) {
   if (kpiPolaBadge) {
     const isUp = polaGrowth >= 0;
     const icon = isUp ? 'trending_up' : 'trending_down';
-    const colorClass = isUp ? 'text-emerald-600' : 'text-rose-600';
-    kpiPolaBadge.className = `inline-flex items-center gap-1 text-xs sm:text-sm font-bold font-mono ${colorClass}`;
+    const colorClass = isUp ? 'text-[#00ff88]' : 'text-[#ff3366]';
+    const colorHex = isUp ? '#00ff88' : '#ff3366';
+    kpiPolaBadge.className = `inline-flex items-center gap-1 text-xs sm:text-sm font-bold font-mono whitespace-nowrap shrink-0 ${colorClass}`;
+    kpiPolaBadge.style.color = colorHex;
     kpiPolaBadge.innerHTML = `
-      <span class="material-symbols-outlined text-base leading-none" id="kpi-pola-icon">${icon}</span>
-      <span id="kpi-pola-growth">${isUp ? '+' : ''}${polaGrowth}%</span>
+      <span class="material-symbols-outlined text-base leading-none" id="kpi-pola-icon" style="color: ${colorHex}">${icon}</span>
+      <span id="kpi-pola-growth" style="color: ${colorHex}">${isUp ? '+' : ''}${polaGrowth}%</span>
     `;
   }
 
-  // KPI 4: Prediksi Ancaman Baru (Entitas Organik / Vektor / Kasus Baru)
+  // KPI 4: Prediksi Ancaman Baru (Kategori Taksonomi Sinyal Baru)
   const elAncamanBaru = document.getElementById('kpi-ancaman-baru');
   if (elAncamanBaru) {
-    const teksAncaman = (stat.ancaman_baru || 'Menunggu Sinyal').trim();
+    const teksAncaman = (stat.ancaman_baru || 'Kondisi Stabil').trim();
     elAncamanBaru.textContent = teksAncaman;
     elAncamanBaru.title = `Prediksi Ancaman Baru: ${teksAncaman}`;
     adjustKpiFontSize(elAncamanBaru, teksAncaman, { shortMax: 14, medMax: 26 });
   }
 }
-

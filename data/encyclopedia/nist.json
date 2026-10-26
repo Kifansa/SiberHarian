@@ -2,97 +2,219 @@
   {
     "function": "Govern",
     "category": "GV.SC (Cybersecurity Supply Chain Risk Management)",
-    "keywords": ["supply chain", "rantai pasok", "vendor", "pihak ketiga", "software vendor", "repositori", "outsourcing"],
+    "keywords": [
+      "supply chain",
+      "rantai pasok",
+      "vendor",
+      "pihak ketiga",
+      "software vendor",
+      "repositori",
+      "outsourcing"
+    ],
     "mitigation": "Terapkan manajemen risiko rantai pasok siber (C-SCRM), evaluasi postur keamanan vendor perangkat lunak, dan cantumkan klausul audit keamanan siber dalam kontrak pengadaan."
   },
   {
     "function": "Govern",
     "category": "GV.PO (Policy and Regulatory Compliance)",
-    "keywords": ["kebijakan", "regulasi", "kepatuhan", "spbe", "sop keamanan", "audit kepatuhan"],
-    "mitigation": "Harmonisasikan SOP tata kelola keamanan siber dengan Perpres SPBE dan regulasi BSSN, serta laksanakan tinjauan kepatuhan operasional berkala."
+    "keywords": [
+      "kebijakan",
+      "regulasi",
+      "kepatuhan",
+      "spbe",
+      "sop keamanan",
+      "audit kepatuhan"
+    ],
+    "mitigation": "Harmonisasikan SOP tata kelola keamanan siber dengan standar NIST CSF 2.0 Governance, serta laksanakan tinjauan kepatuhan operasional berkala."
   },
   {
     "function": "Identify",
     "category": "ID.AM (Asset Management & Attack Surface)",
-    "keywords": ["aset", "inventaris", "server publik", "ip public", "shadow it", "subdomain", "pemetaan aset"],
+    "keywords": [
+      "aset",
+      "inventaris",
+      "server publik",
+      "ip public",
+      "shadow it",
+      "subdomain",
+      "pemetaan aset"
+    ],
     "mitigation": "Lakukan inventarisasi aset digital secara otomatis (Attack Surface Management), petakan seluruh server, port, dan subdomain milik instansi."
   },
   {
     "function": "Identify",
     "category": "ID.RA (Risk Assessment & Vulnerability Scoring)",
-    "keywords": ["cve", "analisis risiko", "penilaian kerentanan", "cvss", "prioritas risiko", "uji celah"],
+    "keywords": [
+      "cve",
+      "analisis risiko",
+      "penilaian kerentanan",
+      "cvss",
+      "prioritas risiko",
+      "uji celah"
+    ],
     "mitigation": "Lakukan penilaian risiko berkala terhadap seluruh aplikasi publik menggunakan framework CVSS dan uji penetrasi (pentest) minimal 2 kali setahun."
   },
   {
     "function": "Protect",
     "category": "PR.AA (Identity Management, Authentication, and Access Control)",
-    "keywords": ["sso", "otp", "kredensial", "password", "akun", "login", "akses ilegal", "brute-force", "credential stuffing", "least privilege"],
+    "keywords": [
+      "sso",
+      "otp",
+      "kredensial",
+      "password",
+      "akun",
+      "login",
+      "akses ilegal",
+      "brute-force",
+      "credential stuffing",
+      "least privilege"
+    ],
     "mitigation": "Terapkan prinsip Least Privilege, tegakkan kebijakan rotasi kredensial, dan gunakan Tanda Tangan Elektronik (TTE) tersertifikasi BSrE untuk validasi integritas dokumen dinas."
   },
   {
     "function": "Protect",
     "category": "PR.AT (Awareness and Training)",
-    "keywords": ["phishing", "rekayasa sosial", "social engineering", "pelatihan asn", "literasi siber", "simulasi phishing"],
+    "keywords": [
+      "phishing",
+      "rekayasa sosial",
+      "social engineering",
+      "pelatihan asn",
+      "literasi siber",
+      "simulasi phishing"
+    ],
     "mitigation": "Gelar pelatihan kesadaran keamanan siber dan simulasi serangan phishing berkala bagi seluruh aparatur sipil negara untuk memperkuat benteng pertahanan manusia."
   },
   {
     "function": "Protect",
     "category": "PR.DS (Data Security & Cryptographic Protection)",
-    "keywords": ["bocor", "data pribadi", "paspor", "kebocoran data", "database", "enkripsi", "ransomware", "integritas", "pdp"],
+    "keywords": [
+      "bocor",
+      "data pribadi",
+      "paspor",
+      "kebocoran data",
+      "database",
+      "enkripsi",
+      "ransomware",
+      "integritas",
+      "pdp"
+    ],
     "mitigation": "Lakukan segmentasi jaringan VLAN ketat antara server publik dan database internal, serta terapkan enkripsi simetris AES-256 pada data sensitif kependudukan dan ASN."
   },
   {
     "function": "Protect",
     "category": "PR.PS (Platform Security & Hardening)",
-    "keywords": ["rce", "cve", "unpatched", "hardening", "konfigurasi server", "patching", "misconfiguration"],
+    "keywords": [
+      "rce",
+      "cve",
+      "unpatched",
+      "hardening",
+      "konfigurasi server",
+      "patching",
+      "misconfiguration"
+    ],
     "mitigation": "Terapkan baseline configuration hardening standar CIS Benchmark pada sistem operasi dan matikan modul atau protokol lawas yang tidak diperlukan."
   },
   {
     "function": "Protect",
     "category": "PR.IR (Infrastructure Resilience & DDoS Defense)",
-    "keywords": ["ddos", "dos", "server down", "flooding", "kelumpuhan layanan", "high availability"],
+    "keywords": [
+      "ddos",
+      "dos",
+      "server down",
+      "flooding",
+      "kelumpuhan layanan",
+      "high availability"
+    ],
     "mitigation": "Terapkan perlindungan anti-DDoS berbasis cloud scrubber dan arsitektur redundansi beban (load balancing) berkapasitas tinggi."
   },
   {
     "function": "Detect",
     "category": "DE.CM (Continuous Security Monitoring & SIEM)",
-    "keywords": ["cve", "zero-day", "rce", "webshell", "deface", "anomali", "monitoring", "pemantauan", "log server", "siem"],
+    "keywords": [
+      "cve",
+      "zero-day",
+      "rce",
+      "webshell",
+      "deface",
+      "anomali",
+      "monitoring",
+      "pemantauan",
+      "log server",
+      "siem"
+    ],
     "mitigation": "Lakukan pemindaian kerentanan (vulnerability assessment) berkala dan audit integritas berkas (File Integrity Monitoring - FIM) pada seluruh server web OPD."
   },
   {
     "function": "Detect",
     "category": "DE.AE (Adverse Event Analysis & Threat Hunting)",
-    "keywords": ["indikasi peretasan", "perilaku mencurigakan", "threat hunting", "analisis anomali", "ioa"],
+    "keywords": [
+      "indikasi peretasan",
+      "perilaku mencurigakan",
+      "threat hunting",
+      "analisis anomali",
+      "ioa"
+    ],
     "mitigation": "Jalankan proaktif threat hunting untuk mencari indikator kompromi (IOC) dan indikator serangan (IOA) pada log lalu lintas jaringan dan log sistem."
   },
   {
     "function": "Respond",
     "category": "RS.MA (Incident Management & CSIRT Activation)",
-    "keywords": ["tanggap insiden", "csirt", "eskalasi darurat", "sop insiden", "komando insiden"],
+    "keywords": [
+      "tanggap insiden",
+      "csirt",
+      "eskalasi darurat",
+      "sop insiden",
+      "komando insiden"
+    ],
     "mitigation": "Aktivasi prosedur penanganan insiden darurat CSIRT dan tetapkan rantai komando teknis untuk penanganan insiden siber berkategori tinggi/kritis."
   },
   {
     "function": "Respond",
     "category": "RS.AN (Incident Analysis & Digital Forensics)",
-    "keywords": ["forensik digital", "analisis bukti", "memory dump", "analisis artefak", "investigasi siber"],
+    "keywords": [
+      "forensik digital",
+      "analisis bukti",
+      "memory dump",
+      "analisis artefak",
+      "investigasi siber"
+    ],
     "mitigation": "Amankan salinan citra memori (RAM dump) dan bukti log terenkripsi untuk investigasi forensik digital guna mengungkap akar penyebab serangan."
   },
   {
     "function": "Respond",
     "category": "RS.MI (Mitigation & Incident Containment)",
-    "keywords": ["insiden sedang berlangsung", "layanan lumpuh", "ddos", "ransomware", "serangan siber", "darurat", "isolasi sistem"],
-    "mitigation": "Aktivasi prosedur tanggap insiden CSIRT, isolasi sistem terdampak dari jaringan produksi, dan laporkan eskalasi ancaman ke BSSN."
+    "keywords": [
+      "insiden sedang berlangsung",
+      "layanan lumpuh",
+      "ddos",
+      "ransomware",
+      "serangan siber",
+      "darurat",
+      "isolasi sistem"
+    ],
+    "mitigation": "Aktivasi prosedur tanggap insiden CSIRT, isolasi sistem terdampak dari jaringan produksi, dan laksanakan mitigasi containment sesuai panduan NIST SP 800-61."
   },
   {
     "function": "Respond",
     "category": "RS.CO (Incident Response Communication)",
-    "keywords": ["notifikasi insiden", "laporan bssn", "komunikasi krisis", "pemberitahuan publik", "laporan kebocoran"],
-    "mitigation": "Laporkan insiden ke PUSOPKAMSINAS BSSN maksimal 1x24 jam dan siapkan klarifikasi resmi satu pintu untuk menghindari kepanikan publik."
+    "keywords": [
+      "notifikasi insiden",
+      "pelaporan insiden",
+      "komunikasi krisis",
+      "pemberitahuan publik",
+      "laporan kebocoran"
+    ],
+    "mitigation": "Laksanakan koordinasi penanganan insiden terpadu dan dokumentasikan respon sesuai standar NIST CSF Incident Response (RS.CO)."
   },
   {
     "function": "Recover",
     "category": "RC.RP (Recovery Planning & System Restoration)",
-    "keywords": ["pemulihan sistem", "restorasi backup", "bcdr", "disaster recovery", "pemulihan layanan"],
+    "keywords": [
+      "pemulihan sistem",
+      "restorasi backup",
+      "bcdr",
+      "disaster recovery",
+      "pemulihan layanan"
+    ],
     "mitigation": "Eksekusi Disaster Recovery Plan (DRP) terverifikasi, pulihkan sistem dari salinan cadangan bersih yang telah dipindai ulang, dan validasi fungsionalitas."
   }
 ]

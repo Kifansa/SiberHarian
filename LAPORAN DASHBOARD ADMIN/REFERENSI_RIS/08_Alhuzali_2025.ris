@@ -1,0 +1,12 @@
+TY  - JOUR
+AU  - Alhuzali, Areej
+TI  - LLM-powered threat intelligence: a retrieval-augmented generation approach for cyber attack investigation
+JO  - PeerJ Computer Science
+T2  - PeerJ Computer Science
+PY  - 2025
+Y1  - 2025
+VL  - 11
+SP  - e3371
+DO  - 10.7717/peerj-cs.3371
+AB  - Development of RAGIntel framework integrating RAG with LLMs to automate cyberattack investigation mapped to MITRE ATT&CK, eliminating hallucinations, outdated knowledge, and technical misinterpretations inherent in standalone LLMs.
+ER  - 

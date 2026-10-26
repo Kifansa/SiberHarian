@@ -1,0 +1,27 @@
+{
+  "source_name": "mitre_d3fend",
+  "source_url": "https://d3fend.mitre.org/ontologies/d3fend/1.6.0/d3fend-full-mappings.json",
+  "download_timestamp_utc": "2026-10-20T16:41:24.589217+00:00",
+  "version_identifier": "1.6.0",
+  "file_sha256": "098e48e2c6de532ac37be6ecdd532da6bb78e85906927c2bcc78b53c45cfe04f",
+  "file_size_bytes": 60304720,
+  "record_count_parsed": 16520,
+  "download_status": "SUCCESS",
+  "staging_path": "D:\\PENTING\\MAGANG\\KOMINFO\\NOTIFIKASI-BERITA\\data\\raw\\mitre_d3fend\\2026-10-20",
+  "files": {
+    "version.json": {
+      "sha256": "10618ef73b18600015f98ebbcb5796e8cea148a8fc49d38fb44b1fc94c33f3a5",
+      "size_bytes": 297
+    },
+    "technique-all.json": {
+      "sha256": "34e2f5a360027a63e3d4bade8eaff783933fd4f2cb0d88cc4c1d7f970a85c4ff",
+      "size_bytes": 36638,
+      "records": 271
+    },
+    "d3fend-full-mappings.json": {
+      "sha256": "098e48e2c6de532ac37be6ecdd532da6bb78e85906927c2bcc78b53c45cfe04f",
+      "size_bytes": 60304720,
+      "records": 16249
+    }
+  }
+}

@@ -49,7 +49,7 @@ flowchart TD
     subgraph CloudAI["Inferensi AI (Google Gemini API)"]
         LLM_SUM["LLM Summarizer\n(Parafrase Faktual & Ekstraksi TTPs)"]
         CTI_AGENT["Multi-Agent CTI Modular\n(SITREP CTI 5 Modul & Analisis Wilayah)"]
-        EMBED["Vector Embeddings\n(text-embedding-004 Semantic RAG)"]
+        EMBED["Vector Embeddings\n(gemini-embedding-001 Semantic RAG)"]
     end
 
     subgraph Storage["Penyimpanan Terpusat"]
@@ -81,7 +81,7 @@ flowchart TD
 ### 1. Inferensi AI dengan Google Gemini API & Semantic Vector RAG
 Pemrosesan teks, klasifikasi, perangkuman, dan sintesis intelijen ditenagai oleh **Google Gemini API** dengan rantai fallback otomatis:
 - **Model LLM:** `gemini-3.1-flash-lite`, `gemini-3.5-flash-lite`, `gemini-3.5-flash`, `gemini-3.6-flash`, dan `gemini-3.7-flash` dengan mekanisme retry otomatis saat menghadapi batasan kuota.
-- **Model Vector Embedding:** `text-embedding-004` untuk pencarian semantik (Semantic RAG) dengan fallback mulus ke pencarian leksikal (RapidFuzz).
+- **Model Vector Embedding:** `gemini-embedding-001` (Gemini Embedding 1) untuk pencarian semantik (Semantic RAG) dengan rantai fallback otomatis ke model Gemini Embedding 2 (`gemini-embedding-exp-03-07` / `text-embedding-004`) serta fallback leksikal (RapidFuzz).
 
 ### 2. Tab Statistik Publik (Fakta Empiris Tanpa Halusinasi)
 Menyajikan data riil yang disederhanakan untuk masyarakat luas tanpa generalisasi berlebih:

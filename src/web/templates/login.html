@@ -7,80 +7,101 @@
   <link rel="icon" type="image/png" href="/static/img/Logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Play:wght@400;700&family=Share+Tech+Mono&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-  <script id="tailwind-config">
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            "enterprise-bg": "#EEF4F8",
-            "ref-navy": "#001D39",
-            "ref-sapphire": "#0A4174",
-            "ref-slate": "#49769F",
-            "ref-teal": "#4E8EA2",
-            "ref-sky": "#7BBDE8",
-            "ref-ice": "#BDD8E9",
-            "primary": "#0A4174",
-            "primary-hover": "#001D39",
-            "primary-light": "#EEF5FA",
-          },
-          fontFamily: {
-            "sans": ["'Plus Jakarta Sans'", "system-ui", "-apple-system", "sans-serif"],
-            "mono": ["'JetBrains Mono'", "monospace"],
-          },
-          boxShadow: {
-            "card": "0 4px 20px -2px rgba(0, 29, 57, 0.05), 0 2px 6px -1px rgba(0, 29, 57, 0.02)",
-            "elevated": "0 20px 40px -8px rgba(0, 29, 57, 0.12), 0 8px 16px -4px rgba(0, 29, 57, 0.04)",
-          }
-        },
-      },
+  <style>
+    :root {
+      --bg-primary: #0a1628;
+      --bg-secondary: #0d2137;
+      --bg-card: rgba(17, 34, 64, 0.85);
+      --accent-cyan: #00d4ff;
+      --accent-teal: #00ff88;
+      --accent-neon-green: #00ff9d;
+      --accent-red: #ff3366;
+      --text-primary: #e0f0ff;
+      --text-secondary: #8892b0;
+      --text-muted: #7d8ca6;
+      --border: #1a3a5c;
     }
-  </script>
+    body {
+      font-family: 'Sora', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+    }
+    .cyber-grid-ambient {
+      background-image: 
+        linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .btn-chamfer {
+      height: 42px;
+      font-family: 'Fragment Mono', 'Share Tech Mono', monospace;
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      user-select: none;
+      color: #ffffff;
+      background: rgba(0, 212, 255, 0.12);
+      border: 1px solid var(--accent-cyan);
+      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+      transition: all 0.2s ease-out;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .btn-chamfer:hover {
+      background: rgba(0, 212, 255, 0.22);
+      box-shadow: 0 0 18px rgba(0, 212, 255, 0.45);
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-[#EEF4F8] text-[#001D39] font-sans flex flex-col justify-between p-4 sm:p-6 antialiased selection:bg-[#BDD8E9] selection:text-[#001D39]">
+<body class="min-h-screen bg-[#0a1628] text-[#e0f0ff] font-['Sora'] flex flex-col justify-between p-4 sm:p-6 antialiased selection:bg-[#00d4ff]/30 selection:text-white cyber-grid-ambient">
 
   <!-- Top Simple Brand Bar -->
-  <header class="w-full max-w-5xl mx-auto flex items-center justify-between py-2">
-    <a href="/" class="inline-flex items-center gap-2.5 text-[#001D39] hover:text-[#0A4174] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A4174] rounded-lg px-2 py-1">
-      <div class="p-1 bg-[#EEF5FA] rounded-lg border border-[#BDD8E9]">
-        <img src="/static/img/Logo.png" alt="Logo SiberHarian" class="w-6 h-6 object-contain" />
+  <header class="w-full max-w-5xl mx-auto flex items-center justify-between gap-3 py-3 flex-wrap">
+    <a href="/" class="inline-flex items-center gap-3 text-[#e0f0ff] hover:text-[#00d4ff] transition-colors focus-visible:outline-none shrink-0">
+      <div class="p-1.5 bg-[#0d2137] rounded-lg border border-[#00d4ff]/40 shadow-[0_0_12px_rgba(0,212,255,0.25)]">
+        <img src="/static/img/Logo.png" alt="Logo SiberHarian" class="w-7 h-7 object-contain" />
       </div>
       <div>
-        <span class="font-extrabold text-sm tracking-tight text-[#001D39] block leading-tight">SiberHarian</span>
-        <span class="text-[10px] text-[#49769F] font-semibold block leading-tight">CSIRT Diskominfo Jatim</span>
+        <span class="font-bold text-base tracking-tight text-[#e0f0ff] block leading-tight">SiberHarian</span>
       </div>
     </a>
-    <a href="/" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#49769F] hover:text-[#001D39] transition-colors py-1.5 px-3 rounded-lg hover:bg-white border border-transparent hover:border-[#BDD8E9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A4174]">
-      <span class="material-symbols-outlined text-base">arrow_back</span>
-      <span>Kembali ke Portal Publik</span>
+    <a href="/" class="btn-chamfer text-xs shrink-0" style="height:36px;padding:0 16px;">
+      <span class="material-symbols-outlined text-sm">arrow_back</span>
+      <span>[ KEMBALI KE PORTAL ]</span>
     </a>
   </header>
 
   <!-- Centered Login Box -->
   <main class="w-full max-w-md mx-auto my-auto py-8">
-    <div class="bg-white rounded-2xl border border-[#BDD8E9] p-7 sm:p-9 shadow-elevated relative overflow-hidden" id="login-card">
+    <div class="bg-[rgba(17,34,64,0.85)] backdrop-blur-md rounded-2xl border border-[#1a3a5c] p-7 sm:p-9 shadow-[0_0_40px_rgba(0,212,255,0.15)] relative overflow-hidden" id="login-card">
       
       <!-- Top Decorative Accent -->
-      <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#0A4174] via-[#4E8EA2] to-[#7BBDE8]"></div>
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#00d4ff] via-[#00ff88] to-[#7b2fff]"></div>
 
       <!-- Header Icon & Titles -->
       <div class="text-center mb-6">
-        <div class="w-14 h-14 mx-auto mb-3.5 flex items-center justify-center p-2 rounded-2xl bg-[#EEF5FA] border border-[#BDD8E9] shadow-2xs">
+        <div class="w-14 h-14 mx-auto mb-3.5 flex items-center justify-center p-2 rounded-xl bg-[#0d2137] border border-[#00d4ff]/40 shadow-[0_0_15px_rgba(0,212,255,0.25)]">
           <img src="/static/img/Logo.png" alt="Logo SiberHarian" class="w-10 h-10 object-contain" />
         </div>
-        <div class="inline-block text-[10px] font-extrabold tracking-wider uppercase text-[#0A4174] bg-[#EEF5FA] border border-[#BDD8E9] px-2.5 py-0.5 rounded-full mb-1.5">
-          Portal Khusus Petugas
+        <div class="inline-block text-[10px] font-mono font-bold tracking-widest uppercase text-[#00d4ff] bg-[#0d2137] border border-[#00d4ff]/30 px-3 py-0.5 rounded mb-2 shadow-[0_0_8px_rgba(0,212,255,0.15)]">
+          [ PORTAL KHUSUS PETUGAS ]
         </div>
-        <h1 class="text-xl sm:text-2xl font-extrabold text-[#001D39] tracking-tight">Otentikasi Tim CTI</h1>
-        <p class="text-xs text-[#49769F] mt-1 max-w-xs mx-auto leading-relaxed">
+        <h1 class="text-xl sm:text-2xl font-bold text-[#e0f0ff] font-['Sora'] tracking-tight">Otentikasi Tim CTI</h1>
+        <p class="text-xs text-[#8892b0] mt-1 max-w-xs mx-auto leading-relaxed font-sans">
           Panel operasional intelijen ancaman siber Dinas Kominfo Provinsi Jawa Timur
         </p>
       </div>
 
       <!-- Alert Notifikasi Kesalahan -->
-      <div id="login-alert" class="hidden mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-[#b91c1c] flex items-start gap-2.5 animate-fade-in" role="alert">
+      <div id="login-alert" class="hidden mb-5 p-3.5 rounded-lg bg-[#ff3366]/15 border border-[#ff3366]/40 text-xs text-[#ff3366] flex items-start gap-2.5 font-mono shadow-[0_0_12px_rgba(255,51,102,0.2)]" role="alert">
         <span class="material-symbols-outlined text-base shrink-0 mt-0.5" aria-hidden="true">error</span>
         <span id="login-alert-msg" class="leading-relaxed font-semibold">Nama pengguna atau kata sandi tidak valid.</span>
       </div>
@@ -88,31 +109,31 @@
       <!-- Login Form -->
       <form id="login-form" class="space-y-4" onsubmit="handleLoginSubmit(event)" novalidate>
         <div>
-          <label for="username" class="block text-xs font-bold text-[#001D39] mb-1.5">
-            Nama Pengguna <span class="text-red-500">*</span>
+          <label for="username" class="block text-xs font-mono font-semibold text-[#8892b0] mb-1.5 uppercase tracking-wider">
+            Nama Pengguna <span class="text-[#ff3366]">*</span>
           </label>
           <div class="relative">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#49769F]">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#7d8ca6]">
               <span class="material-symbols-outlined text-lg">person</span>
             </span>
             <input type="text" id="username" name="username" required autocomplete="username" autofocus
               placeholder="Masukkan username admin"
-              class="w-full text-sm pl-10 pr-3.5 py-2.5 rounded-xl border border-[#BDD8E9] bg-[#EEF5FA]/80 text-[#001D39] placeholder-[#49769F]/70 focus:bg-white focus:border-[#0A4174] focus:ring-2 focus:ring-[#0A4174]/20 outline-none transition-all duration-150 font-medium" />
+              class="w-full text-xs font-mono pl-10 pr-3.5 py-2.5 rounded-lg border border-[#1a3a5c] bg-[#0d2137] text-[#e0f0ff] placeholder-[#7d8ca6] focus:border-[#00d4ff] focus:ring-1 focus:ring-[#00d4ff] outline-none transition-all duration-150" />
           </div>
         </div>
 
         <div>
-          <label for="password" class="block text-xs font-bold text-[#001D39] mb-1.5">
-            Kata Sandi <span class="text-red-500">*</span>
+          <label for="password" class="block text-xs font-mono font-semibold text-[#8892b0] mb-1.5 uppercase tracking-wider">
+            Kata Sandi <span class="text-[#ff3366]">*</span>
           </label>
           <div class="relative">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#49769F]">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#7d8ca6]">
               <span class="material-symbols-outlined text-lg">lock</span>
             </span>
             <input type="password" id="password" name="password" required autocomplete="current-password"
               placeholder="Masukkan kata sandi"
-              class="w-full text-sm pl-10 pr-10 py-2.5 rounded-xl border border-[#BDD8E9] bg-[#EEF5FA]/80 text-[#001D39] placeholder-[#49769F]/70 focus:bg-white focus:border-[#0A4174] focus:ring-2 focus:ring-[#0A4174]/20 outline-none transition-all duration-150 font-medium" />
-            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#49769F] hover:text-[#001D39] focus:outline-none cursor-pointer" title="Lihat/Sembunyikan sandi">
+              class="w-full text-xs font-mono pl-10 pr-10 py-2.5 rounded-lg border border-[#1a3a5c] bg-[#0d2137] text-[#e0f0ff] placeholder-[#7d8ca6] focus:border-[#00d4ff] focus:ring-1 focus:ring-[#00d4ff] outline-none transition-all duration-150" />
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#7d8ca6] hover:text-[#00d4ff] focus:outline-none cursor-pointer" title="Lihat/Sembunyikan sandi">
               <span id="password-toggle-icon" class="material-symbols-outlined text-lg">visibility</span>
             </button>
           </div>
@@ -120,18 +141,18 @@
 
         <div class="pt-2">
           <button type="submit" id="btn-submit"
-            class="w-full py-2.5 px-4 bg-[#0A4174] hover:bg-[#001D39] text-white font-bold text-sm rounded-xl shadow-sm hover:shadow transition-all duration-200 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed">
+            class="btn-chamfer w-full">
             <span id="btn-submit-icon" class="material-symbols-outlined text-lg">login</span>
-            <span id="btn-submit-text">Masuk ke Sistem CTI</span>
+            <span id="btn-submit-text">[ MASUK KE SISTEM CTI → ]</span>
           </button>
         </div>
       </form>
 
       <!-- Security Notice Footer -->
-      <div class="mt-6 pt-4 border-t border-[#E2EDF8] text-center">
-        <p class="text-[11px] text-[#49769F] flex items-center justify-center gap-1.5 font-medium">
-          <span class="material-symbols-outlined text-sm text-[#15803d]">shield</span>
-          <span>Akses terbatas hanya untuk personel berwenang CSIRT Jatim</span>
+      <div class="mt-6 pt-4 border-t border-[#1a3a5c] text-center">
+        <p class="text-[11px] text-[#7d8ca6] flex items-center justify-center gap-1.5 font-mono">
+          <span class="material-symbols-outlined text-sm text-[#00ff88]">shield</span>
+          <span>Akses terbatas hanya untuk personel berwenang</span>
         </p>
       </div>
 
@@ -139,8 +160,8 @@
   </main>
 
   <!-- Page Footer -->
-  <footer class="w-full max-w-5xl mx-auto py-3 text-center text-xs text-[#49769F]">
-    &copy; 2026 CSIRT Dinas Komunikasi dan Informatika Provinsi Jawa Timur. Seluruh hak cipta dilindungi.
+  <footer class="w-full max-w-5xl mx-auto py-3 text-center text-xs text-[#7d8ca6] font-mono">
+    &copy; 2026 Dinas Komunikasi dan Informatika Provinsi Jawa Timur. Seluruh hak cipta dilindungi.
   </footer>
 
   <script>
@@ -180,7 +201,7 @@
       }
 
       btnSubmit.disabled = true;
-      btnText.textContent = 'Memverifikasi...';
+      btnText.textContent = '[ MEMVERIFIKASI... ]';
       btnIcon.textContent = 'hourglass_empty';
 
       try {
@@ -193,7 +214,7 @@
         const data = await response.json();
 
         if (response.ok && data.status === 'ok') {
-          btnText.textContent = 'Berhasil, Mengalihkan...';
+          btnText.textContent = '[ BERHASIL, MENGALIHKAN... ]';
           btnIcon.textContent = 'check_circle';
           window.location.href = data.redirect || '/admin';
         } else {
@@ -202,14 +223,14 @@
           passwordInput.value = '';
           passwordInput.focus();
           btnSubmit.disabled = false;
-          btnText.textContent = 'Masuk ke Sistem CTI';
+          btnText.textContent = '[ MASUK KE SISTEM CTI → ]';
           btnIcon.textContent = 'login';
         }
       } catch (err) {
         alertMsg.textContent = 'Koneksi gagal atau server tidak merespons. Silakan coba lagi.';
         alertBox.classList.remove('hidden');
         btnSubmit.disabled = false;
-        btnText.textContent = 'Masuk ke Sistem CTI';
+        btnText.textContent = '[ MASUK KE SISTEM CTI → ]';
         btnIcon.textContent = 'login';
       }
     }

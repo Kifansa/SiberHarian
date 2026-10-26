@@ -1,34 +1,40 @@
 <div id="feed-beranda-anchor" class="-mt-20 pt-20"></div>
 <div class="py-4 space-y-6">
   <!-- Feed Header -->
-  <div class="border-b border-[#BDD8E9]/80 pb-4">
-    <h2 class="text-xl sm:text-2xl font-black text-[#001D39] tracking-tight">Keamanan Siber Terbaru</h2>
-    <p class="text-xs sm:text-sm text-[#49769F] mt-0.5" id="results-desc">Memuat data intelijen...</p>
+  <div class="border-b border-[#1a3a5c] pb-4 flex items-center justify-between gap-3">
+    <div>
+      <div class="text-[#00ff9d] font-mono text-xs font-bold tracking-widest uppercase mb-1">
+        [ ARTIKEL // 01 ]
+      </div>
+      <h2 class="text-xl sm:text-2xl font-extrabold text-[#e0f0ff] font-['Sora'] tracking-tight">Keamanan Siber Terbaru</h2>
+    </div>
+    <p class="text-xs font-mono text-[#7d8ca6] hidden sm:block" id="results-desc">Memuat data intelijen...</p>
   </div>
 
-  <!-- Quick Filter Toolbar Feed Beranda (Pencarian Kata Kunci) -->
-  <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-[#BDD8E9]/80 shadow-card flex items-center justify-between gap-3">
-    <!-- Quick Search Input -->
+  <!-- Quick Filter Toolbar Feed Beranda (Tactical Search HUD) -->
+  <div class="card-cyber p-3.5 sm:p-4 flex items-center justify-between gap-3">
     <div class="relative flex-1 max-w-xl">
-      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#49769F] text-lg pointer-events-none" aria-hidden="true">search</span>
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#7d8ca6] text-lg pointer-events-none" aria-hidden="true">search</span>
       <input id="beranda-search-input"
-        class="pl-9 pr-10 py-2 rounded-lg bg-[#EEF4F8]/70 hover:bg-[#EEF4F8] focus:bg-white border border-[#BDD8E9] focus:border-[#0A4174] focus:ring-2 focus:ring-[#0A4174]/20 outline-none text-xs w-full transition-all duration-200 placeholder:text-[#49769F] text-[#001D39] font-medium shadow-2xs"
-        placeholder="Cari berita keamanan hari ini..." type="text" aria-label="Saring feed harian" />
+        class="pl-9 pr-10 py-2 rounded-lg bg-[#0d2137] hover:bg-[#132c4a] focus:bg-[#0d2137] border border-[#1a3a5c] focus:border-[#00d4ff] focus:ring-1 focus:ring-[#00d4ff] outline-none text-xs w-full transition-all duration-200 placeholder:text-[#7d8ca6] text-[#e0f0ff] font-mono shadow-inner"
+        placeholder="Ketik kata kunci untuk menyaring feed harian... (tekan '/' untuk cari)" type="text" aria-label="Saring feed harian" />
       <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center">
-        <button id="beranda-search-clear" style="display:none;" class="w-5 h-5 rounded-md bg-[#BDD8E9] hover:bg-[#A8CEE5] flex items-center justify-center text-[#001D39] text-xs cursor-pointer focus-visible:outline-none" title="Bersihkan saringan" aria-label="Bersihkan saringan">
+        <button id="beranda-search-clear" style="display:none;" class="w-5 h-5 rounded bg-[#1a3a5c] hover:bg-[#00d4ff]/30 flex items-center justify-center text-[#e0f0ff] text-xs cursor-pointer focus-visible:outline-none" title="Bersihkan saringan" aria-label="Bersihkan saringan">
           <span class="material-symbols-outlined text-xs" aria-hidden="true">close</span>
         </button>
       </div>
     </div>
   </div>
 
-  <div class="text-center py-16 bg-white rounded-xl border border-[#E2EDF8] shadow-card" id="empty-state">
-    <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-[#EEF5FA] border border-[#BDD8E9] flex items-center justify-center text-[#49769F]">
-      <span class="material-symbols-outlined text-2xl" aria-hidden="true">policy</span>
+  <!-- Empty State (Dark Terminal Style) -->
+  <div class="text-center py-16 card-cyber hidden" id="empty-state">
+    <div class="w-14 h-14 mx-auto mb-3 rounded-xl bg-[#0d2137] border border-[#1a3a5c] flex items-center justify-center text-[#00d4ff] shadow-[0_0_15px_rgba(0,212,255,0.2)]">
+      <span class="material-symbols-outlined text-2xl" aria-hidden="true">feed</span>
     </div>
-    <h3 class="text-base font-bold text-[#001D39] mb-1">Belum Ada Data Intelijen</h3>
-    <p class="text-[#49769F] text-xs max-w-xs mx-auto">Hasil ringkasan berita siber akan ditampilkan di sini setelah pipeline dijalankan.</p>
+    <h3 class="text-base font-bold text-[#e0f0ff] font-['Sora'] mb-1">[ BELUM ADA DATA INTELIJEN ]</h3>
+    <p class="text-[#7d8ca6] text-xs max-w-sm mx-auto font-mono">Hasil ringkasan berita siber akan ditampilkan di sini setelah pipeline dijalankan.</p>
   </div>
 
+  <!-- Grid Card Berita -->
   <div id="card-container"></div>
 </div>

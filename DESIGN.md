@@ -1,73 +1,81 @@
 ---
 name: SiberHarian
-description: Cyber Threat Intelligence & Incident Analytics Platform (CSIRT Diskominfo Jawa Timur) - Sapphire Oceanic Edition
+description: Cyber Threat Intelligence & Incident Analytics Platform (CSIRT Diskominfo Jawa Timur) - Cyber-HUD / Tactical Dark Terminal Edition
 colors:
-  # The 7 Reference Palette Colors:
-  ref-navy: "#001D39"      # 1. Midnight Navy (Headings, primary hero dark card, primary chart bars)
-  ref-sapphire: "#0A4174"  # 2. Dark Sapphire / Royal Navy (Primary action buttons, hero gradient end)
-  ref-slate: "#49769F"     # 3. Slate Blue / Denim (Subheadings, inactive states, borders)
-  ref-teal: "#4E8EA2"      # 4. Ocean Teal (Line curves, radar strokes, active highlights)
-  ref-seafoam: "#6EA2B3"   # 5. Soft Cyan / Seafoam (Secondary chart bars, accents)
-  ref-sky: "#7BBDE8"       # 6. Sky Blue (Active navigation pills, glowing chart peaks, primary highlights)
-  ref-ice: "#BDD8E9"       # 7. Ice Blue (Badge surfaces, subtle borders, soft pills, light tints)
+  # The Cyber-HUD Reference Palette Colors:
+  bg-primary: "#0a1628"      # 1. Dark Tactical Navy Canvas (Main background)
+  bg-secondary: "#0d2137"    # 2. Elevated Dark Surface (Navbar, headers, toolbars, card tracks)
+  bg-card: "rgba(17,34,64,0.7)" # 3. Glassmorphic HUD Surface (Blur 8px, border #1a3a5c)
+  bg-terminal: "#070f1c"    # 4. Code & Log Terminal Body
+  accent-cyan: "#00d4ff"     # 5. Primary Interactive Cyan (Buttons, borders, totals, active lines)
+  accent-teal: "#00ff88"     # 6. Vibrant Teal (Progress gradients, success)
+  accent-neon: "#00ff9d"     # 7. Neon Green (Status pulses, active tags [ ... ], live indicators)
+  accent-red: "#ff3366"      # 8. Hazard Red (Critical threats, CVE watch, active date tabs < ... >)
+  accent-amber: "#ffc107"    # 9. Warning Amber (Medium alerts, viewer badges)
+  accent-orange: "#ff8800"   # 10. Education / Outreach Orange
+  accent-purple: "#a78bfa"   # 11. Advisory Purple
+  border-base: "#1a3a5c"     # 12. Tactical Grid & Border Line
+  text-primary: "#e0f0ff"    # 13. High-Contrast White-Cyan (WCAG AAA)
+  text-secondary: "#8892b0"  # 14. Monospace Slate Label (WCAG AA)
+  text-muted: "#7d8ca6"      # 15. Meta Footers & Captions
 
   # Semantic Mappings:
-  primary: "#0A4174"
-  primary-hover: "#001D39"
-  primary-light: "#EEF5FA"
-  primary-accent: "#7BBDE8"
-  surface: "#ffffff"
-  surface-subtle: "#EEF5FA"
-  surface-card: "#ffffff"
-  background: "#EEF4F8"
-  on-surface: "#001D39"
-  on-surface-variant: "#49769F"
-  outline: "#E2EDF8"
-  outline-hover: "#BDD8E9"
-  outline-border: "#BDD8E9"
-  critical: "#b91c1c"
-  warning: "#b45309"
-  success: "#15803d"
-  shadow-dark: "rgba(0, 29, 57, 0.06)"
-  shadow-light: "rgba(0, 29, 57, 0.02)"
+  primary: "#00d4ff"
+  primary-hover: "#33ddff"
+  primary-light: "rgba(0, 212, 255, 0.12)"
+  primary-accent: "#00ff88"
+  surface: "rgba(17, 34, 64, 0.7)"
+  surface-subtle: "#0d2137"
+  surface-card: "rgba(17, 34, 64, 0.7)"
+  background: "#0a1628"
+  on-surface: "#e0f0ff"
+  on-surface-variant: "#8892b0"
+  outline: "#1a3a5c"
+  outline-hover: "#00d4ff"
+  outline-border: "#1a3a5c"
+  critical: "#ff3366"
+  warning: "#ffc107"
+  success: "#00ff9d"
+  shadow-dark: "rgba(0, 0, 0, 0.5)"
+  shadow-glow: "rgba(0, 212, 255, 0.25)"
 typography:
   display:
-    fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Sora', sans-serif"
     fontSize: "clamp(1.875rem, 4vw, 2.75rem)"
     fontWeight: 800
     lineHeight: 1.15
     letterSpacing: "-0.025em"
   headline:
-    fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Sora', sans-serif"
     fontSize: "1.5rem"
     fontWeight: 700
     lineHeight: 1.3
     letterSpacing: "-0.02em"
   title:
-    fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Sora', sans-serif"
     fontSize: "1.125rem"
     fontWeight: 700
     lineHeight: 1.4
     letterSpacing: "-0.01em"
   body:
-    fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
-    fontSize: "15px"
+    fontFamily: "'Sora', sans-serif"
+    fontSize: "14px"
     fontWeight: 400
     lineHeight: 1.6
     letterSpacing: "normal"
   label:
-    fontFamily: "'Plus Jakarta Sans', sans-serif"
+    fontFamily: "'Fragment Mono', 'Share Tech Mono', monospace"
     fontSize: "0.75rem"
     fontWeight: 600
     lineHeight: 1.4
-    letterSpacing: "0.01em"
+    letterSpacing: "0.05em"
   caption:
-    fontFamily: "'Plus Jakarta Sans', sans-serif"
+    fontFamily: "'Fragment Mono', 'Share Tech Mono', monospace"
     fontSize: "0.6875rem"
-    fontWeight: 600
+    fontWeight: 500
     lineHeight: 1.4
   mono:
-    fontFamily: "JetBrains Mono, monospace"
+    fontFamily: "'Fragment Mono', 'Share Tech Mono', monospace"
     fontSize: "0.75rem"
     fontWeight: 500
     lineHeight: 1.4
@@ -75,6 +83,7 @@ typography:
     fontFamily: "Material Symbols Outlined"
     fontSize: "1.25rem"
 rounded:
+  chamfer: "10px"
   xs: "2px"
   sm: "4px"
   md: "6px"
@@ -91,126 +100,120 @@ spacing:
   gutter: "24px"
 components:
   button-primary:
-    backgroundColor: "#0A4174"
+    backgroundColor: "rgba(0, 212, 255, 0.12)"
+    borderColor: "#00d4ff"
     textColor: "#ffffff"
-    rounded: "{rounded.md}"
+    shape: "clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)"
+    fontFamily: "'Fragment Mono', monospace"
     padding: "10px 20px"
   button-secondary:
-    backgroundColor: "#ffffff"
-    textColor: "#001D39"
-    borderColor: "#BDD8E9"
-    rounded: "{rounded.md}"
+    backgroundColor: "rgba(255, 255, 255, 0.05)"
+    borderColor: "#1a3a5c"
+    textColor: "#e0f0ff"
+    shape: "clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)"
+    fontFamily: "'Fragment Mono', monospace"
     padding: "10px 18px"
   badge-critical:
-    backgroundColor: "#fee2e2"
-    textColor: "#b91c1c"
-    borderColor: "#fecaca"
+    backgroundColor: "rgba(255, 51, 102, 0.15)"
+    textColor: "#ff3366"
+    borderColor: "rgba(255, 51, 102, 0.4)"
     rounded: "{rounded.sm}"
   badge-info:
-    backgroundColor: "#EEF5FA"
-    textColor: "#0A4174"
-    borderColor: "#BDD8E9"
+    backgroundColor: "rgba(0, 212, 255, 0.12)"
+    textColor: "#00d4ff"
+    borderColor: "rgba(0, 212, 255, 0.3)"
     rounded: "{rounded.sm}"
-  badge-warning:
-    backgroundColor: "#fef3c7"
-    textColor: "#b45309"
-    borderColor: "#fde68a"
+  badge-success:
+    backgroundColor: "rgba(0, 255, 157, 0.15)"
+    textColor: "#00ff9d"
+    borderColor: "rgba(0, 255, 157, 0.4)"
     rounded: "{rounded.sm}"
   card-default:
-    backgroundColor: "{colors.surface}"
-    borderColor: "{colors.outline}"
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.lg}"
+    backgroundColor: "rgba(17, 34, 64, 0.7)"
+    borderColor: "#1a3a5c"
+    textColor: "#e0f0ff"
+    backdropFilter: "blur(8px)"
+    rounded: "{rounded.xl}"
     padding: "24px"
 ---
 
-# Design System: Sapphire Oceanic Edition (SiberHarian - CSIRT Jatim)
+# Design System: Cyber-HUD / Tactical Dark Terminal Edition (CSIRT Jatim)
 
 ## Overview
 
-**Creative North Star: "Sapphire Oceanic - High-Trust, Dignified Government Cyber Threat Intelligence & Public Cyber Awareness"**
+**Creative North Star: "Cyber-HUD / Tactical Dark Terminal - Unified Official Visual Experience with CSIRT Provinsi Jawa Timur (`https://csirt.jatimprov.go.id/`)"**
 
-SiberHarian menghadirkan antarmuka analitik intelijen ancaman siber (CTI) sekaligus portal informasi publik resmi CSIRT Provinsi Jawa Timur (`https://csirt.jatimprov.go.id/`). Menggunakan palet **Sapphire Oceanic** (`#0A4174`), kanvas sejuk (`#EEF4F8`), kartu putih bersih, dan aksen 7 warna referensi (`#001D39`, `#0A4174`, `#49769F`, `#4E8EA2`, `#6EA2B3`, `#7BBDE8`, `#BDD8E9`).
+SiberHarian menghadirkan antarmuka analitik intelijen ancaman siber (CTI) sekaligus portal informasi publik resmi CSIRT Provinsi Jawa Timur. Menggunakan tema **Cyber-HUD / Tactical Dark Terminal** dengan kanvas taktis gelap (`#0a1628`), permukaan sekunder `#0d2137`, kartu kaca semi-transparan `rgba(17,34,64,0.7)` dengan `backdrop-filter: blur(8px)`, aksen pendar neon (`#00d4ff`, `#00ff88`, `#00ff9d`, `#ff3366`), tipografi terstandarisasi (`Sora` dan `Fragment Mono`), serta sudut pemotongan diagonal 10px (*chamfered clip-path*).
 
 Desain ini melayani **Dua Persona Pengguna (Dual-User Experience)**:
-1. **Mode Publik (Masyarakat Umum & Pengelola OPD)**: Antarmuka bersih, informatif, dan edukatif tanpa tombol teknis backend.
-2. **Mode Admin CTI (Tim CSIRT Diskominfo Jatim)**: Konsol operasional SOC lengkap dengan monitor terminal pipeline real-time dan analisis intelijen strategis.
+1. **Mode Publik (Masyarakat Umum & Pengelola OPD)**: Antarmuka komando siber yang bersih, informatif, dan edukatif dengan visualisasi data ramah publik tanpa tombol operasional backend.
+2. **Mode Admin CTI (Tim CSIRT Diskominfo Jatim)**: Konsol operasional SOC lengkap dengan monitor terminal pipeline real-time, 4 scorecards KPI bercahaya, 3 kolom kasus wilayah, radar CVE, dan analisis intelijen strategis.
 
 ---
 
 ## Key Design Pillars
 
-1. **Clean Oceanic Canvas (`#EEF4F8`)**: Latar belakang sejuk, tenang, dan profesional yang nyaman untuk penjelajahan publik maupun pemantauan intensif di SOC.
-2. **Deep Midnight Navy Text (`#001D39`)**: Tipografi tajam berkontras tinggi (rasio kontras > 14:1) dengan warna teks navy gelap alami, bebas dari efek lelah mata.
-3. **Sapphire Primary Action (`#0A4174`, hover `#001D39`)**: Aksen biru berwibawa khas identitas Pemprov Jawa Timur untuk tombol aksi utama dan status terpilih.
-4. **Natural Human Copywriting**: Seluruh teks, label, dan grafik menggunakan bahasa Indonesia baku, jelas, dan lugas. Menghilangkan seluruh AI-slop buzzwords (*unlock, elevate, revolutionize, seamless*).
-5. **Targeted Monospace Usage**: Font `JetBrains Mono` digunakan secara disiplin hanya untuk data teknis numerik (persentase, metrik numerik, tanggal teknis, dan terminal log). Teks judul dan narasi menggunakan font `Inter` / `Plus Jakarta Sans`.
+1. **Tactical Dark Canvas (`#0a1628`) & Ambient Cyber Grid**: Latar belakang dark navy pekat dengan grid ambient 40px `.cyber-grid-ambient` yang menciptakan kedalaman visual command center modern.
+2. **High-Contrast Reading Typography (`#e0f0ff` on `#0a1628`)**: Rasio kontras tinggi (**15.6 : 1**) melampaui standar WCAG AAA, menjamin keterbacaan artikel dan data teknis dalam sesi analisis panjang.
+3. **Chamfer Cut 10px Interactive Elements**: Seluruh tombol utama dan tab aksi mengadopsi sudut potong diagonal chamfered:
+   `clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)`.
+4. **Brackets & Monospace Notation (`Fragment Mono`)**: Penggunaan kurung siku `[ ... ]` untuk label modul dan `< ... >` untuk filter navigasi tanggal arsip, mempertegas estetika instrumen telemetri siber profesional.
+5. **Horizontal Pill Progress Bars (`Chart.js`)**: Visualisasi frekuensi serangan dan sektor vital menggunakan horizontal pill bars (`indexAxis: 'y'`) dengan gradasi neon cyan-ke-teal (`#00d4ff` &rarr; `#00ff88`) di atas track gelap `#0d2137`.
 
 ---
 
 ## Dual-Role Navigation Architecture
 
-### Header Role Switcher
-Terletak di sisi kanan header portal, memberikan toggle halus dan jelas:
-- **Mode Publik (2 Tab Saja)**: Menampilkan tab **Berita & Statistik** (gabungan wawasan KPI, Word Cloud, grafik fakta, intisari edukasi asli, dan feed berita) serta **Arsip**.
-- **Mode Admin CTI (3 Tab)**: Menampilkan tab **Dashboard** (operasional + floating console terminal SSE), **Arsip**, dan **Tren CTI**. Badge identitas `"Tim CTI CSIRT"` ditampilkan di samping logo.
+### Header Navigation Bar
+- **Sticky Navbar (70px)**: Background `#0a1628`/95 dengan `backdrop-filter: blur(12px)` dan border bawah tipis `#1a3a5c`.
+- **Identitas Logo CSIRT**: Logo perisai Pemprov Jatim berlatar glow cyan `#00d4ff`, dengan teks judul `SiberHarian` dan sub-label `[ CSIRT PROVINSI JAWA TIMUR ]`.
+- **Mode Publik**: Tab `[ BERANDA // STATISTIK ]` dan `[ ARSIP RIWAYAT ]`.
+- **Mode Admin CTI**: Tab `[ TREN SIBER // CTI ]`, `[ ARSIP RIWAYAT ]`, dan `[ PENGATURAN ]`.
 
-### Desktop & Mobile Navigation
-- **Desktop**: Segmented navigation pill control (`#EEF4F8` container dengan border `#BDD8E9`). Tab aktif disorot dengan warna `#7BBDE8` (Sky Blue) dengan teks putih tegas.
-- **Mobile**: Fixed bottom navigation bar (`bg-white` dengan border-t `#BDD8E9`) yang dinamis menyesuaikan 2 tab untuk Publik dan 3 tab untuk Admin CTI.
+### Mobile Navigation HUD
+- Bottom bar mengambang dengan latar `#0d2137`/95, border `#1a3a5c`, dan ikon navigasi ramah jempol.
 
 ---
 
 ## Surface Specifications
 
 ### 1. Tab Beranda & Statistik (Sisi Publik)
-Menggabungkan wawasan intelijen dan berita hari terakhir dalam satu alur yang kohesif:
-- **Insightful KPI Cards**: 4 kartu wawasan fakta bermakna (*Modus Paling Mengintai: Akun & Phishing 54%*, *Sektor Sasaran Terbanyak: Administrasi Pemerintahan*, *Status Risiko Ancaman: Waspada*, *Fokus Wilayah: Isu Nasional & Internasional*).
-- **Word Cloud Kasus Insiden Spesifik (Interaktif)**: Diekstrak eksklusif dari berita `insiden_spesifik`. Ukuran font dinamis (12px–26px) dengan palet Sapphire Oceanic. Mengklik kata kunci akan langsung memfilter kartu berita kejadian terkait di bawahnya.
-- **Grafik Fakta Empiris**: Bar chart sebaran modus ancaman dan horizontal bar chart sebaran sektor sasaran serangan (IIV).
-- **Intisari Artikel Edukasi Asli**: Daftar himbauan pencegahan yang disarikan langsung dari artikel edukasi siber terverifikasi di database (`kategori_relevansi == 'analisis_relevan'`) lengkap dengan link ke sumber berita asli.
-- **Feed Berita Intelijen Hari Terakhir**: Kartu berita intelijen siber terkini dengan modal pop-up pembaca ringkasan lengkap.
+- **Hero Command Center**: Header taktis dengan status aktif `● [ CSIRT PROVINSI JAWA TIMUR ]` berdenyut, headline display, dan 2 tombol chamfered.
+- **Kartu KPI Paling Mengintai**: Kartu sorotan visual dengan status `[ WASPADA ]` neon amber dan metrik persentase tajam.
+- **Word Cloud Kasus Insiden Interaktif**: Kumpulan kata kunci berbasis frekuensi dengan pendar neon cyan, teal, dan purple yang langsung menyaring feed berita saat diklik.
+- **Infografis 3 Langkah Anatomi Serangan**: Kartu edukasi visual langkah mitigasi dengan nomor langkah chamfered.
+- **Horizontal Pill Bar Chart**: Visualisasi sebaran modus ancaman dan sektor vital IIV.
+- **Feed Berita Intelijen**: Kartu berita glassmorphic dengan tag wilayah (`[ JAWA TIMUR ]`, `[ NASIONAL ]`, `[ GLOBAL ]`), ringkasan terstruktur, dan pop-up modal detail.
 
 ### 2. Tab Arsip (Publik & Admin)
-- Penelusuran data 7-14 hari dengan dropdown tanggal, filter kategori (Insiden Spesifik, Analisis & Edukasi), dan kotak pencarian instan (*live search*).
+- **Header Modul**: `[ ARSIP // 02 ]` dengan deskripsi riwayat data intelijen.
+- **Tab Tanggal Cepat HUD**: Format `< HARI INI >`, `< 7 HARI >`, `< 14 HARI >`, `< 30 HARI >` dengan border merah `#ff3366` saat aktif.
+- **Toolbar Taktis Terpadu**: Select dropdown kategori dan live search bar monospace dark `#0d2137`.
 
-### 3. Tab Tren Siber CTI (Khusus Admin Tim CTI)
-- **Indeks Postur Ancaman Siber Komparatif (Threat Posture)**: Banner eksekutif skor komposit 1.0 sampai 10.0 dengan normalisasi Min-Max scaling berimbang (Insiden 45%, Vektor Serangan 30%, Sektor Vital IIV 25%), perbandingan terhadap baseline minggu lalu, badge tingkat keparahan (KRITIS / TINGGI / SEDANG / RENDAH), dan ringkasan arahan strategis pimpinan.
-- **Matriks Tindakan Ancaman Aktif (Remediation Checklist)**: Tabel taktis operasional SOC yang mengelompokkan ancaman ke dalam kategori, lonjakan kasus 7 hari, tingkat urgensi dengan badge semantik berkontras tinggi, fokus celah website OPD, dan tindakan taktis langsung.
-- **Dinamika Tren Deret Waktu 7 Hari**: Grafik deret waktu harian fluktuasi berita insiden, lengkap dengan grafik komposisi sumber isu nasional vs global.
-- **SITREP CTI Modular Terstruktur**: 
-  1. Tren Insiden Mingguan (Makro)
-  2. Lanskap & Entitas Ancaman (Mikro: klastering multi-artikel dengan mitigasi halusinasi peneliti)
-  3. Vektor Serangan & Pemetaan MITRE ATT&CK (1-to-1)
-  4. Rekomendasi Aksi Preskriptif (Injeksi deterministik dari Ensiklopedia D3FEND/NIST)
-  5. Sinyal Ancaman Baru (Emerging Threats, proyeksi replikasi risiko ke domain instansi)
-- **Taksonomi Terstandarisasi**:
-  - **10 Sektor Standar Nasional**: Mengacu pada Perpres No. 82 Tahun 2022 tentang Infrastruktur Informasi Vital (IIV).
-  - **12 Taktik MITRE ATT&CK Enterprise Matrix**: Initial Access, Execution, Persistence, Privilege Escalation, Defense Evasion, Credential Access, Discovery, Lateral Movement, Collection, Command & Control, Exfiltration, Impact.
-- **Kasus Wilayah 3-Level (Internasional, Nasional, Jawa Timur)**: Visualisasi kartu insiden teramai dengan pendekatan BLUF (Bottom Line Up Front) dan analisis dampak domino lintas sektor.
-- **Ekspor Dokumen PDF Resmi**: Cetak dokumen SITREP mingguan bertata letak standar Diskominfo Jatim langsung dari peramban.
+### 3. Tab Tren Siber CTI (Admin Tim CTI)
+- **Executive KPI Scorecards (4 Kartu)**: Indeks Postur Risiko, Total Insiden Terpantau, Sektor Vital Terdampak, dan Rasio Isu Wilayah dengan metrik glowing `Fragment Mono`.
+- **Kasus Wilayah 3-Level**: Kolom Internasional, Nasional, dan Jawa Timur berlatar dark cyber dengan tombol aksi modal `[ DETAIL ANALISIS → ]`.
+- **AI SITREP Executive Digest**: Kartu ringkasan intelijen mingguan dengan rekomendasi aksi preskriptif dan ekspor PDF resmi.
+- **3 Chart Horizontal Pill**: Sebaran TTPs Serangan, 10 Sektor Vital IIV (Perpres No. 82/2022), dan Pemetaan 12 Taktik MITRE ATT&CK.
+- **Radar CVE Watchlist & Matriks Tindakan Taktis**: Tabel dark cyber dengan CVE ID tautan NVD dan checklist mitigasi SOC.
 
-### 4. Pusat Ensiklopedia Standar Keamanan Siber
-- Database 12 kerangka kerja global dan nasional (165 entitas) tersimpan terstruktur dalam format JSON di `data/encyclopedia/`:
-  - Standar Global: MITRE ATT&CK, MITRE D3FEND, NIST CSF 2.0, OWASP Top 10, CWE, CIS Controls, CISA CPG, ISO/IEC 27001, Cloud Security Alliance (CSA) CCM.
-  - Standar Nasional: BSSN CSIRT Framework, Indeks KAMI (Keamanan Informasi BSSN), Panduan Operasional CSIRT Indonesia.
-- Layanan API `/api/ensiklopedia` dengan filter kerangka kerja dan pencarian instan berbasis kata kunci.
+### 4. Modul Login & Pengaturan
+- **Otentikasi Petugas Tim CTI (`login.html`)**: Halaman taktis dengan kartu semi-transparan `rgba(17,34,64,0.85)`, border neon atas, dan tombol chamfer `[ MASUK KE SISTEM CTI → ]`.
+- **Panel Pengaturan (`_settings.html`)**: 4 tab konfigurasi (`[ UMUM & LLM ]`, `[ TEMPLATE PROMPT LLM ]`, `[ SUMBER RSS ]`, `[ KEAMANAN AKUN ]`) dengan editor prompt terminal `#070f1c` dan tabel manajemen RSS.
 
 ---
 
-## Semantic Color Tokens
+## Semantic Color Tokens (WCAG AA/AAA Verified)
 
-- **Canvas Background**: `#EEF4F8`
-- **Subtle Surface**: `#EEF5FA`
-- **Card Surface**: `#ffffff`
-- **Card Border**: `#E2EDF8`, hover: `#BDD8E9`
-- **Navy Heading**: `#001D39`
-- **Slate Text**: `#49769F`
-- **Body Text**: `#334155`
-- **Sapphire Primary**: `#0A4174`
-- **Sky Active Pill**: `#7BBDE8`
-- **Semantic Accents**:
-  - *Critical / Darurat*: `#b91c1c` (Red 700)
-  - *Warning / Perhatian*: `#b45309` (Amber 700)
-  - *Success / Aman*: `#15803d` (Green 700)
-  - *Teal Data Line*: `#4E8EA2`
+- **Canvas Background**: `#0a1628`
+- **Secondary Surface / Track**: `#0d2137`
+- **Card Surface**: `rgba(17, 34, 64, 0.7)` (Blur 8px)
+- **Terminal Surface**: `#070f1c`
+- **Border**: `#1a3a5c`
+- **Primary Text**: `#e0f0ff` (Kontras 15.6:1 - WCAG AAA)
+- **Secondary Text**: `#8892b0` (Kontras 5.4:1 - WCAG AA)
+- **Cyan Interactive**: `#00d4ff` (Kontras 10.2:1 - WCAG AAA)
+- **Teal Progress**: `#00ff88` (Kontras 13.5:1 - WCAG AAA)
+- **Neon Status**: `#00ff9d` (Kontras 13.8:1 - WCAG AAA)
+- **Hazard Red**: `#ff3366` (Kontras 5.1:1 - WCAG AA)
+- **Warning Amber**: `#ffc107` (Kontras 11.2:1 - WCAG AAA)

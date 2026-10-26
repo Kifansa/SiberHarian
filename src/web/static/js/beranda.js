@@ -18,7 +18,7 @@ function tambahBarisLog(item) {
     const warnaTeks = item.level === 'ERROR' ? 'text-red-400' : item.level === 'WARNING' ? 'text-amber-400' : 'text-slate-300';
     const baris = document.createElement('div');
     baris.className = `flex gap-2 opacity-0 translate-y-1 transition-all duration-300 log-line level-${item.level || 'INFO'}`;
-    baris.innerHTML = `<span class="text-[#49769F] font-mono">[${waktu}]</span><span class="${warnaTeks} font-mono">${escapeHtml(item.message)}</span>`;
+    baris.innerHTML = `<span class="text-[#7d8ca6] font-mono">[${waktu}]</span> <span class="${warnaTeks} font-mono">${escapeHtml(item.message)}</span>`;
     
     // Cek apakah posisi scroll saat ini berada di dekat dasar (jarak <= 45px)
     const isNearBottom = (consoleBody.scrollHeight - consoleBody.scrollTop - consoleBody.clientHeight) <= 45;
@@ -57,12 +57,13 @@ export async function tampilkanBeranda() {
         if (resultsDesc) resultsDesc.textContent = 'Gagal memuat data intelijen';
         if (emptyState) emptyState.style.display = 'none';
         cardContainer.innerHTML = `
-            <div class="text-center py-12 bg-red-50/70 rounded-xl border border-red-200 p-6 shadow-card my-4">
-                <span class="material-symbols-outlined text-3xl text-red-600 mb-2" aria-hidden="true">cloud_off</span>
-                <h3 class="text-base font-bold text-[#001D39] mb-1">Gagal Menghubungi Server CTI</h3>
-                <p class="text-xs text-[#49769F] mb-4 max-w-md mx-auto">Tidak dapat memuat ringkasan insiden terbaru (${escapeHtml(data.message || 'Koneksi terputus')}). Pastikan server backend aktif.</p>
-                <button onclick="window.tampilkanBeranda()" class="px-4 py-2 bg-white hover:bg-[#EEF5FA] text-[#0A4174] hover:text-[#001D39] font-bold text-xs rounded-xl border border-[#BDD8E9] shadow-2xs transition-all duration-200 cursor-pointer inline-flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none">
-                    <span class="material-symbols-outlined text-base text-[#49769F]" aria-hidden="true">refresh</span> Coba Muat Ulang
+            <div class="text-center py-12 card-cyber border-[#ff3366]/40 p-6 my-4 shadow-[0_0_20px_rgba(255,51,102,0.15)]">
+                <span class="material-symbols-outlined text-3xl text-[#ff3366] mb-2 drop-shadow-[0_0_10px_rgba(255,51,102,0.4)]" aria-hidden="true">cloud_off</span>
+                <h3 class="text-base font-bold text-[#e0f0ff] font-['Sora'] mb-1">[ GAGAL MENGHUBUNGI SERVER CTI ]</h3>
+                <p class="text-xs text-[#8892b0] mb-4 max-w-md mx-auto font-mono">Tidak dapat memuat ringkasan insiden terbaru (${escapeHtml(data.message || 'Koneksi terputus')}). Pastikan server backend aktif.</p>
+                <button onclick="window.tampilkanBeranda()" class="btn-chamfer text-xs" style="height:36px;padding:0 18px;">
+                    <span class="material-symbols-outlined text-sm" aria-hidden="true">refresh</span>
+                    <span>[ COBA MUAT ULANG ]</span>
                 </button>
             </div>`;
         return;
@@ -139,26 +140,31 @@ export function filterBerandaCards(query = null) {
         clearBtn.style.display = queryFilterAktif ? 'flex' : 'none';
     }
 
+    const emptyState = getEl('empty-state');
     let searchEmptyNotice = document.getElementById('search-empty-notice');
-    if (totalVisible === 0) {
+    if (totalVisible === 0 && queryFilterAktif) {
+        if (emptyState) emptyState.style.display = 'none';
         if (!searchEmptyNotice) {
             searchEmptyNotice = document.createElement('div');
             searchEmptyNotice.id = 'search-empty-notice';
-            searchEmptyNotice.className = 'text-center py-12 bg-white rounded-xl border border-[#E2EDF8] p-6 shadow-card';
+            searchEmptyNotice.className = 'text-center py-12 card-cyber p-6 mt-4';
             cardContainer.appendChild(searchEmptyNotice);
         }
         searchEmptyNotice.style.display = 'block';
         searchEmptyNotice.innerHTML = `
-            <span class="material-symbols-outlined text-3xl text-[#49769F] mb-2" aria-hidden="true">search_off</span>
-            <h4 class="text-base font-bold text-[#001D39] mb-1">Tidak Ada Hasil Pencarian</h4>
-            <p class="text-xs text-[#49769F] max-w-sm mx-auto mb-3">Tidak ditemukan artikel berita siber yang cocok dengan kata kunci pencarian.</p>
-            <button type="button" onclick="window.resetFilterBeranda && window.resetFilterBeranda()" class="px-4 py-2 bg-[#EEF5FA] hover:bg-[#BDD8E9] text-[#0A4174] font-bold text-xs rounded-xl border border-[#BDD8E9] transition-all cursor-pointer inline-flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174]">
+            <span class="material-symbols-outlined text-3xl text-[#00d4ff] mb-2 drop-shadow-[0_0_10px_rgba(0,212,255,0.4)]" aria-hidden="true">search_off</span>
+            <h4 class="text-base font-bold text-[#e0f0ff] font-['Sora'] mb-1">[ TIDAK ADA HASIL PENCARIAN ]</h4>
+            <p class="text-xs text-[#8892b0] max-w-sm mx-auto mb-4 font-mono">Tidak ditemukan artikel berita siber yang cocok dengan kata kunci pencarian.</p>
+            <button type="button" onclick="window.resetFilterBeranda && window.resetFilterBeranda()" class="btn-chamfer text-xs" style="height:36px;padding:0 16px;">
                 <span class="material-symbols-outlined text-sm" aria-hidden="true">refresh</span>
-                <span>Reset Pencarian</span>
+                <span>[ RESET PENCARIAN ]</span>
             </button>
         `;
-    } else if (searchEmptyNotice) {
-        searchEmptyNotice.style.display = 'none';
+    } else {
+        if (searchEmptyNotice) searchEmptyNotice.style.display = 'none';
+        if (cards.length === 0 && !queryFilterAktif && emptyState) {
+            emptyState.style.display = 'block';
+        }
     }
 }
 

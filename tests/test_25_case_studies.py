@@ -284,30 +284,36 @@ def evaluasi_kualitas_sitrep(sitrep_text: str, case_data: Dict[str, Any]) -> Lis
     """Mengevaluasi laporan SITREP terhadap 6 aturan emas kualitas CTI."""
     pelanggaran = []
 
-    # 1. Wajib ada 5 header utama persis
-    headers = [
-        "### 1. TREN INSIDEN MINGGUAN (MAKRO)",
-        "### 2. LANSKAP & ENTITAS ANCAMAN (MIKRO)",
-        "### 3. VEKTOR SERANGAN & MITRE ATT&CK",
-        "### 4. REKOMENDASI AKSI",
-        "### 5. PREDIKSI & ANCAMAN MASA DEPAN (EMERGING THREATS)"
+    # 1. Wajib ada 5 header utama persis (mendukung format modular CTI terkini & legacy)
+    expected_headers = [
+        ("### 1. INSIDEN MELONJAK DRASTIS", "### 1. TREN INSIDEN MINGGUAN (MAKRO)"),
+        ("### 2. TREN INSIDEN MINGGUAN", "### 2. LANSKAP & ENTITAS ANCAMAN (MIKRO)"),
+        ("### 3. VEKTOR SERANGAN TREN INSIDEN MINGGUAN", "### 3. VEKTOR SERANGAN & MITRE ATT&CK"),
+        ("### 4. REKOMENDASI AKSI",),
+        ("### 5. PREDIKSI TREN ANCAMAN SIBER", "### 5. PREDIKSI & ANCAMAN MASA DEPAN (EMERGING THREATS)"),
     ]
-    for h in headers:
-        if h not in sitrep_text:
-            pelanggaran.append(f"Header hilang atau salah format: '{h}'")
+    for variants in expected_headers:
+        if not any(v in sitrep_text for v in variants):
+            pelanggaran.append(f"Header hilang atau salah format: '{variants[0]}'")
 
     # 2. Larangan tanggal di Bagian 1 & 2
     bagian_1_2 = ""
-    if "### 1. TREN INSIDEN MINGGUAN (MAKRO)" in sitrep_text and "### 3. VEKTOR" in sitrep_text:
-        bagian_1_2 = sitrep_text.split("### 3. VEKTOR")[0]
+    for sec3 in ["### 3. VEKTOR SERANGAN TREN INSIDEN MINGGUAN", "### 3. VEKTOR SERANGAN & MITRE ATT&CK", "### 3. VEKTOR"]:
+        if sec3 in sitrep_text:
+            bagian_1_2 = sitrep_text.split(sec3)[0]
+            break
 
     for pola in case_data.get("ekspektasi_larangan", []):
         if re.search(pola, bagian_1_2, re.IGNORECASE):
             pelanggaran.append(f"Pelanggaran aturan tanggal di Bagian 1/2: ditemukan pola '{pola}'")
 
     # 3. Empat dimensi analisis di Bagian 2 (Sektor, Penyerang, Dampak, Senjata)
-    if "### 2. LANSKAP & ENTITAS ANCAMAN (MIKRO)" in sitrep_text:
-        bag_2 = sitrep_text.split("### 2. LANSKAP & ENTITAS ANCAMAN (MIKRO)")[1].split("### 3.")[0].lower()
+    bag_2 = ""
+    for sec2 in ["### 2. TREN INSIDEN MINGGUAN", "### 2. LANSKAP & ENTITAS ANCAMAN (MIKRO)"]:
+        if sec2 in sitrep_text:
+            bag_2 = sitrep_text.split(sec2)[1].split("### 3.")[0].lower()
+            break
+    if bag_2:
         if "sektor" not in bag_2:
             pelanggaran.append("Bagian 2 kurang mencantumkan analisis 'sektor terdampak'")
         if "dampak" not in bag_2:
@@ -357,6 +363,10 @@ def jalankan_evaluasi_semua_kasus():
 
     print(f"\nHasil Evaluasi: {lulus}/{len(CASE_STUDIES)} Lulus ({lulus/len(CASE_STUDIES)*100:.1f}%)")
     return lulus == len(CASE_STUDIES)
+
+def test_evaluasi_80_studi_kasus_cti():
+    assert jalankan_evaluasi_semua_kasus() is True
+
 
 if __name__ == "__main__":
     jalankan_evaluasi_semua_kasus()

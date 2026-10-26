@@ -21,17 +21,17 @@ SiberHarian adalah modul intelijen ancaman siber (*Cyber Threat Intelligence*) d
 
 ## Positioning
 
-Solusi intelijen dan edukasi keamanan siber terpadu berbasis *Cloud-Accelerated Intelligence with Google Gemini API*: mengombinasikan agregasi berita siber harian (nasional & global) dengan inferensi AI berbasis Google Gemini API dengan fallback chain otomatis dan Semantic Vector RAG (`text-embedding-004`). Menyediakan dua lapis pengalaman pengguna: *Operational CTI Cockpit* untuk analis internal dan *Public Cyber Radar* berbasis data empiris murni untuk masyarakat luas.
+Solusi intelijen dan edukasi keamanan siber terpadu berbasis *Cloud-Accelerated Intelligence with Google Gemini API*: mengombinasikan agregasi berita siber harian (nasional & global) dengan inferensi AI berbasis Google Gemini API dengan fallback chain otomatis dan Semantic Vector RAG (`gemini-embedding-001` dengan fallback otomatis ke model Gemini Embedding 2). Menyediakan dua lapis pengalaman pengguna: *Operational CTI Cockpit* untuk analis internal dan *Public Cyber Radar* berbasis data empiris murni untuk masyarakat luas.
 
 ## Operating Context
 
 - **Mode Publik (2 Tab Saja)**: Pengunjung portal mengakses tab **Beranda & Statistik** (gabungan wawasan KPI dinamis berbasis fakta, Word Cloud interaktif kasus insiden spesifik, grafik fakta siber, sebaran sumber media pelapor, intisari artikel edukasi asli dari database, serta feed berita insiden & edukasi hari terakhir) dan tab **Arsip** (penelusuran riwayat dan filter tanggal). Pengalaman publik bersih dari tombol operasional backend maupun konsol teknis.
-- **Mode Admin Tim CTI (3 Tab + Settings)**: Analis mengakses tab **Beranda Admin** (dilengkapi konsol terminal real-time SSE untuk menjalankan atau membatalkan pipeline scraping & summarization), tab **Arsip**, tab **Tren Siber CTI** (indeks postur ancaman komparatif, matriks tindakan taktis, dinamika deret waktu 7 hari, klastering insiden wilayah, pemetaan TTPs MITRE ATT&CK, dan ekspor Laporan PDF Resmi), serta tab **Pengaturan** (manajemen sumber RSS, keyword, dan prompt bagi Superadmin).
+- **Mode Admin Tim CTI (3 Tab + Settings)**: Analis mengakses tab **Beranda Admin** (dilengkapi konsol terminal real-time SSE untuk menjalankan atau membatalkan pipeline scraping & summarization), tab **Arsip**, tab **Tren Siber CTI** (indeks postur ancaman komparatif, matriks tindakan taktis, dinamika deret waktu 7 hari, klastering insiden wilayah, dan pemetaan TTPs MITRE ATT&CK), serta tab **Pengaturan** (manajemen sumber RSS, keyword, dan prompt bagi Superadmin).
 
 ## Capabilities and Constraints
 
 - **Agregasi Multi-Sumber & Kepatuhan Legal**: Memantau feed berita siber internasional dan media nasional Indonesia dengan User-Agent transparan, validasi `robots.txt` otomatis, dan kepatuhan UU Hak Cipta No. 28/2014.
-- **LLM Cloud-Accelerated & Semantic RAG**: Menggunakan Google Gemini API dengan sistem fallback otomatis (Gemini 3.1 Flash Lite sampai 3.7 Flash) dan Semantic Vector Search menggunakan model `text-embedding-004` untuk relevansi kontekstual tinggi.
+- **LLM Cloud-Accelerated & Semantic RAG**: Menggunakan Google Gemini API dengan sistem fallback otomatis (Gemini 3.1 Flash Lite sampai 3.7 Flash) dan Semantic Vector Search menggunakan model `gemini-embedding-001` (Gemini Embedding 1) dengan fallback ke model Gemini Embedding 2 (`gemini-embedding-exp-03-07` / `text-embedding-004`) untuk relevansi kontekstual tinggi.
 - **Arsitektur Pemrosesan CTI Modular (SIMP)**: Menggunakan *Sequential Isolated Micro-Prompts* (SIMP) yang mengeksekusi analisis bagian demi bagian secara terisolasi (< 450 token per inferensi), menjamin kestabilan LLM tanpa bottleneck memori dan bebas ketergantungan format JSON rapuh.
 - **Taksonomi Sektor IIV & MITRE ATT&CK**: Standardisasi 10 sektor target berdasarkan **Perpres No. 82 Tahun 2022 tentang Infrastruktur Informasi Vital (IIV)** serta 12 taktik **MITRE ATT&CK Enterprise Matrix** untuk analisis vektor serangan yang akurat.
 - **Guardrail Semantic Role Separation**: Memisahkan peran entitas secara ketat sehingga vendor/peneliti keamanan (Zimperium, Mandiant, Kaspersky, BSSN, Google Security) tidak pernah keliru dilabeli sebagai aktor penyerang.
@@ -44,7 +44,7 @@ Solusi intelijen dan edukasi keamanan siber terpadu berbasis *Cloud-Accelerated 
 ## Brand Commitments
 
 - **Identitas Terintegrasi**: SiberHarian - Fitur Berita & Intelijen Siber CSIRT Provinsi Jawa Timur.
-- **Identitas Visual**: Tema *Sapphire Oceanic Edition* berwibawa khas kepemerintahan Diskominfo Jatim (Midnight Navy `#001D39`, Dark Sapphire `#0A4174`, Slate Blue `#49769F`, Ocean Teal `#4E8EA2`, Sky Blue `#7BBDE8`, Ice Blue `#BDD8E9`, dan kanvas sejuk `#EEF4F8`).
+- **Identitas Visual**: Tema *Cyber-HUD / Tactical Dark Terminal Edition* resmi selaras dengan portal CSIRT Provinsi Jawa Timur (`https://csirt.jatimprov.go.id/`) (Dark Navy `#0a1628`, Elevated Surface `#0d2137`, Glassmorphic Card `rgba(17,34,64,0.7)`, Cyber Cyan `#00d4ff`, Teal `#00ff88`, Neon Green `#00ff9d`, Hazard Red `#ff3366`, dan sudut potong chamfer 10px).
 - **Gaya Bahasa**:
   - *Mode Publik*: Bahasa Indonesia yang komunikatif, lugas, mudah dipahami warga non-teknis, tanpa jargon membingungkan, dan berorientasi pada pencegahan praktis.
   - *Mode Admin CTI*: Bahasa Indonesia teknis CTI profesional, presisi, padat, berdasar bukti empiris, dan berorientasi tindakan mitigasi terukur.
@@ -64,7 +64,8 @@ Solusi intelijen dan edukasi keamanan siber terpadu berbasis *Cloud-Accelerated 
 
 ## Accessibility & Inclusion
 
-- Rasio kontras teks tinggi (> 7:1 untuk teks utama) memenuhi standar WCAG AA.
-- Tipografi terstandar: `Inter` untuk seluruh teks narasi dan `JetBrains Mono` khusus untuk data teknis (persentase, skor postur risiko).
-- Dukungan responsif penuh untuk monitor desktop SOC, tablet inspeksi, dan smartphone masyarakat umum.
+- Rasio kontras teks sangat tinggi (15.6 : 1 untuk teks utama `#e0f0ff` terhadap `#0a1628`) memenuhi standar WCAG AAA.
+- Tipografi terstandar: `Sora` untuk seluruh teks narasi dan headline; `Fragment Mono` / `Share Tech Mono` khusus untuk data teknis, metrik, skor postur risiko, tombol chamfered, dan notasi HUD brackets.
+- Dukungan responsif penuh untuk monitor desktop SOC command center (1440px+), tablet inspeksi, dan smartphone masyarakat umum.
+
 

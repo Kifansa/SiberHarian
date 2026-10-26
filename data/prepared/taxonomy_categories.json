@@ -1,0 +1,178 @@
+[
+  {
+    "category_id": "ransomware",
+    "name": "Ransomware",
+    "ecsirt_parent": "malicious-code:ransomware",
+    "definition": "Serangan perangkat lunak jahat (ransomware) yang menyandera, mengeksekusi enkripsi data, basis data, atau sistem server, disertai tuntutan uang tebusan (ransom) untuk kunci pemulihan.",
+    "representative_examples": [
+      "Pusat Data Nasional Sementara (PDNS) mengalami kelumpuhan akibat serangan ransomware Brain Cipher / LockBit 3.0.",
+      "Sistem informasi rumah sakit daerah disandera ransomware dan pelaku menuntut tebusan mata uang kripto."
+    ],
+    "metadata": {
+      "source": "misp-taxonomies/ecsirt",
+      "source_version": "2",
+      "original_id": "52578e42-1ed4-5df1-bd25-5745bd0b4add",
+      "ingest_date": "2026-10-24T06:03:32.087013+00:00"
+    }
+  },
+  {
+    "category_id": "data_breach",
+    "name": "Data Breach / Kebocoran Data",
+    "ecsirt_parent": "information-content-security:unauthorized-information-access",
+    "definition": "Akses ilegal, eksfiltrasi, penjualan, pembocoran, atau distribusi tanpa hak atas data sensitif, rahasia instansi, data pribadi kependudukan (PII), atau catatan basis data internal ke publik/forum gelap.",
+    "representative_examples": [
+      "Jutaan data registrasi SIM card dan data kependudukan diduga bocor dan dijual di forum BreachForums.",
+      "Aktor ancaman mengklaim membobol basis data kepegawaian dan merilis sampel data NIK ke publik."
+    ],
+    "metadata": {
+      "source": "misp-taxonomies/ecsirt",
+      "source_version": "2",
+      "original_id": "dd94a5ce-68d6-5d61-a40b-ee8aabc3032f",
+      "ingest_date": "2026-10-24T06:03:32.087013+00:00"
+    }
+  },
+  {
+    "category_id": "ddos",
+    "name": "DDoS / Gangguan Ketersediaan",
+    "ecsirt_parent": "availability:ddos",
+    "definition": "Serangan penolakan layanan (Distributed Denial of Service / DoS) yang membanjiri kapasitas trafik jaringan, banderol bandwidth, atau sumber daya pemrosesan server sehingga layanan publik atau portal web tidak dapat diakses.",
+    "representative_examples": [
+      "Situs pendaftaran seleksi calon aparatur sipil negara tumbang akibat lonjakan trafik anomali serangan SYN flood DDoS.",
+      "Layanan perbankan digital tidak dapat diakses nasabah selama beberapa jam akibat serangan saturasi DNS amplification."
+    ],
+    "metadata": {
+      "source": "misp-taxonomies/ecsirt",
+      "source_version": "2",
+      "original_id": "c2d002d3-343b-50fe-a715-e78415d62191",
+      "ingest_date": "2026-10-24T06:03:32.087013+00:00"
+    }
+  },
+  {
+    "category_id": "defacement",
+    "name": "Web Defacement",
+    "ecsirt_parent": "intrusions:defacement",
+    "definition": "Tindakan peretasan tanpa hak yang mengubah tampilan visual, indeks halaman muka, atau menyisipkan berkas/konten terlarang (seperti tautan promosi judi online/slot gacor, konten politik, atau pesan kelompok peretas) pada situs web resmi.",
+    "representative_examples": [
+      "Subdomain resmi pemerintah daerah diubah tampilannya menjadi situs promosi judi slot gacor online.",
+      "Halaman beranda portal dinas pendidikan diretas menampilkan pesan protes terhadap kebijakan daerah."
+    ],
+    "metadata": {
+      "source": "misp-taxonomies/ecsirt",
+      "source_version": "2",
+      "original_id": "4ebc4e28-e386-5ba8-82a0-802ded9a0fc0",
+      "ingest_date": "2026-10-24T06:03:32.087013+00:00"
+    }
+  },
+  {
+    "category_id": "phishing_penipuan",
+    "name": "Phishing / Penipuan Siber",
+    "ecsirt_parent": "fraud:phishing",
+    "definition": "Rekayasa sosial berbasis komunikasi digital (email phishing, tautan login palsu, file APK manipulatif via WhatsApp, spoofing domain instansi) untuk mengelabui korban agar membocorkan kredensial, OTP, atau mentransfer aset keuangan.",
+    "representative_examples": [
+      "Penyebaran undangan pernikahan digital atau tagihan palsu berformat file APK yang menguras rekening korban.",
+      "Email mengatasnamakan pimpinan dinas beredar meminta staf melakukan login pada tautan webmail palsu."
+    ],
+    "metadata": {
+      "source": "misp-taxonomies/ecsirt",
+      "source_version": "2",
+      "original_id": "39b78329-da22-5e58-b655-61905e0e5125",
+      "ingest_date": "2026-10-24T06:03:32.087013+00:00"
+    }
+  },
+  {
+    "category_id": "malware",
+    "name": "Malware / Infostealer",
+    "ecsirt_parent": "malicious-code:malware",
+    "definition": "Penyusupan dan infeksi perangkat/server oleh perangkat lunak berbahaya selain ransomware, mencakup trojan, infostealer, botnet drone, spyware, keylogger, worm, atau backdoor untuk spionase siber dan pencurian data.",
+    "representative_examples": [
+      "Perangkat komputer pegawai terinfeksi malware infostealer RedLine yang mencuri sesi cookies browser dan password tersimpan.",
+      "Penyusupan malware Mirai memanfaatkan botnet router untuk kampanye serangan siber lanjutan."
+    ],
+    "metadata": {
+      "source": "misp-taxonomies/ecsirt",
+      "source_version": "2",
+      "original_id": "07f40f1c-2d75-5fa7-8d3d-9978d7066258",
+      "ingest_date": "2026-10-24T06:03:32.087013+00:00"
+    }
+  },
+  {
+    "category_id": "eksploitasi_kerentanan",
+    "name": "Eksploitasi Kerentanan (Exploit / Zero-Day)",
+    "ecsirt_parent": "intrusion-attempts:ids-alert",
+    "definition": "Pemanfaatan celah keamanan sistem perangkat lunak, sistem operasi, pustaka dependensi, atau perangkat keras (termasuk CVE terpublikasi, kelemahan Remote Code Execution / RCE, SQL Injection, Zero-Day exploit) untuk menembus perimeter.",
+    "representative_examples": [
+      "Peretas menembus portal SIMPEG Pemprov melalui eksploitasi kerentanan kritis Apache Log4j (Log4Shell / CVE-2021-44228).",
+      "Eksploitasi zero-day pada modul upload aplikasi layanan publik memungkinkan injeksi arbitrary file upload."
+    ],
+    "metadata": {
+      "source": "misp-taxonomies/ecsirt",
+      "source_version": "2",
+      "original_id": "d2edc338-13b7-5a5c-95f3-00549760e8b2",
+      "ingest_date": "2026-10-24T06:03:32.087013+00:00"
+    }
+  },
+  {
+    "category_id": "akses_tidak_sah",
+    "name": "Akses Tidak Sah / Pembobolan Akun",
+    "ecsirt_parent": "intrusions:account-compromise",
+    "definition": "Pengambilalihan akun berwenang, pembajakan kredensial (credential stuffing/brute force), eskalasi hak akses (privilege escalation), atau penyusupan internal ke dalam sistem/jaringan tertutup tanpa izin sah.",
+    "representative_examples": [
+      "Akun administrator portal kepegawaian dibobol pihak luar menggunakan teknik credential stuffing.",
+      "Pelaku menyusup ke active directory instansi menggunakan kredensial default yang belum diganti."
+    ],
+    "metadata": {
+      "source": "misp-taxonomies/ecsirt",
+      "source_version": "2",
+      "original_id": "e6b84316-a430-5e81-bcc1-ac41750dd193",
+      "ingest_date": "2026-10-24T06:03:32.087013+00:00"
+    }
+  },
+  {
+    "category_id": "pelecehan_konten",
+    "name": "Pelecehan / Konten Berbahaya",
+    "ecsirt_parent": "abusive-content:spam",
+    "definition": "Penyalahgunaan infrastruktur komunikasi digital untuk transmisi pesan spam berskala masif, penyebaran disinformasi terkoordinasi, intimidasi/doxing siber, atau penyebaran materi berbahaya/terlarang.",
+    "representative_examples": [
+      "Kampanye spam email massal membanjiri mail server pemda dengan ribuan pesan promosi gelap.",
+      "Operasi disinformasi siber terkoordinasi memanfaatkan bot media sosial mencemarkan institusi layanan publik."
+    ],
+    "metadata": {
+      "source": "misp-taxonomies/ecsirt",
+      "source_version": "2",
+      "original_id": "73a237d4-4665-559f-ae94-f97aa0a7d6b7",
+      "ingest_date": "2026-10-24T06:03:32.087013+00:00"
+    }
+  },
+  {
+    "category_id": "lainnya",
+    "name": "Lainnya",
+    "ecsirt_parent": "other:other",
+    "definition": "Insiden keamanan siber faktual lainnya yang secara jelas merupakan insiden keamanan informasi namun tidak dapat dikelompokkan ke dalam 9 kategori spesifik di atas (misal anomali konfigurasi keamanan, sabotase fisik TI).",
+    "representative_examples": [
+      "Kesalahan miskonfigurasi bucket penyimpanan cloud internal yang sempat terbuka tanpa autentikasi.",
+      "Kerusakan perangkat keras firewall akibat gangguan pasokan daya cadangan data center."
+    ],
+    "metadata": {
+      "source": "misp-taxonomies/ecsirt",
+      "source_version": "2",
+      "original_id": "69a55ee2-2e31-5a76-9c5b-52ee1d1eab87",
+      "ingest_date": "2026-10-24T06:03:32.087013+00:00"
+    }
+  },
+  {
+    "category_id": "tidak_dapat_ditentukan",
+    "name": "Tidak Dapat Ditentukan",
+    "ecsirt_parent": "other:unspecified",
+    "definition": "Berita atau artikel tidak memuat bukti faktual yang memadai mengenai jenis serangan siber, atau hanya membahas regulasi umum, seremonial, opini, maupun informasi non-insiden sehingga klasifikasi teknis tidak dapat ditentukan.",
+    "representative_examples": [
+      "Dinas Kominfo menggelar bimbingan teknis literasi keamanan informasi bagi ASN di lingkungan pemprov.",
+      "Kunjungan kerja Komisi I DPRD membahas kesiapan infrastruktur Smart City Jawa Timur."
+    ],
+    "metadata": {
+      "source": "misp-taxonomies/ecsirt",
+      "source_version": "2",
+      "original_id": "009ad815-e211-5f06-b4bc-86dac3e2fff7",
+      "ingest_date": "2026-10-24T06:03:32.087013+00:00"
+    }
+  }
+]

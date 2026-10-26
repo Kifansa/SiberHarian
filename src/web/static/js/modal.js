@@ -46,7 +46,7 @@ export function bukaModal(itemOrIdx, paramTeksLengkap, paramPillLabel, paramSumb
         judul: itemOrIdx,
         teksLengkap: paramTeksLengkap || '',
         pillLabel: paramPillLabel || '',
-        pillClass: paramPillLabel ? 'bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]' : '',
+        pillClass: paramPillLabel ? 'bg-[#0d2137] text-[#00d4ff] border border-[#00d4ff]/40 font-mono' : '',
         sumber: paramSumber || '',
         link: (paramLink && paramLink !== '#') ? paramLink : ''
       };

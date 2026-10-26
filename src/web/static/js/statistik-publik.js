@@ -1,9 +1,9 @@
 /**
- * Modul Frontend untuk Statistik & Edukasi Publik (SiberHarian - CSIRT Jatim)
+ * Modul Frontend untuk Statistik & Edukasi Publik (SiberHarian)
  * Menyajikan:
  * 1. Insightful KPI Cards (Wawasan bermakna berbasis data riil)
  * 2. Word Cloud Kasus Insiden Spesifik (Interaktif, filter berita langsung)
- * 3. Grafik Fakta Siber (Top Ancaman & Software Populer Terpapar)
+ * 3. Grafik Fakta Siber (Top Ancaman Horizontal Pill Bar Chart)
  * 4. Daftar Intisari Artikel Edukasi Nyata dari Database
  */
 
@@ -14,7 +14,6 @@ let chartAncaman = null;
 let chartTimeline = null;
 let chartSebaranMedia = null;
 let kataTerpilih = null;
-
 
 export async function muatTabStatistikPublik() {
   try {
@@ -31,19 +30,27 @@ export async function muatTabStatistikPublik() {
       const elDesc = document.getElementById("pub-kpi-1-desc");
       if (elVal && kpi.nilai) elVal.textContent = kpi.nilai;
       if (elDesc && kpi.insight) elDesc.textContent = kpi.insight;
+
+      // Update growth badge (P0 Rekomendasi Publik)
+      const elGrowth = document.getElementById("pub-kpi-1-growth");
+      const elGrowthIcon = document.getElementById("pub-kpi-1-growth-icon");
+      const elGrowthText = document.getElementById("pub-kpi-1-growth-text");
+      if (elGrowth && kpi.growth_persen !== undefined) {
+        const gw = kpi.growth_persen;
+        const isUp = gw >= 0;
+        const iconName = isUp ? 'trending_up' : 'trending_down';
+        const colorClass = isUp ? 'text-[#00ff88]' : 'text-[#8892b0]';
+        elGrowth.className = `inline-flex items-center gap-1 text-xs font-bold font-mono ${colorClass} whitespace-nowrap shrink-0`;
+        if (elGrowthIcon) elGrowthIcon.textContent = iconName;
+        if (elGrowthText) elGrowthText.textContent = `${isUp ? '+' : ''}${gw}% vs pekan lalu`;
+      }
     }
 
     // 2. Render Word Cloud Kasus Insiden Spesifik (7 Hari Terkini)
     renderWordCloud(data.word_cloud || []);
 
-    // 3. Render Chart Top Ancaman (Fakta Praktis 1 Kolom Penuh)
+    // 3. Render Chart Top Ancaman (Fakta Praktis 1 Kolom Penuh - Horizontal Pill Bar)
     renderChartAncaman(data.top_ancaman || []);
-
-    // 3B. Render Analisis Takeaway Chart
-    const elTakeaway = document.getElementById("pub-chart-takeaway");
-    if (elTakeaway && data.takeaway_chart) {
-      elTakeaway.textContent = data.takeaway_chart;
-    }
 
     // 4. Render Intisari Artikel Edukasi Nyata
     renderEdukasiList(data.edukasi_list || []);
@@ -54,26 +61,20 @@ export async function muatTabStatistikPublik() {
 }
 
 /**
- * Palet warna organik terinspirasi visual referensi word cloud:
- * Harmoni eggplant, navy, amber/karamel, ocean teal, forest green, cobalt, dan wine.
+ * Palet warna cerah taktis neon cyber untuk latar belakang dark Cyber-HUD:
+ * Cyan, Teal, Neon Green, Sky Blue, Soft Purple, Emerald, Amber, Pink, dan White.
  */
-const PALET_WORDCLOUD_ORGANIK = [
-  "#1E1B4B", // Midnight Indigo (seperti 'audience')
-  "#4A154B", // Deep Eggplant / Violet (seperti 'together')
-  "#92400E", // Warm Caramel / Amber (seperti 'discover')
-  "#155E75", // Deep Ocean Cyan (seperti 'create')
-  "#0F766E", // Pine Teal (seperti 'word')
-  "#15803D", // Forest Green (seperti 'opinions')
-  "#1D4ED8", // Royal Cobalt (seperti 'artwork')
-  "#831843", // Deep Wine / Plum (seperti 'shared')
-  "#9A3412", // Rust Ochre (seperti 'words')
-  "#3730A3", // Indigo Slate (seperti 'feelings')
-  "#047857", // Emerald Green (seperti 'cloud')
-  "#701A75", // Magenta Plum (seperti 'poll')
-  "#1E40AF", // Navy Blue (seperti 'complex')
-  "#4D7C0F", // Olive Green (seperti 'question')
-  "#991B1B", // Dark Crimson (seperti 'grow')
-  "#0A4174", // CSIRT Dark Sapphire
+const PALET_WORDCLOUD_CYBER = [
+  "#00d4ff", // Neon Cyan
+  "#00ff88", // Tactical Teal
+  "#00ff9d", // Cyber Neon Green
+  "#7bbde8", // Sapphire Ice
+  "#a78bfa", // Soft Purple Neon
+  "#38bdf8", // Light Sky Blue
+  "#34d399", // Emerald Light
+  "#fbbf24", // Amber Glow
+  "#f472b6", // Rose Neon
+  "#e0f0ff", // Crisp Cyber White
 ];
 
 /**
@@ -92,8 +93,7 @@ function susunAwanOrganik(wordList) {
   const giants = sorted.slice(0, giantCount);
   const remaining = sorted.slice(giantCount);
 
-  // Kata terbesar (giants) dikelompokkan rapat bersama-sama di tengah:
-  // Susun giants secara berselang-seling dari pusat (spiral concentric core)
+  // Kata terbesar (giants) dikelompokkan rapat bersama-sama di tengah
   const centerCore = [];
   giants.forEach((item, idx) => {
     if (idx % 2 === 0) {
@@ -103,7 +103,7 @@ function susunAwanOrganik(wordList) {
     }
   });
 
-  // Kata-kata sisanya (medium & kecil) dibagi rata ke sisi luar (kiri/atas dan kanan/bawah)
+  // Kata-kata sisanya (medium & kecil) dibagi rata ke sisi luar
   const outerLeft = [];
   const outerRight = [];
   remaining.forEach((item, idx) => {
@@ -114,56 +114,46 @@ function susunAwanOrganik(wordList) {
     }
   });
 
-  // Gabungkan: Outer kiri -> INTI KATA TERBESAR DI TENGAH -> Outer kanan
   return [...outerLeft, ...centerCore, ...outerRight];
 }
 
 /**
  * Render Word Cloud Kasus Insiden Spesifik
- * Tipografi organik murni tanpa angka dan tanpa border sesuai referensi visual
+ * Mengadopsi tactical HUD chip styling ber-border tipis dengan pendaran neon saat hover
  */
 function renderWordCloud(wordList) {
   const container = document.getElementById("pub-wordcloud-box");
   if (!container) return;
 
   if (!wordList || wordList.length === 0) {
-    container.innerHTML = `<div class="text-xs text-[#49769F]">Belum ada kata kunci insiden yang tercatat.</div>`;
+    container.innerHTML = `<div class="text-xs font-mono text-[#7d8ca6]">Belum ada kata kunci insiden yang tercatat.</div>`;
     return;
   }
 
   const maxBobot = Math.max(...wordList.map((w) => w.bobot), 1);
   const minBobot = Math.min(...wordList.map((w) => w.bobot), 1);
 
-  // Susun awan secara organik agar kata terbesar berada di tengah
+  // Susun awan secara konsentris agar kata terbesar berada di tengah
   const clusteredWords = susunAwanOrganik(wordList);
 
   container.innerHTML = clusteredWords
     .map((item, idx) => {
       // Skala ukuran font & ketebalan dinamis
-      // Min: 13px (medium), Max: 46px (black)
       const rasio = (item.bobot - minBobot) / (maxBobot - minBobot || 1);
-      const fontSize = Math.round(13 + rasio * 33);
+      const fontSize = Math.round(12 + rasio * 22);
       
-      let fontWeight = 500;
-      let letterSpacing = "-0.01em";
+      let fontWeight = 600;
+      let letterSpacing = "0.02em";
       if (item.bobot >= 40) {
-        fontWeight = 900;
-        letterSpacing = "-0.035em";
-      } else if (item.bobot >= 25) {
         fontWeight = 800;
-        letterSpacing = "-0.025em";
-      } else if (item.bobot >= 15) {
+        letterSpacing = "0.04em";
+      } else if (item.bobot >= 25) {
         fontWeight = 700;
-        letterSpacing = "-0.015em";
-      } else if (item.bobot >= 8) {
-        fontWeight = 600;
       }
 
-      // Pilih warna organik tematik
-      const color = PALET_WORDCLOUD_ORGANIK[idx % PALET_WORDCLOUD_ORGANIK.length];
+      const color = PALET_WORDCLOUD_CYBER[idx % PALET_WORDCLOUD_CYBER.length];
       const isAktif = kataTerpilih === item.kata.toLowerCase();
 
-      // Desain murni tipografi: TANPA border, TANPA angka, TANPA background kotak
       const safeKata = escapeHtml(item.kata);
       const safeContoh = escapeHtml(item.contoh_judul || '');
       const safeSumber = escapeHtml(item.sumber || '');
@@ -174,8 +164,8 @@ function renderWordCloud(wordList) {
           data-sumber="${safeSumber}"
           onclick="window.pilihWordCloud(this.getAttribute('data-kata-raw'), this)"
           data-kata="${safeKata.toLowerCase()}"
-          style="font-size: clamp(${Math.round(fontSize * 0.72)}px, ${fontSize * 0.08}vw + 12px, ${fontSize}px); color: ${color}; font-weight: ${fontWeight}; letter-spacing: ${letterSpacing}; ${isAktif ? 'background-color: #EEF5FA; outline: 2px solid #0A4174; border-radius: 8px; padding: 2px 8px; transform: scale(1.15); opacity: 1;' : ''}"
-          class="wordcloud-item inline-block font-sans cursor-pointer transition-all duration-200 hover:scale-110 hover:bg-[#EEF5FA]/80 px-2 py-1 leading-none whitespace-nowrap select-none focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none rounded-lg"
+          style="font-size: clamp(${Math.round(fontSize * 0.75)}px, ${fontSize * 0.08}vw + 11px, ${fontSize}px); color: ${color}; font-weight: ${fontWeight}; letter-spacing: ${letterSpacing}; ${isAktif ? 'background-color: rgba(255, 51, 102, 0.18); border-color: #ff3366; box-shadow: 0 0 16px rgba(255,51,102,0.4); transform: scale(1.12); opacity: 1;' : ''}"
+          class="wordcloud-item inline-block font-mono cursor-pointer transition-all duration-200 hover:scale-105 px-3 py-1 sm:py-1.5 leading-snug whitespace-nowrap select-none rounded-lg bg-[#0d2137]/80 border border-[#1a3a5c] hover:border-[#00d4ff] hover:shadow-[0_0_12px_rgba(0,212,255,0.3)] focus-visible:ring-2 focus-visible:ring-[#00d4ff] focus-visible:outline-none"
           title="Saring kasus: ${safeKata}">
           ${safeKata}
         </button>
@@ -183,7 +173,6 @@ function renderWordCloud(wordList) {
     })
     .join("");
 
-  // Sesuaikan opasitas jika sudah ada kata yang terpilih
   if (kataTerpilih) {
     sorotKataAktif(kataTerpilih);
   }
@@ -195,19 +184,18 @@ function sorotKataAktif(kata) {
     const itemKata = item.getAttribute("data-kata") || "";
     if (itemKata.toLowerCase() === kata.toLowerCase()) {
       item.style.opacity = "1";
-      item.style.transform = "scale(1.15)";
-      item.style.backgroundColor = "#EEF5FA";
-      item.style.outline = "2px solid #0A4174";
-      item.style.borderRadius = "8px";
-      item.style.padding = "2px 8px";
-      item.classList.add("z-10", "shadow-xs");
+      item.style.transform = "scale(1.12)";
+      item.style.backgroundColor = "rgba(255, 51, 102, 0.18)";
+      item.style.borderColor = "#ff3366";
+      item.style.boxShadow = "0 0 16px rgba(255, 51, 102, 0.4)";
+      item.classList.add("z-10");
     } else {
       item.style.opacity = "0.35";
       item.style.transform = "scale(0.96)";
-      item.style.backgroundColor = "transparent";
-      item.style.outline = "none";
-      item.style.padding = "2px 4px";
-      item.classList.remove("z-10", "shadow-xs");
+      item.style.backgroundColor = "rgba(13, 33, 55, 0.4)";
+      item.style.borderColor = "#1a3a5c";
+      item.style.boxShadow = "none";
+      item.classList.remove("z-10");
     }
   });
 }
@@ -228,7 +216,7 @@ window.pilihWordCloud = function (kata, btnEl = null) {
 
   const labelActive = document.getElementById("pub-wordcloud-active-label");
   if (labelActive) {
-    labelActive.textContent = `Menyaring kasus: "${kata}"`;
+    labelActive.textContent = `[ MENYARING: "${kata.toUpperCase()}" ]`;
     labelActive.classList.remove("hidden");
   }
 
@@ -243,9 +231,9 @@ window.pilihWordCloud = function (kata, btnEl = null) {
     const sumber = btnEl ? btnEl.getAttribute("data-sumber") : "";
 
     if (contohJudul && contohJudul.trim()) {
-      elCalloutDesc.innerHTML = `Terdeteksi dalam laporan insiden: <strong>"${escapeHtml(contohJudul)}"</strong> (${escapeHtml(sumber || 'Media Siber')}). Seluruh artikel terkait isu ini telah disaring pada feed Beranda di bawah.`;
+      elCalloutDesc.innerHTML = `Terdeteksi dalam laporan insiden: <strong class="text-[#00d4ff]">"${escapeHtml(contohJudul)}"</strong> (<span class="font-mono text-[#8892b0]">${escapeHtml(sumber || 'Media Siber')}</span>). Seluruh artikel terkait isu ini telah disaring pada feed Beranda di bawah.`;
     } else {
-      elCalloutDesc.innerHTML = `Menampilkan seluruh laporan insiden yang memuat kata kunci <strong>"${escapeHtml(kata)}"</strong> pada feed Beranda di bawah.`;
+      elCalloutDesc.innerHTML = `Menampilkan seluruh laporan insiden yang memuat kata kunci <strong class="text-[#00d4ff]">"${escapeHtml(kata)}"</strong> pada feed Beranda di bawah.`;
     }
     elCallout.classList.remove("hidden");
   }
@@ -290,10 +278,10 @@ window.resetFilterWordCloud = function () {
   items.forEach((item) => {
     item.style.opacity = "1";
     item.style.transform = "scale(1)";
-    item.style.backgroundColor = "transparent";
-    item.style.outline = "none";
-    item.style.padding = "2px 4px";
-    item.classList.remove("z-10", "shadow-xs");
+    item.style.backgroundColor = "rgba(13, 33, 55, 0.8)";
+    item.style.borderColor = "#1a3a5c";
+    item.style.boxShadow = "none";
+    item.classList.remove("z-10");
   });
 
   if (window.filterBerandaCards) {
@@ -310,11 +298,11 @@ function renderEdukasiList(edukasiList) {
 
   const countBadge = document.getElementById("pub-edukasi-count");
   if (countBadge) {
-    countBadge.textContent = `${edukasiList ? edukasiList.length : 0} Panduan`;
+    countBadge.textContent = `[ ${edukasiList ? edukasiList.length : 0} Panduan ]`;
   }
 
   if (!edukasiList || edukasiList.length === 0) {
-    container.innerHTML = `<div class="col-span-full py-8 text-center text-xs text-[#49769F]">Belum ada artikel edukasi dalam 7 hari terakhir.</div>`;
+    container.innerHTML = `<div class="col-span-full py-8 text-center text-xs font-mono text-[#7d8ca6]">Belum ada artikel edukasi dalam 7 hari terakhir.</div>`;
     return;
   }
 
@@ -323,7 +311,7 @@ function renderEdukasiList(edukasiList) {
       const tanggalFormat = item.tanggal ? item.tanggal.slice(0, 10) : "Terkini";
       const sumberLengkap = item.sumber
         ? `${item.sumber} • ${tanggalFormat}`
-        : `CSIRT Jatim • ${tanggalFormat}`;
+        : tanggalFormat;
 
       // Simpan seluruh data lengkap (rangkuman & metadata) ke registry modal
       const idx = simpanItemModal({
@@ -331,20 +319,19 @@ function renderEdukasiList(edukasiList) {
         sumber: sumberLengkap,
         link: item.link || '',
         teksLengkap: item.ringkasan || "Tidak ada rangkuman detail tersedia.",
-        pillClass: 'bg-emerald-50 text-[#15803d] border border-emerald-200',
-        pillLabel: 'Edukasi Keamanan Siber'
+        pillClass: 'bg-[#0d2137] text-[#00ff88] border border-[#00ff88]/40 font-mono',
+        pillLabel: '[ Edukasi Keamanan ]'
       });
 
-      // Hanya tampilkan judul saja, rangkuman dan info lainnya muncul setelah diklik (modal)
       return `
         <button type="button" 
           onclick="window.bukaModal ? window.bukaModal(${idx}) : bukaModal(${idx})"
-          class="w-full text-left bg-white hover:bg-[#EEF5FA] border border-[#E2EDF8] hover:border-[#BDD8E9] p-3 sm:p-3.5 rounded-xl transition-all flex items-center justify-between gap-3 group cursor-pointer shadow-2xs hover:shadow-xs active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
+          class="w-full text-left bg-[#0d2137]/80 hover:bg-[#0d2137] border border-[#1a3a5c] hover:border-[#00d4ff]/50 p-3 sm:p-3.5 rounded-xl transition-all flex items-center justify-between gap-3 group cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(0,212,255,0.2)] active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-[#00d4ff] focus-visible:outline-none"
           title="Klik untuk membaca rangkuman dan informasi lengkap">
-          <span class="font-bold text-xs sm:text-sm text-[#001D39] group-hover:text-[#0A4174] transition-colors line-clamp-2 leading-snug min-w-0 pr-2">
+          <span class="font-semibold text-xs sm:text-sm text-[#e0f0ff] group-hover:text-[#00d4ff] transition-colors line-clamp-2 leading-snug min-w-0 pr-2 font-['Sora'] break-words overflow-hidden">
             ${escapeHtml(item.judul)}
           </span>
-          <span class="material-symbols-outlined text-slate-400 group-hover:text-[#0A4174] text-base sm:text-lg shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden="true">
+          <span class="material-symbols-outlined text-[#7d8ca6] group-hover:text-[#00d4ff] text-base sm:text-lg shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden="true">
             arrow_forward
           </span>
         </button>
@@ -353,6 +340,9 @@ function renderEdukasiList(edukasiList) {
     .join("");
 }
 
+/**
+ * Render Chart Top Ancaman (Horizontal Pill Bar Chart - Cyber-HUD Style)
+ */
 function renderChartAncaman(topAncaman) {
   const ctx = document.getElementById("chart-ancaman-publik");
   if (!ctx) return;
@@ -363,7 +353,15 @@ function renderChartAncaman(topAncaman) {
   const values = topAncaman.map((a) => a.jumlah);
   const totalKasus = values.reduce((a, b) => a + b, 0) || 1;
 
-  const colors = ["#0A4174", "#49769F", "#4E8EA2", "#6EA2B3", "#7BBDE8", "#BDD8E9"];
+  // Horizontal gradient: Cyan (#00d4ff) to Teal (#00ff88)
+  const canvasCtx = ctx.getContext('2d');
+  let barGradient = '#00d4ff';
+  if (canvasCtx) {
+    const g = canvasCtx.createLinearGradient(0, 0, 450, 0);
+    g.addColorStop(0, '#00d4ff');
+    g.addColorStop(1, '#00ff88');
+    barGradient = g;
+  }
 
   chartAncaman = new Chart(ctx, {
     type: "bar",
@@ -373,26 +371,31 @@ function renderChartAncaman(topAncaman) {
         {
           label: "Jumlah Laporan",
           data: values,
-          backgroundColor: colors.slice(0, values.length),
-          borderRadius: 6,
-          borderWidth: 1,
-          borderColor: "#E2EDF8",
+          backgroundColor: barGradient,
+          borderRadius: 9999, // Pill bar
+          borderSkipped: false,
+          barThickness: 16,
         },
       ],
     },
     options: {
+      indexAxis: 'y', // Horizontal Pill Bar Chart
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: "#001D39",
-          titleFont: { family: "Inter", size: 12, weight: "bold" },
-          bodyFont: { family: "Inter", size: 12 },
-          padding: 8,
+          backgroundColor: "rgba(10, 22, 40, 0.95)",
+          borderColor: "#1a3a5c",
+          borderWidth: 1,
+          titleColor: "#00d4ff",
+          bodyColor: "#e0f0ff",
+          titleFont: { family: "'Fragment Mono', 'Share Tech Mono', monospace", size: 12, weight: "bold" },
+          bodyFont: { family: "'Sora', sans-serif", size: 11 },
+          padding: 10,
           callbacks: {
             label: (ctx) => {
-              const val = ctx.parsed.y;
+              const val = ctx.parsed.x;
               const pct = Math.round((val / totalKasus) * 100);
               return ` ${val} Kasus Terlaporkan (${pct}% dari total)`;
             },
@@ -401,26 +404,25 @@ function renderChartAncaman(topAncaman) {
       },
       scales: {
         x: {
-          grid: { display: false },
+          beginAtZero: true,
+          grid: { color: "rgba(26, 58, 92, 0.4)" },
           ticks: {
-            font: { family: "Inter", size: 10, weight: "600" },
-            color: "#001D39",
+            font: { family: "'Fragment Mono', 'Share Tech Mono', monospace", size: 10 },
+            color: "#8892b0",
+            precision: 0,
           },
         },
         y: {
-          beginAtZero: true,
-          grid: { color: "#E2EDF8" },
+          grid: { display: false },
           ticks: {
-            font: { family: "JetBrains Mono", size: 10 },
-            color: "#49769F",
-            precision: 0,
+            font: { family: "'Sora', sans-serif", size: 11, weight: "600" },
+            color: "#e0f0ff",
           },
         },
       },
     },
   });
 }
-
 
 function renderChartTimeline(timelineData) {
   const ctx = document.getElementById("chart-timeline-publik");
@@ -444,20 +446,20 @@ function renderChartTimeline(timelineData) {
         {
           label: "Berita Insiden",
           data: beritaVals,
-          borderColor: "#0A4174",
-          backgroundColor: "rgba(10, 65, 116, 0.08)",
+          borderColor: "#00d4ff",
+          backgroundColor: "rgba(0, 212, 255, 0.12)",
           fill: true,
           tension: 0.35,
           pointBackgroundColor: (ctx) => {
             const val = ctx.raw;
-            return (val >= avgBerita * 1.8 && val > 2) ? "#b91c1c" : "#0A4174";
+            return (val >= avgBerita * 1.8 && val > 2) ? "#ff3366" : "#00d4ff";
           },
           pointRadius: (ctx) => {
             const val = ctx.raw;
             return (val >= avgBerita * 1.8 && val > 2) ? 6 : 4;
           },
           pointHoverRadius: 7,
-          borderWidth: 2.5,
+          borderWidth: 2,
         },
       ],
     },
@@ -477,32 +479,34 @@ function renderChartTimeline(timelineData) {
             boxWidth: 12,
             boxHeight: 12,
             usePointStyle: true,
-            font: { family: "Inter", size: 11, weight: "600" },
-            color: "#001D39",
+            font: { family: "'Fragment Mono', monospace", size: 11, weight: "600" },
+            color: "#e0f0ff",
           },
         },
         tooltip: {
-          backgroundColor: "#001D39",
-          titleFont: { family: "Inter", size: 12, weight: "bold" },
-          bodyFont: { family: "Inter", size: 11 },
+          backgroundColor: "rgba(10, 22, 40, 0.95)",
+          borderColor: "#1a3a5c",
+          borderWidth: 1,
+          titleFont: { family: "'Fragment Mono', monospace", size: 12, weight: "bold" },
+          bodyFont: { family: "'Sora', sans-serif", size: 11 },
           padding: 10,
           boxPadding: 4,
         },
       },
       scales: {
         x: {
-          grid: { color: "#F0F4F8" },
+          grid: { color: "rgba(26, 58, 92, 0.4)" },
           ticks: {
-            font: { family: "Inter", size: 10, weight: "500" },
-            color: "#49769F",
+            font: { family: "'Fragment Mono', monospace", size: 10 },
+            color: "#8892b0",
           },
         },
         y: {
           beginAtZero: true,
-          grid: { color: "#E2EDF8" },
+          grid: { color: "rgba(26, 58, 92, 0.4)" },
           ticks: {
-            font: { family: "JetBrains Mono", size: 10 },
-            color: "#49769F",
+            font: { family: "'Fragment Mono', monospace", size: 10 },
+            color: "#8892b0",
             precision: 0,
           },
         },
@@ -535,9 +539,9 @@ function renderSebaranMedia(sebaranMedia) {
       datasets: [
         {
           data: [nas, intl],
-          backgroundColor: ["#0A4174", "#4E8EA2"],
+          backgroundColor: ["#00d4ff", "#00ff88"],
           borderWidth: 2,
-          borderColor: "#ffffff",
+          borderColor: "#0a1628",
           hoverOffset: 4,
         },
       ],
@@ -549,9 +553,11 @@ function renderSebaranMedia(sebaranMedia) {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: "#001D39",
-          titleFont: { family: "Inter", size: 12, weight: "bold" },
-          bodyFont: { family: "Inter", size: 11 },
+          backgroundColor: "rgba(10, 22, 40, 0.95)",
+          borderColor: "#1a3a5c",
+          borderWidth: 1,
+          titleFont: { family: "'Fragment Mono', monospace", size: 12, weight: "bold" },
+          bodyFont: { family: "'Sora', sans-serif", size: 11 },
           padding: 8,
           callbacks: {
             label: (ctx) => {

@@ -115,7 +115,8 @@ def klasifikasi_batch_5(daftar_artikel: List[dict], model: str = None) -> List[s
     )
 
     system_prompt = (
-        "Anda adalah analis CTI (Cyber Threat Intelligence). Tugas Anda mengklasifikasikan "
+        SettingsManager.get_prompt("klasifikasi")
+        or "Anda adalah analis CTI (Cyber Threat Intelligence). Tugas Anda mengklasifikasikan "
         "relevansi artikel berita ke kategori valid. Jawab strictly dalam format JSON array."
     )
 

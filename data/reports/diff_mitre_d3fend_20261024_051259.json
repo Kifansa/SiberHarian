@@ -1,0 +1,17 @@
+{
+  "source": "mitre_d3fend",
+  "timestamp_utc": "2026-10-24T05:12:59.631642+00:00",
+  "old_version": "1.6.0",
+  "new_version": "1.6.0",
+  "total_old_records": 271,
+  "total_new_records": 271,
+  "counts": {
+    "added": 0,
+    "modified": 0,
+    "revoked": 0,
+    "unchanged": 271
+  },
+  "added": [],
+  "modified": [],
+  "revoked": []
+}

@@ -1,0 +1,23 @@
+{
+  "source_name": "nist_oscal",
+  "source_url": "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
+  "download_timestamp_utc": "2026-10-20T15:55:50.916325+00:00",
+  "version_identifier": "SP800-53-Rev5 / CSF-2.0",
+  "file_sha256": "01f37cf90ea99d92242c936cbfbdebcc338eef1f71454e2acac36cc56e9bc062",
+  "file_size_bytes": 10442037,
+  "record_count_parsed": 509,
+  "download_status": "SUCCESS",
+  "staging_path": "D:\\PENTING\\MAGANG\\KOMINFO\\NOTIFIKASI-BERITA\\data\\raw\\nist_oscal\\2026-10-20",
+  "files": {
+    "NIST_SP-800-53_rev5_catalog.json": {
+      "sha256": "01f37cf90ea99d92242c936cbfbdebcc338eef1f71454e2acac36cc56e9bc062",
+      "size_bytes": 10442037,
+      "controls_count": 324
+    },
+    "CSF_2.0_catalog.json": {
+      "sha256": "4836943f21d393f2821df85ada4e6f3c0617243b4ddf44263fe68205400210b4",
+      "size_bytes": 349827,
+      "subcategories_count": 185
+    }
+  }
+}

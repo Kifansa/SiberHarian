@@ -1,0 +1,11 @@
+TY  - RPRT
+AU  - Dinis, Tiago
+AU  - Tavares, Roger
+AU  - Correia, Miguel
+TI  - Large Language Models for Explainable Threat Intelligence
+PB  - INESC-ID, Instituto Superior Técnico, Universidade de Lisboa / UON
+CY  - Lisbon, Portugal
+PY  - 2025
+Y1  - 2025
+AB  - Exploring the use of LLMs with RAG for threat intelligence by combining real-time retrieval with domain-specific knowledge to produce explainable outputs and actionable mitigation for human security analysts.
+ER  - 

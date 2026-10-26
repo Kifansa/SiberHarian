@@ -64,7 +64,9 @@ def proses_arsip_dan_tren(hasil_ringkas: Dict, db_path: Path = DEFAULT_DB_PATH) 
 
     # Bersihkan data > 14 hari DULU, baru catat data hari ini - supaya window
     # arsip & tren selalu "bergeser" (rolling), bukan menumpuk selamanya.
-    bersihkan_riwayat_tren_lama(hari_retensi=ConfigLoader.get_config().get("cti_analysis", {}).get("pasca_proses", {}).get("retention_days", 14), db_path=db_path)
+    pasca_cfg = ((ConfigLoader.get_config() or {}).get("cti_analysis") or {}).get("pasca_proses") or {}
+    retention_days = pasca_cfg.get("retention_days", 14)
+    bersihkan_riwayat_tren_lama(hari_retensi=retention_days, db_path=db_path)
 
     if item_arsip:
         catat_untuk_tren(item_arsip, db_path)
@@ -87,17 +89,6 @@ def proses_arsip_dan_tren(hasil_ringkas: Dict, db_path: Path = DEFAULT_DB_PATH) 
     statistik_tren = susun_ringkasan_statistik_tren(df_riwayat)
     prediksi_tren = proses_prediksi_tren(statistik_tren, df_riwayat=df_riwayat)
     statistik_dashboard = susun_statistik_dashboard(df_riwayat, statistik_tren=statistik_tren)
-
-    # Sinkronkan ancaman baru dengan hasil LLM
-    data_analyst = prediksi_tren.get("data_analyst", {})
-    if data_analyst and "emerging_threats" in data_analyst and data_analyst["emerging_threats"]:
-        ancaman_obj = data_analyst["emerging_threats"][0]
-        if isinstance(ancaman_obj, dict):
-            ancaman_llm = ancaman_obj.get("nama_ancaman", "Menunggu Sinyal")
-        else:
-            ancaman_llm = str(ancaman_obj)
-        # Jika panjangnya > 25 karakter, kita biarkan saja (CSS akan mengecilkan ukurannya nanti)
-        statistik_dashboard["ancaman_baru"] = ancaman_llm
 
     kasus_wilayah_ai_json = json.dumps(prediksi_tren.get("kasus_wilayah_ai", {}), ensure_ascii=False)
     statistik_json = json.dumps(statistik_dashboard, ensure_ascii=False)

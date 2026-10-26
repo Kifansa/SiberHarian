@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>Panel Operasional Tim CTI | SiberHarian Diskominfo Jatim</title>
+  <title>Panel Operasional Admin SiberHarian Diskominfo Jatim</title>
   <link rel="icon" type="image/png" href="/static/img/Logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Play:wght@400;700&family=Share+Tech+Mono&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
@@ -17,79 +17,185 @@
       theme: {
         extend: {
           colors: {
-            "enterprise-bg": "#EEF4F8",
-            "enterprise-surface": "#ffffff",
-            "enterprise-card": "#ffffff",
-            "enterprise-border": "#E2EDF8",
-            "enterprise-border-light": "#EEF4F8",
-            "enterprise-subtle": "#EEF5FA",
-            // Reference 7 Colors
-            "ref-navy": "#001D39",
-            "ref-sapphire": "#0A4174",
-            "ref-slate": "#49769F",
-            "ref-teal": "#4E8EA2",
-            "ref-seafoam": "#6EA2B3",
-            "ref-sky": "#7BBDE8",
-            "ref-ice": "#BDD8E9",
-            // Semantic Aliases
-            "primary": "#0A4174",
-            "primary-hover": "#001D39",
-            "primary-light": "#EEF5FA",
-            "accent-sky": "#7BBDE8",
-            "accent-teal": "#4E8EA2",
-            "warm-blue": "#0A4174",
-            "warm-brick": "#b91c1c",
-            "warm-amber": "#b45309",
-            "warm-forest": "#15803d",
+            "csirt-bg": "#0a1628",
+            "csirt-bg-secondary": "#0d2137",
+            "csirt-card": "rgba(17, 34, 64, 0.7)",
+            "csirt-border": "#1a3a5c",
+            "csirt-border-glow": "rgba(0, 212, 255, 0.4)",
+            "csirt-cyan": "#00d4ff",
+            "csirt-teal": "#00ff88",
+            "csirt-green": "#00ff9d",
+            "csirt-red": "#ff3366",
+            "csirt-orange": "#ff8800",
+            "csirt-text-primary": "#e0f0ff",
+            "csirt-text-secondary": "#8892b0",
+            "csirt-text-muted": "#7d8ca6",
+            // Backwards-compatible aliases
+            "enterprise-bg": "#0a1628",
+            "enterprise-surface": "#0d2137",
+            "enterprise-card": "rgba(17, 34, 64, 0.7)",
+            "enterprise-border": "#1a3a5c",
+            "enterprise-subtle": "#0d2137",
+            "ref-navy": "#0a1628",
+            "ref-sapphire": "#00d4ff",
+            "ref-slate": "#8892b0",
+            "ref-teal": "#00ff88",
+            "ref-sky": "#00d4ff",
+            "ref-ice": "#8892b0",
+            "primary": "#00d4ff",
+            "primary-hover": "#00ff9d",
+            "primary-light": "#0d2137",
+            "accent-sky": "#00d4ff",
+            "accent-teal": "#00ff88",
           },
-          borderRadius: { "xs": "0.125rem", "sm": "0.25rem", "DEFAULT": "0.375rem", "md": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.25rem", "3xl": "1.5rem", "full": "9999px" },
-          spacing: { "gutter": "24px", "container-max": "1280px", "xl": "36px" },
+          borderRadius: {
+            "card": "12px",
+            "control": "8px",
+            "xs": "0.125rem", "sm": "0.25rem", "DEFAULT": "0.375rem", "md": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.25rem", "3xl": "1.5rem", "full": "9999px"
+          },
+          spacing: { "gutter": "24px", "container-max": "1320px", "xl": "36px" },
           fontFamily: {
-            "sans": ["'Plus Jakarta Sans'", "system-ui", "-apple-system", "sans-serif"],
-            "mono": ["'JetBrains Mono'", "monospace"],
+            "sans": ["'Sora'", "system-ui", "-apple-system", "sans-serif"],
+            "mono": ["'Fragment Mono'", "'Share Tech Mono'", "'Play'", "monospace"],
           },
           boxShadow: {
-            "card": "0 4px 20px -2px rgba(0, 29, 57, 0.05), 0 2px 6px -1px rgba(0, 29, 57, 0.02)",
-            "elevated": "0 20px 40px -8px rgba(0, 29, 57, 0.12), 0 8px 16px -4px rgba(0, 29, 57, 0.04)",
+            "glow-cyan": "0 0 25px rgba(0, 212, 255, 0.25)",
+            "glow-cyan-strong": "0 0 35px rgba(0, 212, 255, 0.45)",
+            "glow-red": "0 0 20px rgba(255, 51, 102, 0.3)",
+            "card": "0 4px 30px rgba(0, 0, 0, 0.4)",
+            "card-hover": "0 10px 24px rgba(0, 0, 0, 0.22)",
+            "elevated": "0 0 35px rgba(0, 212, 255, 0.25)",
           }
         },
       },
     }
   </script>
   <style>
+    :root {
+      --bg-primary: #0a1628;
+      --bg-secondary: #0d2137;
+      --bg-card: rgba(17, 34, 64, 0.7);
+      --article-surface-hover: rgba(19, 39, 70, 0.82);
+      --article-border-hover: rgba(0, 212, 255, 0.48);
+      --article-shadow-hover: 0 10px 24px rgba(0, 0, 0, 0.22);
+      --accent-cyan: #00d4ff;
+      --accent-teal: #00ff88;
+      --accent-neon-green: #00ff9d;
+      --accent-red: #ff3366;
+      --accent-orange: #ff8800;
+      --text-primary: #e0f0ff;
+      --text-secondary: #8892b0;
+      --text-muted: #7d8ca6;
+      --border: #1a3a5c;
+      --border-glow: rgba(0, 212, 255, 0.4);
+      --font-heading: 'Sora', sans-serif;
+      --font-mono: 'Fragment Mono', 'Share Tech Mono', 'Play', monospace;
+      --radius: 8px;
+      --radius-card: 12px;
+      --control-height: 40px;
+    }
+
     [x-cloak] { display: none !important; }
-    .card-enterprise {
-      background: #ffffff;
-      border: 1px solid #E2EDF8;
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.9), 0 4px 18px -2px rgba(0, 29, 57, 0.05), 0 2px 6px -1px rgba(0, 29, 57, 0.02);
-      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+
+    body {
+      font-family: var(--font-heading);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
     }
-    .card-enterprise:hover {
-      transform: translateY(-2px);
-      border-color: rgba(123, 189, 232, 0.85);
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 1), 0 14px 28px -4px rgba(0, 29, 57, 0.09), 0 4px 10px -2px rgba(0, 29, 57, 0.03);
+
+    /* Ambient Subtle Grid Pattern */
+    .cyber-grid-ambient {
+      background-image: 
+        linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
     }
+
+    /* Tactical HUD Card */
+    .card-cyber, .card-enterprise {
+      background: var(--bg-card);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-cyber:hover, .card-enterprise:hover {
+      background: var(--article-surface-hover);
+      border-color: var(--article-border-hover);
+      box-shadow: var(--article-shadow-hover);
+    }
+
+    /* Chamfered Tactical Buttons */
+    .btn-chamfer {
+      height: var(--control-height);
+      padding: 0 20px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      user-select: none;
+      color: #ffffff;
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid var(--accent-cyan);
+      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+      transition: all 0.2s ease-out;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .btn-chamfer:hover {
+      background: rgba(0, 212, 255, 0.22);
+      box-shadow: 0 0 18px rgba(0, 212, 255, 0.45);
+    }
+    .btn-chamfer-secondary {
+      background: rgba(13, 33, 55, 0.85);
+      border-color: var(--border);
+      color: var(--accent-cyan);
+    }
+    .btn-chamfer-secondary:hover {
+      background: rgba(13, 33, 55, 1);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(0, 212, 255, 0.35);
+    }
+    .btn-chamfer-danger {
+      background: rgba(255, 51, 102, 0.15);
+      border-color: var(--accent-red);
+      color: #ffffff;
+    }
+    .btn-chamfer-danger:hover {
+      background: rgba(255, 51, 102, 0.3);
+      box-shadow: 0 0 18px rgba(255, 51, 102, 0.45);
+    }
+
+    /* Dark Custom Scrollbar */
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: #EEF4F8;
+      background: #0a1628;
       border-radius: 4px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #BDD8E9;
+      background: #1a3a5c;
       border-radius: 4px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: #7BBDE8;
+      background: #00d4ff;
     }
     .custom-scrollbar {
       scrollbar-width: thin;
-      scrollbar-color: #BDD8E9 #EEF4F8;
+      scrollbar-color: #1a3a5c #0a1628;
     }
+
     #btn-cancel { display: none; }
     #btn-cancel.visible { display: inline-flex; }
+
     @keyframes indeterminate {
       0% { transform: translateX(-100%); }
       50% { transform: translateX(30%); }
@@ -101,12 +207,12 @@
     @media (prefers-reduced-motion: reduce) {
       html, body { scroll-behavior: auto !important; }
       *, ::before, ::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
-      .card-enterprise:hover { transform: none !important; }
+      .card-cyber:hover, .card-enterprise:hover { transform: none !important; }
       .animate-pulse, .animate-spin, .animate-indeterminate { animation: none !important; }
     }
   </style>
 </head>
-<body class="text-sm antialiased bg-[#EEF4F8] text-[#001D39] font-sans h-screen flex overflow-hidden selection:bg-[#BDD8E9] selection:text-[#001D39]"
+<body class="text-sm antialiased bg-[#0a1628] text-[#e0f0ff] font-['Sora'] h-screen flex overflow-hidden selection:bg-[#00d4ff]/30 selection:text-[#ffffff] cyber-grid-ambient"
   x-data="{ tabAktif: 'tren', sidebarBuka: false, terminalTerbuka: false }">
 
   <!-- Mobile Backdrop Overlay -->
@@ -117,88 +223,88 @@
     x-transition:leave="transition-opacity ease-linear duration-200"
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
-    class="fixed inset-0 bg-[#001D39]/60 backdrop-blur-xs z-40 md:hidden" x-cloak></div>
+    class="fixed inset-0 bg-[#0a1628]/80 backdrop-blur-sm z-40 md:hidden" x-cloak></div>
 
   <!-- ========================================================================= -->
-  <!-- Left Sidebar Navigation (Fixed / Permanen di Desktop, Drawer di Mobile) -->
+  <!-- Left Sidebar Navigation (SOC Tactical Command Sidebar) -->
   <!-- ========================================================================= -->
-  <aside class="fixed md:static inset-y-0 left-0 z-50 w-64 bg-[#001D39] text-white flex flex-col justify-between shrink-0 border-r border-[#0A4174]/70 transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none"
+  <aside class="fixed md:static inset-y-0 left-0 z-50 w-64 bg-[#0a1628]/95 backdrop-blur-md text-[#e0f0ff] flex flex-col justify-between shrink-0 border-r border-[#1a3a5c] transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none"
     :class="sidebarBuka ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
 
     <!-- Top Sidebar Brand & Profile -->
-    <div class="p-5 border-b border-[#0A4174]/60">
+    <div class="p-5 border-b border-[#1a3a5c]">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-[#001429] border border-[#0A4174] p-1.5 flex items-center justify-center shadow-xs">
+          <div class="w-10 h-10 rounded-xl bg-[#0d2137] border border-[#00d4ff]/40 p-2 flex items-center justify-center shadow-[0_0_15px_rgba(0,212,255,0.25)]">
             <img src="/static/img/Logo.png" alt="Logo SiberHarian" class="w-full h-full object-contain" />
           </div>
           <div>
             <div class="flex items-center gap-1.5">
-              <span class="font-extrabold text-base text-white tracking-tight block leading-tight">SiberHarian</span>
+              <span class="font-extrabold text-base text-[#e0f0ff] font-['Sora'] tracking-tight block leading-tight">SiberHarian</span>
             </div>
-            <span class="text-[10px] text-[#7BBDE8] font-bold uppercase tracking-wider block leading-tight mt-0.5">Admin Tim CTI</span>
+            <span class="text-[10px] text-[#00d4ff] font-mono font-bold uppercase tracking-wider block leading-tight mt-0.5">[ TIM CTI ]</span>
           </div>
         </div>
         <!-- Close Button (Mobile Only) -->
-        <button @click="sidebarBuka = false" class="md:hidden text-[#BDD8E9] hover:text-white p-1 rounded-md hover:bg-[#0A4174]/50 transition-colors cursor-pointer" aria-label="Tutup menu samping">
+        <button @click="sidebarBuka = false" class="md:hidden text-[#7d8ca6] hover:text-[#00d4ff] p-1 rounded-md transition-colors cursor-pointer" aria-label="Tutup menu samping">
           <span class="material-symbols-outlined text-xl">close</span>
         </button>
       </div>
     </div>
 
-    <!-- Center Navigation Links -->
-    <nav class="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto custom-scrollbar" role="tablist" aria-label="Navigasi Admin Tim CTI">
+    <!-- Center Navigation Links (HUD Brackets Pattern) -->
+    <nav class="flex-1 px-3 py-4 space-y-2 overflow-y-auto custom-scrollbar" role="tablist" aria-label="Navigasi Admin Tim CTI">
       <!-- 1. Menu Tren CTI (Default Landing) -->
       <button @click="tabAktif = 'tren'; sidebarBuka = false; muatTabTren()" role="tab" :aria-selected="tabAktif === 'tren'"
-        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-150 cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7BBDE8]"
-        :class="tabAktif === 'tren' ? 'bg-[#0A4174] text-white shadow-sm border-l-4 border-[#7BBDE8]' : 'text-[#BDD8E9] hover:bg-[#001429] hover:text-white'">
-        <span class="material-symbols-outlined text-lg shrink-0" :class="tabAktif === 'tren' ? 'text-[#7BBDE8]' : 'text-[#4E8EA2]'">insights</span>
-        <span>Tren CTI</span>
+        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-mono font-bold transition-all duration-150 cursor-pointer text-left focus-visible:outline-none"
+        :class="tabAktif === 'tren' ? 'bg-[#0d2137] text-[#00d4ff] border border-[#00d4ff]/50 shadow-[0_0_15px_rgba(0,212,255,0.2)]' : 'text-[#8892b0] hover:bg-[#0d2137]/60 hover:text-[#e0f0ff] border border-transparent'">
+        <span class="material-symbols-outlined text-lg shrink-0 text-[#00d4ff]">insights</span>
+        <span>[ TREN CTI ]</span>
       </button>
 
       <!-- 2. Menu Arsip -->
       <button @click="tabAktif = 'arsip'; sidebarBuka = false; muatTabArsip()" role="tab" :aria-selected="tabAktif === 'arsip'"
-        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-150 cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7BBDE8]"
-        :class="tabAktif === 'arsip' ? 'bg-[#0A4174] text-white shadow-sm border-l-4 border-[#7BBDE8]' : 'text-[#BDD8E9] hover:bg-[#001429] hover:text-white'">
-        <span class="material-symbols-outlined text-lg shrink-0" :class="tabAktif === 'arsip' ? 'text-[#7BBDE8]' : 'text-[#4E8EA2]'">inventory_2</span>
-        <span>Arsip</span>
+        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-mono font-bold transition-all duration-150 cursor-pointer text-left focus-visible:outline-none"
+        :class="tabAktif === 'arsip' ? 'bg-[#0d2137] text-[#00d4ff] border border-[#00d4ff]/50 shadow-[0_0_15px_rgba(0,212,255,0.2)]' : 'text-[#8892b0] hover:bg-[#0d2137]/60 hover:text-[#e0f0ff] border border-transparent'">
+        <span class="material-symbols-outlined text-lg shrink-0 text-[#00d4ff]">inventory_2</span>
+        <span>[ ARSIP RIWAYAT ]</span>
       </button>
 
       <!-- 3. Menu Pengaturan -->
       <button @click="tabAktif = 'settings'; sidebarBuka = false; if (window.loadSettings) window.loadSettings()" role="tab" :aria-selected="tabAktif === 'settings'"
-        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-150 cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7BBDE8]"
-        :class="tabAktif === 'settings' ? 'bg-[#0A4174] text-white shadow-sm border-l-4 border-[#7BBDE8]' : 'text-[#BDD8E9] hover:bg-[#001429] hover:text-white'">
-        <span class="material-symbols-outlined text-lg shrink-0" :class="tabAktif === 'settings' ? 'text-[#7BBDE8]' : 'text-[#4E8EA2]'">settings</span>
-        <span>Pengaturan</span>
+        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-mono font-bold transition-all duration-150 cursor-pointer text-left focus-visible:outline-none"
+        :class="tabAktif === 'settings' ? 'bg-[#0d2137] text-[#00d4ff] border border-[#00d4ff]/50 shadow-[0_0_15px_rgba(0,212,255,0.2)]' : 'text-[#8892b0] hover:bg-[#0d2137]/60 hover:text-[#e0f0ff] border border-transparent'">
+        <span class="material-symbols-outlined text-lg shrink-0 text-[#00d4ff]">settings</span>
+        <span>[ PENGATURAN ]</span>
       </button>
     </nav>
 
     <!-- Bottom Sidebar Utilities & Logout -->
-    <div class="p-3 border-t border-[#0A4174]/60 space-y-1.5 shrink-0">
+    <div class="p-3 border-t border-[#1a3a5c] space-y-2 shrink-0">
       <!-- Tombol Buka Terminal Monitor -->
       <button @click="terminalTerbuka = !terminalTerbuka; sidebarBuka = false"
-        class="w-full flex items-center justify-between px-3.5 py-2 rounded-lg text-xs font-semibold text-[#7BBDE8] bg-[#001429] hover:bg-[#0A4174]/80 transition-all border border-[#0A4174] cursor-pointer focus-visible:outline-none">
+        class="w-full flex items-center justify-between px-3.5 py-2 rounded-lg text-xs font-mono font-bold text-[#00d4ff] bg-[#0d2137] hover:bg-[#132c4a] border border-[#00d4ff]/30 shadow-[0_0_10px_rgba(0,212,255,0.15)] cursor-pointer focus-visible:outline-none transition-all">
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-base">terminal</span>
-          <span>Terminal Pipeline</span>
+          <span>[ TERMINAL PIPELINE ]</span>
         </div>
         <span class="material-symbols-outlined text-sm" x-text="terminalTerbuka ? 'expand_more' : 'chevron_right'">chevron_right</span>
       </button>
 
       <!-- Tautan ke Portal Publik -->
       <a href="/" target="_blank" rel="noopener noreferrer"
-        class="w-full flex items-center justify-between px-3.5 py-2 rounded-lg text-xs font-semibold text-[#BDD8E9] hover:bg-[#001429] hover:text-white transition-all cursor-pointer">
+        class="w-full flex items-center justify-between px-3.5 py-2 rounded-lg text-xs font-mono font-semibold text-[#8892b0] hover:bg-[#0d2137] hover:text-[#e0f0ff] transition-all cursor-pointer">
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-base">open_in_new</span>
-          <span>Portal Publik</span>
+          <span>[ PORTAL PUBLIK ]</span>
         </div>
       </a>
 
       <!-- Tombol Keluar / Logout -->
       <button onclick="window.logoutAdmin()"
-        class="w-full flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold text-red-300 hover:bg-red-950/40 hover:text-red-200 transition-all cursor-pointer focus-visible:outline-none">
+        class="w-full flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-mono font-semibold text-[#ff3366] hover:bg-[#ff3366]/10 transition-all cursor-pointer focus-visible:outline-none">
         <span class="material-symbols-outlined text-base">logout</span>
-        <span>Keluar / Logout</span>
+        <span>[ KELUAR / LOGOUT ]</span>
       </button>
     </div>
   </aside>
@@ -206,29 +312,17 @@
   <!-- ========================================================================= -->
   <!-- Main Application Body Area -->
   <!-- ========================================================================= -->
-  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
     
-    <!-- Top Enterprise Header Bar (Tanpa Tombol Terminal SSE, Bersih & Elegan) -->
-    <header class="h-16 bg-white border-b border-[#BDD8E9]/80 px-4 sm:px-8 flex items-center justify-between shrink-0 shadow-xs z-20">
-      <div class="flex items-center gap-3">
-        <!-- Hamburger Toggle (Mobile Only) -->
-        <button @click="sidebarBuka = true" 
-          class="md:hidden text-[#001D39] hover:text-[#0A4174] hover:bg-[#EEF5FA] p-1.5 rounded-lg border border-[#BDD8E9] transition-colors cursor-pointer flex items-center justify-center focus-visible:outline-none" 
-          aria-label="Buka menu navigasi">
-          <span class="material-symbols-outlined text-xl">menu</span>
-        </button>
-
-        <div>
-          <h1 class="text-xl sm:text-2xl font-black text-[#001D39] tracking-tight"
-            x-text="tabAktif === 'tren' ? 'Dashboard Tren Siber CTI' : (tabAktif === 'arsip' ? 'Arsip Data Intelijen Ancaman' : 'Pengaturan Konfigurasi Sistem CTI')">
-            Dashboard Tren Siber CTI
-          </h1>
-        </div>
-      </div>
-    </header>
+    <!-- Mobile Hamburger Toggle (Floating, hanya muncul di layar kecil saat sidebar tertutup) -->
+    <button @click="sidebarBuka = true" 
+      class="md:hidden fixed top-4 right-4 z-40 bg-[#0d2137]/90 text-[#00d4ff] hover:bg-[#132c4a] p-2 rounded-xl border border-[#1a3a5c] shadow-[0_0_15px_rgba(0,212,255,0.25)] backdrop-blur-md transition-colors cursor-pointer flex items-center justify-center focus-visible:outline-none" 
+      aria-label="Buka menu navigasi">
+      <span class="material-symbols-outlined text-xl">menu</span>
+    </button>
 
     <!-- Scrollable Main Content -->
-    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 custom-scrollbar bg-[#EEF4F8]">
+    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 custom-scrollbar bg-[#0a1628]">
       <h2 class="sr-only">Navigasi dan Area Kerja Operasional CTI</h2>
       
       <!-- 1. Tab Tren CTI (Default Active for Admin) -->
@@ -259,7 +353,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- Floating Terminal Console (SSE Real-Time Monitor) -->
+  <!-- Floating Terminal Console (SOC Tactical SSE Real-Time Monitor) -->
   <!-- ========================================================================= -->
   <div x-show="terminalTerbuka" 
     x-transition:enter="transition ease-out duration-150 transform origin-bottom-right" 
@@ -268,71 +362,71 @@
     x-transition:leave="transition ease-in duration-100 transform origin-bottom-right" 
     x-transition:leave-start="opacity-100 scale-100" 
     x-transition:leave-end="opacity-0 scale-75"
-    class="fixed z-[100] bg-[#001D39] rounded-xl text-left border border-[#0A4174] overflow-hidden transition-all duration-300 shadow-2xl flex flex-col bottom-4 sm:bottom-6 right-4 sm:right-6 w-[560px] max-w-[calc(100vw-32px)] h-72" x-cloak>
+    class="fixed z-[100] bg-[#0a1628] rounded-xl text-left border border-[#00d4ff]/40 shadow-[0_0_35px_rgba(0,212,255,0.25)] overflow-hidden transition-all duration-300 flex flex-col bottom-4 sm:bottom-6 right-4 sm:right-6 w-[580px] max-w-[calc(100vw-32px)] h-80" x-cloak>
     
-    <div class="flex items-center justify-between gap-2 border-b border-[#0A4174]/60 px-4 py-2.5 bg-[#001429] shrink-0">
-      <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-[#7BBDE8] text-base" aria-hidden="true">terminal</span>
-        <span class="font-mono text-xs text-[#BDD8E9] font-semibold tracking-wide">SiberHarian Terminal</span>
+    <div class="flex items-center justify-between gap-2 border-b border-[#1a3a5c] px-4 py-2.5 bg-[#0d2137] shrink-0">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="material-symbols-outlined text-[#00d4ff] text-base shrink-0" aria-hidden="true">terminal</span>
+        <span class="font-mono text-xs text-[#00d4ff] font-bold tracking-wider truncate">[ SIBERHARIAN SSE // TERMINAL ]</span>
       </div>
       
-      <div class="flex items-center gap-2">
-        <span class="font-mono text-[10px] text-[#7BBDE8] font-medium mr-2" id="console-status">[standby]</span>
+      <div class="flex items-center gap-2 shrink-0">
+        <span class="font-mono text-[10px] text-[#00ff9d] font-semibold mr-1 sm:mr-2 whitespace-nowrap" id="console-status">[STANDBY]</span>
         <button
-          class="bg-[#0A4174] hover:bg-[#7BBDE8] hover:text-[#001D39] text-white px-3 py-1.5 rounded-md text-[10px] font-bold shadow transition-all active:scale-95 flex items-center gap-1 disabled:opacity-50 cursor-pointer focus-visible:outline-none"
+          class="btn-chamfer text-[11px]" style="height:30px;padding:0 12px;"
           id="btn-run" onclick="event.stopPropagation(); mulaiPipeline()" title="Jalankan Pipeline">
           <span class="material-symbols-outlined text-[14px]" id="run-icon">play_arrow</span>
-          <span class="hidden sm:inline" id="btn-run-text">Run</span>
+          <span id="btn-run-text">[ RUN ▶ ]</span>
         </button>
         <button
-          class="bg-[#b91c1c] hover:bg-[#991b1b] text-white px-3 py-1.5 rounded-md text-[10px] font-bold shadow transition-all active:scale-95 items-center gap-1 cursor-pointer focus-visible:outline-none hidden"
+          class="btn-chamfer btn-chamfer-danger text-[11px] hidden" style="height:30px;padding:0 12px;"
           id="btn-cancel" onclick="event.stopPropagation(); batalkanPipeline()" title="Batalkan">
           <span class="material-symbols-outlined text-[14px]">stop_circle</span>
-          <span class="hidden sm:inline">Stop</span>
+          <span>[ STOP ◼ ]</span>
         </button>
         <!-- Tombol Close ("X") -->
-        <button @click.stop="terminalTerbuka = false" class="ml-2 p-1 rounded-md text-red-500 hover:text-red-400 transition-colors cursor-pointer focus-visible:outline-none flex items-center justify-center" title="Tutup Terminal">
+        <button @click.stop="terminalTerbuka = false" class="ml-1 sm:ml-2 text-[#7d8ca6] hover:text-[#ff3366] transition-colors cursor-pointer focus-visible:outline-none flex items-center justify-center shrink-0" title="Tutup Terminal">
           <span class="material-symbols-outlined text-lg">close</span>
         </button>
       </div>
     </div>
-    <div class="font-mono text-xs text-[#BDD8E9] flex-1 overflow-y-auto overflow-x-hidden whitespace-pre-wrap break-words space-y-1.5 leading-relaxed p-4" id="console-body">
-      <div class="flex gap-2 text-[#49769F]">
+    <div class="font-mono text-xs text-[#00ff9d] flex-1 overflow-y-auto overflow-x-hidden whitespace-pre-wrap break-words space-y-1.5 leading-relaxed p-4 bg-[#070f1c] custom-scrollbar" id="console-body">
+      <div class="flex gap-2 text-[#7d8ca6]">
         <span>[SYSTEM] Menunggu instruksi pipeline dimulai...</span>
       </div>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- Clean Modern Modal Dialog Reader -->
+  <!-- Clean Tactical Modal Dialog Reader -->
   <!-- ========================================================================= -->
-  <div class="fixed inset-0 bg-[#001D39]/70 backdrop-blur-sm z-[100] hidden items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-200 ease-out"
+  <div class="fixed inset-0 bg-[#0a1628]/85 backdrop-blur-md z-[100] hidden items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-200 ease-out"
     id="modal-overlay" onclick="tutupModalJikaLuar(event)" aria-hidden="true">
-    <div class="bg-white rounded-2xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-7 relative border border-[#BDD8E9] shadow-elevated transform scale-95 opacity-0 translate-y-4 transition-all duration-200 ease-out"
+    <div class="bg-[rgba(17,34,64,0.95)] backdrop-blur-md rounded-2xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-7 relative border border-[#1a3a5c] shadow-[0_0_40px_rgba(0,212,255,0.2)] transform scale-95 opacity-0 translate-y-4 transition-all duration-200 ease-out font-['Sora']"
       id="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-judul">
-      <button class="absolute top-4 right-4 text-[#49769F] hover:text-[#001D39] w-8 h-8 rounded-lg hover:bg-[#EEF5FA] flex items-center justify-center transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none"
+      <button class="absolute top-4 right-4 text-[#7d8ca6] hover:text-[#00d4ff] w-8 h-8 rounded-lg hover:bg-[#0d2137] flex items-center justify-center transition-colors cursor-pointer focus-visible:outline-none z-10"
         onclick="tutupModal()" title="Tutup dialog (Esc)" aria-label="Tutup dialog">
         <span class="material-symbols-outlined text-xl" aria-hidden="true">close</span>
       </button>
-      <div class="flex items-center gap-2 mb-3">
-        <span class="px-2.5 py-0.5 rounded-md text-xs font-bold" id="modal-pill"></span>
-        <span class="text-xs text-[#49769F] font-semibold" id="modal-sumber"></span>
+      <div class="flex items-center gap-2 mb-3 pr-10 flex-wrap">
+        <span class="px-2.5 py-0.5 rounded text-xs font-mono font-bold shrink-0" id="modal-pill"></span>
+        <span class="text-xs text-[#8892b0] font-mono break-words" id="modal-sumber"></span>
       </div>
-      <h3 class="text-lg sm:text-xl font-extrabold text-[#001D39] mb-3 leading-snug tracking-tight" id="modal-judul"></h3>
-      <div class="text-slate-700 text-sm leading-relaxed whitespace-pre-line bg-[#EEF5FA]/80 p-5 rounded-xl border border-[#BDD8E9]/70 font-sans" id="modal-teks"></div>
-      <div class="mt-6 pt-4 border-t border-[#E2EDF8] flex items-center justify-between gap-3 flex-wrap">
-        <button id="modal-btn-copy" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#EEF5FA] hover:bg-[#BDD8E9] text-[#0A4174] text-xs font-bold transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none active:scale-95">
+      <h3 class="text-lg sm:text-xl font-bold text-[#e0f0ff] mb-3 leading-snug tracking-tight pr-10 break-words" id="modal-judul"></h3>
+      <div class="text-[#e0f0ff] text-sm leading-relaxed whitespace-pre-line bg-[#0d2137] p-5 rounded-xl border border-[#1a3a5c] font-sans" id="modal-teks"></div>
+      <div class="mt-6 pt-4 border-t border-[#1a3a5c] flex items-center justify-between gap-3 flex-wrap">
+        <button id="modal-btn-copy" class="btn-chamfer text-xs" style="height:36px;padding:0 18px;">
           <span class="material-symbols-outlined text-base" aria-hidden="true">content_copy</span>
-          <span id="modal-btn-copy-text">Salin Rangkuman</span>
+          <span id="modal-btn-copy-text">[ Salin Rangkuman ]</span>
         </button>
-        <a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0A4174] hover:bg-[#001D39] text-white text-xs font-bold transition-all shadow-2xs hover:shadow-xs focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none active:scale-95" id="modal-link" href="#" target="_blank" rel="noopener noreferrer">
-          <span>Buka Sumber Asli</span>
+        <a class="btn-chamfer btn-chamfer-secondary text-xs" style="height:36px;padding:0 18px;" id="modal-link" href="#" target="_blank" rel="noopener noreferrer">
+          <span>[ Buka Sumber Asli ]</span>
           <span class="material-symbols-outlined text-sm" aria-hidden="true">open_in_new</span>
         </a>
       </div>
     </div>
   </div>
 
-  <script type="module" src="/static/js/admin.js?v=8.4"></script>
+  <script type="module" src="/static/js/admin.js?v=9.2"></script>
 </body>
 </html>

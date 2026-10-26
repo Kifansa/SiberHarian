@@ -22,19 +22,81 @@ FRAMEWORK_REGISTRY = {
     'csirt_framework': 'csirt_framework.json'
 }
 
+RETIRED_FRAMEWORKS = {
+    'cis_controls.json', 'bssn.json', 'indeks_kami.json', 'cisa_cpg.json',
+    'iso27001.json', 'owasp.json', 'cwe.json', 'csa_ccm.json', 'csirt_framework.json'
+}
+
 _encyclopedia_cache = {}
 
 def load_encyclopedia(filename: str) -> List[Dict]:
     if filename in _encyclopedia_cache:
         return _encyclopedia_cache[filename]
     try:
-        path = os.path.join(ENCYCLOPEDIA_DIR, filename)
-        if not os.path.exists(path):
+        # Jika berkas termasuk dalam 9 berkas yang dipensiunkan, kembalikan list kosong secara anggun
+        if filename in RETIRED_FRAMEWORKS:
+            _encyclopedia_cache[filename] = []
             return []
-        with open(path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            _encyclopedia_cache[filename] = data
-            return data
+
+        path = os.path.join(ENCYCLOPEDIA_DIR, filename)
+        if os.path.exists(path):
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                _encyclopedia_cache[filename] = data
+                return data
+
+        # Fallback resmi ke data aktif jika file JSON lokal tidak ada
+        if filename == 'd3fend.json':
+            from src.storage.db import ambil_semua_d3fend_techniques
+            techs = ambil_semua_d3fend_techniques()
+            fallback_d3 = [
+                {
+                    "id": t["technique_id"],
+                    "tactic": t["tactic"],
+                    "technique": t["name"],
+                    "mitigation": t["definition"] or t["name"],
+                    "keywords": [t["name"].lower(), t["technique_id"].lower()]
+                }
+                for t in techs
+            ]
+            _encyclopedia_cache[filename] = fallback_d3
+            return fallback_d3
+
+        if filename == 'mitre.json':
+            prep_attack = os.path.join(BASE_DIR, 'data', 'prepared', 'attack_techniques.json')
+            if os.path.exists(prep_attack):
+                with open(prep_attack, 'r', encoding='utf-8') as f:
+                    at_list = json.load(f)
+                fallback_att = [
+                    {
+                        "id": t.get("technique_id", ""),
+                        "tactic": (t.get("tactics") or ["Initial Access"])[0],
+                        "technique": t.get("name", ""),
+                        "keywords": [t.get("name", "").lower(), t.get("technique_id", "").lower()]
+                    }
+                    for t in at_list if not t.get("revoked") and not t.get("deprecated")
+                ]
+                _encyclopedia_cache[filename] = fallback_att
+                return fallback_att
+
+        if filename == 'nist.json':
+            prep_nist = os.path.join(BASE_DIR, 'data', 'prepared', 'nist_controls.json')
+            if os.path.exists(prep_nist):
+                with open(prep_nist, 'r', encoding='utf-8') as f:
+                    nist_list = json.load(f)
+                fallback_nist = [
+                    {
+                        "function": c.get("family_or_function", "Protect"),
+                        "category": c.get("control_id", ""),
+                        "mitigation": c.get("title", ""),
+                        "keywords": [c.get("title", "").lower(), c.get("control_id", "").lower()]
+                    }
+                    for c in nist_list
+                ]
+                _encyclopedia_cache[filename] = fallback_nist
+                return fallback_nist
+
+        return []
     except Exception as e:
         return []
 
@@ -46,20 +108,11 @@ def _cocok_kata_kunci(keywords_list: List[str], terms_to_check: List[str]) -> bo
                 return True
     return False
 
-# DRY SEARCH CONFIG
+# DRY SEARCH CONFIG (Hanya sumber resmi MITRE ATT&CK, MITRE D3FEND, dan NIST)
 SEARCH_CONFIG = [
     {'name': 'mitre', 'header': 'REFERENSI MITRE ATT&CK:', 'format': lambda e: f"- Taktik {e['tactic']} [{e['id']}]: {e['technique']}"},
     {'name': 'd3fend', 'header': 'REFERENSI MITRE D3FEND:', 'format': lambda e: f"- Mitigasi {e['tactic']} [{e['id']}]: {e['mitigation']}"},
-    {'name': 'cis_controls', 'header': 'REFERENSI CIS CONTROLS v8:', 'format': lambda e: f"- Kontrol {e['control']} [{e['id']}]: {e['mitigation']}"},
-    {'name': 'bssn', 'header': 'REFERENSI BSSN & REGULASI NASIONAL:', 'format': lambda e: f"- Standar Nasional [{e['id']}] {e['standard']}: {e['mitigation']}"},
-    {'name': 'indeks_kami', 'header': 'REFERENSI BSSN INDEKS KAMI (SPBE):', 'format': lambda e: f"- Standar Evaluasi KAMI [{e['id']}] {e['area']}: {e['mitigation']}"},
     {'name': 'nist', 'header': 'REFERENSI NIST CSF 2.0:', 'format': lambda e: f"- Panduan NIST {e['category']}: {e['mitigation']}"},
-    {'name': 'cisa_cpg', 'header': 'REFERENSI CISA KEV & CPGs:', 'format': lambda e: f"- Panduan CISA [{e['id']}] {e['standard']}: {e['mitigation']}"},
-    {'name': 'iso27001', 'header': 'REFERENSI ISO/IEC 27001:2022:', 'format': lambda e: f"- Kontrol ISO 27001 [{e['id']}] {e['theme']}: {e['mitigation']}"},
-    {'name': 'owasp', 'header': 'REFERENSI OWASP TOP 10 / API:', 'format': lambda e: f"- Kerentanan OWASP {e['id']} ({e['category']}): {e['mitigation']}"},
-    {'name': 'cwe', 'header': 'REFERENSI CWE TOP WEAKNESSES:', 'format': lambda e: f"- Kelemahan Software {e['id']} ({e['name']}): {e['mitigation']}"},
-    {'name': 'csa_ccm', 'header': 'REFERENSI CLOUD SECURITY ALLIANCE (CCM v4):', 'format': lambda e: f"- Kontrol Cloud [{e['id']}] {e['domain']}: {e['mitigation']}"},
-    {'name': 'csirt_framework', 'header': 'REFERENSI CSIRT SERVICES FRAMEWORK (FIRST.ORG & BSSN):', 'format': lambda e: f"- Layanan CSIRT [{e['id']}] {e['service']}: {e['mitigation']}"}
 ]
 
 def get_all_framework_counts() -> Dict[str, int]:
@@ -88,25 +141,13 @@ def search_encyclopedia(query: Union[str, List[str]]) -> str:
             
     return "\n\n".join(hasil_sections) if hasil_sections else "(Tidak ada kecocokan di database ensiklopedia lokal)"
 
-# LAYER MAPPINGS
+# LAYER MAPPINGS: Murni MITRE D3FEND dan NIST (tanpa BSSN, SPBE, dll.)
 INCIDENT_LAYERS = {
-    'taktis': [
-        ('d3fend', lambda e: f"[{e['id']}] {e['mitigation']}"),
-        ('cis_controls', lambda e: f"[{e['id']}] {e['mitigation']}")
+    'd3fend': [
+        ('d3fend', lambda e: f"[{e['id']}] {e['mitigation']}")
     ],
-    'standar': [
-        ('nist', lambda e: f"[NIST {e['category'].split(' ')[0]}] {e['mitigation']}"),
-        ('iso27001', lambda e: f"[{e['id']}] {e['mitigation']}"),
-        ('cisa_cpg', lambda e: f"[{e['id']}] {e['mitigation']}")
-    ],
-    'nasional': [
-        ('bssn', lambda e: f"[{e['id']}] {e['mitigation']}"),
-        ('indeks_kami', lambda e: f"[{e['id']}] {e['mitigation']}"),
-        ('csirt_framework', lambda e: f"[{e['id']}] {e['mitigation']}")
-    ],
-    'aplikasi': [
-        ('owasp', lambda e: f"[OWASP {e['id']}] {e['mitigation']}"),
-        ('csa_ccm', lambda e: f"[CSA {e['id']}] {e['mitigation']}")  # Bug fixed here: prefixed with CSA
+    'nist': [
+        ('nist', lambda e: f"[NIST {e['category'].split(' ')[0]}] {e['mitigation']}")
     ]
 }
 
@@ -129,25 +170,21 @@ def search_encyclopedia_per_incident(nama_insiden: str, keywords_list: List[str]
                     rekomendasi[layer].append(fmt_func(e))
 
     hasil = []
-    if rekomendasi['taktis']: hasil.append(rekomendasi['taktis'][0])
-    
-    if rekomendasi['nasional']: hasil.append(rekomendasi['nasional'][0])
-    elif rekomendasi['standar']: hasil.append(rekomendasi['standar'][0])
-    
-    if len(hasil) < 3:
-        if rekomendasi['aplikasi']: hasil.append(rekomendasi['aplikasi'][0])
-        elif rekomendasi['standar'] and rekomendasi['standar'][0] not in hasil:
-            hasil.append(rekomendasi['standar'][0])
-        elif len(rekomendasi['taktis']) > 1: hasil.append(rekomendasi['taktis'][1])
-        elif len(rekomendasi['nasional']) > 1: hasil.append(rekomendasi['nasional'][1])
+    # 1. Rekomendasi pertama: MITRE D3FEND
+    if rekomendasi['d3fend']:
+        hasil.append(rekomendasi['d3fend'][0])
+    else:
+        hasil.append("[D3-MFA] Wajibkan Multi-Factor Authentication (MFA) berbasis aplikasi authenticator/FIDO2 hardware token untuk seluruh akses administratif dan portal ASN, serta hindari SMS OTP konvensional.")
 
+    # 2. Rekomendasi kedua: Standar NIST
+    if rekomendasi['nist']:
+        hasil.append(rekomendasi['nist'][0])
+    else:
+        hasil.append("[NIST PR.AA-01] Terapkan segmentasi jaringan dan audit hak akses berkala (Least Privilege).")
+
+    # Ambil elemen unik
     hasil_unik = list(dict.fromkeys(hasil))
-    if not hasil_unik:
-        hasil_unik = [
-            "[D3-MFA] Wajibkan Multi-Factor Authentication (MFA) berbasis aplikasi authenticator/FIDO2 hardware token untuk seluruh akses administratif dan portal ASN, serta hindari SMS OTP konvensional.",
-            "[NIST PR.AA] Terapkan segmentasi jaringan dan audit hak akses berkala (Least Privilege)."
-        ]
-    return hasil_unik[:3]
+    return hasil_unik[:2]
 
 def lookup_mitre_technique(identifier_or_query: str) -> Optional[Dict]:
     mitre_db = load_encyclopedia("mitre.json")

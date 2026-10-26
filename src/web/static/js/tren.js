@@ -5,17 +5,14 @@
 import { ambilTren } from './api.js';
 import { formatWaktuSekarang, tampilkanToast } from './utils.js';
 
-import { renderKpiCards, flashUpdatedCards } from './tren/tren-kpi.js';
+import { renderKpiCards, flashUpdatedCards } from './tren/tren-kpi.js?v=9.2';
 import { renderCharts } from './tren/tren-charts.js';
 import { renderKasusInsidenWilayah } from './tren/tren-wilayah.js';
 import { renderTables } from './tren/tren-tables.js';
-import { renderLaporanCards, tampilAiTab } from './tren/tren-ai-cards.js';
-import { eksporLaporanTren as eksporPdf } from './tren/tren-pdf-exporter.js';
-
+import { renderLaporanCards, tampilAiTab } from './tren/tren-ai-cards.js?v=9.2';
 
 let sudahDimuat = false;
 let sedangMemuat = false;
-let lastTrenData = null;
 
 // Expose tab switcher pada window agar selalu dapat diakses dari HTML
 window.tampilAiTab = tampilAiTab;
@@ -88,7 +85,6 @@ export async function muatTabTren(isManualReload = false) {
     }
 
     sudahDimuat = true;
-    lastTrenData = data;
 
     if (trenLoadingState) trenLoadingState.classList.add('hidden');
     if (trenEmptyState) trenEmptyState.classList.add('hidden');
@@ -181,14 +177,6 @@ export function muatUlangTabTren() {
   return muatTabTren(true);
 }
 
-/**
- * Menghasilkan dokumen PDF eksekutif mingguan dari data tren terakhir
- */
-export function eksporLaporanTren() {
-  return eksporPdf(lastTrenData);
-}
-
 // Binds ke window untuk kompatibilitas penuh dengan atribut event handler inline HTML
 window.muatTabTren = muatTabTren;
 window.muatUlangTabTren = muatUlangTabTren;
-window.eksporLaporanTren = eksporLaporanTren;

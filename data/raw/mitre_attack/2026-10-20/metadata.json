@@ -1,0 +1,18 @@
+{
+  "source_name": "mitre_attack",
+  "source_url": "https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json",
+  "download_timestamp_utc": "2026-10-20T15:56:06.083261+00:00",
+  "version_identifier": "v20.0",
+  "file_sha256": "81113ba98afa2928f3dcff62022539f7ce30c315c32e14422f11ff95ce534352",
+  "file_size_bytes": 55271014,
+  "record_count_parsed": 706,
+  "download_status": "SUCCESS",
+  "staging_path": "D:\\PENTING\\MAGANG\\KOMINFO\\NOTIFIKASI-BERITA\\data\\raw\\mitre_attack\\2026-10-20",
+  "files": {
+    "enterprise-attack.json": {
+      "sha256": "81113ba98afa2928f3dcff62022539f7ce30c315c32e14422f11ff95ce534352",
+      "size_bytes": 55271014,
+      "active_techniques_count": 706
+    }
+  }
+}

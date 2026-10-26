@@ -1,4 +1,4 @@
-﻿"""
+"""
 Memuat konfigurasi dari config.yaml dan 
 menyiapkan struktur data yang dibutuhkan tahap pengumpulan berita.
 """
@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 
 import yaml
+
+from src.utils.settings_manager import SettingsManager
 
 CONFIG_PATH = Path(__file__).resolve().parents[2] / "config" / "config.yaml"
 
@@ -67,17 +69,18 @@ def bangun_daftar_feed_google_news(config: dict) -> List[Tuple[str, str, bool, s
             daftar_feed.append((rss_url, "Google News", True, "umum"))
     return daftar_feed
 
-from src.utils.settings_manager import SettingsManager
+
 
 def _kumpulkan_semua_kata_kunci(config: dict) -> Dict[str, List[str]]:
     kw = SettingsManager.get_keywords()
+    cfg_kw = (config or {}).get("keywords", {})
     return {
-        "english": kw.get("english", []),
-        "mandiri": kw.get("indonesia_mandiri", []),
-        "objek_data": kw.get("objek_data_sensitif", []),
-        "objek_aset": kw.get("objek_aset_digital", []),
-        "indikator": kw.get("indikator_insiden", []),
-        "ambigu": kw.get("ambigu_butuh_konteks", []),
+        "english": kw.get("english") or cfg_kw.get("english", []),
+        "mandiri": kw.get("indonesia_mandiri") or cfg_kw.get("indonesia_mandiri", []),
+        "objek_data": kw.get("objek_data_sensitif") or cfg_kw.get("objek_data_sensitif", []),
+        "objek_aset": kw.get("objek_aset_digital") or cfg_kw.get("objek_aset_digital", []),
+        "indikator": kw.get("indikator_insiden") or cfg_kw.get("indikator_insiden", []),
+        "ambigu": kw.get("ambigu_butuh_konteks") or cfg_kw.get("ambigu_butuh_konteks", []),
     }
 
 

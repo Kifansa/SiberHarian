@@ -1,0 +1,17 @@
+{
+  "source": "mitre_attack",
+  "timestamp_utc": "2026-10-24T05:12:53.045673+00:00",
+  "old_version": "v20.0",
+  "new_version": "v20.0",
+  "total_old_records": 706,
+  "total_new_records": 706,
+  "counts": {
+    "added": 0,
+    "modified": 0,
+    "revoked": 0,
+    "unchanged": 706
+  },
+  "added": [],
+  "modified": [],
+  "revoked": []
+}

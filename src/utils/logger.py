@@ -31,8 +31,11 @@ def setup_logger(name: str = "cyber_news_digest", log_dir: str = "logs") -> logg
 
     Path(log_dir).mkdir(parents=True, exist_ok=True)
     log_file = Path(log_dir) / f"{datetime.now().strftime('%Y-%m-%d')}.log"
-    file_handler = logging.FileHandler(log_file, encoding="utf-8")
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
+    try:
+        file_handler = logging.FileHandler(log_file, encoding="utf-8")
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+    except PermissionError:
+        pass
 
     return logger

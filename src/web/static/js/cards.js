@@ -8,26 +8,25 @@ export function buatCardBerita(item) {
     sumber: item.sumber,
     link: safeLink,
     teksLengkap: item.ringkasan,
-    pillClass: 'bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9]',
-    pillLabel: 'Berita Insiden'
+    pillClass: 'bg-[#0d2137] text-[#00d4ff] border border-[#00d4ff]/40 font-mono',
+    pillLabel: '[ Berita Insiden ]'
   });
   return `
-    <article class="bg-white border border-[#E2EDF8] hover:border-[#7BBDE8]/70 rounded-xl p-6 shadow-card hover:shadow-card-hover card-enterprise flex flex-col justify-between group transition-all duration-200 active:scale-[0.99]" data-search-text="${escapeHtml((item.judul + ' ' + item.sumber + ' ' + (item.ringkasan || '')).toLowerCase())}">
+    <article class="card-cyber p-6 flex flex-col justify-between group transition-all duration-200 active:scale-[0.99]" data-search-text="${escapeHtml((item.judul + ' ' + item.sumber + ' ' + (item.ringkasan || '')).toLowerCase())}">
       <div>
         <div class="flex justify-between items-center gap-2 mb-3">
-          <span class="inline-flex items-center text-[11px] font-bold text-[#0A4174] bg-[#EEF5FA] border border-[#BDD8E9]/70 px-2.5 py-0.5 rounded-full shadow-2xs">
-            <span>${escapeHtml(item.sumber)}</span>
+          <span class="inline-flex items-center text-[11px] font-mono font-bold text-[#00d4ff] bg-[#0d2137] border border-[#00d4ff]/30 px-2.5 py-0.5 rounded shadow-[0_0_8px_rgba(0,212,255,0.15)]">
+            <span>[ ${escapeHtml(item.sumber)} ]</span>
           </span>
         </div>
-        <h3 class="text-base sm:text-lg font-bold text-[#001D39] mb-2.5 line-clamp-2 leading-snug tracking-tight group-hover:text-[#0A4174] transition-colors break-words" style="text-wrap: balance;">${escapeHtml(item.judul)}</h3>
-        <p class="text-slate-600 text-xs sm:text-sm mb-4 line-clamp-3 leading-relaxed break-words">${escapeHtml(item.ringkasan)}</p>
+        <h3 class="text-base sm:text-lg font-bold text-[#e0f0ff] font-['Sora'] mb-2.5 line-clamp-2 leading-snug tracking-tight group-hover:text-[#00d4ff] transition-colors break-words" style="text-wrap: balance;">${escapeHtml(item.judul)}</h3>
+        <p class="text-[#7d8ca6] text-xs sm:text-sm mb-4 line-clamp-3 leading-relaxed break-words font-['Sora']">${escapeHtml(item.ringkasan)}</p>
       </div>
-      <div class="mt-auto pt-3.5 border-t border-[#E2EDF8] flex items-center justify-between gap-2">
-        <button type="button" class="px-3 py-1.5 rounded-lg bg-[#EEF5FA] hover:bg-[#E2EDF8] text-[#0A4174] font-bold text-xs transition-all cursor-pointer inline-flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none active:scale-95 border border-[#BDD8E9]/70 shadow-2xs" onclick="window.bukaModal ? window.bukaModal(${idx}) : bukaModal(${idx})" aria-haspopup="dialog" aria-label="Buka ringkasan lengkap: ${escapeHtml(item.judul)}">
-          <span>Rangkuman</span>
-          <span class="material-symbols-outlined text-sm transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true">arrow_forward</span>
+      <div class="mt-auto pt-3.5 border-t border-[#1a3a5c] flex items-center justify-between gap-2 flex-wrap">
+        <button type="button" class="btn-chamfer text-xs whitespace-nowrap shrink-0" style="height:36px;padding:0 14px;" onclick="window.bukaModal ? window.bukaModal(${idx}) : bukaModal(${idx})" aria-haspopup="dialog" aria-label="Buka ringkasan lengkap: ${escapeHtml(item.judul)}">
+          <span>[ RANGKUMAN → ]</span>
         </button>
-        <a class="px-2.5 py-1.5 rounded-lg text-[#49769F] hover:text-[#001D39] hover:bg-[#EEF4F8] text-xs font-semibold transition-all inline-flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-[#0A4174] focus-visible:outline-none active:scale-95" href="${safeLink}" target="_blank" rel="noopener noreferrer">
+        <a class="px-2.5 py-1.5 rounded text-[#8892b0] hover:text-[#00d4ff] hover:bg-[#0d2137] text-xs font-mono font-medium transition-all inline-flex items-center gap-1 focus-visible:ring-1 focus-visible:ring-[#00d4ff] outline-none whitespace-nowrap shrink-0" href="${safeLink}" target="_blank" rel="noopener noreferrer">
           <span>Sumber Asli</span>
           <span class="material-symbols-outlined text-sm" aria-hidden="true">open_in_new</span>
         </a>
@@ -38,14 +37,14 @@ export function buatCardBerita(item) {
 export function buatSection(label, cardsHtml, jumlah, { ikon = '', kelas = '', kategori = '' } = {}) {
   if (jumlah === 0) return '';
   const ikonHtml = ikon
-    ? `<span class="w-8 h-8 rounded-lg ${kelas} flex items-center justify-center shrink-0 shadow-2xs"><span class="material-symbols-outlined text-lg" aria-hidden="true">${ikon}</span></span>`
+    ? `<span class="w-8 h-8 rounded-lg bg-[#0d2137] border border-[#1a3a5c] text-[#00d4ff] flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(0,212,255,0.2)]"><span class="material-symbols-outlined text-lg" aria-hidden="true">${ikon}</span></span>`
     : '';
   return `
       <div class="mb-10 section-wrapper" data-kategori="${kategori}">
-        <div class="flex items-center gap-3 mb-5 border-b border-[#BDD8E9]/70 pb-3.5">
+        <div class="flex items-center gap-3 mb-5 border-b border-[#1a3a5c] pb-3.5">
           ${ikonHtml}
-          <h3 class="text-lg font-extrabold text-[#001D39] tracking-tight">${label}</h3>
-          <span class="bg-[#EEF5FA] text-[#0A4174] border border-[#BDD8E9] text-xs font-bold px-2.5 py-0.5 rounded-full count-badge shadow-2xs">${jumlah}</span>
+          <h3 class="text-lg font-extrabold text-[#e0f0ff] font-['Sora'] tracking-tight">[ ${label.toUpperCase()} ]</h3>
+          <span class="bg-[#0d2137] text-[#00ff9d] border border-[#00ff9d]/30 font-mono text-xs font-bold px-2.5 py-0.5 rounded shadow-[0_0_8px_rgba(0,255,157,0.2)] count-badge">${jumlah}</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 cards-grid">${cardsHtml}</div>
       </div>`;

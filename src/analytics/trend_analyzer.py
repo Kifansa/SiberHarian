@@ -94,14 +94,29 @@ def _dedup_ringan_lintas_hari(df_berita: pd.DataFrame, kolom_judul: str = "judul
     for i in range(len(df_berita)):
         if i in sudah_diproses:
             continue
-        judul_i = df_berita.loc[i, kolom_judul]
+        judul_i = str(df_berita.loc[i, kolom_judul] or "")
+        nums_i = re.findall(r"\d+", judul_i)
+        tgl_i_str = str(df_berita.loc[i, kolom_tgl] or "")[:10] if kolom_tgl in df_berita.columns else ""
         baris_representatif.append(df_berita.loc[i].to_dict())
         sudah_diproses.add(i)
 
         for j in range(i + 1, len(df_berita)):
             if j in sudah_diproses:
                 continue
-            judul_j = df_berita.loc[j, kolom_judul]
+            if tgl_i_str and kolom_tgl in df_berita.columns:
+                tgl_j_str = str(df_berita.loc[j, kolom_tgl] or "")[:10]
+                if len(tgl_i_str) == 10 and len(tgl_j_str) == 10:
+                    try:
+                        d_i = datetime.strptime(tgl_i_str, "%Y-%m-%d")
+                        d_j = datetime.strptime(tgl_j_str, "%Y-%m-%d")
+                        if abs((d_j - d_i).days) > 7:
+                            continue
+                    except ValueError:
+                        pass
+            judul_j = str(df_berita.loc[j, kolom_judul] or "")
+            nums_j = re.findall(r"\d+", judul_j)
+            if nums_i and nums_j and nums_i != nums_j:
+                continue
             if fuzz.token_sort_ratio(judul_i, judul_j) >= THRESHOLD_DEDUP_TREN:
                 sudah_diproses.add(j)  # dianggap follow-up insiden yang sama
 
@@ -314,6 +329,7 @@ def hitung_distribusi_taktik_mitre(
     return hasil
 
 
+
 def ekstrak_radar_cve_watchlist(
     df_riwayat: pd.DataFrame, df_berita_dedup: Optional[pd.DataFrame] = None
 ) -> List[Dict[str, Any]]:
@@ -480,6 +496,22 @@ _ENTITAS_NASIONAL_REGEX = re.compile(
     re.IGNORECASE
 )
 
+# Entitas & negara internasional untuk deteksi konten luar negeri yang diliput media nasional
+_REGEX_KONTEN_INTERNASIONAL = re.compile(
+    r'\b(australia|amerika|amerika serikat|as|us|usa|inggris|britania|rusia|china|tiongkok|'
+    r'korea selatan|korea utara|jepang|singapura|malaysia|belanda|amsterdam|prancis|jerman|'
+    r'ukraina|israel|iran|taiwan|kanada|india|global|dunia|internasional|pentagon|white house|'
+    r'fbi|cia|nsa|kremlin|europol|interpol)\b',
+    re.IGNORECASE
+)
+
+# Entitas & indikator target Indonesia untuk mencegah false positive internasional
+_REGEX_TARGET_INDONESIA = re.compile(
+    r'\b(indonesia|ri|kpu|pdn|kemenkes|kemhan|polri|tni|bumn|jatim|jawa|jakarta|surabaya|'
+    r'diskominfo|pemprov|pemkab|pemkot|dprd|bpjs|bank bri|bca|mandiri|bni)\b',
+    re.IGNORECASE
+)
+
 
 def _bersihkan_judul_dan_publisher(judul_raw: str, sumber_raw: str) -> tuple[str, str]:
     """
@@ -634,6 +666,14 @@ def hitung_kasus_insiden_wilayah(df_riwayat: pd.DataFrame, top_n_per_wilayah: in
 
         # Evaluasi lokasi kejadian HANYA berdasarkan konten berita bersih (judul & narasi tanpa dateline & tanpa publisher)
         teks_konten_bersih = f"{judul_bersih} {narasi_bersih} {kata_kunci_raw}".lower()
+
+        if not is_intl:
+            # Periksa apakah judul/konten memberitakan insiden luar negeri yang diliput media nasional
+            has_intl_target = bool(_REGEX_KONTEN_INTERNASIONAL.search(judul_bersih))
+            has_id_target = bool(_REGEX_TARGET_INDONESIA.search(judul_bersih)) or bool(_REGEX_TARGET_INDONESIA.search(teks_konten_bersih))
+            if has_intl_target and not has_id_target:
+                is_intl = True
+
         matches_jatim = bool(_KEYWORDS_JATIM_REGEX.search(teks_konten_bersih))
 
         is_jatim = False
@@ -707,6 +747,93 @@ def susun_ringkasan_statistik_tren(df_riwayat: pd.DataFrame) -> Dict:
     return statistik
 
 
+
+def hitung_perbandingan_wow(df_riwayat: pd.DataFrame) -> Dict:
+    """
+    Menghitung perbandingan metrik kunci Week-over-Week (7 hari terkini vs 7 hari baseline).
+    Mencakup:
+    1. Total Insiden Siber (Berita)
+    2. Insiden Kritis
+    3. Top Vektor Serangan Dominan
+    4. Top Sektor Target Terpapar
+    5. Celah Kerentanan Kritis (CVE Watchlist)
+    """
+    if df_riwayat.empty:
+        return {}
+
+    df_terkini, df_baseline = _split_periode(df_riwayat)
+    df_terkini_b = df_terkini[df_terkini["kategori"] == "berita"] if not df_terkini.empty else pd.DataFrame()
+    df_baseline_b = df_baseline[df_baseline["kategori"] == "berita"] if not df_baseline.empty else pd.DataFrame()
+
+    terkini_total = len(df_terkini_b)
+    baseline_total = len(df_baseline_b)
+    growth_total = _hitung_growth(terkini_total, baseline_total)
+
+    terkini_kritis = int((df_terkini_b["kategori_relevansi"] == "insiden_spesifik").sum()) if not df_terkini_b.empty else 0
+    baseline_kritis = int((df_baseline_b["kategori_relevansi"] == "insiden_spesifik").sum()) if not df_baseline_b.empty else 0
+    growth_kritis = _hitung_growth(terkini_kritis, baseline_kritis)
+
+    # Vektor Serangan Terkini vs Baseline
+    vektor_terkini = hitung_tren_vektor_serangan(df_terkini) if not df_terkini.empty else []
+    vektor_baseline = hitung_tren_vektor_serangan(df_baseline) if not df_baseline.empty else []
+    top_v_terkini = vektor_terkini[0]["vektor"] if vektor_terkini and vektor_terkini[0]["jumlah"] > 0 else "-"
+    top_v_baseline = vektor_baseline[0]["vektor"] if vektor_baseline and vektor_baseline[0]["jumlah"] > 0 else "-"
+
+    # Sektor Target Terkini vs Baseline
+    sektor_terkini = hitung_tren_sektor_target(df_terkini) if not df_terkini.empty else []
+    sektor_baseline = hitung_tren_sektor_target(df_baseline) if not df_baseline.empty else []
+    top_s_terkini = sektor_terkini[0]["sektor"] if sektor_terkini and sektor_terkini[0]["jumlah"] > 0 else "-"
+    top_s_baseline = sektor_baseline[0]["sektor"] if sektor_baseline and sektor_baseline[0]["jumlah"] > 0 else "-"
+
+    # CVE Watchlist Terkini vs Baseline
+    cve_terkini_list = ekstrak_radar_cve_watchlist(df_terkini) if not df_terkini.empty else []
+    cve_baseline_list = ekstrak_radar_cve_watchlist(df_baseline) if not df_baseline.empty else []
+    cve_terkini_count = len(cve_terkini_list)
+    cve_baseline_count = len(cve_baseline_list)
+    growth_cve = _hitung_growth(cve_terkini_count, cve_baseline_count)
+
+    return {
+        "total_insiden": {
+            "label": "Total Insiden Siber",
+            "terkini": f"{terkini_total} insiden",
+            "baseline": f"{baseline_total} insiden",
+            "growth": growth_total,
+            "status": f"{'+' if growth_total >= 0 else ''}{growth_total}%",
+            "icon": "newspaper"
+        },
+        "insiden_kritis": {
+            "label": "Insiden Kritis Operasional",
+            "terkini": f"{terkini_kritis} kasus",
+            "baseline": f"{baseline_kritis} kasus",
+            "growth": growth_kritis,
+            "status": f"{'+' if growth_kritis >= 0 else ''}{growth_kritis}%",
+            "icon": "warning"
+        },
+        "top_vektor": {
+            "label": "Vektor Serangan Utama",
+            "terkini": top_v_terkini,
+            "baseline": top_v_baseline,
+            "status": "Tetap" if top_v_terkini == top_v_baseline and top_v_terkini != "-" else "Bergeser",
+            "icon": "alt_route"
+        },
+        "top_sektor": {
+            "label": "Sektor Paling Terdampak",
+            "terkini": top_s_terkini,
+            "baseline": top_s_baseline,
+            "status": "Tetap" if top_s_terkini == top_s_baseline and top_s_terkini != "-" else "Bergeser",
+            "icon": "domain"
+        },
+        "cve_kritis": {
+            "label": "Radar Eksploitasi CVE Aktif",
+            "terkini": f"{cve_terkini_count} CVE",
+            "baseline": f"{cve_baseline_count} CVE",
+            "growth": growth_cve,
+            "status": f"{'+' if growth_cve >= 0 else ''}{growth_cve}%",
+            "icon": "bug_report"
+        }
+    }
+
+
 def susun_statistik_dashboard(df_riwayat: pd.DataFrame, statistik_tren: Optional[dict] = None) -> dict:
     """
     Menyusun seluruh agregat statistik visualisasi dashboard (KPI, grafik harian, distribusi sumber & CVSS).
@@ -721,6 +848,7 @@ def susun_statistik_dashboard(df_riwayat: pd.DataFrame, statistik_tren: Optional
         "komposisi_jenis": {}, "harian_sumber": [], "vektor_serangan": [],
         "taktik_mitre": [], "cve_watchlist": [],
         "kasus_wilayah": {"internasional": [], "nasional": [], "jawa_timur": []},
+        "perbandingan_wow": {},
     }
     if df_riwayat.empty:
         return statistik_kosong
@@ -776,8 +904,15 @@ def susun_statistik_dashboard(df_riwayat: pd.DataFrame, statistik_tren: Optional
         ancaman_baru = rag.hitung_prediksi_ancaman_baru()
     except Exception as err:
         logger.warning(f"Gagal menghitung prediksi pola serangan/ancaman: {err}")
-        pola_serangan = {"pola": "RCE", "growth_persen": 0.0, "subteks": "Stabil"}
-        ancaman_baru = "Menunggu Sinyal"
+        pola_serangan = {
+            "pola": "Akses Tidak Sah / Pembobolan Akun",
+            "pola_lengkap": "Akses Tidak Sah / Pembobolan Akun",
+            "growth_persen": 0.0,
+            "jumlah_terkini": 0,
+            "subteks": "vs minggu lalu",
+            "taksonomi_resmi": "Akses Tidak Sah / Pembobolan Akun",
+        }
+        ancaman_baru = "Kondisi Stabil"
 
     return {
         "total_berita": total_berita,
@@ -798,6 +933,7 @@ def susun_statistik_dashboard(df_riwayat: pd.DataFrame, statistik_tren: Optional
         "cve_watchlist": statistik.get("cve_watchlist", []),
         "kasus_wilayah": statistik.get("kasus_wilayah", {"internasional": [], "nasional": [], "jawa_timur": []}),
         "prediksi_pola_serangan": pola_serangan,
+        "perbandingan_wow": hitung_perbandingan_wow(df_riwayat),
     }
 
 

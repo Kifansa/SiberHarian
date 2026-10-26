@@ -300,11 +300,13 @@ def analisis_kasus_insiden_wilayah_ai(
         )
 
         try:
+            cfg_llm = ((ConfigLoader.get_config() or {}).get("cti_analysis") or {}).get("llm") or {}
+            num_pred_wil = (cfg_llm.get("num_predict") or {}).get("section_wilayah", 550)
             hasil_teks = _call_llm_text(
                 "Kamu adalah Senior CTI Strategic Advisor CSIRT Dinas Komunikasi dan Informatika Jawa Timur. Sajikan intelijen ringkas, tajam, dan actionable berbasis fakta. DILARANG menggunakan JSON atau kata klise.",
                 user_prompt,
                 model=model,
-                num_predict=350
+                num_predict=num_pred_wil
             )
             urgensi, potensi = _parse_urgensi_dan_potensi(hasil_teks, fallback_urgensi, fallback_potensi)
         except Exception as err:

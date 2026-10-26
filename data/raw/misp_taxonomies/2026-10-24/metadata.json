@@ -1,0 +1,18 @@
+{
+  "source_name": "misp_taxonomies",
+  "source_url": "https://raw.githubusercontent.com/MISP/misp-taxonomies/main/ecsirt/machinetag.json",
+  "download_timestamp_utc": "2026-10-24T06:03:32.087013+00:00",
+  "version_identifier": "2",
+  "file_sha256": "447c77f3488e94caaabcbc1281c5b991325fcd626abf2c1ae945f419f7a12c14",
+  "file_size_bytes": 13120,
+  "record_count_parsed": 11,
+  "download_status": "SUCCESS",
+  "staging_path": "D:\\PENTING\\MAGANG\\KOMINFO\\NOTIFIKASI-BERITA\\data\\raw\\misp_taxonomies\\2026-10-24",
+  "files": {
+    "machinetag.json": {
+      "sha256": "447c77f3488e94caaabcbc1281c5b991325fcd626abf2c1ae945f419f7a12c14",
+      "size_bytes": 13120,
+      "record_count": 11
+    }
+  }
+}

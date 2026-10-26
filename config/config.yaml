@@ -1,33 +1,55 @@
-# === Gemini API Configuration ===
+﻿# === Gemini API Configuration ===
 gemini:
   api_key: ""
   model_chain:
+    - "gemini-2.5-flash"
+    - "gemini-2.5-flash-lite"
+    - "gemini-3-flash"
     - "gemini-3.1-flash-lite"
-    - "gemini-3.5-flash-lite"
-    - "gemini-3.5-flash"
     - "gemini-3.6-flash"
-    - "gemini-3.7-flash"
+    - "gemini-3.5-flash-lite"
     - "gemini-3.8-flash"
   embedding_model: "gemini-embedding-001"
+  embedding_model_fallback:
+    - "gemini-embedding-exp-03-07"
+    - "text-embedding-004"
   temperature: 0.1
   max_output_tokens: 500
   rate_limits:
-    flash_lite_rpm: 12
-    flash_rpm: 4
-    embedding_rpm: 80
+    gemini-2.5-flash: 5
+    gemini-2.5-flash-lite: 10
+    gemini-3-flash: 5
+    gemini-3.1-flash-lite: 15
+    gemini-3.6-flash: 5
+    gemini-3.5-flash-lite: 15
+    gemini-3.8-flash: 5
+    gemini-embedding-001: 100
+    gemini-embedding-exp-03-07: 100
+    text-embedding-004: 100
+  proactive_thresholds:
+    gemini-2.5-flash: 4
+    gemini-2.5-flash-lite: 9
+    gemini-3-flash: 4
+    gemini-3.1-flash-lite: 14
+    gemini-3.6-flash: 4
+    gemini-3.5-flash-lite: 14
+    gemini-3.8-flash: 4
+    gemini-embedding-001: 90
+    gemini-embedding-exp-03-07: 90
+    text-embedding-004: 90
   batch_sizes:
     classification: 5
     embedding: 50
 
 pipeline:
-  window_hours: 26
+  window_hours: 19
   request_delay_seconds: 1
   request_timeout: 15
   max_retry: 3
   backoff_factor: 1.5
 
 analytics:
-  cti_generation_mode: "modular_llm"  # "modular_llm" (Section-by-section Llama 3.2) atau "instant_rag" (instan RAG <1s)
+  cti_generation_mode: "modular_llm"  # "modular_llm" (Section-by-section Google Gemini Modular LLM) atau "instant_rag" (instan RAG <1s)
   timeout_per_section_detik: 45
 
 
@@ -201,6 +223,7 @@ cti_analysis:
       section_mikro: 500
       section_vektor: 450
       section_emerging: 300
+      section_wilayah: 550
     truncation:
       korpus_max: 1500
       fakta_max: 400
@@ -222,6 +245,7 @@ cti_analysis:
       min_word_length: 4
       growth_threshold: 20.0
     truncation:
+      berita_preview: 220
   pasca_proses:
     retention_days: 14
 

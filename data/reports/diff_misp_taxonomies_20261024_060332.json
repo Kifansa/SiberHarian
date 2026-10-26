@@ -1,0 +1,17 @@
+{
+  "source": "misp_taxonomies",
+  "timestamp_utc": "2026-10-24T06:03:32.089359+00:00",
+  "old_version": "2",
+  "new_version": "2",
+  "total_old_records": 11,
+  "total_new_records": 11,
+  "counts": {
+    "added": 0,
+    "modified": 0,
+    "revoked": 0,
+    "unchanged": 11
+  },
+  "added": [],
+  "modified": [],
+  "revoked": []
+}

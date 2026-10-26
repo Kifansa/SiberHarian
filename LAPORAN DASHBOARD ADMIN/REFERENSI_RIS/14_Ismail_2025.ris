@@ -1,0 +1,20 @@
+TY  - JOUR
+AU  - Ismail, Ismail
+AU  - Kurnia, R.
+AU  - Widyatama, F.
+AU  - Wibawa, I. M.
+AU  - Brata, Z. A.
+AU  - Ukasyah, Ukasyah
+AU  - Nelistiani, G. A.
+AU  - Kim, H.
+TI  - Enhancing Security Operations Center: Wazuh Security Event Response with Retrieval-Augmented-Generation-Driven Copilot
+JO  - Sensors
+T2  - Sensors
+PY  - 2025
+Y1  - 2025
+VL  - 25
+IS  - 3
+SP  - 870
+DO  - 10.3390/s25030870
+AB  - SERC copilot leverages Wazuh SIEM telemetry with RAG and three vectorized knowledge bases (Incident Response, MITRE ATT&CK, NIST CSF 2.0) to guide SOC analysts during incident triage.
+ER  - 

@@ -1,0 +1,18 @@
+TY  - JOUR
+AU  - Arazzi, Marco
+AU  - Arikkat, Dheeraj R.
+AU  - Nicolazzo, Serena
+AU  - Nocera, Antonino
+AU  - Rehiman, Rizwin K. A.
+AU  - Vinod, P.
+AU  - Conti, Mauro
+TI  - NLP-based techniques for Cyber Threat Intelligence
+JO  - Computer Science Review
+T2  - Computer Science Review
+PY  - 2025
+Y1  - 2025
+VL  - 56
+SP  - 100765
+DO  - 10.1016/j.cosrev.2025.100765
+AB  - A comprehensive survey on Natural Language Processing (NLP) techniques used to collect, process, and extract actionable Cyber Threat Intelligence (CTI) from unstructured public text and vulnerability reports to enable proactive defense.
+ER  - 

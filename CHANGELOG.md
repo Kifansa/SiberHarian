@@ -2,6 +2,14 @@
 
 Semua perubahan penting pada proyek **SiberHarian (CSIRT Dinas Komunikasi dan Informatika Provinsi Jawa Timur)** didokumentasikan di berkas ini. Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1.0.0/).
 
+## [3.1.0] - 2026-10-20
+
+### Diubah & Diperbaiki
+- **Standardisasi Gemini Embedding 1 & Fallback Gemini Embedding 2:** Menyelaraskan model vector embedding utama ke `gemini-embedding-001` (Gemini Embedding 1) serta menambahkan mekanisme rantai fallback otomatis ke model Gemini Embedding 2 (`gemini-embedding-exp-03-07` dan `text-embedding-004`) pada `src/utils/llm_adapter.py`, `config/config.yaml`, dan database pengaturan SQLite.
+- **Pembersihan Perulangan Ganda (Redundant Loop Cleanup):** Menghapus perulangan redundan `for vec in vector_set` pada fungsi `retrieve_berita_context` di `src/analytics/rag_engine.py` untuk mengoptimalkan efisiensi komputasi scoring RAG.
+- **Pembersihan String Warisan v6:** Memperbarui string log dan docstring peninggalan v6 "Section-by-Section Llama 3.2" pada `src/analytics/cti_agents.py` dan `config/config.yaml` menjadi representasi resmi Google Gemini Modular LLM.
+- **Penyelarasan Dokumentasi:** Memperbarui referensi model vector embedding pada `README.md`, `PRODUCT.md`, dan komentar modul analitik RAG.
+
 ---
 
 ## [3.0.0] - 2026-09-28
