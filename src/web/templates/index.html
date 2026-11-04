@@ -271,7 +271,7 @@
     }
     .hazard-glow-pulse {
       background: var(--bg-card) !important;
-      animation: hazard-pulse 2.2s ease-in-out infinite;
+      animation: hazard-pulse 2.2s ease-in-out infinite !important;
     }
 
     /* Efek Animasi Mendarat pada Target Section */
@@ -579,21 +579,11 @@
       </section>
     </main>
 
-    <!-- Footer Disclaimer Hukum & Hak Cipta -->
+    <!-- Footer Disclaimer AI -->
     <footer class="mt-12 py-8 border-t border-[#1a3a5c] text-center max-w-[1320px] mx-auto px-4 sm:px-6 mb-16 md:mb-6">
       <div class="max-w-2xl mx-auto space-y-2">
-        <div class="flex items-center justify-center gap-2 text-xs font-bold text-[#e0f0ff]">
-          <img src="/static/img/Logo.png" alt="Logo SiberHarian" class="w-5 h-5 object-contain" />
-          <span class="font-mono tracking-wider">[ SIBERHARIAN · DISKOMINFO PROVINSI JAWA TIMUR ]</span>
-        </div>
         <p class="text-[11px] sm:text-xs text-[#8892b0] leading-relaxed">
           Konten di portal ini merupakan ringkasan (parafrase) dari berita yang dikumpulkan secara otomatis dari sumber media terpercaya. Ringkasan disintesis oleh AI dan bukan salinan langsung dari artikel asli. Pembaca disarankan membaca artikel lengkap di sumber asli melalui tautan yang disediakan.
-        </p>
-        <p class="text-[11px] text-[#00d4ff] font-mono">
-          Berdasarkan UU No. 28/2014 Pasal 43(c) tentang Hak Cipta &amp; Perpres No. 32/2024.
-        </p>
-        <p class="text-[10px] sm:text-[11px] text-[#7d8ca6] pt-2 font-mono">
-          &copy; 2024–2026 Dinas Komunikasi dan Informatika Provinsi Jawa Timur. Seluruh hak cipta dilindungi.
         </p>
       </div>
     </footer>
@@ -649,12 +639,22 @@
       // Efek highlight pendaran neon saat layar mendarat
       var cardTarget = el.classList.contains('card-cyber') ? el : (el.querySelector('.card-cyber') || el);
       if (cardTarget) {
-        cardTarget.classList.remove('animate-target-highlight');
-        void cardTarget.offsetWidth; // trigger reflow
-        cardTarget.classList.add('animate-target-highlight');
+        if (cardTarget.classList.contains('hazard-glow-pulse')) {
+          // Pertahankan dan segarkan denyutan merah hazard agar tidak tertimpa glow cyan
+          cardTarget.classList.remove('hazard-glow-pulse');
+          void cardTarget.offsetWidth; // trigger reflow restart denyutan merah
+          cardTarget.classList.add('hazard-glow-pulse');
+        } else {
+          cardTarget.classList.remove('animate-target-highlight');
+          void cardTarget.offsetWidth; // trigger reflow
+          cardTarget.classList.add('animate-target-highlight');
+          cardTarget.addEventListener('animationend', function() {
+            cardTarget.classList.remove('animate-target-highlight');
+          }, { once: true });
+        }
       }
     };
   </script>
-  <script type="module" src="/static/js/main.js?v=9.0"></script>
+  <script type="module" src="/static/js/main.js?v=9.9"></script>
 </body>
 </html>

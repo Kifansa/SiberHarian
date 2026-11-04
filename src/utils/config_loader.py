@@ -1,5 +1,4 @@
-﻿import os
-import yaml
+﻿import yaml
 from pathlib import Path
 
 class ConfigLoader:

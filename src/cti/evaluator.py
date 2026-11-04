@@ -19,23 +19,17 @@ Menyediakan kerangka kerja evaluasi kinerja pipeline intelijen siber:
    - Idempoten dan dapat langsung dijalankan ulang kapan pun prompt, model, atau label berubah.
 """
 
-import os
-import sys
 import csv
-import json
 import sqlite3
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple, Union
+from typing import Dict, List, Any, Optional, Union
 
 from src.utils.logger import setup_logger
 from src.storage.db import DEFAULT_DB_PATH, _koneksi, init_db
 from src.cti.analyzer import CTINewsAnalyzer, guard_sector_and_quote
 from src.cti.preparer import (
-    CLOSED_11_TAXONOMY_CATEGORIES,
     TAXONOMY_DISPLAY_NAMES,
     CLOSED_10_IIV_SECTORS,
-    IIV_SECTOR_DISPLAY_NAMES,
 )
 
 logger = setup_logger(__name__)

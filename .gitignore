@@ -49,6 +49,7 @@ logs/
 *.sqlite3
 data/*.db
 data/state.db
+data/backups/
 hasil_terakhir.json
 src/web/hasil_terakhir.json
 
@@ -83,3 +84,8 @@ desktop.ini
 # Impeccable local overrides
 .impeccable/config.local.json
 .impeccable/live/
+
+# Laporan & Logbook (Eksklusif Lokal)
+LAPORAN DASHBOARD ADMIN/
+Logbook_Magang_SiberHarian_Diskominfo_Jatim.docx
+

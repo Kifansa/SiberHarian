@@ -104,9 +104,9 @@ def klasifikasi_batch_5(daftar_artikel: List[dict], model: str = None) -> List[s
 
     user_prompt = (
         "Klasifikasikan setiap artikel berikut ke dalam salah satu label valid:\n"
-        "- insiden_spesifik: insiden siber nyata, ransomware, kebocoran data, deface, malware aktif\n"
-        "- analisis_relevan: riset keamanan siber, analisis ancaman, advisori keamanan penting\n"
-        "- tidak_relevan: berita umum, lifestyle, gadget konsumen, politik tanpa insiden siber\n\n"
+        "- insiden_spesifik: insiden serangan siber teknis nyata (ransomware, kebocoran data, deface, malware aktif, celah dieksploitasi)\n"
+        "- analisis_relevan: edukasi pencegahan, tips keamanan, panduan pengguna, riset intelijen ancaman, dan advisori keamanan\n"
+        "- tidak_relevan: berita umum non-siber, lifestyle, gadget konsumen, politik biasa, atau penangkapan judi online tanpa insiden teknis\n\n"
         "Format jawaban WAJIB array JSON valid berisi pasangan ID dan kategori:\n"
         "[\n"
         '  {"id": "ART-1", "kategori": "<label>"}\n'

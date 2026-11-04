@@ -1,7 +1,8 @@
 import { bukaModal, tutupModal, tutupModalJikaLuar, salinTeksModal } from './modal.js';
-import { tampilkanBeranda, mulaiPipeline, batalkanPipeline, filterBerandaCards } from './beranda.js';
+import { tampilkanBeranda, mulaiPipeline, batalkanPipeline, filterBerandaCards } from './beranda.js?v=9.9';
 import { muatTabArsip, muatUlangTabArsip, filterArsipCards } from './arsip.js';
-import { muatTabStatistikPublik } from './statistik-publik.js?v=8.7';
+import { muatTabStatistikPublik } from './statistik-publik.js?v=9.8';
+import { tampilkanToast, tampilkanKonfirmasi } from './utils.js';
 
 // Expose handlers ke window untuk Alpine.js & atribut onclick
 window.bukaModal = bukaModal;
@@ -11,9 +12,12 @@ window.salinTeksModal = salinTeksModal;
 window.mulaiPipeline = mulaiPipeline;
 window.batalkanPipeline = batalkanPipeline;
 window.muatTabArsip = muatTabArsip;
+window.filterArsipCards = filterArsipCards;
 window.muatTabStatistikPublik = muatTabStatistikPublik;
 window.tampilkanBeranda = tampilkanBeranda;
 window.filterBerandaCards = filterBerandaCards;
+window.tampilkanToast = tampilkanToast;
+window.tampilkanKonfirmasi = tampilkanKonfirmasi;
 
 // Invalidate cache saat pipeline selesai jalan
 window.addEventListener('pipeline-selesai', () => {

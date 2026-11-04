@@ -7,7 +7,7 @@ Mengimplementasikan alur pemrosesan per berita intelijen siber:
 2. Ekstraksi MITRE ATT&CK Kondisional: Dijalankan HANYA jika berita mendeskripsikan alur/cara serangan.
    Dilarang menebak! Jika bukti lemah, berhenti pada tingkat Taktik atau 'tidak_ditentukan'.
 3. Active ATT&CK Validation Guard: Menolak keras ID teknik yang halusinasi, revoked, atau tidak aktif.
-4. Deterministic D3FEND Mitigation Lookup: Lookup murni dari tabel SQLite relasional, zero LLM additions.
+4. Deterministic D3FEND Mitigation Lookup: Lookup murni dari prepared JSON deterministik, zero LLM additions.
 5. Referensi NIST On-Demand: Retrieval kontrol NIST SP 800-53 Rev 5 & CSF 2.0.
 6. Provenance & Manual Correction: Penyimpanan persisten ke tabel `intelijen_berita_tervalidasi` di `data/state.db`.
 """
@@ -35,8 +35,6 @@ from src.cti.preparer import (
     TAXONOMY_DISPLAY_NAMES,
     ECSIRT_PARENT_MAPPINGS,
     CLOSED_10_IIV_SECTORS,
-    IIV_SECTOR_DISPLAY_NAMES,
-    InvalidSectorError,
 )
 from src.cti.vector_store import CTIVectorStore
 
@@ -613,7 +611,7 @@ class CTINewsAnalyzer:
                 else:
                     selected_id = "T1566"
                 selected_tactic = "Initial Access"
-            elif "cve-" in clean_text or "remote code execution" in clean_text or "rce" in clean_text or "eksploitasi" in clean_text:
+            elif "cve-" in clean_text or "remote code execution" in clean_text or bool(re.search(r"\brce\b", clean_text)) or "eksploitasi" in clean_text:
                 selected_id = "T1190"
                 selected_tactic = "Initial Access"
             elif "powershell" in clean_text:
@@ -897,9 +895,9 @@ class CTINewsAnalyzer:
         if not attack_technique_id or attack_technique_id == "tidak_ditentukan":
             return []
 
-        rows = ambil_d3fend_mitigasi_by_attack_id(attack_technique_id, db_path=self.db_path)
-        if not rows and self.db_path != DEFAULT_DB_PATH and DEFAULT_DB_PATH.exists():
-            rows = ambil_d3fend_mitigasi_by_attack_id(attack_technique_id, db_path=DEFAULT_DB_PATH)
+        rows = ambil_d3fend_mitigasi_by_attack_id(
+            attack_technique_id, prepared_dir=self.prepared_dir
+        )
 
         mitigations = []
         for r in rows:
@@ -1061,6 +1059,10 @@ class CTINewsAnalyzer:
             simpan_intelijen_berita(intel_record, db_path=self.db_path)
 
         return intel_record
+
+    def analyze_and_save(self, article: Dict[str, Any]) -> Dict[str, Any]:
+        """Alias untuk analyze_news dengan persist=True."""
+        return self.analyze_news(article, persist=True)
 
     def record_manual_correction(
         self,

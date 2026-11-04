@@ -2,20 +2,22 @@
  * Modul Controller Utama Tab Tren (Orkestrator Komponen Modular)
  * Mengintegrasikan submodul di static/js/tren/ untuk menjaga kode tetap bersih, modular, dan ringan.
  */
-import { ambilTren } from './api.js';
-import { formatWaktuSekarang, tampilkanToast } from './utils.js';
+import { ambilTren } from './api.js?v=9.6';
+import { formatWaktuSekarang, tampilkanToast } from './utils.js?v=9.6';
 
-import { renderKpiCards, flashUpdatedCards } from './tren/tren-kpi.js?v=9.2';
-import { renderCharts } from './tren/tren-charts.js';
-import { renderKasusInsidenWilayah } from './tren/tren-wilayah.js';
-import { renderTables } from './tren/tren-tables.js';
-import { renderLaporanCards, tampilAiTab } from './tren/tren-ai-cards.js?v=9.2';
+import { renderKpiCards, flashUpdatedCards } from './tren/tren-kpi.js?v=9.6';
+import { renderCharts } from './tren/tren-charts.js?v=9.6';
+import { renderKasusInsidenWilayah, sorotAtauBukaBeritaArsip } from './tren/tren-wilayah.js?v=9.6';
+import { renderTables, sorotAtauBukaBeritaCve } from './tren/tren-tables.js?v=9.6';
+import { renderLaporanCards, tampilAiTab } from './tren/tren-ai-cards.js?v=10.0';
 
 let sudahDimuat = false;
 let sedangMemuat = false;
 
-// Expose tab switcher pada window agar selalu dapat diakses dari HTML
+// Expose fungsi ke window agar selalu dapat diakses dari HTML & event click
 window.tampilAiTab = tampilAiTab;
+window.sorotAtauBukaBeritaCve = sorotAtauBukaBeritaCve;
+window.sorotAtauBukaBeritaArsip = sorotAtauBukaBeritaArsip;
 
 /**
  * Memuat dan mengorkestrasi render seluruh submodul pada Tab Tren
@@ -100,14 +102,32 @@ export async function muatTabTren(isManualReload = false) {
 
     // 1. Delegasi ke tren-ai-cards (SITREP CTI AI 5 Modul)
     const containerBerita = document.getElementById('prediksi-berita-cards');
-    if (containerBerita) renderLaporanCards(containerBerita, data.prediksi_berita, 'berita');
+    if (containerBerita) {
+      try {
+        renderLaporanCards(containerBerita, data.prediksi_berita, 'berita');
+      } catch (errAi) {
+        console.error('Gagal merender laporan AI cards:', errAi);
+      }
+    }
 
     // 2. Delegasi ke submodul analitik
     const stat = data.statistik;
     if (stat) {
-      renderKpiCards(stat, isManualReload);
-      renderKasusInsidenWilayah(stat);
-      renderTables(stat);
+      try {
+        renderKpiCards(stat, isManualReload);
+      } catch (errKpi) {
+        console.error('Gagal merender KPI cards:', errKpi);
+      }
+      try {
+        renderKasusInsidenWilayah(stat);
+      } catch (errWil) {
+        console.error('Gagal merender kasus wilayah:', errWil);
+      }
+      try {
+        renderTables(stat);
+      } catch (errTbl) {
+        console.error('Gagal merender tables & CVE watchlist:', errTbl);
+      }
       
       // Render grafik terisolasi dengan delay singkat
       setTimeout(() => {

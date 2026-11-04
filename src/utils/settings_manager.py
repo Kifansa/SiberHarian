@@ -2,22 +2,12 @@ import json
 import sqlite3
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Set
 from src.storage.db import DEFAULT_DB_PATH, init_db
 from src.utils.config_loader import ConfigLoader
 from src.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
-
-OFFICIAL_NARRATIVE_MODELS: List[str] = [
-    "gemini-2.5-flash",
-    "gemini-2.5-flash-lite",
-    "gemini-3-flash",
-    "gemini-3.1-flash-lite",
-    "gemini-3.6-flash",
-    "gemini-3.5-flash-lite",
-    "gemini-3.8-flash",
-]
 
 OBSOLETE_MODELS: Set[str] = {
     "gemini-2.0-flash",
@@ -27,31 +17,44 @@ OBSOLETE_MODELS: Set[str] = {
     "embedding-001",
 }
 
-DEFAULT_RATE_LIMITS: Dict[str, float] = {
-    "gemini-2.5-flash": 5.0,
-    "gemini-2.5-flash-lite": 10.0,
-    "gemini-3-flash": 5.0,
-    "gemini-3.1-flash-lite": 15.0,
-    "gemini-3.6-flash": 5.0,
-    "gemini-3.5-flash-lite": 15.0,
-    "gemini-3.8-flash": 5.0,
-    "gemini-embedding-001": 100.0,
-    "gemini-embedding-exp-03-07": 100.0,
-    "text-embedding-004": 100.0,
-}
 
-DEFAULT_PROACTIVE_THRESHOLDS: Dict[str, int] = {
-    "gemini-2.5-flash": 4,
-    "gemini-2.5-flash-lite": 9,
-    "gemini-3-flash": 4,
-    "gemini-3.1-flash-lite": 14,
-    "gemini-3.6-flash": 4,
-    "gemini-3.5-flash-lite": 14,
-    "gemini-3.8-flash": 4,
-    "gemini-embedding-001": 90,
-    "gemini-embedding-exp-03-07": 90,
-    "text-embedding-004": 90,
-}
+class PengaturanTidakValid(ValueError):
+    """Nilai pengaturan tidak lolos validasi server."""
+
+
+def _default_gemini_values() -> Dict[str, Any]:
+    """Membaca nilai default Gemini dari config agar tidak ada duplikasi hardcode."""
+    gemini = ConfigLoader.get_config().get("gemini", {}) or {}
+
+    model_chain = [
+        str(m).strip()
+        for m in gemini.get("model_chain", [])
+        if str(m).strip() and str(m).strip() not in OBSOLETE_MODELS
+    ]
+
+    rate_limits: Dict[str, float] = {}
+    for k, v in (gemini.get("rate_limits") or {}).items():
+        if str(k) in OBSOLETE_MODELS:
+            continue
+        try:
+            rate_limits[str(k)] = float(v)
+        except (TypeError, ValueError):
+            continue
+
+    proactive_thresholds: Dict[str, int] = {}
+    for k, v in (gemini.get("proactive_thresholds") or {}).items():
+        if str(k) in OBSOLETE_MODELS:
+            continue
+        try:
+            proactive_thresholds[str(k)] = int(v)
+        except (TypeError, ValueError):
+            continue
+
+    return {
+        "model_chain": model_chain,
+        "rate_limits": rate_limits,
+        "proactive_thresholds": proactive_thresholds,
+    }
 
 # Registri prompt aktif dengan nama ramah pengguna, kategori, dan deskripsi
 PROMPT_METADATA: Dict[str, Dict[str, str]] = {
@@ -65,27 +68,47 @@ PROMPT_METADATA: Dict[str, Dict[str, str]] = {
         "kategori": "Pipeline Harian",
         "deskripsi": "Meringkas artikel insiden siber jadi 2-3 kalimat Bahasa Indonesia untuk digest.",
     },
+    "kasus_insiden_wilayah": {
+        "nama": "Kasus Insiden Teramai",
+        "kategori": "KASUS INSIDEN SIBER TERAMAI",
+        "deskripsi": "Sintesis analisis kasus insiden siber teratas (#1) per wilayah (Internasional, Nasional, Jawa Timur) berbasis fakta berita CTI.",
+    },
     "section_1_makro": {
-        "nama": "SITREP CTI - 1. Lanskap Makro",
-        "kategori": "SITREP Tren Berita",
+        "nama": "01 LONJAKAN ANCAMAN",
+        "kategori": "ANALISIS BERITA SIBER MINGGUAN",
         "deskripsi": "Sintesis pola ancaman makro berdasarkan lonjakan insiden riil mingguan.",
     },
     "section_2_mikro": {
-        "nama": "SITREP CTI - 2. Insiden Mikro",
-        "kategori": "SITREP Tren Berita",
+        "nama": "02 TREN MINGGUAN",
+        "kategori": "ANALISIS BERITA SIBER MINGGUAN",
         "deskripsi": "Analisis mendalam terhadap top 3 insiden dominan dalam 7 hari terakhir.",
     },
     "section_3_vektor": {
-        "nama": "SITREP CTI - 3. Vektor Serangan",
-        "kategori": "SITREP Tren Berita",
+        "nama": "03 VEKTOR SERANGAN",
+        "kategori": "ANALISIS BERITA SIBER MINGGUAN",
         "deskripsi": "Pemetaan metode serangan teknis dan sektor sasaran yang terdampak.",
     },
     "section_5_emerging": {
-        "nama": "SITREP CTI - 5. Ancaman Baru",
-        "kategori": "SITREP Tren Berita",
+        "nama": "05 PROYEKSI ANCAMAN",
+        "kategori": "ANALISIS BERITA SIBER MINGGUAN",
         "deskripsi": "Deteksi varian malware baru, taktik mutakhir, atau kelompok peretas baru.",
     },
 }
+
+PROMPT_SNAPSHOT_DIR = Path(__file__).resolve().parents[2] / "config" / "prompts"
+
+KEYWORD_GROUPS: Set[str] = {
+    "spesifik",
+    "general",
+    "english",
+    "indonesia_mandiri",
+    "objek_data_sensitif",
+    "objek_aset_digital",
+    "indikator_insiden",
+    "ambigu_butuh_konteks",
+}
+
+RSS_TYPES: Set[str] = {"international", "indonesia"}
 
 
 class SettingsManager:
@@ -128,6 +151,7 @@ class SettingsManager:
     @classmethod
     def _clean_obsolete_db(cls, conn):
         try:
+            defaults = _default_gemini_values()
             cur = conn.cursor()
             cur.execute("SELECT nilai FROM pengaturan WHERE kunci = 'gemini.model_chain'")
             row = cur.fetchone()
@@ -137,12 +161,12 @@ class SettingsManager:
                 except Exception:
                     models = []
                 clean = [m for m in models if m not in OBSOLETE_MODELS]
-                if not clean or any(m in OBSOLETE_MODELS for m in models) or (clean and clean[0] != "gemini-2.5-flash" and set(clean) == set(OFFICIAL_NARRATIVE_MODELS)):
-                    clean = OFFICIAL_NARRATIVE_MODELS
+                if not clean or any(m in OBSOLETE_MODELS for m in models) or (clean and clean[0] != "gemini-2.5-flash" and set(clean) == set(defaults["model_chain"])):
+                    clean = defaults["model_chain"]
                 if clean != models:
                     cur.execute("UPDATE pengaturan SET nilai = ? WHERE kunci = 'gemini.model_chain'", (json.dumps(clean),))
             else:
-                cur.execute("INSERT INTO pengaturan (kunci, nilai, diubah) VALUES ('gemini.model_chain', ?, datetime('now'))", (json.dumps(OFFICIAL_NARRATIVE_MODELS),))
+                cur.execute("INSERT INTO pengaturan (kunci, nilai, diubah) VALUES ('gemini.model_chain', ?, datetime('now'))", (json.dumps(defaults["model_chain"]),))
 
             cur.execute("SELECT nilai FROM pengaturan WHERE kunci = 'gemini.embedding_model_fallback'")
             row = cur.fetchone()
@@ -171,13 +195,13 @@ class SettingsManager:
                     current_rl = {}
                 for obs in OBSOLETE_MODELS:
                     current_rl.pop(obs, None)
-                for k, v in DEFAULT_RATE_LIMITS.items():
+                for k, v in defaults["rate_limits"].items():
                     if k not in current_rl:
                         current_rl[k] = v
                 if current_rl != (json.loads(row_rl[0]) if row_rl and row_rl[0] else {}):
                     cur.execute("UPDATE pengaturan SET nilai = ? WHERE kunci = 'gemini.rate_limits'", (json.dumps(current_rl),))
             else:
-                cur.execute("INSERT INTO pengaturan (kunci, nilai, diubah) VALUES ('gemini.rate_limits', ?, datetime('now'))", (json.dumps(DEFAULT_RATE_LIMITS),))
+                cur.execute("INSERT INTO pengaturan (kunci, nilai, diubah) VALUES ('gemini.rate_limits', ?, datetime('now'))", (json.dumps(defaults["rate_limits"]),))
 
             cur.execute("SELECT nilai FROM pengaturan WHERE kunci = 'gemini.proactive_thresholds'")
             row_pt = cur.fetchone()
@@ -188,19 +212,35 @@ class SettingsManager:
                     current_pt = {}
                 for obs in OBSOLETE_MODELS:
                     current_pt.pop(obs, None)
-                for k, v in DEFAULT_PROACTIVE_THRESHOLDS.items():
+                for k, v in defaults["proactive_thresholds"].items():
                     if k not in current_pt:
                         current_pt[k] = v
                 if current_pt != (json.loads(row_pt[0]) if row_pt and row_pt[0] else {}):
                     cur.execute("UPDATE pengaturan SET nilai = ? WHERE kunci = 'gemini.proactive_thresholds'", (json.dumps(current_pt),))
             else:
-                cur.execute("INSERT INTO pengaturan (kunci, nilai, diubah) VALUES ('gemini.proactive_thresholds', ?, datetime('now'))", (json.dumps(DEFAULT_PROACTIVE_THRESHOLDS),))
+                cur.execute("INSERT INTO pengaturan (kunci, nilai, diubah) VALUES ('gemini.proactive_thresholds', ?, datetime('now'))", (json.dumps(defaults["proactive_thresholds"]),))
 
             # Bersihkan karakter BOM (\ufeff) dari template prompt
             cur.execute("SELECT kunci, nilai FROM pengaturan WHERE kunci LIKE 'prompt.%'")
             for p_kunci, p_nilai in cur.fetchall():
                 if isinstance(p_nilai, str) and p_nilai.startswith("\ufeff"):
                     cur.execute("UPDATE pengaturan SET nilai = ? WHERE kunci = ?", (p_nilai.lstrip("\ufeff"), p_kunci))
+
+            # Pastikan semua template prompt dari registri tersemat di database
+            for p_id in PROMPT_METADATA:
+                cur.execute("SELECT nilai FROM pengaturan WHERE kunci = ?", (f"prompt.{p_id}",))
+                row_p = cur.fetchone()
+                if not row_p or not row_p[0]:
+                    snap_file = PROMPT_SNAPSHOT_DIR / f"{p_id}.txt"
+                    if snap_file.exists():
+                        try:
+                            isi_snap = snap_file.read_text(encoding="utf-8-sig").lstrip("\ufeff")
+                            cur.execute(
+                                "INSERT OR REPLACE INTO pengaturan (kunci, nilai, diubah) VALUES (?, ?, datetime('now'))",
+                                (f"prompt.{p_id}", isi_snap),
+                            )
+                        except Exception:
+                            pass
 
             conn.commit()
         except Exception as e:
@@ -239,8 +279,9 @@ class SettingsManager:
                 val = [m for m in val if m not in OBSOLETE_MODELS]
             else:
                 val = []
-            if not val or (val and val[0] != "gemini-2.5-flash" and set(val) == set(OFFICIAL_NARRATIVE_MODELS)):
-                val = list(OFFICIAL_NARRATIVE_MODELS)
+            default_chain = _default_gemini_values()["model_chain"]
+            if not val or (val and val[0] != "gemini-2.5-flash" and set(val) == set(default_chain)):
+                val = list(default_chain)
 
         elif kunci.startswith("keywords."):
             if isinstance(val, str):
@@ -261,20 +302,22 @@ class SettingsManager:
                 val = "gemini-embedding-001"
 
         elif kunci == "gemini.rate_limits":
+            defaults = _default_gemini_values()["rate_limits"]
             if not isinstance(val, dict):
-                val = dict(DEFAULT_RATE_LIMITS)
+                val = dict(defaults)
             else:
                 val = {k: float(v) for k, v in val.items() if k not in OBSOLETE_MODELS}
-                for k, v in DEFAULT_RATE_LIMITS.items():
+                for k, v in defaults.items():
                     if k not in val:
                         val[k] = v
 
         elif kunci == "gemini.proactive_thresholds":
+            defaults = _default_gemini_values()["proactive_thresholds"]
             if not isinstance(val, dict):
-                val = dict(DEFAULT_PROACTIVE_THRESHOLDS)
+                val = dict(defaults)
             else:
                 val = {k: int(v) for k, v in val.items() if k not in OBSOLETE_MODELS}
-                for k, v in DEFAULT_PROACTIVE_THRESHOLDS.items():
+                for k, v in defaults.items():
                     if k not in val:
                         val[k] = v
 
@@ -313,18 +356,190 @@ class SettingsManager:
             "batch_sizes": cls.get("gemini.batch_sizes", yaml_cfg.get("batch_sizes", {})),
         }
 
+    @staticmethod
+    def sanitize_api_key_list(value: Any) -> List[str]:
+        """Menormalkan daftar API key: trim, buang kosong, dedup, pertahankan urutan."""
+        if isinstance(value, str):
+            parsed = [
+                k.strip()
+                for k in value.replace("\r\n", "\n").replace("\n", ",").split(",")
+                if k.strip()
+            ]
+        elif isinstance(value, (list, tuple)):
+            parsed = [str(k).strip() for k in value if str(k).strip()]
+        else:
+            raise PengaturanTidakValid("Daftar API Key harus berupa teks atau array.")
+        return list(dict.fromkeys(parsed))
+
+    @classmethod
+    def sanitize_api_key(cls, value: Any) -> Any:
+        """Menormalkan API key; satu key disimpan sebagai string seperti perilaku lama."""
+        if isinstance(value, str):
+            keys = cls.sanitize_api_key_list(value)
+            return keys if len(keys) > 1 else (keys[0] if keys else "")
+        if isinstance(value, (list, tuple)):
+            return cls.sanitize_api_key_list(value)
+        raise PengaturanTidakValid("API Key harus berupa teks atau array.")
+
+    @staticmethod
+    def sanitize_model_chain(value: Any) -> List[str]:
+        """Membersihkan rantai model dari model usang dan duplikat."""
+        if isinstance(value, str):
+            daftar = value.replace("\r\n", "\n").replace("\n", ",").split(",")
+        elif isinstance(value, (list, tuple)):
+            daftar = list(value)
+        else:
+            raise PengaturanTidakValid("Model chain harus berupa teks atau array.")
+
+        bersih: List[str] = []
+        for item in daftar:
+            model = str(item).strip()
+            if not model or model in OBSOLETE_MODELS or model in bersih:
+                continue
+            bersih.append(model)
+        return bersih
+
+    @staticmethod
+    def sanitize_embedding_fallbacks(value: Any) -> List[str]:
+        """Membersihkan daftar fallback embedding dari nilai usang dan duplikat."""
+        if isinstance(value, str):
+            daftar = value.replace("\r\n", "\n").replace("\n", ",").split(",")
+        elif isinstance(value, (list, tuple)):
+            daftar = list(value)
+        else:
+            raise PengaturanTidakValid("Fallback embedding harus berupa teks atau array.")
+
+        bersih: List[str] = []
+        for item in daftar:
+            model = str(item).strip()
+            if not model or model == "embedding-001" or model in bersih:
+                continue
+            bersih.append(model)
+        return bersih
+
+    @staticmethod
+    def sanitize_keywords(value: Any) -> List[str]:
+        """Menormalkan kata kunci menjadi huruf kecil, unik, dan tanpa nilai kosong."""
+        if isinstance(value, str):
+            daftar = value.replace("\r\n", "\n").replace("\n", ",").split(",")
+        elif isinstance(value, (list, tuple)):
+            daftar = list(value)
+        else:
+            raise PengaturanTidakValid("Kata kunci harus berupa teks atau array.")
+
+        bersih: List[str] = []
+        for item in daftar:
+            kata = str(item).strip().lower()
+            if kata and kata not in bersih:
+                bersih.append(kata)
+        return bersih
+
+    @classmethod
+    def sanitize_rss_sources(cls, value: Any) -> List[dict]:
+        """Memvalidasi struktur sumber RSS: nama wajib, feed unik, status boolean."""
+        if not isinstance(value, list):
+            raise PengaturanTidakValid("Sumber RSS harus berupa array.")
+
+        bersih: List[dict] = []
+        for item in value:
+            if not isinstance(item, dict):
+                raise PengaturanTidakValid("Setiap sumber RSS harus berupa objek.")
+            nama = str(item.get("nama", "")).strip()
+            if not nama:
+                raise PengaturanTidakValid("Nama sumber RSS wajib diisi.")
+
+            feeds = item.get("feeds", [])
+            if isinstance(feeds, str):
+                daftar_feed = [
+                    f.strip() for f in feeds.replace("\n", ",").split(",") if f.strip()
+                ]
+            elif isinstance(feeds, list):
+                daftar_feed = [str(f).strip() for f in feeds if str(f).strip()]
+            else:
+                raise PengaturanTidakValid("Feed RSS harus berupa teks atau array.")
+
+            bersih.append({
+                "nama": nama,
+                "feeds": list(dict.fromkeys(daftar_feed)),
+                "active": bool(item.get("active", True)),
+            })
+        return bersih
+
+    @staticmethod
+    def sanitize_rate_limits(value: Any) -> Dict[str, float]:
+        """Memvalidasi rate limit per model sebagai angka positif."""
+        if not isinstance(value, dict):
+            raise PengaturanTidakValid("Rate limit harus berupa objek.")
+        bersih: Dict[str, float] = {}
+        for k, v in value.items():
+            model = str(k).strip()
+            if not model or model in OBSOLETE_MODELS:
+                continue
+            try:
+                angka = float(v)
+            except (TypeError, ValueError):
+                raise PengaturanTidakValid(f"Rate limit model '{model}' harus berupa angka.")
+            if angka <= 0:
+                raise PengaturanTidakValid(f"Rate limit model '{model}' harus lebih dari nol.")
+            bersih[model] = angka
+        return bersih
+
+    @staticmethod
+    def sanitize_proactive_thresholds(value: Any) -> Dict[str, int]:
+        """Memvalidasi ambang proaktif per model sebagai bilangan bulat positif."""
+        if not isinstance(value, dict):
+            raise PengaturanTidakValid("Ambang proaktif harus berupa objek.")
+        bersih: Dict[str, int] = {}
+        for k, v in value.items():
+            model = str(k).strip()
+            if not model or model in OBSOLETE_MODELS:
+                continue
+            try:
+                angka = int(v)
+            except (TypeError, ValueError):
+                raise PengaturanTidakValid(f"Ambang proaktif model '{model}' harus berupa bilangan bulat.")
+            if angka <= 0:
+                raise PengaturanTidakValid(f"Ambang proaktif model '{model}' harus lebih dari nol.")
+            bersih[model] = angka
+        return bersih
+
+    @classmethod
+    def reset_prompt(cls, nama: str) -> str:
+        """Mengembalikan isi prompt ke snapshot beku `config/prompts/<nama>.txt`."""
+        if nama not in PROMPT_METADATA:
+            raise PengaturanTidakValid("Nama prompt tidak dikenal.")
+        path = PROMPT_SNAPSHOT_DIR / f"{nama}.txt"
+        if not path.exists():
+            raise FileNotFoundError(f"Snapshot prompt tidak ditemukan: {path}")
+
+        isi = path.read_text(encoding="utf-8-sig")
+        cls.set(f"prompt.{nama}", isi)
+        return isi
+
     @classmethod
     def get_keywords(cls) -> dict:
         """Membaca semua grup kata kunci langsung dari database SQLite (tabel pengaturan)."""
-        return {
+        res = {
             grup: cls.get(f"keywords.{grup}", [])
-            for grup in ["english", "indonesia_mandiri", "objek_data_sensitif",
+            for grup in ["spesifik", "general", "english", "indonesia_mandiri", "objek_data_sensitif",
                          "objek_aset_digital", "indikator_insiden", "ambigu_butuh_konteks"]
         }
+        if not res.get("spesifik"):
+            res["spesifik"] = list(dict.fromkeys((res.get("indonesia_mandiri") or []) + (res.get("english") or [])))
+        if not res.get("general"):
+            res["general"] = list(dict.fromkeys(
+                (res.get("objek_data_sensitif") or []) +
+                (res.get("objek_aset_digital") or []) +
+                (res.get("indikator_insiden") or []) +
+                (res.get("ambigu_butuh_konteks") or [])
+            ))
+        return res
 
     @classmethod
     def get_prompt(cls, nama: str) -> str:
         """Membaca template prompt CTI langsung dari database SQLite (tabel pengaturan), dengan fallback cerdas ke berkas konfigurasi lokal."""
+        if nama in ("kasus_wilayah", "section_wilayah") and "kasus_insiden_wilayah" in PROMPT_METADATA:
+            nama = "kasus_insiden_wilayah"
         val = cls.get(f"prompt.{nama}", "")
         if not val or not str(val).strip():
             try:
@@ -336,7 +551,7 @@ class SettingsManager:
 
     @classmethod
     def get_all_prompts_info(cls) -> List[dict]:
-        """Mengembalikan daftar 6 prompt aktif dengan metadata nama, kategori, dan deskripsi dari database."""
+        """Mengembalikan daftar prompt aktif dengan metadata nama, kategori, dan deskripsi dari database."""
         prompts_info = []
         for prompt_id, meta in PROMPT_METADATA.items():
             isi = cls.get_prompt(prompt_id)

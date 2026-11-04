@@ -4,22 +4,19 @@ Modul CTI Data Preparation & Relational/Document Storage.
 Melakukan transformasi dan persiapan data dari berkas mentah staging:
 1. Perataan MITRE ATT&CK STIX 2.1: Memfilter hanya attack-pattern aktif (membuang revoked/deprecated).
 2. Pembangkitan Dokumen Taksonomi Insiden: 11 kategori tertutup berpemetaan ke induk eCSIRT.
-3. Ingesti D3FEND Relasional: Menyimpan teknik & relasi pemetaan ke SQLite data/state.db (strictly non-vector).
+3. Ingesti D3FEND: Menyimpan teknik & relasi pemetaan ke berkas prepared JSON (strictly non-vector).
 4. Perataan Katalog NIST OSCAL: Mengekstraksi kontrol SP 800-53 Rev 5 dan subkategori CSF 2.0.
 """
 
-import os
 import json
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Any, List, Optional, Tuple, Set
+from typing import Dict, Any, List, Optional
 
 from src.storage.db import (
-    DEFAULT_DB_PATH,
     simpan_d3fend_techniques,
     simpan_d3fend_attack_mappings,
-    ambil_d3fend_mitigasi_by_attack_id,
 )
 from src.utils.logger import setup_logger
 
@@ -217,11 +214,9 @@ class CTIPreparer:
         self,
         raw_base_dir: Path = DEFAULT_RAW_DIR,
         prepared_base_dir: Path = DEFAULT_PREPARED_DIR,
-        db_path: Path = DEFAULT_DB_PATH,
     ):
         self.raw_base_dir = Path(raw_base_dir)
         self.prepared_base_dir = Path(prepared_base_dir)
-        self.db_path = Path(db_path)
 
     # -------------------------------------------------------------------------
     # 1. MITRE ATT&CK STIX 2.1 Flattener
@@ -393,19 +388,18 @@ class CTIPreparer:
         )
 
     # -------------------------------------------------------------------------
-    # 3. D3FEND Relational Storage (SQLite)
+    # 3. D3FEND Prepared Storage (JSON)
     # -------------------------------------------------------------------------
     @staticmethod
     def prepare_d3fend_storage(
         mappings_input: Any,
         techniques_input: Any,
-        db_path: Path = DEFAULT_DB_PATH,
         prepared_dir: Optional[Path] = None,
         source_version: str = "1.6.0",
     ) -> Dict[str, Any]:
         """
         Memproses ontologi teknik D3FEND dan relasi pemetaan ATT&CK -> D3FEND,
-        lalu menyimpannya ke tabel relasional SQLite (strictly non-vector).
+        lalu menyimpannya ke berkas prepared JSON (strictly non-vector).
         """
         # 1. Load techniques data
         if isinstance(techniques_input, (str, Path)):
@@ -519,11 +513,11 @@ class CTIPreparer:
                 "source_version": source_version,
             })
 
-        # Simpan ke berkas JSON data/prepared/ dan SQLite jika custom db
+        # Simpan ke berkas JSON data/prepared/
         tech_list = sorted(list(techniques_to_store.values()), key=lambda x: x["technique_id"])
         mappings_to_store = sorted(mappings_to_store, key=lambda x: (x["attack_technique_id"], x["technique_id"]))
-        stored_tech = simpan_d3fend_techniques(tech_list, db_path=db_path, prepared_dir=prepared_dir)
-        stored_maps = simpan_d3fend_attack_mappings(mappings_to_store, db_path=db_path, prepared_dir=prepared_dir)
+        stored_tech = simpan_d3fend_techniques(tech_list, prepared_dir=prepared_dir)
+        stored_maps = simpan_d3fend_attack_mappings(mappings_to_store, prepared_dir=prepared_dir)
 
         logger.info(
             f"D3FEND Storage siap: {stored_tech} teknik disimpan, {stored_maps} baris relasi ATT&CK dipetakan."
@@ -533,7 +527,6 @@ class CTIPreparer:
             "techniques_stored": stored_tech,
             "mappings_stored": stored_maps,
             "total_raw_bindings": len(bindings),
-            "db_path": str(db_path),
         }
 
     # -------------------------------------------------------------------------
@@ -736,7 +729,6 @@ class CTIPreparer:
             d3_res = self.prepare_d3fend_storage(
                 mappings_input=map_file,
                 techniques_input=tech_file,
-                db_path=self.db_path,
                 prepared_dir=self.prepared_base_dir,
                 source_version=ver_str,
             )
@@ -769,11 +761,12 @@ def generate_taxonomy_documents(machinetag_input: Optional[Any] = None, source_v
 def prepare_d3fend_storage(
     mappings_input: Any,
     techniques_input: Any,
-    db_path: Path = DEFAULT_DB_PATH,
     prepared_dir: Optional[Path] = None,
     source_version: str = "1.6.0",
 ) -> Dict[str, Any]:
-    return CTIPreparer.prepare_d3fend_storage(mappings_input, techniques_input, db_path, prepared_dir, source_version)
+    return CTIPreparer.prepare_d3fend_storage(
+        mappings_input, techniques_input, prepared_dir, source_version
+    )
 
 
 def flatten_nist_oscal(
@@ -785,10 +778,9 @@ def flatten_nist_oscal(
 def prepare_all_staged(
     raw_dir: Path = DEFAULT_RAW_DIR,
     prepared_dir: Path = DEFAULT_PREPARED_DIR,
-    db_path: Path = DEFAULT_DB_PATH,
     specific_date: Optional[str] = None,
 ) -> Dict[str, Any]:
-    preparer = CTIPreparer(raw_base_dir=raw_dir, prepared_base_dir=prepared_dir, db_path=db_path)
+    preparer = CTIPreparer(raw_base_dir=raw_dir, prepared_base_dir=prepared_dir)
     return preparer.prepare_all_staged(specific_date=specific_date)
 
 

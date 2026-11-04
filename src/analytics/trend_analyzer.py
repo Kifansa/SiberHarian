@@ -10,7 +10,7 @@ Prinsip pembagian periode: window 14 hari dibagi jadi
 Growth dihitung dari rata-rata HARIAN (bukan total mentah).
 """
 from collections import Counter
-from datetime import datetime, timedelta
+from datetime import datetime
 import re
 from typing import Any, Dict, List, Optional
 from rapidfuzz import fuzz
@@ -37,7 +37,10 @@ def _split_periode(df: pd.DataFrame, kolom_tanggal: str = "tanggal_publish") -> 
         return df, df
 
     df = df.copy()
-    tgl_series = df[kolom_tanggal].fillna("").astype(str).str.slice(0, 10)
+    col_tgl = kolom_tanggal if kolom_tanggal in df.columns else ("tanggal_dicatat" if "tanggal_dicatat" in df.columns else None)
+    if col_tgl is None:
+        return df, pd.DataFrame(columns=df.columns)
+    tgl_series = df[col_tgl].fillna("").astype(str).str.slice(0, 10)
     tanggal_unik = sorted(tgl_series[tgl_series.str.match(r"^\d{4}-\d{2}-\d{2}$")].unique(), reverse=True)
 
     if not tanggal_unik:
@@ -241,11 +244,10 @@ def ambil_sampel_judul_insiden(
     ]
 
 
-
-
-
-
-
+def _kata_kunci_cocok(kata: str, teks: str) -> bool:
+    if not kata or not teks:
+        return False
+    return bool(re.search(rf"\b{re.escape(kata.lower())}\b", teks))
 
 
 def hitung_tren_vektor_serangan(
@@ -266,7 +268,7 @@ def hitung_tren_vektor_serangan(
     for _, row in df_berita.iterrows():
         teks = (str(row.get("judul", "")) + " " + str(row.get("ringkasan_atau_narasi", "")) + " " + str(row.get("kata_kunci", ""))).lower()
         for v_nama, v_words in VEKTOR_RULES.items():
-            if any(w in teks for w in v_words):
+            if any(_kata_kunci_cocok(w, teks) for w in v_words):
                 vektor_counts[v_nama] += 1
 
     hasil = [{"vektor": v, "jumlah": c} for v, c in vektor_counts.items()]
@@ -308,7 +310,7 @@ def hitung_distribusi_taktik_mitre(
             taktik = entry.get("tactic", "Initial Access")
             taktik_list = [t.strip() for t in taktik.split("/")]
             kws = entry.get("keywords", [])
-            if any(k in teks for k in kws):
+            if any(_kata_kunci_cocok(k, teks) for k in kws):
                 for t in taktik_list:
                     taktik_ditemukan.add(t)
 
@@ -327,7 +329,6 @@ def hitung_distribusi_taktik_mitre(
             "persen": round((count / total) * 100, 1)
         })
     return hasil
-
 
 
 def ekstrak_radar_cve_watchlist(
@@ -365,6 +366,7 @@ def ekstrak_radar_cve_watchlist(
         judul = str(row.get("judul", ""))
         narasi = str(row.get("ringkasan_atau_narasi", ""))
         sumber = str(row.get("sumber", "Media Intelijen"))
+        link = str(row.get("link", ""))
         teks_gabung = f"{judul} {narasi}"
 
         cve_matches = cve_regex.findall(teks_gabung)
@@ -373,7 +375,7 @@ def ekstrak_radar_cve_watchlist(
             app_target = "Komponen Server / Gateway"
             teks_lower = teks_gabung.lower()
             for sw in software_keywords:
-                if sw in teks_lower:
+                if _kata_kunci_cocok(sw, teks_lower):
                     app_target = sw.title()
                     break
 
@@ -384,17 +386,20 @@ def ekstrak_radar_cve_watchlist(
                     "status_urgensi": "Eksploitasi Aktif",
                     "jumlah_laporan": 1,
                     "sumber_terakhir": sumber,
-                    "contoh_kasus": judul[:90]
+                    "contoh_kasus": judul[:90],
+                    "judul_lengkap": judul,
+                    "ringkasan": narasi,
+                    "link": link
                 }
             else:
                 temuan[cve_upper]["jumlah_laporan"] += 1
 
         teks_lower = teks_gabung.lower()
-        if not cve_matches and any(term in teks_lower for term in ["zero-day", "0-day", "rce", "remote code execution", "celah kritis"]):
-            label = "Kerentanan Zero-Day" if "zero-day" in teks_lower or "0-day" in teks_lower else "Celah Kritis RCE"
+        if not cve_matches and re.search(r"\b(?:zero-day|0-day|rce|remote code execution|celah kritis)\b", teks_lower):
+            label = "Kerentanan Zero-Day" if ("zero-day" in teks_lower or "0-day" in teks_lower) else "Celah Kritis RCE"
             app_target = "Layanan Web Publik"
             for sw in software_keywords:
-                if sw in teks_lower:
+                if _kata_kunci_cocok(sw, teks_lower):
                     app_target = sw.title()
                     break
 
@@ -406,7 +411,10 @@ def ekstrak_radar_cve_watchlist(
                     "status_urgensi": "Pantauan Eksploitasi",
                     "jumlah_laporan": 1,
                     "sumber_terakhir": sumber,
-                    "contoh_kasus": judul[:90]
+                    "contoh_kasus": judul[:90],
+                    "judul_lengkap": judul,
+                    "ringkasan": narasi,
+                    "link": link
                 }
             else:
                 temuan[key]["jumlah_laporan"] += 1
@@ -439,7 +447,7 @@ def hitung_tren_sektor_target(
         for _, row in df_sub.iterrows():
             teks = (str(row.get("judul", "")) + " " + str(row.get("ringkasan_atau_narasi", "")) + " " + str(row.get("kata_kunci", ""))).lower()
             for s_nama, s_words in SEKTOR_RULES.items():
-                if any(w in teks for w in s_words):
+                if any(_kata_kunci_cocok(w, teks) for w in s_words):
                     counts[s_nama] += 1
         return counts
 
@@ -468,19 +476,18 @@ def hitung_tren_sektor_target(
     return hasil
 
 
+# Frasa idiomatik/umum yang tidak boleh disalahartikan sebagai wilayah Jawa Timur (Batu / Malang)
+_REGEX_AMBIGU_JATIM = re.compile(
+    r'\b(?:batu\s+bara|batubara|batu\s+ginjal|batu\s+akik|kepala\s+batu|gula\s+batu|batu\s+bata|'
+    r'batu\s+karang|batu\s+apung|batu\s+mulia|nasib\s+malang|malang\s+melintang|malang\s+nian|'
+    r'malang\s+tak\s+dapat|korban\s+yang\s+malang|pria\s+malang|wanita\s+malang|gadis\s+malang|'
+    r'bocah\s+malang|orang\s+malang)\b',
+    re.IGNORECASE
+)
 
-
-
-
-# Media Cybersecurity Internasional (RSS Resmi Luar Negeri)
-
-
-# Entitas Geografis Murni Jawa Timur (Provinsi + 29 Kabupaten + 9 Kota)
-# Tanpa hardcode nama instansi/OPD karena instansi lokal selalu mengandung unsur "Jatim"/"Jawa Timur" atau nama kota/kabupatennya.
-
-
+# Entitas Geografis & Instansi Jawa Timur (Provinsi + 29 Kabupaten + 9 Kota)
 _KEYWORDS_JATIM_REGEX = re.compile(
-    r'\b(?:' + '|'.join(re.escape(k) for k in ConfigLoader.get_rules("keywords_jawa_timur")) + r')\b',
+    r'\b(?:' + '|'.join(re.escape(k) for k in ConfigLoader.get_rules("keywords_jawa_timur")) + r'|malang)\b',
     re.IGNORECASE
 )
 
@@ -491,26 +498,112 @@ _REGEX_DATELINE = re.compile(
 
 # Entitas tingkat nasional murni (mencegah artikel nasional yang diliput media Jatim masuk ke Jatim)
 _ENTITAS_NASIONAL_REGEX = re.compile(
-    r'\b(?:pusat data nasional|pdn|kpu ri|kpu pusat|kemenkes|kemhan|kementerian|mabes polri|'
-    r'bareskrim|bssn|dpr ri|kejaksaan agung|bank indonesia|ojk pusat|bpjs)\b',
+    r'\b(?:pusat data nasional|pdn|pdns|kpu ri|kpu pusat|kemenkes|kemhan|kementan|kemenkeu|'
+    r'kemenkominfo|komdigi|kemenkomdigi|kementerian|mabes polri|bareskrim|bssn|dpr ri|'
+    r'kejaksaan agung|bank indonesia|ojk pusat|bpjs)\b',
     re.IGNORECASE
 )
 
-# Entitas & negara internasional untuk deteksi konten luar negeri yang diliput media nasional
+# Entitas & negara internasional untuk deteksi konten luar negeri
 _REGEX_KONTEN_INTERNASIONAL = re.compile(
-    r'\b(australia|amerika|amerika serikat|as|us|usa|inggris|britania|rusia|china|tiongkok|'
+    r'\b(australia|amerika|amerika serikat|as|us|usa|new mexico|california|inggris|britania|rusia|china|tiongkok|'
     r'korea selatan|korea utara|jepang|singapura|malaysia|belanda|amsterdam|prancis|jerman|'
     r'ukraina|israel|iran|taiwan|kanada|india|global|dunia|internasional|pentagon|white house|'
-    r'fbi|cia|nsa|kremlin|europol|interpol)\b',
+    r'fbi|cia|nsa|kremlin|europol|interpol|kepco|korea electric power)\b',
     re.IGNORECASE
 )
 
-# Entitas & indikator target Indonesia untuk mencegah false positive internasional
-_REGEX_TARGET_INDONESIA = re.compile(
-    r'\b(indonesia|ri|kpu|pdn|kemenkes|kemhan|polri|tni|bumn|jatim|jawa|jakarta|surabaya|'
-    r'diskominfo|pemprov|pemkab|pemkot|dprd|bpjs|bank bri|bca|mandiri|bni)\b',
+# Indikator artikel terjemahan entitas asing yang tidak boleh dianggap BUMN/target Indonesia (mis. KEPCO -> PLN)
+_REGEX_ARTEFAK_ASING = re.compile(
+    r'(?:\bkepco\b|\bkorea\s+electric\s+power\b|[\uac00-\ud7af])',
     re.IGNORECASE
 )
+
+# Entitas & indikator target Indonesia (Nasional di luar Jawa Timur, provinsi, kota besar, BUMN/instansi, domain .id)
+# Kata ambigu seperti "mandiri" dan "garuda" wajib berpasangan dengan konteks institusi resminya.
+_REGEX_TARGET_INDONESIA = re.compile(
+    r'(?:\b(?:'
+    r'indonesia|tanah\s+air|nusantara|nkri|ri|jakarta|dki\s+jakarta|bogor|depok|tangerang|tangsel|bekasi|'
+    r'jawa\s+barat|jabar|bandung|cirebon|sukabumi|tasikmalaya|karawang|purwakarta|garut|cianjur|'
+    r'jawa\s+tengah|jateng|semarang|surakarta|solo|magelang|pekalongan|tegal|cilacap|banyumas|purwokerto|'
+    r'yogyakarta|jogja|diy|sleman|bantul|kulon\s+progo|gunungkidul|banten|serang|cilegon|'
+    r'sumatera\s+barat|sumbar|padang|bukittinggi|payakumbuh|sumatera\s+utara|sumut|medan|deli\s+serdang|'
+    r'sumatera\s+selatan|sumsel|palembang|riau|pekanbaru|kepri|batam|bintan|tanjungpinang|'
+    r'aceh|banda\s+aceh|lampung|bandar\s+lampung|jambi|bengkulu|bangka\s+belitung|pangkalpinang|'
+    r'bali|denpasar|badung|gianyar|bangli|buleleng|tabanan|klungkung|karangasem|jembrana|'
+    r'ntb|lombok|mataram|bima|sumbawa|ntt|kupang|flores|sumba|labuan\s+bajo|'
+    r'kalimantan\s+barat|kalbar|pontianak|singkawang|kalimantan\s+tengah|kalteng|palangkaraya|'
+    r'kalimantan\s+selatan|kalsel|banjarmasin|banjarbaru|kalimantan\s+timur|kaltim|samarinda|balikpapan|bontang|'
+    r'kalimantan\s+utara|kaltara|tarakan|ikn\s+nusantara|otorita\s+ikn|'
+    r'sulawesi\s+selatan|sulsel|makassar|gowa|maros|parepare|sulawesi\s+utara|sulut|manado|bitung|tomohon|'
+    r'sulawesi\s+tengah|sulteng|palu|morowali|sulawesi\s+tenggara|sultra|kendari|baubau|'
+    r'gorontalo|sulawesi\s+barat|sulbar|mamuju|maluku|ambon|ternate|tidore|papua|jayapura|sorong|manokwari|merauke|timika|'
+    r'kpu|bawaslu|pdn|pdns|pusat\s+data\s+nasional|kemenkes|kemhan|kementan|kemenkeu|kemendagri|kemendikbud|'
+    r'kemenkominfo|kominfo|komdigi|kemenkomdigi|bssn|csirt|gov-csirt|polri|mabes\s+polri|bareskrim|polda|polres|polresta|'
+    r'tni|bumn|dpr\s+ri|dprd|mpr\s+ri|kpk|kejagung|kejaksaan|mahkamah\s+agung|mahkamah\s+konstitusi|'
+    r'bpjs|ojk|bank\s+indonesia|qris|pandi|diskominfo|pemprov|pemkab|pemkot|bpkpd|dukcapil|'
+    r'bank\s+bri|pt\s+bri|brimo|bca|bank\s+bca|bni|bank\s+bni|bsi|bank\s+syariah\s+indonesia|btn|bank\s+btn|'
+    r'bank\s+mandiri|pt\s+bank\s+mandiri|livin\s+by\s+mandiri|mandiri\s+online|nasabah\s+mandiri|atm\s+mandiri|sekuritas\s+mandiri|'
+    r'garuda\s+indonesia|maskapai\s+garuda|pertamina|telkom|telkomsel|indihome|indosat|xl\s+axiata|'
+    r'pln|pt\s+pln|pln\s+mobile|tokopedia|gojek|goto|bukalapak|traveloka|'
+    r'universitas\s+indonesia|mahasiswa\s+ui|kampus\s+ui|ugm|universitas\s+gadjah\s+mada|itb|ipb|undip|unpad'
+    r')\b|(?:\.(?:go|co|ac|or|desa|sch|net|web|my)\.id\b|\bdomain\s+\.id\b|\bsitus\s+\.id\b))',
+    re.IGNORECASE
+)
+
+# Filter berita non-insiden siber (bantahan murni, penangkapan judi online konvensional, kebijakan/opini non-serangan)
+_REGEX_BANTAHAN_MURNI = re.compile(
+    r'\b(?:tak\s+temukan\s+indikasi\s+kebocoran|tidak\s+menemukan\s+indikasi\s+kebocoran|'
+    r'tidak\s+ditemukan\s+indikasi\s+kebocoran|bantah\s+(?:isu\s+)?kebocoran\s+data|membantah\s+(?:isu\s+)?kebocoran\s+data|'
+    r'tepis\s+(?:isu\s+)?kebocoran\s+data|menepis\s+kabar\s+hoaks|pastikan\s+server\s+aman|'
+    r'bantah\s+terkait\s+transfer|tak\s+terkait\s+operasi\s+sekarang|tidak\s+terkait\s+operasi\s+sekarang|'
+    r'pastikan\s+data\s+aman\s+tidak\s+bocor|pastikan\s+sistem\s+tidak\s+diretas)\b',
+    re.IGNORECASE
+)
+
+_REGEX_KEBIJAKAN_NON_INSIDEN = re.compile(
+    r'\b(?:kaji\s+bentuk\s+tim\s+tanggap|larang\s+pegawai\s+negeri\s+gunakan|larang\s+pns\s+gunakan|'
+    r'ingatkan\s+kreator\s+waspadai|masuk\s+tim\s+keamanan\s+siber\s+dunia|gelar\s+sosialisasi\s+keamanan\s+siber|'
+    r'tips\s+aman\s+bertransaksi|cara\s+mudah\s+mencegah\s+peretasan)\b',
+    re.IGNORECASE
+)
+
+
+def _is_bukan_insiden_siber_aktual(
+    judul_bersih: str, teks_konten_bersih: str, row_dict: Optional[Dict[str, Any]] = None
+) -> bool:
+    """
+    Mengecualikan berita yang bukan insiden serangan siber aktual terhadap sistem/infrastruktur:
+    1. Berita penegakan hukum/penangkapan pelaku judi online atau kriminal umum (via rag_engine.is_berita_penegakan_hukum).
+    2. Berita bantahan murni tanpa konfirmasi kebocoran/insiden aktif.
+    3. Berita kebijakan/himbauan/pencapaian umum yang tidak melaporkan insiden serangan siber.
+    """
+    from src.analytics.rag_engine import is_berita_penegakan_hukum
+    eval_dict = row_dict or {"judul": judul_bersih, "ringkasan_atau_narasi": teks_konten_bersih}
+    if is_berita_penegakan_hukum(eval_dict):
+        return True
+
+    judul_low = judul_bersih.lower()
+    if _REGEX_BANTAHAN_MURNI.search(judul_low) or _REGEX_BANTAHAN_MURNI.search(teks_konten_bersih):
+        return True
+
+    if _REGEX_KEBIJAKAN_NON_INSIDEN.search(judul_low):
+        return True
+
+    # Penangkapan pelaku judi online konvensional (tanpa peretasan situs/defacement)
+    if re.search(r'\b(?:judi\s+online|judol)\b', teks_konten_bersih):
+        ada_penangkapan = bool(re.search(
+            r'\b(?:tangkap|ditangkap|menangkap|meringkus|diringkus|mengamankan|diamankan|tersangka|pelaku|bandar|warung\s+kopi|selebgram)\b',
+            teks_konten_bersih
+        ))
+        ada_serangan_siber = bool(re.search(
+            r'\b(?:diretas|peretasan|retas|deface|defacement|disusupi|situs|domain|subdomain|website|server|injeksi)\b',
+            teks_konten_bersih
+        ))
+        if ada_penangkapan and not ada_serangan_siber:
+            return True
+
+    return False
 
 
 def _bersihkan_judul_dan_publisher(judul_raw: str, sumber_raw: str) -> tuple[str, str]:
@@ -519,8 +612,8 @@ def _bersihkan_judul_dan_publisher(judul_raw: str, sumber_raw: str) -> tuple[str
     Contoh: 'PDN Diretas - Detik Jatim' -> ('PDN Diretas', 'Detik Jatim')
     Pembersihan dilakukan secara berulang untuk menangani duplikasi suffix dari agregator RSS.
     """
-    judul = str(judul_raw or "").strip()
-    sumber = str(sumber_raw or "").strip()
+    judul = re.sub(r"[\u200b-\u200d\ufeff]", "", str(judul_raw or "")).strip()
+    sumber = re.sub(r"[\u200b-\u200d\ufeff]", "", str(sumber_raw or "")).strip()
     while " - " in judul:
         parts = judul.rsplit(" - ", 1)
         suffix = parts[1].strip()
@@ -553,18 +646,13 @@ def _deteksi_tag_insiden(text: str) -> str:
     return "Insiden Siber"
 
 
-def hitung_kasus_insiden_wilayah(df_riwayat: pd.DataFrame, top_n_per_wilayah: int = 5) -> Dict[str, List[Dict]]:
+def hitung_kasus_insiden_wilayah(df_riwayat: pd.DataFrame, top_n_per_wilayah: int = 20) -> Dict[str, List[Dict]]:
     """
     Mengidentifikasi kasus insiden siber yang sedang ramai selama 7 hari terakhir
-    pada 3 level wilayah: Internasional, Nasional, dan Jawa Timur.
-    
-    Fitur khusus:
-    - Jawa Timur mendeteksi penyebutan daerah kabupaten/kota & instansi Pemprov/BUMD Jawa Timur.
-      Jika tidak ada kasus insiden siber dalam 7 hari terakhir, mengembalikan list kosong []
-      (ditampilkan '-' pada antarmuka dashboard).
-    - Menerapkan deduplikasi / clustering liputan serupa menggunakan RapidFuzz untuk
-      menghitung 'jumlah_liputan' media sebagai indikator isu yang 'sedang ramai'.
-    - Pembersihan otomatis nama publisher portal berita (mis. dari Google News RSS).
+    pada 3 level wilayah dengan hierarki ketat:
+    1. Jawa Timur: Eksplisit menyebut entitas, pemda, kota/kabupaten, atau instansi di Jawa Timur.
+    2. Nasional: Eksplisit menyebut Indonesia atau entitas/wilayah/instansi di Indonesia (di luar Jawa Timur).
+    3. Internasional: Semua berita insiden siber di luar Indonesia (termasuk insiden global yang diliput media lokal).
     """
     hasil_kosong = {"internasional": [], "nasional": [], "jawa_timur": []}
     if df_riwayat.empty:
@@ -575,10 +663,17 @@ def hitung_kasus_insiden_wilayah(df_riwayat: pd.DataFrame, top_n_per_wilayah: in
         return hasil_kosong
 
     # Ambil periode terkini (7 hari)
-    df_berita["tgl"] = df_berita["tanggal_publish"].fillna("").astype(str).str.slice(0, 10)
+    col_tgl = "tanggal_publish" if "tanggal_publish" in df_berita.columns else ("tanggal_dicatat" if "tanggal_dicatat" in df_berita.columns else None)
+    if col_tgl is not None:
+        df_berita["tgl"] = df_berita[col_tgl].fillna("").astype(str).str.slice(0, 10)
+    else:
+        df_berita["tgl"] = ""
     tanggal_unik = sorted(df_berita[df_berita["tgl"].str.match(r"^\d{4}-\d{2}-\d{2}$")]["tgl"].unique(), reverse=True)
-    tanggal_terkini = set(tanggal_unik[:HARI_PERIODE_TERKINI])
-    df_terkini = df_berita[df_berita["tgl"].isin(tanggal_terkini)].copy()
+    if tanggal_unik:
+        tanggal_terkini = set(tanggal_unik[:HARI_PERIODE_TERKINI])
+        df_terkini = df_berita[df_berita["tgl"].isin(tanggal_terkini)].copy()
+    else:
+        df_terkini = df_berita.copy()
 
     if df_terkini.empty:
         return hasil_kosong
@@ -595,7 +690,8 @@ def hitung_kasus_insiden_wilayah(df_riwayat: pd.DataFrame, top_n_per_wilayah: in
         if df_insiden.empty:
             return []
 
-        df_sorted = df_insiden.sort_values(by=["tanggal_publish"], ascending=False).reset_index(drop=True)
+        sort_col = "tanggal_publish" if "tanggal_publish" in df_insiden.columns else "tgl"
+        df_sorted = df_insiden.sort_values(by=[sort_col], ascending=False).reset_index(drop=True)
         clusters = []
         sudah_diproses = set()
 
@@ -616,8 +712,12 @@ def hitung_kasus_insiden_wilayah(df_riwayat: pd.DataFrame, top_n_per_wilayah: in
                 "sumber": sumber_tampil,
                 "sumber_asli": sumber_raw,
                 "link": str(row_i.get("link", "#")),
+                "id": int(row_i.get("id", 0) or 0),
                 "tanggal": str(row_i.get("tgl", "")),
+                "tanggal_publish": str(row_i.get("tanggal_publish", row_i.get("tgl", ""))),
                 "ringkasan": str(row_i.get("ringkasan_atau_narasi", ""))[:150],
+                "ringkasan_atau_narasi": str(row_i.get("ringkasan_atau_narasi", "")),
+                "kata_kunci": str(row_i.get("kata_kunci", "")),
                 "skor_relevansi": float(row_i.get("skor_relevansi", 0.0) or 0.0),
                 "tag": _deteksi_tag_insiden(text_full),
                 "jumlah_liputan": 1,
@@ -642,9 +742,9 @@ def hitung_kasus_insiden_wilayah(df_riwayat: pd.DataFrame, top_n_per_wilayah: in
 
             clusters.append(cluster)
 
-        # Urutkan berdasarkan: intensitas liputan media (sedang ramai), skor relevansi, tanggal terbaru
+        # Urutkan berdasarkan: intensitas liputan media (sedang ramai), skor relevansi, tanggal terbaru, dan id artikel (deterministik penuh)
         clusters.sort(
-            key=lambda x: (x["jumlah_liputan"], x["skor_relevansi"], x["tanggal"]),
+            key=lambda x: (x["jumlah_liputan"], x["skor_relevansi"], x.get("tanggal_publish", x["tanggal"]), x.get("id", 0)),
             reverse=True
         )
         return clusters[:limit]
@@ -662,31 +762,31 @@ def hitung_kasus_insiden_wilayah(df_riwayat: pd.DataFrame, top_n_per_wilayah: in
         judul_bersih, pub_tampil = _bersihkan_judul_dan_publisher(judul_raw, sumber_raw)
         narasi_bersih = _REGEX_DATELINE.sub("", narasi_raw)
 
-        is_intl = sumber_raw in _SUMBER_INTERNASIONAL or pub_tampil in _SUMBER_INTERNASIONAL
-
         # Evaluasi lokasi kejadian HANYA berdasarkan konten berita bersih (judul & narasi tanpa dateline & tanpa publisher)
         teks_konten_bersih = f"{judul_bersih} {narasi_bersih} {kata_kunci_raw}".lower()
+        row_dict = row.to_dict() if hasattr(row, "to_dict") else dict(row)
 
-        if not is_intl:
-            # Periksa apakah judul/konten memberitakan insiden luar negeri yang diliput media nasional
-            has_intl_target = bool(_REGEX_KONTEN_INTERNASIONAL.search(judul_bersih))
-            has_id_target = bool(_REGEX_TARGET_INDONESIA.search(judul_bersih)) or bool(_REGEX_TARGET_INDONESIA.search(teks_konten_bersih))
-            if has_intl_target and not has_id_target:
-                is_intl = True
+        # Filter berita non-insiden siber (penangkapan judol, bantahan murni, kebijakan non-insiden)
+        if _is_bukan_insiden_siber_aktual(judul_bersih, teks_konten_bersih, row_dict):
+            continue
 
-        matches_jatim = bool(_KEYWORDS_JATIM_REGEX.search(teks_konten_bersih))
+        is_sumber_intl = (
+            sumber_raw in _SUMBER_INTERNASIONAL
+            or pub_tampil in _SUMBER_INTERNASIONAL
+            or bool(_REGEX_ARTEFAK_ASING.search(f"{sumber_raw} {judul_raw} {narasi_raw}"))
+        )
 
+        # Bersihkan frasa idiomatik ambigu ("batu bara", "nasib malang", dll.) sebelum evaluasi Jatim
+        teks_jatim_eval = _REGEX_AMBIGU_JATIM.sub(" ", teks_konten_bersih)
+        judul_jatim_eval = _REGEX_AMBIGU_JATIM.sub(" ", judul_bersih.lower())
+        matches_jatim = bool(_KEYWORDS_JATIM_REGEX.search(teks_jatim_eval))
+
+        # Hierarki 1: Jawa Timur
         is_jatim = False
-        if matches_jatim and not is_intl:
-            # Validasi ketat: cegah artikel nasional yang diliput media lokal Jatim keliru masuk Jatim
-            # atau sekadar opini/tanggapan pakar kampus lokal atas isu peretasan nasional
+        if matches_jatim and not is_sumber_intl:
             target_nasional = bool(_ENTITAS_NASIONAL_REGEX.search(judul_bersih))
             opini_pakar = any(p in judul_bersih.lower() for p in ["pakar", "analisis", "tanggapi", "komentari", "soroti", "minta", "dosen"])
-            ada_target_lokal_eksplisit = any(k in judul_bersih.lower() for k in [
-                "jatim", "jawa timur", "surabaya", "sidoarjo", "pamekasan", "malang",
-                "lumajang", "gresik", "banyuwangi", "jember", "kediri", "madiun", "blitar",
-                "mojokerto", "pasuruan", "probolinggo", "tuban", "bojonegoro"
-            ])
+            ada_target_lokal_eksplisit = bool(_KEYWORDS_JATIM_REGEX.search(judul_jatim_eval))
 
             if target_nasional and opini_pakar:
                 is_jatim = False
@@ -695,12 +795,20 @@ def hitung_kasus_insiden_wilayah(df_riwayat: pd.DataFrame, top_n_per_wilayah: in
             else:
                 is_jatim = True
 
+        # Hierarki 2: Nasional (wajib memiliki penyebutan eksplisit Indonesia / daerah / entitas nasional / domain .id)
+        is_nasional = False
+        if not is_jatim and not is_sumber_intl:
+            has_id_target = bool(_REGEX_TARGET_INDONESIA.search(judul_bersih)) or bool(_REGEX_TARGET_INDONESIA.search(teks_konten_bersih))
+            if has_id_target:
+                is_nasional = True
+
+        # Hierarki 3: Internasional (semua berita insiden siber di luar Jawa Timur & Nasional)
         if is_jatim:
             rows_jatim.append(row)
-        elif is_intl:
-            rows_intl.append(row)
-        else:
+        elif is_nasional:
             rows_nasional.append(row)
+        else:
+            rows_intl.append(row)
 
     hasil_jatim = _cluster_and_rank(pd.DataFrame(rows_jatim), top_n_per_wilayah) if rows_jatim else []
     hasil_nas = _cluster_and_rank(pd.DataFrame(rows_nasional), top_n_per_wilayah) if rows_nasional else []
@@ -745,7 +853,6 @@ def susun_ringkasan_statistik_tren(df_riwayat: pd.DataFrame) -> Dict:
         f"Kasus Wilayah: Intl={len(statistik['kasus_wilayah']['internasional'])}, Nas={len(statistik['kasus_wilayah']['nasional'])}, Jatim={len(statistik['kasus_wilayah']['jawa_timur'])}."
     )
     return statistik
-
 
 
 def hitung_perbandingan_wow(df_riwayat: pd.DataFrame) -> Dict:

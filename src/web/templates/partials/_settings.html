@@ -7,9 +7,8 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-[#00ff9d] animate-pulse"></span>
                 <span>[ KONFIGURASI SISTEM CTI ]</span>
             </div>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-[#e0f0ff] font-['Sora'] tracking-tight flex items-center gap-2">
-                <span class="material-symbols-outlined text-[#00d4ff]">settings</span>
-                Pengaturan Sistem CTI Diskominfo Jatim
+            <h2 class="text-xl sm:text-2xl font-extrabold text-[#e0f0ff] font-['Sora'] uppercase tracking-tight">
+                PENGATURAN SISTEM CTI DISKOMINFO JATIM
             </h2>
             <p class="text-xs sm:text-sm text-[#8892b0] mt-1">
                 Manajemen LLM Gemini, Kata Kunci Scraping, Template Prompt Intelijen, Sumber Feed RSS, dan Referensi CTI.
@@ -19,11 +18,11 @@
 
     <!-- Main Navigation Tabs (5 Tab Utama) -->
     <div class="flex border-b border-[#1a3a5c] bg-[#0d2137]/90 rounded-t-xl px-2 gap-1 overflow-x-auto custom-scrollbar">
-        <!-- 1. Umum & LLM -->
+        <!-- 1. LLM -->
         <button @click="activeTab = 'umum'" 
                 :class="{'border-b-2 border-[#00d4ff] text-[#00d4ff] bg-[#0a1628]/80 font-bold': activeTab === 'umum', 'text-[#8892b0] hover:text-[#e0f0ff] hover:bg-[#132c4a]/40 font-medium': activeTab !== 'umum'}" 
                 class="px-4 py-3 text-xs sm:text-sm font-mono transition-all flex items-center gap-2 cursor-pointer shrink-0 rounded-t-lg">
-            <span class="material-symbols-outlined text-base">tune</span> Umum &amp; LLM
+            <span class="material-symbols-outlined text-base">tune</span> LLM
         </button>
 
         <!-- 2. Kata Kunci Scraping -->
@@ -33,11 +32,11 @@
             <span class="material-symbols-outlined text-base">manage_search</span> Kata Kunci Scraping
         </button>
 
-        <!-- 3. Template Prompt LLM -->
+        <!-- 3. Template Prompt Sistem -->
         <button @click="activeTab = 'prompts'" 
                 :class="{'border-b-2 border-[#00d4ff] text-[#00d4ff] bg-[#0a1628]/80 font-bold': activeTab === 'prompts', 'text-[#8892b0] hover:text-[#e0f0ff] hover:bg-[#132c4a]/40 font-medium': activeTab !== 'prompts'}" 
                 class="px-4 py-3 text-xs sm:text-sm font-mono transition-all flex items-center gap-2 cursor-pointer shrink-0 rounded-t-lg">
-            <span class="material-symbols-outlined text-base">psychology</span> Template Prompt LLM
+            <span class="material-symbols-outlined text-base">psychology</span> Template Prompt Sistem
         </button>
 
         <!-- 4. Sumber RSS -->
@@ -79,7 +78,7 @@
                                   placeholder="Tempel API Key Google AI Studio di sini (pisahkan dengan koma atau baris baru jika lebih dari satu)" 
                                   class="w-full text-xs font-mono p-3 rounded-lg border border-[#1a3a5c] bg-[#0a1628] text-[#e0f0ff] placeholder-[#7d8ca6] focus:border-[#00d4ff] focus:ring-1 focus:ring-[#00d4ff] outline-none transition-colors"></textarea>
                         <p class="text-[11px] font-mono text-[#8892b0] mt-1.5 leading-relaxed">
-                            Sistem mendeteksi ambang batas proaktif (90%-95% RPM). Model embedding otomatis berganti pada 90 RPM (kuota 100 RPM), dan 7 model narasi berganti sebelum menyentuh batas limit. Jika seluruh model pada satu kunci jenuh, sistem beralih ke kunci berikutnya.
+                            API key digunakan untuk pembuatan narasi berita siber. Jika kuota API habis atau mencapai batas limit, sistem akan otomatis beralih ke model berikutnya.
                         </p>
                     </div>
 
@@ -127,12 +126,8 @@
                         <textarea x-model="gemini.model_chain" rows="4" 
                                   class="w-full text-xs font-mono p-3 rounded-lg border border-[#1a3a5c] bg-[#0a1628] text-[#e0f0ff] focus:border-[#00d4ff] focus:ring-1 focus:ring-[#00d4ff] outline-none"></textarea>
                         <p class="text-[11px] font-mono text-[#8892b0] mt-1.5 leading-relaxed">
-                            Model pertama dicoba lebih dulu. Jika kuota habis atau batas rate limit tercapai, otomatis berpindah ke model cadangan berikutnya: <span class="text-[#00d4ff]">gemini-2.5-flash</span> (5 RPM), <span class="text-[#00d4ff]">gemini-2.5-flash-lite</span> (10 RPM), <span class="text-[#00d4ff]">gemini-3-flash</span> (5 RPM), <span class="text-[#00d4ff]">gemini-3.1-flash-lite</span> (15 RPM), <span class="text-[#00d4ff]">gemini-3.6-flash</span> (5 RPM), <span class="text-[#00d4ff]">gemini-3.5-flash-lite</span> (15 RPM), <span class="text-[#00d4ff]">gemini-3.8-flash</span> (5 RPM).
+                            Model pertama dicoba lebih dulu. Jika kuota habis atau batas rate limit tercapai, otomatis berpindah ke model cadangan berikutnya.
                         </p>
-                    </div>
-
-                    <div class="p-3.5 bg-[#0a1628]/60 border border-[#1a3a5c] rounded-xl text-xs font-mono text-[#8892b0] leading-relaxed">
-                        <strong class="text-[#00ff9d]">Inferensi Deterministik Terkunci:</strong> Parameter temperature inferensi diatur tetap secara presisi pada <strong class="text-[#e0f0ff]">0.1</strong> untuk menjamin akurasi dan kepatuhan penuh pada fakta berita tanpa halusinasi.
                     </div>
                 </div>
             </div>
@@ -155,144 +150,99 @@
                     Filter Kata Kunci Scraping &amp; Klasifikasi Relevansi
                 </h3>
                 <p class="text-xs text-[#8892b0] mt-1 leading-relaxed">
-                    Kelola kamus kata kunci penyaring berita siber secara visual melalui sub-tab kategori. Tanpa penulisan koma manual, dengan tombol tambah, hapus konfirmasi, dan simpan permanen.
+                    Kelola kamus kata kunci penyaring berita siber melalui sub-tab kategori untuk meningkatkan akurasi pemantauan dan relevansi intelijen ancaman secara terstruktur.
                 </p>
             </div>
 
-            <!-- 3 Sub-Tabs Kata Kunci (Model Sub-Tab seperti RSS) -->
-            <div class="flex items-center gap-2 border-b border-[#1a3a5c] pb-2 overflow-x-auto custom-scrollbar">
-                <button type="button" @click="kwSubTab = 'mandiri'" 
-                        :class="kwSubTab === 'mandiri' ? 'border-[#00d4ff] text-[#00d4ff] bg-[#0a1628] font-bold shadow-[0_0_10px_rgba(0,212,255,0.15)]' : 'border-transparent text-[#8892b0] hover:text-[#e0f0ff] bg-transparent'" 
-                        class="px-4 py-2 rounded-lg border text-xs font-mono transition-all flex items-center gap-2 cursor-pointer shrink-0">
-                    <span class="w-2 h-2 rounded-full bg-[#00ff9d]"></span>
-                    <span>1. Indikator Insiden (Mandiri)</span>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#1a3a5c] text-[#e0f0ff] font-bold" x-text="keywordsList.mandiri.length"></span>
+            <!-- 2 Sub-Tabs Kata Kunci: Spesifik & General -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 border-b border-[#1a3a5c] pb-2">
+                <button type="button" @click="kwSubTab = 'spesifik'" 
+                        :class="kwSubTab === 'spesifik' ? 'border-[#00ff9d] text-[#00ff9d] bg-[#0a1628] font-bold shadow-[0_0_12px_rgba(0,255,157,0.2)]' : 'border-[#1a3a5c] text-[#8892b0] bg-[#0a1628]/60 hover:bg-[#132c4a] hover:text-[#e0f0ff] hover:border-[#00ff9d]/40 font-medium'" 
+                        class="flex-1 px-4 py-2.5 rounded-lg border text-xs font-mono transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <span>1. Kata Kunci Spesifik</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold transition-colors" 
+                          :class="kwSubTab === 'spesifik' ? 'bg-[#00ff9d]/20 text-[#00ff9d] border border-[#00ff9d]/30' : 'bg-[#0d2137] text-[#8892b0] border border-[#1a3a5c]'" 
+                          x-text="keywordsList.spesifik.length"></span>
                 </button>
-                <button type="button" @click="kwSubTab = 'data'" 
-                        :class="kwSubTab === 'data' ? 'border-[#00d4ff] text-[#00d4ff] bg-[#0a1628] font-bold shadow-[0_0_10px_rgba(0,212,255,0.15)]' : 'border-transparent text-[#8892b0] hover:text-[#e0f0ff] bg-transparent'" 
-                        class="px-4 py-2 rounded-lg border text-xs font-mono transition-all flex items-center gap-2 cursor-pointer shrink-0">
-                    <span class="w-2 h-2 rounded-full bg-[#00d4ff]"></span>
-                    <span>2. Objek Data Sensitif</span>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#1a3a5c] text-[#e0f0ff] font-bold" x-text="keywordsList.data.length"></span>
-                </button>
-                <button type="button" @click="kwSubTab = 'aset'" 
-                        :class="kwSubTab === 'aset' ? 'border-[#00d4ff] text-[#00d4ff] bg-[#0a1628] font-bold shadow-[0_0_10px_rgba(0,212,255,0.15)]' : 'border-transparent text-[#8892b0] hover:text-[#e0f0ff] bg-transparent'" 
-                        class="px-4 py-2 rounded-lg border text-xs font-mono transition-all flex items-center gap-2 cursor-pointer shrink-0">
-                    <span class="w-2 h-2 rounded-full bg-[#ffb703]"></span>
-                    <span>3. Objek Aset Digital</span>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#1a3a5c] text-[#e0f0ff] font-bold" x-text="keywordsList.aset.length"></span>
+                <button type="button" @click="kwSubTab = 'general'" 
+                        :class="kwSubTab === 'general' ? 'border-[#00d4ff] text-[#00d4ff] bg-[#0a1628] font-bold shadow-[0_0_12px_rgba(0,212,255,0.2)]' : 'border-[#1a3a5c] text-[#8892b0] bg-[#0a1628]/60 hover:bg-[#132c4a] hover:text-[#e0f0ff] hover:border-[#00d4ff]/40 font-medium'" 
+                        class="flex-1 px-4 py-2.5 rounded-lg border text-xs font-mono transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <span>2. Kata Kunci General</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold transition-colors" 
+                          :class="kwSubTab === 'general' ? 'bg-[#00d4ff]/20 text-[#00d4ff] border border-[#00d4ff]/30' : 'bg-[#0d2137] text-[#8892b0] border border-[#1a3a5c]'" 
+                          x-text="keywordsList.general.length"></span>
                 </button>
             </div>
 
-            <!-- Panel Sub-Tab 1: Indikator Insiden Mandiri -->
-            <div x-show="kwSubTab === 'mandiri'" class="p-5 rounded-xl border border-[#1a3a5c] bg-[#0a1628]/60 space-y-4">
+            <!-- Panel Sub-Tab 1: Kata Kunci Spesifik -->
+            <div x-show="kwSubTab === 'spesifik'" class="p-5 rounded-xl border border-[#1a3a5c] bg-[#0a1628]/60 space-y-4">
                 <div class="flex items-center justify-between pb-2 border-b border-[#1a3a5c]">
-                    <h4 class="text-sm font-bold text-[#e0f0ff] font-mono flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-[#00ff9d]"></span>
-                        Indikator Insiden Mandiri (Bahasa Indonesia)
+                    <h4 class="text-sm font-bold text-[#e0f0ff] font-mono">
+                        Kata Kunci Spesifik (Indikator Mandiri &amp; Ancaman Siber)
                     </h4>
                     <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-[#00ff9d]/10 text-[#00ff9d] border border-[#00ff9d]/30" 
-                          x-text="keywordsList.mandiri.length + ' Kata Kunci Terdaftar'"></span>
+                          x-text="keywordsList.spesifik.length + ' Kata Kunci Terdaftar'"></span>
                 </div>
                 <p class="text-xs text-[#8892b0] leading-relaxed">
-                    <strong class="text-[#00ff9d]">Fungsi Taktis:</strong> Kata kunci berkekuatan mandiri yang <em class="text-[#e0f0ff]">pasti menandakan insiden siber</em> (contoh: <code>kebocoran data</code>, <code>ransomware</code>, <code>phishing</code>, <code>peretasan</code>, <code>situs diretas</code>). Jika artikel memuat salah satu kata ini, artikel otomatis dinyatakan relevan tanpa perlu kata pelengkap.
+                    <strong class="text-[#00ff9d]">Fungsi Taktis:</strong> Kata kunci berkekuatan spesifik yang <em class="text-[#e0f0ff]">langsung menandakan insiden atau ancaman siber</em> (contoh: <code>kebocoran data</code>, <code>ransomware</code>, <code>phishing</code>, <code>peretasan</code>, <code>malware</code>, <code>data breach</code>, <code>exploit</code>, <code>zero-day</code>). Jika artikel memuat salah satu kata ini, artikel otomatis dinyatakan relevan tanpa perlu kata pelengkap.
                 </p>
 
                 <!-- Chips Container -->
-                <div class="flex flex-wrap gap-2 min-h-[50px] p-3 rounded-xl border border-[#1a3a5c] bg-[#070d1e]">
-                    <template x-for="(kw, idx) in keywordsList.mandiri" :key="'man-'+idx">
+                <div class="flex flex-wrap gap-2 min-h-[50px] p-3 rounded-xl border border-[#1a3a5c] bg-[#070d1e] max-h-[300px] overflow-y-auto custom-scrollbar">
+                    <template x-for="(kw, idx) in keywordsList.spesifik" :key="'spe-'+idx">
                         <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0d2137] border border-[#00ff9d]/30 text-xs font-mono text-[#00ff9d] hover:border-[#00ff9d] transition-all">
                             <span x-text="kw"></span>
-                            <button type="button" @click="removeKeyword('mandiri', idx)" 
+                            <button type="button" @click="removeKeyword('spesifik', idx)" 
                                     class="text-[#7d8ca6] hover:text-[#ff3366] text-xs cursor-pointer font-bold ml-0.5" title="Hapus kata kunci">✕</button>
                         </span>
                     </template>
-                    <span x-show="keywordsList.mandiri.length === 0" class="text-xs text-[#7d8ca6] italic py-1 font-mono">Belum ada kata kunci mandiri terdaftar.</span>
+                    <span x-show="keywordsList.spesifik.length === 0" class="text-xs text-[#7d8ca6] italic py-1 font-mono">Belum ada kata kunci spesifik terdaftar.</span>
                 </div>
 
                 <!-- Input Tambah Baru -->
                 <div class="flex items-center gap-2 pt-1">
-                    <input type="text" x-model="newKw.mandiri" @keydown.enter.prevent="addKeyword('mandiri')" 
-                           placeholder="Ketik kata kunci indikator mandiri baru lalu tekan Enter / Tambah..." 
-                           class="flex-1 text-xs font-mono p-3 rounded-lg border border-[#1a3a5c] bg-[#0d2137] text-[#e0f0ff] placeholder-[#7d8ca6] focus:border-[#00d4ff] outline-none">
-                    <button type="button" @click="addKeyword('mandiri')" 
+                    <input type="text" x-model="newKw.spesifik" @keydown.enter.prevent="addKeyword('spesifik')" 
+                           placeholder="Ketik kata kunci spesifik baru lalu tekan Enter / Tambah..." 
+                           class="flex-1 text-xs font-mono p-3 rounded-lg border border-[#1a3a5c] bg-[#0d2137] text-[#e0f0ff] placeholder-[#7d8ca6] focus:border-[#00ff9d] outline-none">
+                    <button type="button" @click="addKeyword('spesifik')" 
                             class="px-4 py-3 rounded-lg bg-[#00ff9d]/20 hover:bg-[#00ff9d]/30 border border-[#00ff9d]/40 text-[#00ff9d] text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer">
                         <span class="material-symbols-outlined text-sm">add</span> Tambah
                     </button>
                 </div>
             </div>
 
-            <!-- Panel Sub-Tab 2: Objek Data Sensitif -->
-            <div x-show="kwSubTab === 'data'" class="p-5 rounded-xl border border-[#1a3a5c] bg-[#0a1628]/60 space-y-4">
+            <!-- Panel Sub-Tab 2: Kata Kunci General -->
+            <div x-show="kwSubTab === 'general'" class="p-5 rounded-xl border border-[#1a3a5c] bg-[#0a1628]/60 space-y-4">
                 <div class="flex items-center justify-between pb-2 border-b border-[#1a3a5c]">
-                    <h4 class="text-sm font-bold text-[#e0f0ff] font-mono flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-[#00d4ff]"></span>
-                        Objek Data Sensitif (Butuh Indikator Aksi)
+                    <h4 class="text-sm font-bold text-[#e0f0ff] font-mono">
+                        Kata Kunci General (Objek Data, Aset, &amp; Konteks)
                     </h4>
                     <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-[#00d4ff]/10 text-[#00d4ff] border border-[#00d4ff]/30" 
-                          x-text="keywordsList.data.length + ' Kata Kunci Terdaftar'"></span>
+                          x-text="keywordsList.general.length + ' Kata Kunci Terdaftar'"></span>
                 </div>
                 <p class="text-xs text-[#8892b0] leading-relaxed">
-                    <strong class="text-[#00d4ff]">Fungsi Taktis:</strong> Entitas atau data rahasia warga dan instansi (contoh: <code>ktp</code>, <code>nik</code>, <code>kartu keluarga</code>, <code>npwp</code>, <code>data nasabah</code>, <code>bpjs</code>). Kata ini <em class="text-[#e0f0ff]">tidak berdiri sendiri</em>—hanya memicu status relevan jika ditemukan bersamaan dengan indikator aksi (misal: <code>KTP</code> + <code>bocor</code> atau <code>NIK</code> + <code>dijual</code>).
+                    <strong class="text-[#00d4ff]">Fungsi Taktis:</strong> Entitas data sensitif, infrastruktur aset digital, dan konteks pendukung (contoh: <code>ktp</code>, <code>nik</code>, <code>kartu keluarga</code>, <code>website</code>, <code>server</code>, <code>database</code>, <code>akun</code>, <code>judi online</code>). Kata ini <em class="text-[#e0f0ff]">memerlukan indikator aksi</em> agar penyaringan tetap selektif dan tidak menjaring berita non-insiden.
                 </p>
 
                 <!-- Chips Container -->
-                <div class="flex flex-wrap gap-2 min-h-[50px] p-3 rounded-xl border border-[#1a3a5c] bg-[#070d1e]">
-                    <template x-for="(kw, idx) in keywordsList.data" :key="'dat-'+idx">
+                <div class="flex flex-wrap gap-2 min-h-[50px] p-3 rounded-xl border border-[#1a3a5c] bg-[#070d1e] max-h-[300px] overflow-y-auto custom-scrollbar">
+                    <template x-for="(kw, idx) in keywordsList.general" :key="'gen-'+idx">
                         <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0d2137] border border-[#00d4ff]/30 text-xs font-mono text-[#00d4ff] hover:border-[#00d4ff] transition-all">
                             <span x-text="kw"></span>
-                            <button type="button" @click="removeKeyword('data', idx)" 
+                            <button type="button" @click="removeKeyword('general', idx)" 
                                     class="text-[#7d8ca6] hover:text-[#ff3366] text-xs cursor-pointer font-bold ml-0.5" title="Hapus kata kunci">✕</button>
                         </span>
                     </template>
-                    <span x-show="keywordsList.data.length === 0" class="text-xs text-[#7d8ca6] italic py-1 font-mono">Belum ada kata kunci data sensitif terdaftar.</span>
+                    <span x-show="keywordsList.general.length === 0" class="text-xs text-[#7d8ca6] italic py-1 font-mono">Belum ada kata kunci general terdaftar.</span>
                 </div>
 
                 <!-- Input Tambah Baru -->
                 <div class="flex items-center gap-2 pt-1">
-                    <input type="text" x-model="newKw.data" @keydown.enter.prevent="addKeyword('data')" 
-                           placeholder="Ketik kata kunci objek data baru lalu tekan Enter / Tambah..." 
+                    <input type="text" x-model="newKw.general" @keydown.enter.prevent="addKeyword('general')" 
+                           placeholder="Ketik kata kunci general baru lalu tekan Enter / Tambah..." 
                            class="flex-1 text-xs font-mono p-3 rounded-lg border border-[#1a3a5c] bg-[#0d2137] text-[#e0f0ff] placeholder-[#7d8ca6] focus:border-[#00d4ff] outline-none">
-                    <button type="button" @click="addKeyword('data')" 
+                    <button type="button" @click="addKeyword('general')" 
                             class="px-4 py-3 rounded-lg bg-[#00d4ff]/20 hover:bg-[#00d4ff]/30 border border-[#00d4ff]/40 text-[#00d4ff] text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer">
-                        <span class="material-symbols-outlined text-sm">add</span> Tambah
-                    </button>
-                </div>
-            </div>
-
-            <!-- Panel Sub-Tab 3: Objek Aset Digital -->
-            <div x-show="kwSubTab === 'aset'" class="p-5 rounded-xl border border-[#1a3a5c] bg-[#0a1628]/60 space-y-4">
-                <div class="flex items-center justify-between pb-2 border-b border-[#1a3a5c]">
-                    <h4 class="text-sm font-bold text-[#e0f0ff] font-mono flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-[#ffb703]"></span>
-                        Objek Aset Digital (Butuh Indikator Aksi)
-                    </h4>
-                    <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-[#ffb703]/10 text-[#ffb703] border border-[#ffb703]/30" 
-                          x-text="keywordsList.aset.length + ' Kata Kunci Terdaftar'"></span>
-                </div>
-                <p class="text-xs text-[#8892b0] leading-relaxed">
-                    <strong class="text-[#ffb703]">Fungsi Taktis:</strong> Infrastruktur sistem, server, aplikasi, dan database instansi (contoh: <code>website</code>, <code>server</code>, <code>database</code>, <code>aplikasi</code>, <code>rekening</code>, <code>pdns</code>). Wajib berpasangan dengan kata aksi insiden (misal: <code>server</code> + <code>dibobol</code>) agar artikel peluncuran sistem publik normal tidak salah terjaring.
-                </p>
-
-                <!-- Chips Container -->
-                <div class="flex flex-wrap gap-2 min-h-[50px] p-3 rounded-xl border border-[#1a3a5c] bg-[#070d1e]">
-                    <template x-for="(kw, idx) in keywordsList.aset" :key="'ast-'+idx">
-                        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0d2137] border border-[#ffb703]/30 text-xs font-mono text-[#ffb703] hover:border-[#ffb703] transition-all">
-                            <span x-text="kw"></span>
-                            <button type="button" @click="removeKeyword('aset', idx)" 
-                                    class="text-[#7d8ca6] hover:text-[#ff3366] text-xs cursor-pointer font-bold ml-0.5" title="Hapus kata kunci">✕</button>
-                        </span>
-                    </template>
-                    <span x-show="keywordsList.aset.length === 0" class="text-xs text-[#7d8ca6] italic py-1 font-mono">Belum ada kata kunci aset digital terdaftar.</span>
-                </div>
-
-                <!-- Input Tambah Baru -->
-                <div class="flex items-center gap-2 pt-1">
-                    <input type="text" x-model="newKw.aset" @keydown.enter.prevent="addKeyword('aset')" 
-                           placeholder="Ketik kata kunci objek aset baru lalu tekan Enter / Tambah..." 
-                           class="flex-1 text-xs font-mono p-3 rounded-lg border border-[#1a3a5c] bg-[#0d2137] text-[#e0f0ff] placeholder-[#7d8ca6] focus:border-[#00d4ff] outline-none">
-                    <button type="button" @click="addKeyword('aset')" 
-                            class="px-4 py-3 rounded-lg bg-[#ffb703]/20 hover:bg-[#ffb703]/30 border border-[#ffb703]/40 text-[#ffb703] text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer">
                         <span class="material-symbols-outlined text-sm">add</span> Tambah
                     </button>
                 </div>
@@ -312,10 +262,10 @@
         <div class="border-b border-[#1a3a5c] pb-3 mb-2">
             <h3 class="text-base font-bold text-[#e0f0ff] font-['Sora'] flex items-center gap-2">
                 <span class="material-symbols-outlined text-[#00d4ff]">psychology</span>
-                Template Prompt Sistem CTI (Modul Aktif)
+                Template Prompt Sistem
             </h3>
             <p class="text-xs text-[#8892b0] mt-1 leading-relaxed">
-                Prompt disusun modular per-bagian agar hasil inferensi akurat, bebas halusinasi, dan dapat disesuaikan kebutuhan analisis intelijen Diskominfo Jawa Timur.
+                Prompt disusun modular per-bagian agar hasil inferensi akurat, bebas halusinasi, dan dapat disesuaikan kebutuhan.
             </p>
         </div>
 
@@ -331,9 +281,11 @@
                         <div class="space-y-1">
                             <template x-for="p in getPromptsByCategory(kat)" :key="p.id">
                                 <button type="button" @click="selectPrompt(p)" 
-                                        :class="{'bg-[#00d4ff]/20 text-[#00d4ff] border border-[#00d4ff]/40 font-bold shadow-xs': selectedPromptId === p.id, 'hover:bg-[#132c4a]/50 text-[#8892b0] hover:text-[#e0f0ff] border border-transparent': selectedPromptId !== p.id}" 
-                                        class="w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-mono transition-all flex items-center justify-between cursor-pointer">
-                                    <span class="font-semibold text-[#e0f0ff]" x-text="p.nama"></span>
+                                        :class="selectedPromptId === p.id 
+                                            ? 'bg-[#00d4ff]/15 text-[#00d4ff] border-[#00d4ff] font-bold shadow-[0_0_10px_rgba(0,212,255,0.15)]' 
+                                            : 'bg-[#0a1628]/60 text-[#8892b0] border-[#1a3a5c] hover:bg-[#132c4a] hover:text-[#e0f0ff] hover:border-[#00d4ff]/30 font-medium'" 
+                                        class="w-full text-left px-3.5 py-2.5 rounded-lg border text-xs font-mono transition-all flex items-center justify-between cursor-pointer">
+                                    <span class="font-semibold" :class="selectedPromptId === p.id ? 'text-[#00d4ff]' : 'text-[#e0f0ff]'" x-text="p.nama"></span>
                                     <span class="material-symbols-outlined text-xs text-[#00d4ff]" x-show="selectedPromptId === p.id">chevron_right</span>
                                 </button>
                             </template>
@@ -345,13 +297,9 @@
             <!-- Editor Prompt Pane -->
             <div class="md:col-span-8 pl-1 flex flex-col justify-between">
                 <div x-show="selectedPromptMeta" class="space-y-4">
-                    <div class="flex items-start justify-between gap-4 border-b border-[#1a3a5c] pb-3">
-                        <div>
-                            <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-[#00ff9d]" x-text="selectedPromptMeta ? selectedPromptMeta.kategori : ''"></span>
-                            <h4 class="text-base font-bold text-[#e0f0ff] font-['Sora']" x-text="selectedPromptMeta ? selectedPromptMeta.nama : ''"></h4>
-                            <p class="text-xs text-[#8892b0] mt-0.5" x-text="selectedPromptMeta ? selectedPromptMeta.deskripsi : ''"></p>
-                        </div>
-                        <span class="text-[11px] font-mono bg-[#0a1628] px-2.5 py-1 rounded-md text-[#00d4ff] border border-[#1a3a5c]" x-text="'ID: ' + selectedPromptId"></span>
+                    <div class="border-b border-[#1a3a5c] pb-3">
+                        <h4 class="text-base font-bold text-[#e0f0ff] font-['Sora']" x-text="selectedPromptMeta ? selectedPromptMeta.nama : ''"></h4>
+                        <p class="text-xs text-[#8892b0] mt-0.5" x-text="selectedPromptMeta ? selectedPromptMeta.deskripsi : ''"></p>
                     </div>
 
                     <div>
@@ -360,8 +308,12 @@
                                   class="w-full text-xs font-mono p-3 rounded-lg border border-[#1a3a5c] bg-[#0a1628] text-[#e0f0ff] focus:border-[#00d4ff] focus:ring-1 focus:ring-[#00d4ff] outline-none leading-relaxed transition-all custom-scrollbar"></textarea>
                     </div>
 
-                    <!-- Tombol Simpan Kanan Bawah Bergaya Chamfer -->
-                    <div class="flex justify-end pt-4 border-t border-[#1a3a5c]">
+                    <!-- Tombol Simpan & Reset Kanan Bawah Bergaya Chamfer -->
+                    <div class="flex flex-wrap justify-end gap-2 pt-4 border-t border-[#1a3a5c]">
+                        <button type="button" @click="resetPrompt()"
+                                class="px-3.5 py-2 rounded-lg border border-[#ff3366]/40 bg-[#ff3366]/10 hover:bg-[#ff3366]/20 text-[#ff3366] text-xs font-mono font-semibold transition-all cursor-pointer">
+                            [ RESET KE SNAPSHOT ]
+                        </button>
                         <button type="button" @click="savePrompt()" class="btn-chamfer">
                             [ SIMPAN PERUBAHAN PROMPT ]
                         </button>
@@ -399,39 +351,49 @@
             </div>
 
             <!-- Sub-Tabs Navigation (Internasional & Nasional) -->
-            <div class="flex items-center gap-2 border-b border-[#1a3a5c] pb-2">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 border-b border-[#1a3a5c] pb-2">
                 <button type="button" @click="rssSubTab = 'international'" 
-                        :class="rssSubTab === 'international' ? 'border-[#00d4ff] text-[#00d4ff] bg-[#0a1628] font-bold shadow-[0_0_10px_rgba(0,212,255,0.15)]' : 'border-transparent text-[#8892b0] hover:text-[#e0f0ff] bg-transparent'" 
-                        class="px-4 py-2 rounded-lg border text-xs font-mono transition-all flex items-center gap-2 cursor-pointer">
-                    <span class="material-symbols-outlined text-sm">public</span>
-                    <span>Media Cybersecurity Internasional</span>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#1a3a5c] text-[#e0f0ff] font-bold" x-text="rss.international.length"></span>
+                        :class="rssSubTab === 'international' ? 'border-[#00d4ff] text-[#00d4ff] bg-[#0a1628] font-bold shadow-[0_0_12px_rgba(0,212,255,0.2)]' : 'border-[#1a3a5c] text-[#8892b0] bg-[#0a1628]/60 hover:bg-[#132c4a] hover:text-[#e0f0ff] hover:border-[#00d4ff]/40 font-medium'" 
+                        class="flex-1 w-full sm:w-1/2 min-w-0 px-4 py-2.5 rounded-lg border text-xs font-mono transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <span class="material-symbols-outlined text-sm shrink-0" :class="rssSubTab === 'international' ? 'text-[#00d4ff]' : 'text-[#8892b0]'">public</span>
+                    <span class="truncate">Media Cybersecurity Internasional</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold transition-colors shrink-0"
+                          :class="rssSubTab === 'international' ? 'bg-[#00d4ff]/20 text-[#00d4ff] border border-[#00d4ff]/30' : 'bg-[#0d2137] text-[#8892b0] border border-[#1a3a5c]'" 
+                          x-text="rss.international.length"></span>
                 </button>
                 <button type="button" @click="rssSubTab = 'indonesia'" 
-                        :class="rssSubTab === 'indonesia' ? 'border-[#00d4ff] text-[#00d4ff] bg-[#0a1628] font-bold shadow-[0_0_10px_rgba(0,212,255,0.15)]' : 'border-transparent text-[#8892b0] hover:text-[#e0f0ff] bg-transparent'" 
-                        class="px-4 py-2 rounded-lg border text-xs font-mono transition-all flex items-center gap-2 cursor-pointer">
-                    <span class="material-symbols-outlined text-sm">flag</span>
-                    <span>Media Siber &amp; Berita Nasional</span>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#1a3a5c] text-[#e0f0ff] font-bold" x-text="rss.indonesia.length"></span>
+                        :class="rssSubTab === 'indonesia' ? 'border-[#00d4ff] text-[#00d4ff] bg-[#0a1628] font-bold shadow-[0_0_12px_rgba(0,212,255,0.2)]' : 'border-[#1a3a5c] text-[#8892b0] bg-[#0a1628]/60 hover:bg-[#132c4a] hover:text-[#e0f0ff] hover:border-[#00d4ff]/40 font-medium'" 
+                        class="flex-1 w-full sm:w-1/2 min-w-0 px-4 py-2.5 rounded-lg border text-xs font-mono transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <span class="material-symbols-outlined text-sm shrink-0" :class="rssSubTab === 'indonesia' ? 'text-[#00d4ff]' : 'text-[#8892b0]'">flag</span>
+                    <span class="truncate">Media Siber &amp; Berita Nasional</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold transition-colors shrink-0"
+                          :class="rssSubTab === 'indonesia' ? 'bg-[#00d4ff]/20 text-[#00d4ff] border border-[#00d4ff]/30' : 'bg-[#0d2137] text-[#8892b0] border border-[#1a3a5c]'" 
+                          x-text="rss.indonesia.length"></span>
                 </button>
             </div>
 
             <!-- Tabel Feed untuk Sub-Tab Aktif -->
             <div class="overflow-x-auto border border-[#1a3a5c] rounded-xl bg-[#0a1628]/60">
-                <table class="w-full text-xs text-left">
+                <table class="w-full text-xs text-left table-fixed min-w-[700px]">
+                    <colgroup>
+                        <col class="w-[28%]">
+                        <col class="w-[44%]">
+                        <col class="w-[12%] min-w-[90px]">
+                        <col class="w-[16%] min-w-[130px]">
+                    </colgroup>
                     <thead class="bg-[#0a1628] text-[#8892b0] font-mono border-b border-[#1a3a5c]">
                         <tr>
-                            <th class="px-4 py-3 font-bold">Nama Sumber Media</th>
-                            <th class="px-4 py-3 font-bold">URL Feed (RSS/Atom)</th>
-                            <th class="px-4 py-3 font-bold text-center">Status</th>
-                            <th class="px-4 py-3 font-bold text-center">Aksi</th>
+                            <th class="px-4 py-3 font-bold w-[28%]">Nama Sumber Media</th>
+                            <th class="px-4 py-3 font-bold w-[44%]">URL Feed (RSS/Atom)</th>
+                            <th class="px-4 py-3 font-bold w-[12%] text-center">Status</th>
+                            <th class="px-4 py-3 font-bold w-[16%] text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[#1a3a5c]">
                         <template x-for="(s, idx) in (rssSubTab === 'international' ? rss.international : rss.indonesia)" :key="rssSubTab + '-' + idx">
                             <tr class="hover:bg-[#132c4a]/40 transition-colors">
-                                <td class="px-4 py-2.5 font-semibold text-[#e0f0ff] font-mono" x-text="s.nama"></td>
-                                <td class="px-4 py-2.5 font-mono text-[11px] text-[#8892b0] max-w-sm">
+                                <td class="px-4 py-2.5 font-semibold text-[#e0f0ff] font-mono truncate" x-text="s.nama" :title="s.nama"></td>
+                                <td class="px-4 py-2.5 font-mono text-[11px] text-[#8892b0] truncate">
                                     <template x-for="(fUrl, fIdx) in s.feeds" :key="fIdx">
                                         <div class="truncate flex items-center gap-1.5" :title="fUrl">
                                             <span x-show="s.feeds.length > 1" class="text-[10px] text-[#00d4ff] font-bold shrink-0" x-text="'[' + (fIdx + 1) + ']'"></span>
@@ -443,14 +405,29 @@
                                     <span x-show="s.active !== false" class="px-2.5 py-0.5 bg-[#00ff9d]/10 text-[#00ff9d] border border-[#00ff9d]/30 text-[10px] font-bold rounded-full font-mono">Aktif</span>
                                     <span x-show="s.active === false" class="px-2.5 py-0.5 bg-[#ff3366]/10 text-[#ff3366] border border-[#ff3366]/30 text-[10px] font-bold rounded-full font-mono">Nonaktif</span>
                                 </td>
-                                <td class="px-4 py-2.5 text-center">
-                                    <div class="flex items-center justify-center gap-2.5 font-mono text-xs">
+                                <td class="px-4 py-2.5 text-center whitespace-nowrap">
+                                    <div class="inline-flex items-center justify-center gap-2">
+                                        <!-- Tombol Toggle Status -->
                                         <button type="button" @click="toggleRss(rssSubTab, idx)" 
-                                                class="text-[#00d4ff] hover:text-[#00ff9d] hover:underline font-semibold cursor-pointer" 
-                                                x-text="s.active !== false ? 'Nonaktifkan' : 'Aktifkan'"></button>
-                                        <span class="text-[#1a3a5c]">|</span>
+                                                :title="s.active !== false ? 'Nonaktifkan Sumber Feed' : 'Aktifkan Sumber Feed'"
+                                                class="p-1.5 rounded-lg border transition-all cursor-pointer flex items-center justify-center"
+                                                :class="s.active !== false ? 'border-[#00ff9d]/30 bg-[#00ff9d]/10 text-[#00ff9d] hover:bg-[#00ff9d]/20 hover:border-[#00ff9d]' : 'border-[#7d8ca6]/30 bg-[#7d8ca6]/10 text-[#7d8ca6] hover:bg-[#7d8ca6]/20 hover:border-[#7d8ca6]'">
+                                            <span class="material-symbols-outlined text-base" x-text="s.active !== false ? 'toggle_on' : 'toggle_off'"></span>
+                                        </button>
+
+                                        <!-- Tombol Edit -->
+                                        <button type="button" @click="editRss(rssSubTab, idx)" 
+                                                title="Edit Sumber Media &amp; URL Feed"
+                                                class="p-1.5 rounded-lg border border-[#00d4ff]/30 bg-[#00d4ff]/10 text-[#00d4ff] hover:bg-[#00d4ff]/20 hover:border-[#00d4ff] transition-all cursor-pointer flex items-center justify-center">
+                                            <span class="material-symbols-outlined text-base">edit</span>
+                                        </button>
+
+                                        <!-- Tombol Hapus -->
                                         <button type="button" @click="deleteRss(rssSubTab, idx)" 
-                                                class="text-[#ff3366] hover:text-[#ff5588] hover:underline font-semibold cursor-pointer">Hapus</button>
+                                                title="Hapus Sumber Feed dari Pantauan"
+                                                class="p-1.5 rounded-lg border border-[#ff3366]/30 bg-[#ff3366]/10 text-[#ff3366] hover:bg-[#ff3366]/20 hover:border-[#ff3366] transition-all cursor-pointer flex items-center justify-center">
+                                            <span class="material-symbols-outlined text-base">delete</span>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -464,13 +441,14 @@
                 </table>
             </div>
 
-            <!-- Form Tambah Sumber RSS Baru (Collapsible) -->
+            <!-- Form Tambah / Edit Sumber RSS Baru (Collapsible) -->
             <div x-show="addRssModal" x-transition class="p-4 border border-[#00d4ff]/30 rounded-xl bg-[#0a1628] shadow-[0_0_15px_rgba(0,212,255,0.1)] space-y-3">
                 <div class="flex items-center justify-between pb-2 border-b border-[#1a3a5c]">
                     <h4 class="text-xs font-bold text-[#e0f0ff] font-mono flex items-center gap-1.5 uppercase tracking-wider">
-                        <span class="material-symbols-outlined text-sm text-[#00ff9d]">add_circle</span> Tambah Sumber Feed RSS Baru
+                        <span class="material-symbols-outlined text-sm" :class="editRssIndex !== null ? 'text-[#00d4ff]' : 'text-[#00ff9d]'" x-text="editRssIndex !== null ? 'edit' : 'add_circle'">add_circle</span>
+                        <span x-text="editRssIndex !== null ? 'Edit Sumber Feed RSS' : 'Tambah Sumber Feed RSS Baru'"></span>
                     </h4>
-                    <button type="button" @click="addRssModal = false" class="text-xs text-[#7d8ca6] hover:text-[#e0f0ff] cursor-pointer">✕ Batal</button>
+                    <button type="button" @click="closeRssModal()" class="text-xs text-[#7d8ca6] hover:text-[#e0f0ff] cursor-pointer">✕ Batal</button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
@@ -490,10 +468,10 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2 pt-1">
-                    <button type="button" @click="submitNewRss()" class="px-4 py-2 rounded-lg bg-[#00d4ff] hover:bg-[#00ff9d] text-[#0a1628] text-xs font-bold font-mono uppercase tracking-wider cursor-pointer">
+                    <button type="button" @click="submitNewRss()" class="px-4 py-2 rounded-lg bg-[#00d4ff] hover:bg-[#00ff9d] text-[#0a1628] text-xs font-bold font-mono uppercase tracking-wider cursor-pointer" x-text="editRssIndex !== null ? 'Simpan Perubahan' : 'Tambahkan ke Daftar'">
                         Tambahkan ke Daftar
                     </button>
-                    <button type="button" @click="addRssModal = false" class="px-4 py-2 rounded-lg bg-[#1a3a5c] hover:bg-[#132c4a] text-[#e0f0ff] text-xs font-mono cursor-pointer">
+                    <button type="button" @click="closeRssModal()" class="px-4 py-2 rounded-lg bg-[#1a3a5c] hover:bg-[#132c4a] text-[#e0f0ff] text-xs font-mono cursor-pointer">
                         Batal
                     </button>
                 </div>
@@ -628,13 +606,211 @@
 </div>
 
 <script>
+if (typeof window !== 'undefined' && !window.tampilkanToast) {
+    window.tampilkanToast = function(pesan, tipe = 'sukses', durasiMs = null) {
+        let toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container';
+            toastContainer.className = 'fixed top-5 right-5 sm:top-6 sm:right-6 z-[99999] flex flex-col gap-2.5 pointer-events-none max-w-sm sm:max-w-md w-full px-4 sm:px-0';
+            document.body.appendChild(toastContainer);
+        }
+
+        const toast = document.createElement('div');
+        let borderCol = 'border-[#00ff9d]/60 text-[#00ff9d] shadow-[0_0_25px_rgba(0,255,157,0.25)]';
+        let badgeCol = 'bg-[#00ff9d]/15 text-[#00ff9d] border border-[#00ff9d]/30';
+        let icon = 'check_circle';
+        let label = 'SUKSES';
+
+        if (tipe === 'error') {
+            borderCol = 'border-[#ff3366]/60 text-[#ff3366] shadow-[0_0_25px_rgba(255,51,102,0.3)]';
+            badgeCol = 'bg-[#ff3366]/15 text-[#ff3366] border border-[#ff3366]/30';
+            icon = 'error';
+            label = 'GAGAL';
+        } else if (tipe === 'warning') {
+            borderCol = 'border-[#ffc107]/60 text-[#ffc107] shadow-[0_0_25px_rgba(255,193,7,0.3)]';
+            badgeCol = 'bg-[#ffc107]/15 text-[#ffc107] border border-[#ffc107]/30';
+            icon = 'warning';
+            label = 'PERINGATAN';
+        } else if (tipe === 'info') {
+            borderCol = 'border-[#00d4ff]/60 text-[#00d4ff] shadow-[0_0_25px_rgba(0,212,255,0.3)]';
+            badgeCol = 'bg-[#00d4ff]/15 text-[#00d4ff] border border-[#00d4ff]/30';
+            icon = 'info';
+            label = 'INFO';
+        }
+
+        const durasi = durasiMs || (tipe === 'error' ? 4500 : 3200);
+        const safePesan = String(pesan ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+        toast.className = `flex items-start gap-3 p-3.5 rounded-xl text-xs font-mono font-medium bg-[#0d2137]/95 backdrop-blur-md border transition-all duration-300 transform -translate-y-2 opacity-0 scale-95 pointer-events-auto ${borderCol}`;
+        toast.innerHTML = `
+            <span class="material-symbols-outlined text-lg shrink-0 mt-0.5" aria-hidden="true">${icon}</span>
+            <div class="flex-1 min-w-0 pr-1">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider font-mono ${badgeCol}">[ ${label} ]</span>
+                </div>
+                <p class="text-[#e0f0ff] font-sans font-medium text-xs leading-relaxed break-words">${safePesan}</p>
+            </div>
+            <button type="button" class="text-[#7d8ca6] hover:text-[#e0f0ff] cursor-pointer shrink-0 p-0.5 transition-colors" title="Tutup">
+                <span class="material-symbols-outlined text-base">close</span>
+            </button>
+        `;
+
+        const btnClose = toast.querySelector('button');
+        let isClosed = false;
+        const dismissToast = () => {
+            if (isClosed) return;
+            isClosed = true;
+            toast.classList.remove('translate-y-0', 'opacity-100', 'scale-100');
+            toast.classList.add('-translate-y-2', 'opacity-0', 'scale-95');
+            setTimeout(() => toast.remove(), 250);
+        };
+
+        if (btnClose) {
+            btnClose.addEventListener('click', dismissToast);
+        }
+
+        toastContainer.appendChild(toast);
+
+        requestAnimationFrame(() => {
+            toast.classList.remove('-translate-y-2', 'opacity-0', 'scale-95');
+            toast.classList.add('translate-y-0', 'opacity-100', 'scale-100');
+        });
+
+        setTimeout(dismissToast, durasi);
+    };
+}
+if (typeof window !== 'undefined' && !window.tampilkanKonfirmasi) {
+    window.tampilkanKonfirmasi = function(opsi) {
+        let config = {
+            judul: 'KONFIRMASI TINDAKAN',
+            pesan: '',
+            subteks: '',
+            teksKonfirmasi: 'Konfirmasi',
+            teksBatal: 'Batal',
+            tipe: 'danger'
+        };
+        if (typeof opsi === 'string') {
+            config.pesan = opsi;
+        } else if (typeof opsi === 'object' && opsi !== null) {
+            config = Object.assign(config, opsi);
+        }
+
+        return new Promise((resolve) => {
+            const existingOverlay = document.getElementById('dialog-konfirmasi-overlay');
+            if (existingOverlay) existingOverlay.remove();
+
+            const overlay = document.createElement('div');
+            overlay.id = 'dialog-konfirmasi-overlay';
+            overlay.className = 'fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-[#0a1628]/85 backdrop-blur-sm transition-opacity duration-200 opacity-0 pointer-events-auto';
+
+            let borderCol = 'border-[#ff3366]/50 shadow-[0_0_35px_rgba(255,51,102,0.25)]';
+            let iconCol = 'text-[#ff3366] bg-[#ff3366]/10 border border-[#ff3366]/30';
+            let btnConfirmCol = 'bg-[#ff3366] hover:bg-[#ff3366]/80 text-white shadow-[0_0_15px_rgba(255,51,102,0.4)]';
+            let icon = 'warning';
+            let badgeText = 'PERINGATAN SISTEM';
+
+            if (config.tipe === 'warning') {
+                borderCol = 'border-[#ffc107]/50 shadow-[0_0_35px_rgba(255,193,7,0.25)]';
+                iconCol = 'text-[#ffc107] bg-[#ffc107]/10 border border-[#ffc107]/30';
+                btnConfirmCol = 'bg-[#ffc107] hover:bg-[#ffc107]/80 text-[#0a1628] font-bold shadow-[0_0_15px_rgba(255,193,7,0.4)]';
+                icon = 'help';
+                badgeText = 'PERINGATAN';
+            } else if (config.tipe === 'info') {
+                borderCol = 'border-[#00d4ff]/50 shadow-[0_0_35px_rgba(0,212,255,0.25)]';
+                iconCol = 'text-[#00d4ff] bg-[#00d4ff]/10 border border-[#00d4ff]/30';
+                btnConfirmCol = 'bg-[#00d4ff] hover:bg-[#00ff9d] text-[#0a1628] font-bold shadow-[0_0_15px_rgba(0,212,255,0.4)]';
+                icon = 'info';
+                badgeText = 'KONFIRMASI OPERASIONAL';
+            }
+
+            const safeEscape = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+            overlay.innerHTML = `
+                <div class="relative bg-[#0d2137]/95 backdrop-blur-md rounded-2xl max-w-md w-full p-6 border ${borderCol} transform transition-all duration-200 scale-95 opacity-0 font-['Sora']" id="dialog-konfirmasi-box" role="dialog" aria-modal="true">
+                    <button type="button" id="dialog-konfirmasi-close" class="absolute top-4 right-4 text-[#7d8ca6] hover:text-[#e0f0ff] w-8 h-8 rounded-lg hover:bg-[#132c4a] flex items-center justify-center transition-colors cursor-pointer" title="Tutup (Esc)">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                    <div class="flex items-start gap-3.5 mb-4 pr-6">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${iconCol}">
+                            <span class="material-symbols-outlined text-xl">${icon}</span>
+                        </div>
+                        <div class="min-w-0">
+                            <span class="text-[10px] font-mono font-bold tracking-wider uppercase text-[#7d8ca6] block mb-0.5">[ ${badgeText} ]</span>
+                            <h3 class="text-base font-bold text-[#e0f0ff] leading-snug tracking-tight">${safeEscape(config.judul)}</h3>
+                        </div>
+                    </div>
+                    <div class="mb-5 space-y-2">
+                        <p class="text-sm text-[#e0f0ff] leading-relaxed break-words font-medium">${safeEscape(config.pesan)}</p>
+                        ${config.subteks ? `<p class="text-xs text-[#8892b0] font-mono leading-relaxed break-words">${safeEscape(config.subteks)}</p>` : ''}
+                    </div>
+                    <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-[#1a3a5c]">
+                        <button type="button" id="dialog-konfirmasi-batal" class="px-4 py-2 rounded-lg bg-[#1a3a5c] hover:bg-[#132c4a] text-[#e0f0ff] text-xs font-mono font-semibold transition-colors cursor-pointer">
+                            ${safeEscape(config.teksBatal)}
+                        </button>
+                        <button type="button" id="dialog-konfirmasi-setuju" class="px-4 py-2 rounded-lg ${btnConfirmCol} text-xs font-mono font-bold tracking-wide transition-all cursor-pointer">
+                            ${safeEscape(config.teksKonfirmasi)}
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            const box = overlay.querySelector('#dialog-konfirmasi-box');
+            const btnSetuju = overlay.querySelector('#dialog-konfirmasi-setuju');
+            const btnBatal = overlay.querySelector('#dialog-konfirmasi-batal');
+            const btnClose = overlay.querySelector('#dialog-konfirmasi-close');
+
+            let resolved = false;
+            const cleanup = (result) => {
+                if (resolved) return;
+                resolved = true;
+                document.removeEventListener('keydown', handleKey);
+                overlay.classList.remove('opacity-100');
+                overlay.classList.add('opacity-0');
+                if (box) {
+                    box.classList.remove('scale-100', 'opacity-100');
+                    box.classList.add('scale-95', 'opacity-0');
+                }
+                setTimeout(() => overlay.remove(), 200);
+                resolve(result);
+            };
+
+            const handleKey = (e) => {
+                if (e.key === 'Escape') cleanup(false);
+            };
+
+            document.addEventListener('keydown', handleKey);
+            btnSetuju.addEventListener('click', () => cleanup(true));
+            btnBatal.addEventListener('click', () => cleanup(false));
+            btnClose.addEventListener('click', () => cleanup(false));
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) cleanup(false);
+            });
+
+            requestAnimationFrame(() => {
+                overlay.classList.remove('opacity-0');
+                overlay.classList.add('opacity-100');
+                if (box) {
+                    box.classList.remove('scale-95', 'opacity-0');
+                    box.classList.add('scale-100', 'opacity-100');
+                }
+                btnSetuju.focus();
+            });
+        });
+    };
+}
+
 document.addEventListener('alpine:init', () => {
     Alpine.data('settingsPanel', () => ({
         activeTab: 'umum',
         rssSubTab: 'international',
-        kwSubTab: 'mandiri',
+        kwSubTab: 'spesifik',
         statusApiKey: 'Belum Disetel',
         apiKeysList: [],
+        activeApiKeyIndex: -1,
+        csrfToken: '',
         testingApiKey: false,
         testResult: null,
 
@@ -648,41 +824,93 @@ document.addEventListener('alpine:init', () => {
         refProgressLogs: [],
 
         gemini: { api_key: '', temperature: 0.1, model_chain: '' },
-        keywordsList: { mandiri: [], data: [], aset: [] },
-        newKw: { mandiri: '', data: '', aset: '' },
+        keywordsList: { spesifik: [], general: [] },
+        newKw: { spesifik: '', general: '' },
 
         promptsData: [],
-        promptCategories: ['Pipeline Harian', 'SITREP Tren Berita'],
+        promptCategories: ['Pipeline Harian', 'KASUS INSIDEN SIBER TERAMAI', 'ANALISIS BERITA SIBER MINGGUAN'],
         selectedPromptId: null,
         selectedPromptMeta: null,
         promptContent: '',
 
         rss: { international: [], indonesia: [] },
         addRssModal: false,
+        editRssIndex: null,
+        editRssCategory: null,
         newRss: { tipe: 'international', nama: '', feeds: '' },
+
+        notify(pesan, tipe = 'sukses') {
+            if (typeof window.tampilkanToast === 'function') {
+                window.tampilkanToast(pesan, tipe);
+            } else if (typeof tampilkanToast === 'function') {
+                tampilkanToast(pesan, tipe);
+            } else {
+                alert(pesan);
+            }
+        },
 
         async init() {
             window.loadSettings = this.fetchSettings.bind(this);
+            this.csrfToken = this.readCsrfCookie();
             await this.fetchSettings();
             await this.fetchReferenceInfo();
         },
 
+        readCsrfCookie() {
+            const match = document.cookie.match(/(?:^|;\s*)cti_csrf=([^;]+)/);
+            return match ? decodeURIComponent(match[1]) : '';
+        },
+
+        csrfHeaders(extra) {
+            this.csrfToken = this.readCsrfCookie();
+            return Object.assign({ 'X-CSRF-Token': this.csrfToken }, extra || {});
+        },
+
+        async errorMessage(res, fallback) {
+            try {
+                const data = await res.json();
+                if (data && data.message) return data.message;
+            } catch (e) {
+                // Respons bukan JSON; gunakan pesan bawaan.
+            }
+            if (res.status === 401 || res.status === 403) {
+                return 'Sesi tidak valid atau akses ditolak. Silakan login ulang sebagai superadmin.';
+            }
+            return fallback;
+        },
+
         async fetchSettings() {
             try {
-                const res = await fetch('/api/settings');
+                const res = await fetch('/api/settings', { headers: this.csrfHeaders() });
+                if (!res.ok) {
+                    this.notify(await this.errorMessage(res, 'Gagal memuat pengaturan.'), 'error');
+                    return;
+                }
                 const data = await res.json();
 
                 this.statusApiKey = data.gemini_api_key_set ? "Disetel" : "Belum Disetel";
                 this.apiKeysList = data.api_keys || [];
+                this.activeApiKeyIndex = typeof data.active_api_key_index === 'number' ? data.active_api_key_index : -1;
                 if (this.apiKeysList.length > 0) {
                     this.gemini.api_key = this.apiKeysList.join(', ');
                 }
                 this.gemini.model_chain = (data.model_chain || []).join(', ');
 
                 if (data.keywords) {
-                    this.keywordsList.mandiri = Array.isArray(data.keywords.indonesia_mandiri) ? [...data.keywords.indonesia_mandiri] : [];
-                    this.keywordsList.data = Array.isArray(data.keywords.objek_data_sensitif) ? [...data.keywords.objek_data_sensitif] : [];
-                    this.keywordsList.aset = Array.isArray(data.keywords.objek_aset_digital) ? [...data.keywords.objek_aset_digital] : [];
+                    this.keywordsList.spesifik = Array.isArray(data.keywords.spesifik) ? [...data.keywords.spesifik] : [];
+                    this.keywordsList.general = Array.isArray(data.keywords.general) ? [...data.keywords.general] : [];
+                    if (this.keywordsList.spesifik.length === 0) {
+                        const legacyMandiri = Array.isArray(data.keywords.indonesia_mandiri) ? data.keywords.indonesia_mandiri : [];
+                        const legacyEnglish = Array.isArray(data.keywords.english) ? data.keywords.english : [];
+                        this.keywordsList.spesifik = [...new Set([...legacyMandiri, ...legacyEnglish])];
+                    }
+                    if (this.keywordsList.general.length === 0) {
+                        const legacyData = Array.isArray(data.keywords.objek_data_sensitif) ? data.keywords.objek_data_sensitif : [];
+                        const legacyAset = Array.isArray(data.keywords.objek_aset_digital) ? data.keywords.objek_aset_digital : [];
+                        const legacyInd = Array.isArray(data.keywords.indikator_insiden) ? data.keywords.indikator_insiden : [];
+                        const legacyAmb = Array.isArray(data.keywords.ambigu_butuh_konteks) ? data.keywords.ambigu_butuh_konteks : [];
+                        this.keywordsList.general = [...new Set([...legacyData, ...legacyAset, ...legacyInd, ...legacyAmb])];
+                    }
                 }
 
                 // Metadata prompts
@@ -710,16 +938,26 @@ document.addEventListener('alpine:init', () => {
             const val = (this.newKw[kategori] || '').trim().toLowerCase();
             if (!val) return;
             if (this.keywordsList[kategori].includes(val)) {
-                alert(`Kata kunci "${val}" sudah ada dalam daftar.`);
+                this.notify(`Kata kunci "${val}" sudah ada dalam daftar.`, 'warning');
                 return;
             }
             this.keywordsList[kategori].push(val);
             this.newKw[kategori] = '';
         },
 
-        removeKeyword(kategori, idx) {
+        async removeKeyword(kategori, idx) {
             const item = this.keywordsList[kategori][idx];
-            if (confirm(`Hapus kata kunci "${item}" dari daftar?`)) {
+            const namaKat = kategori === 'spesifik' ? 'Kata Kunci Spesifik' : 'Kata Kunci General';
+            const setuju = await (window.tampilkanKonfirmasi ? window.tampilkanKonfirmasi({
+                judul: 'Hapus Kata Kunci',
+                pesan: `Hapus kata kunci "${item}" dari daftar?`,
+                subteks: `Kata kunci ini akan dihapus dari kategori ${namaKat}. Klik simpan kata kunci untuk menerapkan perubahan permanen.`,
+                teksKonfirmasi: 'Hapus Kata Kunci',
+                teksBatal: 'Batal',
+                tipe: 'danger'
+            }) : Promise.resolve(confirm(`Hapus kata kunci "${item}" dari daftar?`)));
+
+            if (setuju) {
                 this.keywordsList[kategori].splice(idx, 1);
             }
         },
@@ -727,24 +965,27 @@ document.addEventListener('alpine:init', () => {
         async saveKeywords() {
             const payload = {
                 keywords: {
-                    indonesia_mandiri: this.keywordsList.mandiri,
-                    objek_data_sensitif: this.keywordsList.data,
-                    objek_aset_digital: this.keywordsList.aset
+                    spesifik: this.keywordsList.spesifik,
+                    general: this.keywordsList.general,
+                    indonesia_mandiri: this.keywordsList.spesifik,
+                    english: this.keywordsList.spesifik.filter(k => /^[a-z0-9\s\-]+$/i.test(k)),
+                    objek_data_sensitif: this.keywordsList.general,
+                    objek_aset_digital: this.keywordsList.general
                 }
             };
             try {
                 const res = await fetch('/api/settings', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: this.csrfHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify(payload)
                 });
                 if (res.ok) {
-                    alert('Seluruh kamus kata kunci scraping berhasil disimpan ke database!');
+                    this.notify('Seluruh kamus kata kunci scraping berhasil disimpan ke database!', 'sukses');
                 } else {
-                    alert('Gagal menyimpan kata kunci.');
+                    this.notify(await this.errorMessage(res, 'Gagal menyimpan kata kunci.'), 'error');
                 }
             } catch (e) {
-                alert('Kesalahan jaringan: ' + e);
+                this.notify('Kesalahan jaringan: ' + e, 'error');
             }
         },
 
@@ -758,12 +999,14 @@ document.addEventListener('alpine:init', () => {
             this.selectedPromptMeta = p;
             this.promptContent = 'Memuat isi prompt...';
             try {
-                const res = await fetch(`/api/settings/prompts/${p.id}`);
+                const res = await fetch(`/api/settings/prompts/${encodeURIComponent(p.id)}`, {
+                    headers: this.csrfHeaders()
+                });
                 const data = await res.json();
                 if (res.ok) {
                     this.promptContent = data.isi;
                 } else {
-                    this.promptContent = 'Gagal memuat isi prompt.';
+                    this.promptContent = data.message || 'Gagal memuat isi prompt.';
                 }
             } catch (e) {
                 this.promptContent = 'Gagal memuat isi prompt: ' + e;
@@ -777,62 +1020,156 @@ document.addEventListener('alpine:init', () => {
             try {
                 const res = await fetch('/api/settings/prompts', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: this.csrfHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify(payload)
                 });
                 if (res.ok) {
-                    alert("Template Prompt '" + this.selectedPromptMeta.nama + "' berhasil disimpan ke database!");
+                    this.notify("Template Prompt '" + this.selectedPromptMeta.nama + "' berhasil disimpan ke database!", "sukses");
                 } else {
-                    alert("Gagal menyimpan prompt.");
+                    this.notify(await this.errorMessage(res, "Gagal menyimpan prompt."), "error");
                 }
             } catch (e) {
-                alert("Kesalahan jaringan saat menyimpan prompt.");
+                this.notify("Kesalahan jaringan saat menyimpan prompt.", "error");
+            }
+        },
+
+        async resetPrompt() {
+            if (!this.selectedPromptId) return;
+            const setuju = await (window.tampilkanKonfirmasi ? window.tampilkanKonfirmasi({
+                judul: 'Reset Template Prompt',
+                pesan: `Kembalikan template prompt "${this.selectedPromptMeta.nama}" ke snapshot beku?`,
+                subteks: 'Seluruh instruksi kustom yang tersimpan saat ini akan dibatalkan dan dikembalikan ke konfigurasi bawaan sistem.',
+                teksKonfirmasi: 'Reset ke Snapshot',
+                teksBatal: 'Batal',
+                tipe: 'warning'
+            }) : Promise.resolve(confirm("Kembalikan prompt '" + this.selectedPromptMeta.nama + "' ke snapshot beku? Perubahan tersimpan akan hilang.")));
+
+            if (!setuju) return;
+            try {
+                const res = await fetch(`/api/settings/prompts/${encodeURIComponent(this.selectedPromptId)}/reset`, {
+                    method: 'POST',
+                    headers: this.csrfHeaders({ 'Content-Type': 'application/json' })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    this.promptContent = data.isi;
+                    this.notify("Prompt '" + this.selectedPromptMeta.nama + "' berhasil direset ke snapshot beku.", "sukses");
+                } else {
+                    this.notify(data.message || "Gagal mereset prompt.", "error");
+                }
+            } catch (e) {
+                this.notify("Kesalahan jaringan saat mereset prompt.", "error");
             }
         },
 
         // --- RSS Management ---
         openAddRssModal(tipe) {
-            this.newRss = { tipe: tipe || 'international', nama: '', feeds: '' };
+            this.editRssCategory = null;
+            this.editRssIndex = null;
+            this.newRss = { tipe: tipe || this.rssSubTab || 'international', nama: '', feeds: '' };
             this.addRssModal = true;
         },
 
+        editRss(tipe, idx) {
+            const item = this.rss[tipe] && this.rss[tipe][idx];
+            if (!item) return;
+            this.editRssCategory = tipe;
+            this.editRssIndex = idx;
+            this.newRss = {
+                tipe: tipe,
+                nama: item.nama || '',
+                feeds: Array.isArray(item.feeds) ? item.feeds.join(', ') : (item.feeds || '')
+            };
+            this.addRssModal = true;
+        },
+
+        closeRssModal() {
+            this.addRssModal = false;
+            this.editRssCategory = null;
+            this.editRssIndex = null;
+            this.newRss = { tipe: this.rssSubTab || 'international', nama: '', feeds: '' };
+        },
+
         toggleRss(tipe, idx) {
+            if (!this.rss[tipe] || !this.rss[tipe][idx]) return;
             this.rss[tipe][idx].active = this.rss[tipe][idx].active === false ? true : false;
         },
 
-        deleteRss(tipe, idx) {
-            const nama = this.rss[tipe][idx].nama || 'sumber feed ini';
-            if (confirm(`Yakin ingin menghapus ${nama} dari daftar pantauan?`)) {
+        async deleteRss(tipe, idx) {
+            const item = this.rss[tipe] && this.rss[tipe][idx];
+            const nama = item ? item.nama : 'sumber feed ini';
+            const setuju = await (window.tampilkanKonfirmasi ? window.tampilkanKonfirmasi({
+                judul: 'Hapus Sumber Feed RSS',
+                pesan: `Yakin ingin menghapus "${nama}" dari daftar pantauan?`,
+                subteks: 'Feed berita dari media ini tidak akan ditarik lagi pada pipeline berikutnya. Klik Simpan Perubahan RSS untuk menerapkan permanen.',
+                teksKonfirmasi: 'Hapus Sumber Feed',
+                teksBatal: 'Batal',
+                tipe: 'danger'
+            }) : Promise.resolve(confirm(`Yakin ingin menghapus "${nama}" dari daftar pantauan?`)));
+
+            if (setuju) {
                 this.rss[tipe].splice(idx, 1);
+                if (this.editRssIndex === idx && this.editRssCategory === tipe) {
+                    this.closeRssModal();
+                }
             }
         },
 
         submitNewRss() {
-            if (!this.newRss.nama || !this.newRss.feeds) return alert("Silakan lengkapi nama media dan URL feed!");
-            const fds = this.newRss.feeds.split(',').map(s => s.trim()).filter(s => s);
-            this.rss[this.newRss.tipe].push({
-                nama: this.newRss.nama,
-                feeds: fds,
-                active: true
-            });
-            this.addRssModal = false;
-            this.newRss = { tipe: this.rssSubTab, nama: '', feeds: '' };
+            if (!this.newRss.nama || !this.newRss.feeds) {
+                this.notify("Silakan lengkapi nama media dan URL feed!", "warning");
+                return;
+            }
+            const fds = this.newRss.feeds.split(',').map(s => s.trim()).filter(Boolean);
+            if (fds.length === 0) {
+                this.notify("URL feed tidak boleh kosong!", "warning");
+                return;
+            }
+
+            if (this.editRssIndex !== null && this.editRssCategory) {
+                const prevCat = this.editRssCategory;
+                const prevIdx = this.editRssIndex;
+                const prevItem = this.rss[prevCat] && this.rss[prevCat][prevIdx];
+                const activeState = (prevItem && typeof prevItem.active === 'boolean') ? prevItem.active : true;
+
+                if (prevCat === this.newRss.tipe) {
+                    this.rss[prevCat][prevIdx] = {
+                        nama: this.newRss.nama.trim(),
+                        feeds: fds,
+                        active: activeState
+                    };
+                } else {
+                    this.rss[prevCat].splice(prevIdx, 1);
+                    this.rss[this.newRss.tipe].push({
+                        nama: this.newRss.nama.trim(),
+                        feeds: fds,
+                        active: activeState
+                    });
+                }
+            } else {
+                this.rss[this.newRss.tipe].push({
+                    nama: this.newRss.nama.trim(),
+                    feeds: fds,
+                    active: true
+                });
+            }
+            this.closeRssModal();
         },
 
         async saveRss() {
             try {
                 const res = await fetch('/api/settings/rss', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: this.csrfHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify(this.rss)
                 });
                 if (res.ok) {
-                    alert("Daftar sumber RSS berhasil diperbarui!");
+                    this.notify("Daftar sumber RSS berhasil diperbarui!", "sukses");
                 } else {
-                    alert("Gagal menyimpan sumber RSS.");
+                    this.notify(await this.errorMessage(res, "Gagal menyimpan sumber RSS."), "error");
                 }
             } catch (e) {
-                alert("Kesalahan jaringan saat menyimpan RSS.");
+                this.notify("Kesalahan jaringan saat menyimpan RSS.", "error");
             }
         },
 
@@ -842,18 +1179,19 @@ document.addEventListener('alpine:init', () => {
             try {
                 const res = await fetch('/api/settings', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: this.csrfHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify({ gemini: { api_key: keys } })
                 });
                 if (res.ok) {
                     this.apiKeysList = keys;
                     this.statusApiKey = keys.length > 0 ? "Disetel" : "Belum Disetel";
-                    alert('API Key berhasil disimpan permanen ke database!');
+                    this.notify('API Key berhasil disimpan permanen ke database!', 'sukses');
+                    await this.fetchSettings();
                 } else {
-                    alert('Gagal menyimpan API Key ke server.');
+                    this.notify(await this.errorMessage(res, 'Gagal menyimpan API Key ke server.'), 'error');
                 }
             } catch (e) {
-                alert('Gagal menyimpan API Key: ' + e);
+                this.notify('Gagal menyimpan API Key: ' + e, 'error');
             }
         },
 
@@ -864,7 +1202,7 @@ document.addEventListener('alpine:init', () => {
             try {
                 const res = await fetch('/api/settings/test-key', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: this.csrfHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify({ api_key: primaryKey })
                 });
                 const data = await res.json();
@@ -895,17 +1233,17 @@ document.addEventListener('alpine:init', () => {
             try {
                 const res = await fetch('/api/settings', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: this.csrfHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify(payload)
                 });
                 if (res.ok) {
-                    alert("Pengaturan Parameter LLM berhasil disimpan!");
+                    this.notify("Pengaturan Parameter LLM berhasil disimpan!", "sukses");
                     await this.fetchSettings();
                 } else {
-                    alert("Gagal menyimpan pengaturan umum.");
+                    this.notify(await this.errorMessage(res, "Gagal menyimpan pengaturan umum."), "error");
                 }
             } catch (e) {
-                alert("Kesalahan jaringan saat menyimpan.");
+                this.notify("Kesalahan jaringan saat menyimpan.", "error");
             }
         },
 
@@ -913,7 +1251,9 @@ document.addEventListener('alpine:init', () => {
         async fetchReferenceInfo() {
             this.loadingReferences = true;
             try {
-                const res = await fetch('/api/settings/references-info');
+                const res = await fetch('/api/settings/references-info', {
+                    headers: this.csrfHeaders()
+                });
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.references) {
@@ -939,11 +1279,11 @@ document.addEventListener('alpine:init', () => {
             try {
                 const res = await fetch('/api/settings/update-references', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: this.csrfHeaders({ 'Content-Type': 'application/json' })
                 });
 
                 if (!res.ok) {
-                    alert('Gagal memulai sinkronisasi sumber referensi.');
+                    this.notify(await this.errorMessage(res, 'Gagal memulai sinkronisasi sumber referensi.'), 'error');
                     this.refUpdating = false;
                     return;
                 }
@@ -974,7 +1314,7 @@ document.addEventListener('alpine:init', () => {
                                 this.refProgressLogs.push(`[${evt.timestamp || new Date().toLocaleTimeString()}] ${evt.message}`);
                             }
                             if (evt.status === 'completed') {
-                                alert('Pembaruan 4 sumber referensi CTI berhasil diselesaikan!');
+                                this.notify('Pembaruan 4 sumber referensi CTI berhasil diselesaikan!', 'sukses');
                             }
                         } catch (err) {
                             console.error("Parse progress line error:", err, line);
@@ -984,7 +1324,7 @@ document.addEventListener('alpine:init', () => {
 
                 await this.fetchReferenceInfo();
             } catch (e) {
-                alert('Koneksi terputus saat memperbarui referensi: ' + e);
+                this.notify('Koneksi terputus saat memperbarui referensi: ' + e, 'error');
             } finally {
                 this.refUpdating = false;
             }

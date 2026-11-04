@@ -1,4 +1,4 @@
-import { animateNumber } from '../utils.js';
+import { animateNumber } from '../utils.js?v=9.5';
 
 /**
  * Memberikan efek highlight ring berkedip pada kartu KPI saat data berhasil diperbarui

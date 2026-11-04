@@ -84,6 +84,13 @@ def proses_arsip_dan_tren(hasil_ringkas: Dict, db_path: Path = DEFAULT_DB_PATH) 
             [{"identifier": i["identifier"], "judul": i["judul"], "sumber": i["sumber"]} for i in item_berita],
             kategori="berita", db_path=db_path,
         )
+        try:
+            from src.cti.analyzer import CTINewsAnalyzer
+            cti_analyzer = CTINewsAnalyzer(db_path=db_path, llm_mode="offline")
+            for item in item_berita:
+                cti_analyzer.analyze_news(item, persist=True)
+        except Exception as e:
+            logger.warning(f"Gagal memvalidasi CTI intelijen_berita_tervalidasi secara offline: {e}")
 
     df_riwayat = ambil_riwayat_tren(hari=14, db_path=db_path)
     statistik_tren = susun_ringkasan_statistik_tren(df_riwayat)

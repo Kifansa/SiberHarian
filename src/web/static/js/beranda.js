@@ -1,13 +1,15 @@
-import { ambilBeranda, mulaiPipelineRequest, batalkanPipelineRequest, bukaStreamLog } from './api.js';
-import { escapeHtml, formatWaktuScraping } from './utils.js';
+import { ambilBeranda, ambilArsip, mulaiPipelineRequest, batalkanPipelineRequest, bukaStreamLog } from './api.js';
+import { escapeHtml, formatWaktuScraping, tampilkanKonfirmasi } from './utils.js';
 import { buatCardBerita } from './cards.js';
 import { resetDataLengkap } from './modal.js';
 
 function getEl(id) { return document.getElementById(id); }
 
 let sumberAktif = null; // EventSource yang sedang berjalan
-let dataBerandaTersimpan = { berita: [] };
-
+let dataBerandaTersimpan = { berita: [], waktu_terakhir_scraping: null };
+let poolSemuaBerita7Hari = null;
+let promiseMuatPool = null;
+let queryFilterAktif = '';
 
 function tambahBarisLog(item) {
     const consoleBody = getEl('console-body');
@@ -41,6 +43,67 @@ function resetTombol() {
     if (btnCancel) {
         btnCancel.classList.remove('visible');
     }
+}
+
+/**
+ * Memuat dan meng-cache pool artikel dari seluruh 7 hari terakhir.
+ * Memastikan berita lama dapat dicari dan dimunculkan di feed Beranda saat kata kunci dipilih.
+ */
+export async function muatPoolSemuaBerita() {
+    if (poolSemuaBerita7Hari && poolSemuaBerita7Hari.length > 0) {
+        return poolSemuaBerita7Hari;
+    }
+    if (promiseMuatPool) {
+        return await promiseMuatPool;
+    }
+    promiseMuatPool = (async () => {
+        try {
+            const dataArsip = await ambilArsip();
+            const beritaList = [];
+            const seen = new Set();
+
+            // 1. Masukkan berita tanggal terbaru dari Beranda
+            if (dataBerandaTersimpan && Array.isArray(dataBerandaTersimpan.berita)) {
+                for (const b of dataBerandaTersimpan.berita) {
+                    if (b.kategori === 'analisis_relevan' || b.kategori === 'edukasi') continue;
+                    const key = (b.link || b.judul || '').trim().toLowerCase();
+                    if (key && !seen.has(key)) {
+                        seen.add(key);
+                        beritaList.push(b);
+                    }
+                }
+            }
+
+            // 2. Gabungkan berita dari seluruh hari dalam arsip (7 hari terakhir)
+            if (dataArsip && dataArsip.status === 'ok' && Array.isArray(dataArsip.hari)) {
+                for (const h of dataArsip.hari) {
+                    if (Array.isArray(h.berita)) {
+                        for (const b of h.berita) {
+                            if (b.kategori === 'analisis_relevan' || b.kategori === 'edukasi') continue;
+                            const key = (b.link || b.judul || '').trim().toLowerCase();
+                            if (key && !seen.has(key)) {
+                                seen.add(key);
+                                beritaList.push({
+                                    ...b,
+                                    tanggal: b.tanggal || h.tanggal
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            poolSemuaBerita7Hari = beritaList;
+            return poolSemuaBerita7Hari;
+        } catch (err) {
+            console.error('Gagal memuat pool berita 7 hari:', err);
+            return (dataBerandaTersimpan && dataBerandaTersimpan.berita) || [];
+        } finally {
+            promiseMuatPool = null;
+        }
+    })();
+
+    return await promiseMuatPool;
 }
 
 export async function tampilkanBeranda() {
@@ -83,7 +146,10 @@ export async function tampilkanBeranda() {
     }
 
     const berita = data.berita || [];
-    dataBerandaTersimpan = { berita };
+    dataBerandaTersimpan = {
+        berita,
+        waktu_terakhir_scraping: data.waktu_terakhir_scraping
+    };
     // Saring hanya berita intelijen siber aktual (edukasi disajikan khusus pada Edukasi Keamanan Siber)
     const daftarBerita = berita.filter(b => b.kategori !== 'analisis_relevan' && b.kategori !== 'edukasi');
     
@@ -91,6 +157,9 @@ export async function tampilkanBeranda() {
         const infoWaktu = data.waktu_terakhir_scraping ? `Diperbarui pada ${formatWaktuScraping(data.waktu_terakhir_scraping)}` : 'Pantauan intelijen terkini';
         resultsDesc.textContent = `${daftarBerita.length} Berita Terpantau • ${infoWaktu}`;
     }
+
+    const filterBadge = getEl('beranda-filter-badge');
+    if (filterBadge) filterBadge.classList.add('hidden');
 
     if (daftarBerita.length === 0) {
         if (emptyState) {
@@ -112,59 +181,104 @@ export async function tampilkanBeranda() {
     `;
 
     inisialisasiFilterBerandaToolbar();
+
+    // Prefetch pool arsip 7 hari di latar belakang agar filtering instan
+    setTimeout(() => {
+        muatPoolSemuaBerita().catch(() => {});
+    }, 120);
 }
 
-let queryFilterAktif = '';
-
-export function filterBerandaCards(query = null) {
+export async function filterBerandaCards(query = null) {
     if (query !== null) queryFilterAktif = (query || '').trim().toLowerCase();
 
     const cardContainer = getEl('card-container');
-    if (!cardContainer) return;
-    const cards = cardContainer.querySelectorAll('article[data-search-text]');
-    let totalVisible = 0;
-
-    cards.forEach(card => {
-        const text = card.getAttribute('data-search-text') || '';
-        if (!queryFilterAktif || text.includes(queryFilterAktif)) {
-            card.style.display = 'flex';
-            totalVisible++;
-        } else {
-            card.style.display = 'none';
-        }
-    });
-
-    // Toggle clear search button
+    const resultsDesc = getEl('results-desc');
+    const filterBadge = getEl('beranda-filter-badge');
+    const filterBadgeText = getEl('beranda-filter-badge-text');
     const clearBtn = getEl('beranda-search-clear');
+    const emptyState = getEl('empty-state');
+
+    if (!cardContainer) return;
+
     if (clearBtn) {
         clearBtn.style.display = queryFilterAktif ? 'flex' : 'none';
     }
 
-    const emptyState = getEl('empty-state');
-    let searchEmptyNotice = document.getElementById('search-empty-notice');
-    if (totalVisible === 0 && queryFilterAktif) {
-        if (emptyState) emptyState.style.display = 'none';
-        if (!searchEmptyNotice) {
-            searchEmptyNotice = document.createElement('div');
-            searchEmptyNotice.id = 'search-empty-notice';
-            searchEmptyNotice.className = 'text-center py-12 card-cyber p-6 mt-4';
-            cardContainer.appendChild(searchEmptyNotice);
+    // KASUS 1: Query kosong (Kondisi default Beranda harian)
+    if (!queryFilterAktif) {
+        if (filterBadge) filterBadge.classList.add('hidden');
+        const defaultBerita = (dataBerandaTersimpan.berita || []).filter(
+            b => b.kategori !== 'analisis_relevan' && b.kategori !== 'edukasi'
+        );
+
+        if (resultsDesc) {
+            const infoWaktu = dataBerandaTersimpan.waktu_terakhir_scraping
+                ? `Diperbarui pada ${formatWaktuScraping(dataBerandaTersimpan.waktu_terakhir_scraping)}`
+                : 'Pantauan intelijen terkini';
+            resultsDesc.textContent = `${defaultBerita.length} Berita Terpantau • ${infoWaktu}`;
         }
-        searchEmptyNotice.style.display = 'block';
-        searchEmptyNotice.innerHTML = `
-            <span class="material-symbols-outlined text-3xl text-[#00d4ff] mb-2 drop-shadow-[0_0_10px_rgba(0,212,255,0.4)]" aria-hidden="true">search_off</span>
-            <h4 class="text-base font-bold text-[#e0f0ff] font-['Sora'] mb-1">[ TIDAK ADA HASIL PENCARIAN ]</h4>
-            <p class="text-xs text-[#8892b0] max-w-sm mx-auto mb-4 font-mono">Tidak ditemukan artikel berita siber yang cocok dengan kata kunci pencarian.</p>
-            <button type="button" onclick="window.resetFilterBeranda && window.resetFilterBeranda()" class="btn-chamfer text-xs" style="height:36px;padding:0 16px;">
-                <span class="material-symbols-outlined text-sm" aria-hidden="true">refresh</span>
-                <span>[ RESET PENCARIAN ]</span>
-            </button>
+
+        if (defaultBerita.length === 0) {
+            if (emptyState) emptyState.style.display = 'block';
+            cardContainer.innerHTML = '';
+        } else {
+            if (emptyState) emptyState.style.display = 'none';
+            cardContainer.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="beranda-cards-grid">
+                    ${defaultBerita.map(buatCardBerita).join('')}
+                </div>
+            `;
+        }
+        return;
+    }
+
+    // KASUS 2: Query aktif (mencari ke seluruh pool 7 hari termasuk berita lama)
+    if (emptyState) emptyState.style.display = 'none';
+
+    if (!poolSemuaBerita7Hari && resultsDesc) {
+        resultsDesc.textContent = `Menyaring arsip insiden: "${queryFilterAktif}"...`;
+    }
+
+    const pool = await muatPoolSemuaBerita();
+    const kecocokan = pool.filter(b => {
+        const teks = (
+            (b.judul || '') + ' ' +
+            (b.sumber || '') + ' ' +
+            (b.ringkasan || '') + ' ' +
+            (b.kategori || '') + ' ' +
+            (b.kata_kunci || '') + ' ' +
+            (b.tanggal || '')
+        ).toLowerCase();
+        return teks.includes(queryFilterAktif);
+    });
+
+    if (filterBadge && filterBadgeText) {
+        filterBadgeText.textContent = `TAG: ${queryFilterAktif.toUpperCase()} (${kecocokan.length})`;
+        filterBadge.classList.remove('hidden');
+    }
+
+    if (resultsDesc) {
+        resultsDesc.textContent = `${kecocokan.length} Berita Ditemukan • Menyaring: "${queryFilterAktif}"`;
+    }
+
+    if (kecocokan.length === 0) {
+        cardContainer.innerHTML = `
+            <div class="text-center py-12 card-cyber p-6 mt-4 w-full" id="search-empty-notice">
+                <span class="material-symbols-outlined text-3xl text-[#00d4ff] mb-2 drop-shadow-[0_0_10px_rgba(0,212,255,0.4)]" aria-hidden="true">search_off</span>
+                <h4 class="text-base font-bold text-[#e0f0ff] font-['Sora'] mb-1">[ TIDAK ADA HASIL PENCARIAN ]</h4>
+                <p class="text-xs text-[#8892b0] max-w-sm mx-auto mb-4 font-mono">Tidak ditemukan artikel berita siber yang cocok dengan kata kunci "${escapeHtml(queryFilterAktif)}".</p>
+                <button type="button" onclick="window.resetFilterBeranda && window.resetFilterBeranda()" class="btn-chamfer text-xs" style="height:36px;padding:0 16px;">
+                    <span class="material-symbols-outlined text-sm" aria-hidden="true">refresh</span>
+                    <span>[ RESET PENCARIAN ]</span>
+                </button>
+            </div>
         `;
     } else {
-        if (searchEmptyNotice) searchEmptyNotice.style.display = 'none';
-        if (cards.length === 0 && !queryFilterAktif && emptyState) {
-            emptyState.style.display = 'block';
-        }
+        cardContainer.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="beranda-cards-grid">
+                ${kecocokan.map(buatCardBerita).join('')}
+            </div>
+        `;
     }
 }
 
@@ -187,6 +301,9 @@ function inisialisasiFilterBerandaToolbar() {
                 searchInput.focus();
             }
             filterBerandaCards('');
+            if (window.resetFilterWordCloud) {
+                window.resetFilterWordCloud();
+            }
         });
     }
 }
@@ -205,10 +322,14 @@ window.resetFilterBeranda = function() {
 };
 
 export async function mulaiPipeline() {
-    const konfirmasi = window.confirm(
-        'Jalankan pipeline pengumpulan intelijen siber sekarang?\n\n' +
-        'Proses ini akan mengambil feed berita RSS intelijen siber, menganalisis sektor sasaran, dan memperbarui tren ancaman.'
-    );
+    const konfirmasi = await tampilkanKonfirmasi({
+        judul: 'Jalankan Pipeline Intelijen',
+        pesan: 'Jalankan pipeline pengumpulan intelijen siber sekarang?',
+        subteks: 'Proses ini akan mengambil feed berita RSS intelijen siber, menganalisis sektor sasaran, dan memperbarui tren ancaman.',
+        teksKonfirmasi: 'Mulai Pipeline',
+        teksBatal: 'Batal',
+        tipe: 'info'
+    });
     if (!konfirmasi) return;
 
     const btnRun = getEl('btn-run');
@@ -249,6 +370,7 @@ export async function mulaiPipeline() {
                 resetTombol();
                 if (consoleStatus) consoleStatus.textContent = item.sukses ? '[selesai]' : '[gagal, cek log di atas]';
                 if (item.sukses) {
+                    poolSemuaBerita7Hari = null; // Invalidate cache pool saat ada data baru
                     await tampilkanBeranda();
                     window.dispatchEvent(new CustomEvent('pipeline-selesai'));
                 }

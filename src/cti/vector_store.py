@@ -23,10 +23,10 @@ import re
 import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional
 
 from src.utils.logger import setup_logger
-from src.utils.llm_adapter import GeminiLLMAdapter, DEFAULT_EMBEDDING_MODEL
+from src.utils.llm_adapter import GeminiLLMAdapter
 
 logger = setup_logger(__name__)
 

@@ -2,7 +2,6 @@
 Pengecekan kepatuhan robots.txt sebelum pengumpulan konten artikel.
 Menjaga etika scraping dan kepatuhan hukum sesuai UU No. 28/2014 & UU ITE.
 """
-from functools import lru_cache
 from typing import Dict, Optional
 import urllib.robotparser
 from urllib.parse import urlparse

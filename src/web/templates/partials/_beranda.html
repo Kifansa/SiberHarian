@@ -1,10 +1,15 @@
 <div id="feed-beranda-anchor" class="-mt-20 pt-20"></div>
-<div class="py-4 space-y-6">
+<div id="feed-beranda-section" class="py-4 space-y-6 transition-all duration-300 rounded-xl">
   <!-- Feed Header -->
   <div class="border-b border-[#1a3a5c] pb-4 flex items-center justify-between gap-3">
     <div>
-      <div class="text-[#00ff9d] font-mono text-xs font-bold tracking-widest uppercase mb-1">
-        [ ARTIKEL // 01 ]
+      <div class="text-[#00ff9d] font-mono text-xs font-bold tracking-widest uppercase mb-1 flex items-center gap-2 flex-wrap">
+        <span>[ ARTIKEL // 01 ]</span>
+        <span id="beranda-filter-badge" class="hidden text-[10px] font-mono font-bold text-[#00d4ff] bg-[#0d2137] px-2.5 py-0.5 rounded border border-[#00d4ff]/40 shadow-[0_0_10px_rgba(0,212,255,0.25)] inline-flex items-center gap-1.5 animate-pulse">
+          <span class="material-symbols-outlined text-xs" aria-hidden="true">filter_alt</span>
+          <span id="beranda-filter-badge-text"></span>
+          <button type="button" onclick="window.resetFilterBeranda && window.resetFilterBeranda()" class="hover:text-red-400 ml-1 text-sm leading-none cursor-pointer" title="Hapus saringan">&times;</button>
+        </span>
       </div>
       <h2 class="text-xl sm:text-2xl font-extrabold text-[#e0f0ff] font-['Sora'] tracking-tight">Keamanan Siber Terbaru</h2>
     </div>

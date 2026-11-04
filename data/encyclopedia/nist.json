@@ -38,7 +38,7 @@
       "subdomain",
       "pemetaan aset"
     ],
-    "mitigation": "Lakukan inventarisasi aset digital secara otomatis (Attack Surface Management), petakan seluruh server, port, dan subdomain milik instansi."
+    "mitigation": "Lakukan inventarisasi aset digital secara otomatis (Attack Surface Management), petakan seluruh server, port, dan subdomain milik organisasi."
   },
   {
     "function": "Identify",
@@ -68,7 +68,7 @@
       "credential stuffing",
       "least privilege"
     ],
-    "mitigation": "Terapkan prinsip Least Privilege, tegakkan kebijakan rotasi kredensial, dan gunakan Tanda Tangan Elektronik (TTE) tersertifikasi BSrE untuk validasi integritas dokumen dinas."
+    "mitigation": "Terapkan prinsip Least Privilege, tegakkan kebijakan rotasi kredensial secara berkala, dan gunakan autentikasi kriptografis terverifikasi untuk menjaga integritas akses sistem."
   },
   {
     "function": "Protect",
@@ -77,11 +77,11 @@
       "phishing",
       "rekayasa sosial",
       "social engineering",
-      "pelatihan asn",
+      "pelatihan keamanan",
       "literasi siber",
       "simulasi phishing"
     ],
-    "mitigation": "Gelar pelatihan kesadaran keamanan siber dan simulasi serangan phishing berkala bagi seluruh aparatur sipil negara untuk memperkuat benteng pertahanan manusia."
+    "mitigation": "Gelar pelatihan kesadaran keamanan siber dan simulasi serangan phishing berkala bagi seluruh personel organisasi untuk memperkuat ketahanan terhadap rekayasa sosial."
   },
   {
     "function": "Protect",
@@ -97,7 +97,7 @@
       "integritas",
       "pdp"
     ],
-    "mitigation": "Lakukan segmentasi jaringan VLAN ketat antara server publik dan database internal, serta terapkan enkripsi simetris AES-256 pada data sensitif kependudukan dan ASN."
+    "mitigation": "Lakukan segmentasi jaringan VLAN ketat antara server publik dan database internal, serta terapkan enkripsi simetris AES-256 pada data sensitif pelanggan dan organisasi."
   },
   {
     "function": "Protect",
@@ -141,7 +141,7 @@
       "log server",
       "siem"
     ],
-    "mitigation": "Lakukan pemindaian kerentanan (vulnerability assessment) berkala dan audit integritas berkas (File Integrity Monitoring - FIM) pada seluruh server web OPD."
+    "mitigation": "Lakukan pemindaian kerentanan (vulnerability assessment) berkala dan audit integritas berkas (File Integrity Monitoring - FIM) pada seluruh server web dan layanan publik."
   },
   {
     "function": "Detect",
@@ -165,7 +165,7 @@
       "sop insiden",
       "komando insiden"
     ],
-    "mitigation": "Aktivasi prosedur penanganan insiden darurat CSIRT dan tetapkan rantai komando teknis untuk penanganan insiden siber berkategori tinggi/kritis."
+    "mitigation": "Aktivasi prosedur penanganan insiden darurat CSIRT/SOC dan tetapkan rantai komando teknis untuk penanganan insiden siber berkategori tinggi/kritis."
   },
   {
     "function": "Respond",
@@ -191,7 +191,7 @@
       "darurat",
       "isolasi sistem"
     ],
-    "mitigation": "Aktivasi prosedur tanggap insiden CSIRT, isolasi sistem terdampak dari jaringan produksi, dan laksanakan mitigasi containment sesuai panduan NIST SP 800-61."
+    "mitigation": "Aktivasi prosedur tanggap insiden CSIRT/SOC, isolasi sistem terdampak dari jaringan produksi, dan laksanakan mitigasi containment sesuai panduan NIST SP 800-61."
   },
   {
     "function": "Respond",

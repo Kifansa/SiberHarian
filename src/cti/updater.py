@@ -24,15 +24,12 @@ Fitur Utama:
 - Resiliensi Jaringan: dukungan HTTP proxy dan mirror internal (--mirror-base-url).
 """
 
-import os
-import sys
 import re
 import json
 import shutil
-import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple, Set, Union
+from typing import Dict, List, Any, Optional, Set
 
 import requests
 
@@ -42,12 +39,10 @@ from src.cti.preparer import (
     CTIPreparer,
     DEFAULT_RAW_DIR,
     DEFAULT_PREPARED_DIR,
-    CLOSED_11_TAXONOMY_CATEGORIES,
 )
 from src.cti.vector_store import (
     CTIVectorStore,
     DEFAULT_VECTOR_DIR,
-    VECTOR_DIMENSION,
     cosine_similarity,
 )
 from src.storage.db import (
@@ -116,7 +111,6 @@ class CTISourceUpdater:
         self.preparer = CTIPreparer(
             raw_base_dir=self.raw_dir,
             prepared_base_dir=self.prepared_dir,
-            db_path=self.db_path,
         )
         self.vector_store = vector_store or CTIVectorStore(
             prepared_dir=self.prepared_dir,
@@ -704,10 +698,10 @@ class CTISourceUpdater:
         staging_dir = Path(meta["staging_path"])
         version_str = meta.get("version_identifier", "1.6.0")
 
-        # Ambil jumlah relasi lama dari JSON/DB
+        # Ambil jumlah relasi lama dari prepared JSON
         from src.storage.db import ambil_semua_d3fend_techniques, ambil_semua_d3fend_mappings
-        old_techs = ambil_semua_d3fend_techniques(db_path=self.db_path)
-        old_maps = ambil_semua_d3fend_mappings(db_path=self.db_path)
+        old_techs = ambil_semua_d3fend_techniques(prepared_dir=self.prepared_dir)
+        old_maps = ambil_semua_d3fend_mappings(prepared_dir=self.prepared_dir)
         old_total = len(old_techs) + len(old_maps)
 
         # Hitung record baru dari staging
@@ -724,16 +718,16 @@ class CTISourceUpdater:
         # Drop Guard
         self.validate_staging_drop(source, new_total, old_total)
 
-        # Persiapan & Penyimpanan ke JSON data/prepared/ (dan SQLite jika custom db)
+        # Persiapan & Penyimpanan ke JSON data/prepared/ (strictly non-vector)
         store_res = CTIPreparer.prepare_d3fend_storage(
             mappings_input=map_file,
             techniques_input=tech_file,
-            db_path=self.db_path,
+            prepared_dir=self.prepared_dir,
             source_version=version_str,
         )
 
         # Diff Report
-        new_techs_now = ambil_semua_d3fend_techniques(db_path=self.db_path)
+        new_techs_now = ambil_semua_d3fend_techniques(prepared_dir=self.prepared_dir)
         diff = self.compute_diff(
             source=source,
             old_items=old_techs,

@@ -220,24 +220,6 @@ window.pilihWordCloud = function (kata, btnEl = null) {
     labelActive.classList.remove("hidden");
   }
 
-  // Tampilkan Callout Kontekstual Interaktif (Empiris Riil)
-  const elCallout = document.getElementById("pub-wordcloud-callout");
-  const elCalloutKata = document.getElementById("callout-kata");
-  const elCalloutDesc = document.getElementById("callout-deskripsi");
-
-  if (elCallout && elCalloutKata && elCalloutDesc) {
-    elCalloutKata.textContent = kata;
-    const contohJudul = btnEl ? btnEl.getAttribute("data-contoh-judul") : "";
-    const sumber = btnEl ? btnEl.getAttribute("data-sumber") : "";
-
-    if (contohJudul && contohJudul.trim()) {
-      elCalloutDesc.innerHTML = `Terdeteksi dalam laporan insiden: <strong class="text-[#00d4ff]">"${escapeHtml(contohJudul)}"</strong> (<span class="font-mono text-[#8892b0]">${escapeHtml(sumber || 'Media Siber')}</span>). Seluruh artikel terkait isu ini telah disaring pada feed Beranda di bawah.`;
-    } else {
-      elCalloutDesc.innerHTML = `Menampilkan seluruh laporan insiden yang memuat kata kunci <strong class="text-[#00d4ff]">"${escapeHtml(kata)}"</strong> pada feed Beranda di bawah.`;
-    }
-    elCallout.classList.remove("hidden");
-  }
-
   // Sinkronkan ke input search feed beranda
   const berandaInput = document.getElementById("beranda-search-input");
   if (berandaInput) {
@@ -247,10 +229,39 @@ window.pilihWordCloud = function (kata, btnEl = null) {
   // Update visual item awan kata
   sorotKataAktif(kataLower);
 
-  // Filter kartu berita di tab beranda
+  // Filter kartu berita di tab beranda (mencakup berita lama dari seluruh pool 7 hari)
   if (window.filterBerandaCards) {
     window.filterBerandaCards(kataLower);
   }
+
+  // Animasi gulir halus ke bawah menuju "Keamanan Siber Terbaru" + efek pendaran neon penanda
+  setTimeout(() => {
+    const anchor = document.getElementById("feed-beranda-anchor");
+    const section = document.getElementById("feed-beranda-section");
+    const targetEl = anchor || section;
+
+    if (targetEl) {
+      const headerOffset = 80;
+      const targetPos = targetEl.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+      window.scrollTo({
+        top: Math.max(0, targetPos),
+        behavior: "smooth"
+      });
+    }
+
+    if (section) {
+      section.classList.remove("animate-target-highlight");
+      void section.offsetWidth; // Force reflow
+      section.classList.add("animate-target-highlight");
+    }
+
+    const cardsGrid = document.getElementById("beranda-cards-grid");
+    if (cardsGrid) {
+      cardsGrid.classList.remove("animate-target-highlight");
+      void cardsGrid.offsetWidth; // Force reflow
+      cardsGrid.classList.add("animate-target-highlight");
+    }
+  }, 120);
 };
 
 window.tutupWordCloudCallout = function () {

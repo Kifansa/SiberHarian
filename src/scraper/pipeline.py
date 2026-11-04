@@ -200,7 +200,7 @@ def jalankan_pipeline_berita(config: dict = None) -> pd.DataFrame:
         teks_artikel, tanggal_halaman = ekstrak_teks_hybrid(url_target, session, timeout)
 
         if not teks_artikel:
-            logger.debug(f"     [-] Gagal ekstraksi konten, dilewati.")
+            logger.debug("     [-] Gagal ekstraksi konten, dilewati.")
             gagal_ekstrak_per_sumber[entri["sumber_nama"]] += 1
             continue
 
@@ -215,11 +215,11 @@ def jalankan_pipeline_berita(config: dict = None) -> pd.DataFrame:
 
         teks_lengkap = f"{entri['judul']} {teks_artikel}".lower()
         if entri["kategori"] != "trusted_cyber" and not filter_kk.relevan(teks_lengkap):
-            logger.debug(f"     [-] Tidak relevan setelah cek konten penuh, dilewati.")
+            logger.debug("     [-] Tidak relevan setelah cek konten penuh, dilewati.")
             continue
 
         kata_kunci_ditemukan = filter_kk.temukan_kata_kunci(teks_lengkap)
-        logger.info(f"     [+] SUKSES EKSTRAK!")
+        logger.info("     [+] SUKSES EKSTRAK!")
 
         artikel_hasil.append({
             "sumber": entri["sumber_nama"],

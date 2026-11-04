@@ -2,7 +2,7 @@ import sqlite3
 from pathlib import Path
 import bcrypt
 from typing import Optional, Tuple
-from src.storage.db import DEFAULT_DB_PATH, init_db
+from src.storage.db import DEFAULT_DB_PATH
 from src.utils.logger import setup_logger
 
 logger = setup_logger(__name__)

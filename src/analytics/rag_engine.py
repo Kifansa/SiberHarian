@@ -4,7 +4,6 @@ Mengambil fakta artikel riil dari riwayat_tren di SQLite untuk diinjeksikan
 ke prompt LLM (grounded context), serta menghitung proyeksi 1 pola serangan
 terdepan (1 kata) berdasarkan momentum eskalasi historis.
 """
-from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 import math
@@ -74,35 +73,75 @@ def _cosine_similarity(vec_a: List[float], vec_b: List[float]) -> float:
     return dot / (math.sqrt(sum_a) * math.sqrt(sum_b))
 
 
+def _has_word(kw: str, text: str) -> bool:
+    """Memeriksa kecocokan kata kunci secara utuh menggunakan word boundary (\\b)."""
+    if not kw or not text:
+        return False
+    kw_l = kw.lower().strip()
+    if kw_l.endswith("-"):
+        return bool(re.search(rf"\b{re.escape(kw_l)}", text))
+    return bool(re.search(rf"\b{re.escape(kw_l)}\b", text))
+
+
+_NON_MALWARE_ENTITIES_STOP = {
+    # Lembaga penegak hukum, intelijen, pemerintah, organisasi
+    "fbi", "cia", "nsa", "cisa", "europol", "interpol", "bssn", "polri", "bareskrim",
+    "kominfo", "komdigi", "diskominfo", "kemenkominfo", "cert", "csirt", "tni", "pentagon",
+    "dprd", "dpr", "kpu", "bpjs", "ojk", "pandi", "divd", "nato", "who",
+    # Negara, wilayah, kebangsaan
+    "china", "tiongkok", "rusia", "russia", "russian", "chinese", "iran", "iranian",
+    "korea", "utara", "selatan", "north", "south", "amerika", "serikat", "as", "us", "usa",
+    "inggris", "uk", "israel", "india", "jepang", "japan", "vietnam", "belarus", "ukraina",
+    "indonesia", "surabaya", "jakarta", "jatim", "malaysia", "singapura", "eropa", "global", "dunia",
+    # Nama grup APT / aktor ancaman (aktor bukan nama malware)
+    "apt", "lazarus", "kimsuky", "volt", "typhoon", "salt", "flax", "sandworm", "muddywater",
+    "mustang", "panda", "bluenoroff", "shinyhunters", "bjorka", "brain", "cipher", "cybercartel", "unc",
+    # Vendor teknologi, platform, sistem operasi
+    "google", "microsoft", "apple", "meta", "openai", "cisco", "fortinet", "ivanti", "vmware",
+    "citrix", "palo", "alto", "crowdstrike", "kaspersky", "mandiant", "sophos", "eset", "symantec",
+    "zimperium", "sentinelone", "bitdefender", "checkpoint", "youtube", "telegram", "whatsapp",
+    "github", "gitlab", "pypi", "npm", "docker", "kubernetes", "wordpress", "zammad", "litellm",
+    "connectwise", "screenconnect", "teamviewer", "anydesk", "android", "windows", "linux",
+    "macos", "ios", "iphone", "chrome", "firefox", "safari", "edge",
+    # Kata umum Bahasa Indonesia & Inggris
+    "pada", "pencuri", "yang", "dan", "untuk", "dengan", "dari", "tersebut", "kini",
+    "baru", "aktif", "menyerang", "seperti", "antara", "uses", "hides", "gives",
+    "steals", "from", "terintegrasi", "berbahaya", "dalam", "bisa", "akan", "hacks",
+    "sistem", "server", "komputer", "perangkat", "jaringan", "terhadap", "adalah",
+    "sejumlah", "banyak", "beberapa", "sebuah", "suatu", "the", "a", "an", "of", "in",
+    "on", "at", "to", "for", "ini", "itu", "atas", "oleh", "di", "ke", "juga", "tagar",
+    "terdeteksi", "ditemukan", "menginfeksi", "menyasar", "menargetkan", "melumpuhkan",
+    "membajak", "meretas", "mencuri", "curi", "bobol", "membobol", "serang", "terpasang",
+    "bernama", "ponsel", "murah", "diam", "secara", "sasar", "jenis", "resmi", "data",
+    "pribadi", "nasabah", "warga", "pengguna", "korban", "ribuan", "ratusan", "jutaan",
+    "perusahaan", "bank", "rumah", "sakit", "kampus", "sekolah", "situs", "web", "website",
+    "domain", "aplikasi", "file", "dokumen", "akun", "kredensial", "password", "kreator"
+}
+
+
+def _bersihkan_kandidat_nama_tool(raw_name: str) -> str:
+    """Membersihkan kandidat nama tool/malware dari kata umum, negara, instansi, atau grup APT."""
+    if not raw_name:
+        return ""
+    tokens = []
+    for t in raw_name.split():
+        tl = t.lower().strip(".,:;()[]{}\"'")
+        if not tl or len(tl) < 3:
+            continue
+        if tl in _NON_MALWARE_ENTITIES_STOP or re.match(r"^apt\d*$", tl):
+            continue
+        tokens.append(t)
+    return " ".join(tokens)
+
+
 def extract_threat_entity_organic(judul: str, narasi: str = "", kata_kunci: str = "") -> str:
     """
     Mengekstrak nama spesifik malware, exploit, zero-day, backdoor, botnet, atau modus serangan
     secara langsung dan organik dari teks berita tanpa menggunakan klasifikasi kaku.
-    Contoh output:
-    - 'Backdoor TASK#STOMP'
-    - 'NetScaler Zero-Day'
-    - 'Ransomware LockBit'
-    - 'Trojan RemControl'
-    - 'Botnet CARBONATO'
-    - 'Phishing APK'
-    - 'Penipuan Online'
-    - 'Pencurian Kripto'
     """
     judul_clean = re.sub(r'[\"\'\`“”‘’]', '', str(judul or "")).strip()
     narasi_clean = re.sub(r'[\"\'\`“”‘’]', '', str(narasi or "")).strip()
     teks = f"{judul_clean}. {narasi_clean}"
-
-    STOP_TERMS = {
-        'pada', 'pencuri', 'yang', 'dan', 'untuk', 'dengan', 'dari', 'tersebut', 'kini',
-        'baru', 'aktif', 'menyerang', 'seperti', 'antara', 'uses', 'hides', 'gives',
-        'steals', 'from', 'terintegrasi', 'berbahaya', 'dalam', 'bisa', 'akan', 'hacks',
-        'sistem', 'server', 'komputer', 'perangkat', 'jaringan', 'terhadap', 'adalah',
-        'sejumlah', 'banyak', 'beberapa', 'sebuah', 'suatu', 'the', 'a', 'an', 'of', 'in',
-        'on', 'at', 'to', 'for', 'ini', 'itu', 'atas', 'oleh', 'di', 'ke', 'juga', 'tagar',
-        'terdeteksi', 'ditemukan', 'menginfeksi', 'menyasar', 'menargetkan', 'melumpuhkan',
-        'membajak', 'meretas', 'mencuri', 'curi', 'bobol', 'membobol', 'serang', 'terpasang',
-        'bernama', 'ponsel', 'android', 'iphone', 'murah', 'diam', 'secara'
-    }
 
     # 0. Pola 'Malware/Ransomware/Backdoor (baru) bernama <Nama>'
     m_named = re.search(
@@ -110,7 +149,9 @@ def extract_threat_entity_organic(judul: str, narasi: str = "", kata_kunci: str 
         teks, re.IGNORECASE
     )
     if m_named:
-        return f"{m_named.group(1).title()} {m_named.group(2).strip()}"
+        clean_cand = _bersihkan_kandidat_nama_tool(m_named.group(2).strip())
+        if clean_cand:
+            return f"{m_named.group(1).title()} {clean_cand}"
 
     # 1. Pola Malware/Backdoor/Ransomware/Trojan/Infostealer/Botnet/Spyware + Nama Entitas Spesifik (Huruf Kapital)
     m_malware = re.search(
@@ -119,20 +160,19 @@ def extract_threat_entity_organic(judul: str, narasi: str = "", kata_kunci: str 
     )
     if m_malware:
         tipe = m_malware.group(1).title()
-        nama = m_malware.group(2).strip()
-        first_word = nama.split()[0].lower()
-        if first_word not in STOP_TERMS and nama.lower() not in STOP_TERMS and len(nama) > 2:
-            return f"{tipe} {nama}"
+        clean_cand = _bersihkan_kandidat_nama_tool(m_malware.group(2).strip())
+        if clean_cand and len(clean_cand) > 2:
+            return f"{tipe} {clean_cand}"
 
     # 2. Pola Zero-Day atau CVE Produk / Vendor spesifik
     m_zero = re.search(r'\b([A-Z][a-zA-Z0-9]+(?:\s+[A-Z][a-zA-Z0-9]+)?)\s+(?:Zero-Days?|0-Days?)\b', teks, re.IGNORECASE)
-    if m_zero and m_zero.group(1).lower() not in STOP_TERMS:
+    if m_zero and m_zero.group(1).lower() not in _NON_MALWARE_ENTITIES_STOP:
         return f"{m_zero.group(1)} Zero-Day"
 
     m_cve = re.search(r'\b(CVE-\d{4}-\d{4,7})\b', teks, re.IGNORECASE)
     if m_cve:
         m_prod = re.search(r'\b([A-Z][a-zA-Z0-9]+(?:\s+[A-Z][a-zA-Z0-9]+)?)\s+(?:Zero-Days?|0-Days?|Celah|Kerentanan|CVE)', judul_clean, re.IGNORECASE)
-        if m_prod and m_prod.group(1).lower() not in STOP_TERMS:
+        if m_prod and m_prod.group(1).lower() not in _NON_MALWARE_ENTITIES_STOP:
             return f"{m_prod.group(1)} ({m_cve.group(1).upper()})"
         return m_cve.group(1).upper()
 
@@ -141,12 +181,12 @@ def extract_threat_entity_organic(judul: str, narasi: str = "", kata_kunci: str 
     if m_apt:
         return f"Aktor {m_apt.group(1).title()}"
 
-    # 4. Modus Serangan dengan Preposisi (misal: "Peretasan terhadap FBI" -> "Peretasan FBI")
+    # 4. Modus Serangan dengan Preposisi (misal: "Peretasan terhadap Sistem X")
     m_prep = re.search(r'\b(Peretasan|Pencurian|Kebocoran|Pembobolan)\s+(?:terhadap|pada|oleh|di|ke|dari|untuk|dan|yang)\s+([A-Z0-9][a-zA-Z0-9\.\#\-]+(?:\s+[A-Z0-9][a-zA-Z0-9\.\#\-]+)?)', teks, re.IGNORECASE)
     if m_prep:
         target = m_prep.group(2).strip()
         first_w = target.split()[0].lower()
-        if first_w not in STOP_TERMS and len(target) > 2:
+        if first_w not in _NON_MALWARE_ENTITIES_STOP and len(target) > 2:
             return f"{m_prep.group(1).title()} {target.title()}"
 
     # 5. Pola Serangan / Modus Spesifik Lainnya
@@ -157,10 +197,10 @@ def extract_threat_entity_organic(judul: str, narasi: str = "", kata_kunci: str 
     if m_modus:
         val = m_modus.group(1).title()
         words = val.split()
-        if len(words) > 1 and words[1].lower() not in STOP_TERMS:
+        if len(words) > 1 and words[1].lower() not in _NON_MALWARE_ENTITIES_STOP:
             return val
 
-    # 6. Fallback organik aman (menghindari pemotongan judul sembarang seperti 'Ratusan Supermarket Prancis')
+    # 6. Fallback organik aman
     return "Insiden Siber"
 
 
@@ -233,32 +273,32 @@ def resolve_article_taxonomy_category(row_or_dict: Any, return_display: bool = F
             elif top_tid.startswith("T1566"):
                 cat_found = "phishing_penipuan"
 
-    # 4. Heuristik NLP dari konten teks (judul, ringkasan, kata kunci)
+    # 4. Heuristik NLP dari konten teks (judul, ringkasan, kata kunci) dengan word boundary
     if not explicit_field_found and (not cat_found or cat_found in ["tidak_dapat_ditentukan", "lainnya"]):
         judul = str(data.get("judul", "")).lower()
         narasi = str(data.get("ringkasan_atau_narasi", "") or data.get("ringkasan", "") or data.get("narasi", "")).lower()
         kata_kunci = str(data.get("kata_kunci", "")).lower()
         teks = f"{judul} {narasi} {kata_kunci}"
 
-        if any(k in teks for k in ["ransomware", "tebusan", "enkripsi file", "mengenkripsi"]):
+        if any(_has_word(k, teks) for k in ["ransomware", "tebusan", "enkripsi file", "mengenkripsi"]):
             cat_found = "ransomware"
-        elif any(k in teks for k in ["bocor", "breach", "kebocoran data", "dijual di forum", "basis data", "data pribadi", "pembocoran data"]):
+        elif any(_has_word(k, teks) for k in ["bocor", "breach", "kebocoran data", "dijual di forum", "basis data", "data pribadi", "pembocoran data", "leak"]):
             cat_found = "data_breach"
-        elif any(k in teks for k in ["ddos", "dos", "lumpuh", "ketersediaan", "denial of service", "banjir trafik"]):
+        elif any(_has_word(k, teks) for k in ["ddos", "dos", "lumpuh", "ketersediaan", "denial of service", "banjir trafik"]):
             cat_found = "ddos"
-        elif any(k in teks for k in ["deface", "defacement", "web deface", "slot", "judi", "peretasan web"]):
+        elif any(_has_word(k, teks) for k in ["deface", "defacement", "web deface", "slot", "judi", "peretasan web"]):
             cat_found = "defacement"
-        elif any(k in teks for k in ["zero-day", "0-day", "rce", "cve-", "cve", "exploit", "kerentanan", "celah keamanan", "celah", "vulnerability"]):
+        elif any(_has_word(k, teks) for k in ["zero-day", "0-day", "rce", "cve-", "cve", "exploit", "kerentanan", "celah keamanan", "celah", "vulnerability"]):
             cat_found = "eksploitasi_kerentanan"
-        elif any(k in teks for k in ["malware", "trojan", "infostealer", "stealer", "backdoor", "spyware", "botnet", "webshell"]):
+        elif any(_has_word(k, teks) for k in ["malware", "trojan", "infostealer", "stealer", "backdoor", "spyware", "botnet", "webshell"]):
             cat_found = "malware"
-        elif any(k in teks for k in ["phishing", "penipuan", "apk", "palsu", "scam", "social engineering"]):
+        elif any(_has_word(k, teks) for k in ["phishing", "quishing", "penipuan", "apk", "palsu", "scam", "social engineering"]):
             cat_found = "phishing_penipuan"
-        elif any(k in teks for k in ["akses tidak sah", "kredensial", "sso", "pembobolan akun", "kompromi akun", "pencurian akun", "login", "password", "unauthorized access"]):
+        elif any(_has_word(k, teks) for k in ["akses tidak sah", "kredensial", "sso", "pembobolan akun", "kompromi akun", "pencurian akun", "login", "password", "unauthorized access"]):
             cat_found = "akses_tidak_sah"
-        elif any(k in teks for k in ["pelecehan", "konten berbahaya", "spam", "hoaks"]):
+        elif any(_has_word(k, teks) for k in ["pelecehan", "konten berbahaya", "spam", "hoaks"]):
             cat_found = "pelecehan_konten"
-        elif any(k in teks for k in ["peretasan", "hacked", "dibobol", "menyerang"]):
+        elif any(_has_word(k, teks) for k in ["peretasan", "hacked", "dibobol", "menyerang", "diretas"]):
             cat_found = "akses_tidak_sah"
         elif not cat_found:
             cat_found = "tidak_dapat_ditentukan"
@@ -291,7 +331,6 @@ def _bagi_periode_terkini_baseline(df_dedup: pd.DataFrame) -> tuple:
     if df_terkini.empty:
         df_terkini = df_dedup
     return df_terkini, df_baseline
-
 
 
 _SECURITY_VENDORS_STOP = {
@@ -334,6 +373,7 @@ def extract_structured_rag_facts(articles: List[Any], label_kelompok: str = "") 
     gabungan_teks_list = []
     sumber_list = []
     identifiers = []
+    sektor_tervalidasi_langsung = []
 
     for art in articles:
         data = art.to_dict() if hasattr(art, "to_dict") else (dict(art) if not isinstance(art, dict) else art)
@@ -343,6 +383,13 @@ def extract_structured_rag_facts(articles: List[Any], label_kelompok: str = "") 
         kw = str(data.get("kata_kunci", "")).strip()
         sumber = str(data.get("sumber", "Media")).strip()
         ident = str(data.get("identifier", "") or data.get("link", "")).strip()
+
+        # Cek jika artikel sudah memiliki sektor tervalidasi langsung di atributnya
+        for f_sek in ("koreksi_admin_sektor", "sektor_target"):
+            v_sek = str(data.get(f_sek, "") or "").strip()
+            if v_sek and v_sek.lower() not in ("", "none", "nan", "tidak dapat ditentukan", "-"):
+                if v_sek not in sektor_tervalidasi_langsung:
+                    sektor_tervalidasi_langsung.append(v_sek)
 
         if clean_j and clean_j not in judul_list:
             judul_list.append(clean_j)
@@ -381,45 +428,45 @@ def extract_structured_rag_facts(articles: List[Any], label_kelompok: str = "") 
 
     if aktor_found:
         aktor_str = ", ".join(aktor_found[:3])
-    elif any(k in full_lower for k in ["peretas", "hacker", "penyerang", "sindikat", "pelaku"]):
+    elif any(_has_word(k, full_lower) for k in ["peretas", "hacker", "penyerang", "sindikat", "pelaku"]):
         aktor_str = "Aktor ancaman / kelompok peretas yang belum diungkap identitas resminya dalam berita"
     else:
         aktor_str = "Pelaku belum teridentifikasi secara spesifik dalam laporan berita"
 
     # 2. Ekstraksi Pihak / Entitas & Sektor Terdampak
-    sektor_terdeteksi = []
+    # Prioritaskan 100% sektor dari intelijen_berita_tervalidasi; JANGAN ditimpa oleh heuristik jika sudah ada!
+    sektor_terdeteksi = list(sektor_tervalidasi_langsung)
     if identifiers:
         try:
             from src.storage.db import ambil_intelijen_berita
             for ident in identifiers[:8]:
                 rec = ambil_intelijen_berita(ident)
-                if rec and rec.get("sektor_target") and rec.get("sektor_target") != "Tidak dapat ditentukan":
-                    sek = rec.get("sektor_target")
-                    if sek not in sektor_terdeteksi:
-                        sektor_terdeteksi.append(sek)
+                if rec:
+                    sek_val = rec.get("koreksi_admin_sektor") or rec.get("sektor_target")
+                    if sek_val and str(sek_val).strip().lower() not in ("", "none", "tidak dapat ditentukan", "-"):
+                        sek_clean = str(sek_val).strip()
+                        if sek_clean not in sektor_terdeteksi:
+                            sektor_terdeteksi.append(sek_clean)
         except Exception:
             pass
 
-    sektor_heuristik_map = [
-        ("Administrasi Pemerintahan", ["pemerintah", "pemprov", "pemkab", "pemkot", "dinas", "kementerian", "instansi", "asn", "bssn", "desa"]),
-        ("Keuangan & Perbankan", ["bank", "perbankan", "keuangan", "finansial", "kripto", "crypto", "rekening", "nasabah", "fintech", "asuransi"]),
-        ("Teknologi Informasi & Komunikasi (TIK)", ["server", "cloud", "perangkat lunak", "aplikasi", "sistem operasi", "jaringan", "telekomunikasi", "isp", "data center", "github", "npm", "open source", "plugin", "wordpress", "windows", "linux", "android", "apple", "google", "microsoft", "cisco", "fortinet"]),
-        ("Kesehatan", ["rumah sakit", "rsud", "medis", "kesehatan", "pasien", "klinik", "farmasi"]),
-        ("Pendidikan", ["kampus", "universitas", "sekolah", "pendidikan", "mahasiswa", "akademik"]),
-        ("Transportasi", ["bandara", "penerbangan", "maskapai", "pelabuhan", "kereta", "logistik", "transportasi"]),
-        ("Energi & Sumber Daya Mineral", ["energi", "listrik", "pln", "migas", "pertamina", "tambang", "gardu"]),
-        ("Pertahanan & Keamanan", ["militer", "pertahanan", "kepolisian", "polri", "tni", "intelijen", "fbi"]),
-        ("Pangan", ["pangan", "pertanian", "perkebunan", "supermarket", "ritel", "distribusi makanan"]),
-        ("Layanan Publik & Pengguna Digital", ["pengguna", "masyarakat", "publik", "konsumen", "warga", "pelanggan", "media sosial", "akun"]),
-    ]
-    for sek_label, kws in sektor_heuristik_map:
-        if any(k in full_lower for k in kws) and sek_label not in sektor_terdeteksi:
-            sektor_terdeteksi.append(sek_label)
-
-    # Cari entitas korban spesifik dari judul
-    entitas_korban = []
-    for j in judul_list[:4]:
-        entitas_korban.append(j)
+    # Heuristik sektor HANYA dijalankan apabila belum ada sektor tervalidasi dari database/atribut
+    if not sektor_terdeteksi:
+        sektor_heuristik_map = [
+            ("Administrasi Pemerintahan", ["pemerintah", "pemprov", "pemkab", "pemkot", "dinas", "kementerian", "instansi", "asn", "bssn", "desa"]),
+            ("Keuangan & Perbankan", ["bank", "perbankan", "keuangan", "finansial", "kripto", "crypto", "rekening", "nasabah", "fintech", "asuransi"]),
+            ("Teknologi Informasi & Komunikasi (TIK)", ["server", "cloud", "perangkat lunak", "aplikasi", "sistem operasi", "jaringan", "telekomunikasi", "isp", "data center", "github", "npm", "open source", "plugin", "wordpress", "windows", "linux", "android", "apple", "google", "microsoft", "cisco", "fortinet"]),
+            ("Kesehatan", ["rumah sakit", "rsud", "medis", "kesehatan", "pasien", "klinik", "farmasi"]),
+            ("Pendidikan", ["kampus", "universitas", "sekolah", "pendidikan", "mahasiswa", "akademik"]),
+            ("Transportasi", ["bandara", "penerbangan", "maskapai", "pelabuhan", "kereta", "logistik", "transportasi"]),
+            ("Energi & Sumber Daya Mineral", ["energi", "listrik", "pln", "migas", "pertamina", "tambang", "gardu"]),
+            ("Pertahanan & Keamanan", ["militer", "pertahanan", "kepolisian", "polri", "tni", "intelijen", "fbi"]),
+            ("Pangan", ["pangan", "pertanian", "perkebunan", "supermarket", "ritel", "distribusi makanan"]),
+            ("Layanan Publik & Pengguna Digital", ["pengguna", "masyarakat", "publik", "konsumen", "warga", "pelanggan", "media sosial", "akun"]),
+        ]
+        for sek_label, kws in sektor_heuristik_map:
+            if any(_has_word(k, full_lower) for k in kws) and sek_label not in sektor_terdeteksi:
+                sektor_terdeteksi.append(sek_label)
 
     if sektor_terdeteksi:
         pihak_terdampak_str = f"Sektor {', '.join(sektor_terdeteksi[:2])}"
@@ -429,14 +476,14 @@ def extract_structured_rag_facts(articles: List[Any], label_kelompok: str = "") 
     # 3. Ekstraksi Lokasi / Di Mana Kejadiannya
     lokasi_found = []
     lokasi_candidates = [
-        ("Jawa Timur", ["jawa timur", "jatim", "surabaya", "malang", "sidoarjo", "gresik", "banyuwangi", "jember", "kediri"]),
-        ("Indonesia (Nasional)", ["indonesia", "jakarta", "nasional", "kementerian", "komdigi", "bssn", "polri", "tanah air", "nusantara"]),
-        ("Amerika Serikat", ["amerika serikat", "as", "u.s.", "united states", "fbi", "cisa", "washington", "california"]),
+        ("Jawa Timur", ["jawa timur", "jatim", "surabaya", "malang", "sidoarjo", "gresik", "banyuwangi", "jember", "kediri", "magetan", "pamekasan"]),
+        ("Indonesia (Nasional)", ["indonesia", "jakarta", "nasional", "kementerian", "komdigi", "bssn", "polri", "tanah air", "nusantara", "sumbar", "bangli", "bali"]),
+        ("Amerika Serikat", ["amerika serikat", "as", "u.s.", "united states", "fbi", "cisa", "washington", "california", "new mexico"]),
         ("Eropa", ["eropa", "inggris", "uk", "prancis", "jerman", "belanda", "uni eropa", "italia", "spanyol"]),
         ("Asia-Pasifik", ["jepang", "korea", "china", "tiongkok", "singapura", "australia", "india", "taiwan", "vietnam", "malaysia"]),
     ]
     for lok_label, kws in lokasi_candidates:
-        if any(re.search(r"\b" + re.escape(k) + r"\b", full_lower) for k in kws):
+        if any(_has_word(k, full_lower) for k in kws):
             lokasi_found.append(lok_label)
 
     if lokasi_found:
@@ -444,7 +491,7 @@ def extract_structured_rag_facts(articles: List[Any], label_kelompok: str = "") 
     else:
         lokasi_str = "Ekosistem Digital Lintas Wilayah / Global"
 
-    # 4. Ekstraksi Senjata / Alat / Metode Serangan
+    # 4. Ekstraksi Senjata / Alat / Metode Serangan (Bebas Hallusinasi Nama Malware)
     senjata_found = []
     cves = re.findall(r"\bCVE-\d{4}-\d{4,7}\b", full_text, re.IGNORECASE)
     for c in cves:
@@ -452,19 +499,14 @@ def extract_structured_rag_facts(articles: List[Any], label_kelompok: str = "") 
         if cu not in senjata_found:
             senjata_found.append(cu)
 
-    named_tools = re.findall(
-        r"\b(?:malware|ransomware|trojan|spyware|stealer|botnet|backdoor|rat)\s+(?:bernama\s+)?([A-Z][A-Za-z0-9_-]{2,20}(?:\s+[A-Z][A-Za-z0-9_-]{2,20})?)\b",
+    for m_tool in re.finditer(
+        r"\b(Malware|Ransomware|Trojan|Spyware|Infostealer|Stealer|Botnet|Backdoor)\s+(?:bernama\s+)?([A-Z][A-Za-z0-9_-]{2,20}(?:\s+[A-Z][A-Za-z0-9_-]{2,20})?)\b",
         full_text,
-    )
-    _STOP_TOOL_WORDS = {
-        "sasar", "menargetkan", "baru", "terdeteksi", "android", "windows",
-        "iphone", "linux", "yang", "dan", "di", "pada", "untuk", "dengan",
-        "jenis", "berbahaya", "resmi", "tersebut", "ini", "ponsel", "perangkat"
-    }
-    for nt in named_tools:
-        tokens = [t for t in nt.split() if t.lower() not in _STOP_TOOL_WORDS]
-        if tokens:
-            clean_tool = f"Malware {' '.join(tokens)}"
+    ):
+        tipe_tool = m_tool.group(1).title()
+        cand_tool = _bersihkan_kandidat_nama_tool(m_tool.group(2))
+        if cand_tool:
+            clean_tool = f"{tipe_tool} {cand_tool}"
             if clean_tool not in senjata_found:
                 senjata_found.append(clean_tool)
 
@@ -472,21 +514,21 @@ def extract_structured_rag_facts(articles: List[Any], label_kelompok: str = "") 
         ("Ransomware & Enkripsi Penyanderaan Data", ["ransomware", "tebusan", "enkripsi file", "mengenkripsi"]),
         ("Eksploitasi Celah Keamanan / Zero-Day", ["zero-day", "0-day", "rce", "exploit", "celah keamanan", "kerentanan", "cve-"]),
         ("Malware / Infostealer & Backdoor", ["malware", "infostealer", "stealer", "trojan", "backdoor", "spyware", "botnet", "rat"]),
-        ("Phishing & Rekayasa Sosial (Social Engineering)", ["phishing", "penipuan", "tautan palsu", "scam", "social engineering", "apk palsu"]),
+        ("Phishing & Rekayasa Sosial (Social Engineering)", ["phishing", "quishing", "penipuan", "tautan palsu", "scam", "social engineering", "apk palsu"]),
         ("Serangan DDoS / Banjir Trafik Jaringan", ["ddos", "denial of service", "banjir trafik"]),
         ("Penyusupan Akun & Pencurian Kredensial", ["kredensial", "password", "pembobolan akun", "akses tidak sah", "brute force", "sso"]),
         ("Web Defacement & Injeksi Konten Ilegal", ["deface", "defacement", "slot", "judi online", "ubah tampilan"]),
     ]
     for m_label, kws in metode_map:
-        if any(k in full_lower for k in kws) and m_label not in senjata_found:
+        if any(_has_word(k, full_lower) for k in kws) and m_label not in senjata_found:
             senjata_found.append(m_label)
 
     senjata_str = ", ".join(senjata_found[:3]) if senjata_found else (label_kelompok or "Eksploitasi Siber Terarah")
 
-    # 5. Ekstraksi Dampak Nyata
+    # 5. Ekstraksi Dampak Nyata (dengan word boundary \b)
     dampak_found = []
     dampak_map = [
-        ("kebocoran serta eksfiltrasi data sensitif/pribadi (data breach)", ["bocor", "breach", "kebocoran data", "data pribadi", "dijual", "eksfiltrasi", "database bocor"]),
+        ("kebocoran serta eksfiltrasi data sensitif/pribadi (data breach)", ["bocor", "breach", "kebocoran data", "data pribadi", "dijual", "eksfiltrasi", "database bocor", "leak"]),
         ("terenkripsinya sistem operasional dan penyanderaan basis data disertai tuntutan tebusan", ["ransomware", "tebusan", "terenkripsi", "mengenkripsi", "terkunci"]),
         ("kelumpuhan layanan dan terganggunya ketersediaan akses sistem", ["lumpuh", "down", "tidak dapat diakses", "gangguan layanan", "ddos", "offline"]),
         ("pengambilalihan akses sistem/akun secara tidak sah dan kompromi kredensial pengguna", ["akses tidak sah", "pembobolan akun", "kredensial", "password", "kompromi akun", "ambil alih", "remote code execution", "rce", "backdoor"]),
@@ -494,7 +536,7 @@ def extract_structured_rag_facts(articles: List[Any], label_kelompok: str = "") 
         ("perubahan tampilan situs web (defacement) dan rusaknya integritas konten layanan", ["deface", "defacement", "ubah tampilan", "judi"]),
     ]
     for d_label, kws in dampak_map:
-        if any(k in full_lower for k in kws) and d_label not in dampak_found:
+        if any(_has_word(k, full_lower) for k in kws) and d_label not in dampak_found:
             dampak_found.append(d_label)
 
     dampak_str = "; ".join(dampak_found[:3]) if dampak_found else "risiko kompromi keamanan sistem dan gangguan operasional pada entitas sasaran"
@@ -508,7 +550,7 @@ def extract_structured_rag_facts(articles: List[Any], label_kelompok: str = "") 
         if n_clean and not any(n_clean[:60].lower() in exist.lower() for exist in narasi_terpilih):
             narasi_terpilih.append(n_clean)
     if narasi_terpilih:
-        alur_str = " ".join(narasi_terpilih[:2])
+        alur_str = narasi_terpilih[0]
     else:
         alur_str = "Penyerang melancarkan aksi eksploitasi dan penetrasi sistem hingga menimbulkan dampak operasional."
 
@@ -538,6 +580,7 @@ def extract_structured_rag_facts(articles: List[Any], label_kelompok: str = "") 
         "kejadian": kejadian_str,
         "aktor": aktor_str,
         "pihak_terdampak": pihak_terdampak_str,
+        "sektor_terdampak": ", ".join(list(dict.fromkeys(sektor_terdeteksi))[:3]) if sektor_terdeteksi else pihak_terdampak_str,
         "lokasi_kejadian": lokasi_str,
         "senjata_metode": senjata_str,
         "alur_serangan": alur_str,
@@ -553,6 +596,7 @@ class RAGEngine:
     Engine RAG sederhana dan teroptimasi untuk mengambil korpus berita riil
     dan mengevaluasi proyeksi pola serangan berdasarkan data historis.
     """
+    extract_structured_rag_facts = staticmethod(extract_structured_rag_facts)
 
     def __init__(self, df_riwayat: Optional[pd.DataFrame] = None):
         self.df_riwayat = df_riwayat if df_riwayat is not None else pd.DataFrame()
@@ -693,7 +737,7 @@ class RAGEngine:
         except Exception as e:
             logger.debug(f"MITRE vector embedding search bypassed: {e}")
 
-        # 2. Fallback Deterministik RapidFuzz Lexical Scoring
+        # 2. Fallback Deterministik RapidFuzz Lexical Scoring (dengan Word Boundary \b)
         if not results or (results and max(r["score"] for r in results) < 0.40):
             fuzzy_results = []
             q_lower = query_text.lower()
@@ -703,8 +747,8 @@ class RAGEngine:
                 score_ratio = fuzz.token_set_ratio(q_lower, target_text) / 100.0
 
                 for kw in entry.get("keywords", []):
-                    if kw.lower() in q_lower:
-                        score_ratio = min(1.0, score_ratio + 0.15)
+                    if _has_word(kw, q_lower):
+                        score_ratio = min(1.0, score_ratio + 0.20)
                         break
 
                 fuzzy_results.append({
@@ -816,8 +860,6 @@ class RAGEngine:
 
         return "\n".join(chunks)
 
-
-
     def retrieve_regional_context(self, cluster_items: List[Dict], wilayah_label: str, limit: int = 10) -> str:
         """
         Menyusun korpus fakta artikel riil untuk analisis makro ancaman wilayah (RAG).
@@ -844,6 +886,61 @@ class RAGEngine:
             )
 
         return "\n".join(chunks)
+
+    @staticmethod
+    def _filter_cyber_headline(judul: str) -> str:
+        """Menyaring kata generik berita siber dan menyisakan token pembeda entitas/kasus."""
+        stopwords = {
+            "peretas", "hacker", "hackers", "menggunakan", "pakai", "alat", "perangkat", "ai",
+            "untuk", "secara", "otomatis", "menyerang", "serang", "serangan", "siber", "cyber",
+            "terhadap", "dalam", "pada", "dan", "yang", "di", "ke", "dari", "dengan", "ini", "itu",
+            "ratusan", "ribuan", "puluhan", "jutaan", "bisnis", "organisasi", "perusahaan", "sistem",
+            "web", "website", "situs", "terbaru", "baru", "marak", "waspada", "ancaman", "korban",
+            "target", "kebocoran", "data", "pribadi", "bocor", "breach", "leak", "leaked", "supply",
+            "chain", "compromised", "attack", "attacks", "vulnerability", "vulnerabilities", "flaw",
+            "zero-day", "0-day", "rce", "exploit", "celah", "keamanan", "diretas", "peretasan",
+            "retas", "disusupi", "kasus", "laporan", "insiden", "melonjak", "jadi", "orang",
+            "anak", "pengguna", "nasabah", "warga", "pelanggan", "malware", "ransomware", "phishing",
+            "ddos", "deface", "defacement", "trojan", "spyware", "stealer", "infostealer", "backdoor",
+            "kelompok", "grup", "sindikat", "pelaku", "aktor", "akibat", "usai", "setelah", "karena",
+            "oleh", "ungkap", "temukan", "ditemukan", "terdeteksi", "peringatan", "darurat", "kritis"
+        }
+        tokens = re.findall(r"[a-zA-Z0-9_-]+", str(judul or "").lower())
+        meaningful = [
+            t for t in tokens
+            if t not in stopwords and len(t) >= 2 and not (t.isdigit() and len(t) <= 2)
+        ]
+        return " ".join(meaningful)
+
+    @classmethod
+    def _apakah_judul_insiden_sama(cls, judul_a: str, judul_b: str) -> bool:
+        """
+        Menentukan secara ketat apakah dua judul artikel merujuk pada KASUS/INSIDEN spesifik yang sama.
+        Mencegah penggabungan kasus berbeda yang hanya kebetulan berada di kategori yang sama
+        (misal: 'Kebocoran Data PLN' tidak boleh tergabung dengan 'Kebocoran Data Meta').
+        """
+        from rapidfuzz import fuzz
+        ja = str(judul_a or "").lower().strip()
+        jb = str(judul_b or "").lower().strip()
+        if not ja or not jb:
+            return False
+        if ja == jb:
+            return True
+
+        kw_a = cls._filter_cyber_headline(ja)
+        kw_b = cls._filter_cyber_headline(jb)
+        tokens_a = {t for t in kw_a.split() if len(t) >= 3 and not t.isdigit()}
+        tokens_b = {t for t in kw_b.split() if len(t) >= 3 and not t.isdigit()}
+
+        if tokens_a and tokens_b:
+            shared_entities = tokens_a & tokens_b
+            if not shared_entities:
+                return False
+            ratio_kw = fuzz.token_set_ratio(kw_a, kw_b)
+            ratio_raw = fuzz.token_set_ratio(ja, jb)
+            return ratio_kw >= 68 and ratio_raw >= 62
+
+        return fuzz.token_sort_ratio(ja, jb) >= 80
 
     def hitung_prediksi_pola_serangan(self) -> Dict[str, Any]:
         """
@@ -966,7 +1063,6 @@ class RAGEngine:
             df_terkini = df_dedup
 
         from src.analytics.trend_analyzer import _bersihkan_judul_dan_publisher
-        from rapidfuzz import fuzz
 
         arts_pola = []
         for _, r in df_terkini.iterrows():
@@ -976,7 +1072,7 @@ class RAGEngine:
         if not arts_pola:
             arts_pola = [r for _, r in df_terkini.head(5).iterrows()]
 
-        # Cluster artikel dalam kategori dominan untuk mengambil 1 KASUS yang paling banyak
+        # Cluster artikel dalam kategori dominan secara ketat agar kasus berbeda tidak tergabung
         clusters_makro = []
         sudah_makro = set()
         for i in range(len(arts_pola)):
@@ -993,7 +1089,7 @@ class RAGEngine:
                 row_j = arts_pola[j]
                 data_j = row_j.to_dict() if hasattr(row_j, "to_dict") else dict(row_j)
                 cl_j_j, _ = _bersihkan_judul_dan_publisher(str(data_j.get("judul", "")), "")
-                if fuzz.token_set_ratio(cl_j_i.lower(), cl_j_j.lower()) >= 52:
+                if self._apakah_judul_insiden_sama(cl_j_i, cl_j_j):
                     sudah_makro.add(j)
                     c_arts.append(row_j)
             clusters_makro.append({"judul_utama": cl_j_i, "artikel_list": c_arts})
@@ -1011,7 +1107,7 @@ class RAGEngine:
             "kategori_taksonomi": dominant_cat,
             "kategori_display": dominant_display,
             "growth_persen": growth_val,
-            "jumlah_artikel": len(arts_top_kasus),
+            "jumlah_artikel": len(arts_pola),
             "korpus_artikel": fakta_rag["korpus_terstruktur"],
             "fakta_rag": fakta_rag,
             "artikel_list": [r.to_dict() if hasattr(r, "to_dict") else dict(r) for r in arts_top_kasus],
@@ -1029,7 +1125,6 @@ class RAGEngine:
             return []
 
         from src.analytics.trend_analyzer import _bersihkan_judul_dan_publisher, _dedup_ringan_lintas_hari
-        from rapidfuzz import fuzz
 
         df_dedup = _dedup_ringan_lintas_hari(self.df_berita)
         df_terkini, _ = _bagi_periode_terkini_baseline(df_dedup)
@@ -1048,42 +1143,64 @@ class RAGEngine:
             data_makro = self.ambil_data_tren_makro_spiking()
             makro_arts = data_makro.get("artikel_list", [])
             makro_titles = [
-                _bersihkan_judul_dan_publisher(str(dr.get("judul", "")), "")[0].lower()
+                _bersihkan_judul_dan_publisher(str(dr.get("judul", "")), "")[0]
                 for dr in makro_arts
             ]
             non_makro_cases = []
             for r in unclustered:
                 title_r, _ = _bersihkan_judul_dan_publisher(str(r.get("judul", "")), "")
-                if makro_titles and any(fuzz.token_set_ratio(title_r.lower(), mt) >= 60 for mt in makro_titles):
+                if makro_titles and any(self._apakah_judul_insiden_sama(title_r, mt) for mt in makro_titles):
                     continue
                 non_makro_cases.append(r)
             if non_makro_cases:
                 unclustered = non_makro_cases
 
-        # Cluster artikel berdasarkan KASUS (Incident Case Clustering)
+        # Precompute clean titles, keywords, dan taxonomy category untuk performa optimal
+        meta_unclustered = []
+        for r in unclustered:
+            raw_j = str(r.get("judul", "")).strip()
+            clean_j, _ = _bersihkan_judul_dan_publisher(raw_j, "")
+            cat = resolve_article_taxonomy_category(r)
+            kw = self._filter_cyber_headline(clean_j)
+            meta_unclustered.append({
+                "clean_j": clean_j,
+                "cat": cat,
+                "kw": kw,
+                "row": r,
+            })
+
         daftar_klaster = []
         sudah_diproses = set()
 
-        for i in range(len(unclustered)):
+        for i in range(len(meta_unclustered)):
             if i in sudah_diproses:
                 continue
-            row_i = unclustered[i]
-            raw_j_i = str(row_i.get("judul", "")).strip()
-            kw_i = str(row_i.get("kata_kunci", "")).strip()
-            clean_j_i, _ = _bersihkan_judul_dan_publisher(raw_j_i, "")
-            cat_i = resolve_article_taxonomy_category(row_i)
+            item_i = meta_unclustered[i]
+            row_i = item_i["row"]
+            clean_j_i = item_i["clean_j"]
+            cat_i = item_i["cat"]
 
             artikel_klaster = [row_i]
             sudah_diproses.add(i)
 
-            for j in range(i + 1, len(unclustered)):
+            for j in range(i + 1, len(meta_unclustered)):
                 if j in sudah_diproses:
                     continue
-                row_j = unclustered[j]
-                raw_j_j = str(row_j.get("judul", "")).strip()
-                clean_j_j, _ = _bersihkan_judul_dan_publisher(raw_j_j, "")
+                item_j = meta_unclustered[j]
+                row_j = item_j["row"]
+                clean_j_j = item_j["clean_j"]
+                cat_j = item_j["cat"]
 
-                if fuzz.token_set_ratio(clean_j_i.lower(), clean_j_j.lower()) >= 55:
+                # Validasi konsistensi kategori taksonomi: kategori berbeda tidak boleh disatukan
+                kategori_konsisten = (
+                    cat_i == cat_j
+                    or cat_i in ("tidak_dapat_ditentukan", "lainnya", None, "")
+                    or cat_j in ("tidak_dapat_ditentukan", "lainnya", None, "")
+                )
+                if not kategori_konsisten:
+                    continue
+
+                if self._apakah_judul_insiden_sama(clean_j_i, clean_j_j):
                     sudah_diproses.add(j)
                     artikel_klaster.append(row_j)
 
@@ -1216,7 +1333,7 @@ class RAGEngine:
                     str(art.get("ringkasan_atau_narasi", "")) + " " +
                     str(art.get("kata_kunci", ""))
                 ).lower()
-                if any(w in txt for w in NOVELTY_KEYWORDS):
+                if any(_has_word(w, txt) for w in NOVELTY_KEYWORDS):
                     kw_hits += 1
 
             is_novel = False
@@ -1259,13 +1376,12 @@ class RAGEngine:
             qualifying_novel.sort(key=lambda x: x["novelty_score"], reverse=True)
             top = qualifying_novel[0]
         from src.analytics.trend_analyzer import _bersihkan_judul_dan_publisher
-        from rapidfuzz import fuzz
 
         top_cat = top["kategori"]
         display_name = TAXONOMY_DISPLAY_NAMES.get(top_cat, top_cat)
         arts_novel = top["articles"]
 
-        # Cluster artikel ancaman baru untuk memilih 1 KASUS ancaman baru paling banyak
+        # Cluster artikel ancaman baru secara ketat agar kasus berbeda tidak tergabung
         c_novel = []
         sudah_n = set()
         for i in range(len(arts_novel)):
@@ -1282,7 +1398,7 @@ class RAGEngine:
                 r_j = arts_novel[j]
                 d_j = r_j.to_dict() if hasattr(r_j, "to_dict") else dict(r_j)
                 cj_j, _ = _bersihkan_judul_dan_publisher(str(d_j.get("judul", "")), "")
-                if fuzz.token_set_ratio(cj_i.lower(), cj_j.lower()) >= 52:
+                if self._apakah_judul_insiden_sama(cj_i, cj_j):
                     sudah_n.add(j)
                     c_arts.append(r_j)
             c_novel.append({"judul_utama": cj_i, "artikel_list": c_arts})
@@ -1305,6 +1421,6 @@ class RAGEngine:
             "artikel_list": [r.to_dict() if hasattr(r, "to_dict") else dict(r) for r in top_novel_case["artikel_list"]],
             "sumber": str(top_row.get("sumber", "Media Intelijen")),
             "judul": str(top_row.get("judul", "-")),
-            "jumlah_kasus": len(top_novel_case["artikel_list"]),
+            "jumlah_kasus": top["cnt_cur"],
             "growth_persen": top["growth"],
         }

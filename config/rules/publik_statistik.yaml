@@ -1,73 +1,113 @@
 kategori_map:
-  Phishing & Link Palsu:
-    keywords:
-    - phishing
-    - penipuan online
-    - penipuan digital
-    - situs palsu
-    - social engineering
-    icon: link_off
-    desc: Tautan jebakan yang menyamar sebagai instansi/bank untuk mencuri password
-      & data.
-  Judi Online & Defacement:
-    keywords:
-    - judi online
-    - slot
-    - deface
-    - hacked by
-    - situs diretas
-    icon: casino
-    desc: Penyusupan ke halaman web pemerintah/kampus untuk disisipi iklan ilegal.
-  Ransomware & Malware:
-    keywords:
-    - ransomware
-    - malware
-    - virus
-    - tebusan
-    - brain cipher
-    - jadepuffer
-    icon: pest_control
-    desc: Program jahat yang menyandera file atau merusak sistem komputer.
-  Pencurian Data Pribadi:
-    keywords:
-    - bocor
-    - data pribadi
-    - breach
-    - dijual
-    - dark web
-    - dukcapil
+  Pencurian & Kebocoran Data Pribadi:
+    ecsirt_category: data_breach
+    ecsirt_parent: "information-content-security:unauthorized-information-access"
     icon: fingerprint
-    desc: Penyalahgunaan dan penjualan data kependudukan tanpa izin.
-  Penipuan Modus APK:
+    desc: "Akses ilegal, pembocoran, dan penjualan data kependudukan atau data sensitif."
     keywords:
-    - apk
-    - surat tilang
-    - undangan
-    - kurir
-    - whatsapp
-    - infostealer
-    icon: app_blocking
-    desc: Pencurian akses M-Banking dan OTP lewat aplikasi palsu di HP.
-  Eksploitasi Celah Keamanan:
-    keywords:
-    - 0-day
-    - zero-day
-    - rce
-    - kerentanan
-    - celah keamanan
-    - eksploitasi
+      - bocor
+      - data pribadi
+      - breach
+      - dark web
+      - dukcapil
+      - data breach
+
+  Eksploitasi Celah Keamanan (Zero-Day):
+    ecsirt_category: eksploitasi_kerentanan
+    ecsirt_parent: "intrusion-attempts:ids-alert"
     icon: bug_report
-    desc: Eksploitasi kelemahan pada aplikasi, website instansi, atau infrastruktur server.
+    desc: "Pemanfaatan celah keamanan (CVE/RCE) pada sistem perangkat lunak atau server."
+    keywords:
+      - 0-day
+      - zero-day
+      - rce
+      - kerentanan
+      - celah keamanan
+      - exploit
+
+  Malware & Virus Pencuri Akun:
+    ecsirt_category: malware
+    ecsirt_parent: "malicious-code:malware"
+    icon: pest_control
+    desc: "Program jahat penyusup (trojan, infostealer, spyware) perusak perangkat target."
+    keywords:
+      - malware
+      - trojan
+      - infostealer
+      - stealer
+      - virus
+      - spyware
+      - backdoor
+
+  Web Defacement & Sisipan Judi Online:
+    ecsirt_category: defacement
+    ecsirt_parent: "intrusions:defacement"
+    icon: casino
+    desc: "Peretasan tampilan situs web resmi untuk disusupi konten promosi judi atau pesan peretas."
+    keywords:
+      - deface
+      - judi online
+      - slot
+      - hacked by
+      - situs diretas
+
+  Gangguan Layanan & Server (DDoS):
+    ecsirt_category: ddos
+    ecsirt_parent: "availability:ddos"
+    icon: cloud_off
+    desc: "Banjir trafik masif yang melumpuhkan portal layanan instansi publik."
+    keywords:
+      - ddos
+      - dos
+      - gangguan server
+      - server down
+
+  Ransomware & Penyanderaan Sistem:
+    ecsirt_category: ransomware
+    ecsirt_parent: "malicious-code:ransomware"
+    icon: lock
+    desc: "Perangkat pemeras yang menyandera/mengenkripsi data dan menuntut tebusan."
+    keywords:
+      - ransomware
+      - tebusan
+      - ransom
+      - encrypt
+
+  Phishing & Penipuan Digital (APK/Link):
+    ecsirt_category: phishing_penipuan
+    ecsirt_parent: "fraud:phishing"
+    icon: link_off
+    desc: "Rekayasa sosial, tautan palsu, dan file APK manipulatif untuk mencuri kredensial & OTP."
+    keywords:
+      - phishing
+      - apk
+      - undangan
+      - surat tilang
+      - social engineering
+      - penipuan online
+
+  Pembobolan Akun & Akses Ilegal:
+    ecsirt_category: akses_tidak_sah
+    ecsirt_parent: "intrusions:account-compromise"
+    icon: key
+    desc: "Pengambilalihan akun berprivilese dan eskalasi hak akses sistem tanpa izin sah."
+    keywords:
+      - pembobolan akun
+      - akses tidak sah
+      - brute force
+      - credential stuffing
+      - pembajakan akun
+
 stop_words:
-- sistem
-- situs
-- jaringan
-- server
-- aplikasi
-- website
-- dicuri
-- bocor
-- diretas
-- online
-- terkini
-- baru
+  - sistem
+  - situs
+  - jaringan
+  - server
+  - aplikasi
+  - website
+  - dicuri
+  - bocor
+  - diretas
+  - online
+  - terkini
+  - baru

@@ -15,7 +15,7 @@
       "kata sandi",
       "brute force"
     ],
-    "mitigation": "Wajibkan Multi-Factor Authentication (MFA) berbasis aplikasi authenticator/FIDO2 hardware token untuk seluruh akses administratif dan portal ASN, serta hindari SMS OTP konvensional.",
+    "mitigation": "Wajibkan Multi-Factor Authentication (MFA) berbasis aplikasi authenticator/FIDO2 hardware token untuk seluruh akses administratif dan layanan aplikasi kritis, serta hindari SMS OTP konvensional.",
     "source_version": "1.6.0"
   },
   {
@@ -65,11 +65,11 @@
       "spoofing",
       "docusign",
       "zoom",
-      "surat dinas palsu",
+      "surat resmi palsu",
       "penipuan email",
       "bec"
     ],
-    "mitigation": "Konfigurasikan DMARC dengan kebijakan penolakan ketat (p=reject), diselaraskan dengan verifikasi cryptographic signature DKIM dan SPF record resmi instansi."
+    "mitigation": "Konfigurasikan DMARC dengan kebijakan penolakan ketat (p=reject), diselaraskan dengan verifikasi cryptographic signature DKIM dan SPF record resmi organisasi."
   },
   {
     "id": "D3-DLP",
@@ -200,7 +200,7 @@
       "undangan wa",
       "social engineering"
     ],
-    "mitigation": "Terapkan gateway keamanan penjelajahan web dengan analisis reputasi URL real-time untuk memblokir akses aparatur ke domain phishing dan unduhan berbahaya.",
+    "mitigation": "Terapkan gateway keamanan penjelajahan web dengan analisis reputasi URL real-time untuk memblokir akses personel ke domain phishing dan unduhan berbahaya.",
     "source_version": "1.6.0"
   },
   {
@@ -298,7 +298,7 @@
       "pegawai resign",
       "akun tidak aktif"
     ],
-    "mitigation": "Lakukan audit bulanan terhadap seluruh akun lokal dan domain, segera nonaktifkan akun aparatur/kontraktor yang telah mutasi atau purnatugas.",
+    "mitigation": "Lakukan audit bulanan terhadap seluruh akun lokal dan domain, segera nonaktifkan akun personel/kontraktor yang telah mutasi atau purnatugas.",
     "source_version": "1.6.0"
   },
   {

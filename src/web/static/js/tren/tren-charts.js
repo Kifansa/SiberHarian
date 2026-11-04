@@ -1,4 +1,4 @@
-import { escapeHtml } from './tren-utils.js';
+import { escapeHtml } from './tren-utils.js?v=9.5';
 
 /**
  * Modul visualisasi analitik untuk Tab Tren (CSIRT Jatim Cyber-HUD Style)

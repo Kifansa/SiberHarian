@@ -1,7 +1,8 @@
-import { bukaModal, tutupModal, tutupModalJikaLuar, salinTeksModal } from './modal.js';
-import { mulaiPipeline, batalkanPipeline } from './beranda.js';
-import { muatTabArsip, muatUlangTabArsip, filterArsipCards } from './arsip.js';
-import { muatTabTren, muatUlangTabTren } from './tren.js?v=9.2';
+import { bukaModal, tutupModal, tutupModalJikaLuar, salinTeksModal } from './modal.js?v=9.6';
+import { mulaiPipeline, batalkanPipeline } from './beranda.js?v=9.6';
+import { muatTabArsip, muatUlangTabArsip, filterArsipCards } from './arsip.js?v=9.6';
+import { muatTabTren, muatUlangTabTren } from './tren.js?v=10.0';
+import { tampilkanToast, tampilkanKonfirmasi } from './utils.js?v=9.6';
 
 // Expose handlers ke window untuk Alpine.js & atribut onclick
 window.bukaModal = bukaModal;
@@ -11,8 +12,11 @@ window.salinTeksModal = salinTeksModal;
 window.mulaiPipeline = mulaiPipeline;
 window.batalkanPipeline = batalkanPipeline;
 window.muatTabArsip = muatTabArsip;
+window.filterArsipCards = filterArsipCards;
 window.muatTabTren = muatTabTren;
 window.muatUlangTabTren = muatUlangTabTren;
+window.tampilkanToast = tampilkanToast;
+window.tampilkanKonfirmasi = tampilkanKonfirmasi;
 
 // Handler Logout Admin
 window.logoutAdmin = async function() {
@@ -55,6 +59,10 @@ async function inisialisasiAdmin() {
         await muatTabTren();
     } catch (err) {
         console.error('Error saat inisialisasi data admin:', err);
+        const trenLoadingState = document.getElementById('tren-loading-state');
+        const trenKontenContainer = document.getElementById('tren-konten-container');
+        if (trenLoadingState) trenLoadingState.classList.add('hidden');
+        if (trenKontenContainer) trenKontenContainer.classList.remove('hidden');
     } finally {
         if (window.selesaikanPreloader) {
             window.selesaikanPreloader();

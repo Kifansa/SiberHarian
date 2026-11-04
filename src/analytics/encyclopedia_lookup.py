@@ -33,7 +33,7 @@ def load_encyclopedia(filename: str) -> List[Dict]:
     if filename in _encyclopedia_cache:
         return _encyclopedia_cache[filename]
     try:
-        # Jika berkas termasuk dalam 9 berkas yang dipensiunkan, kembalikan list kosong secara anggun
+        # Jika berkas termasuk dalam 9 berkas yang dipensiunkan, kembalikan list kosong
         if filename in RETIRED_FRAMEWORKS:
             _encyclopedia_cache[filename] = []
             return []
@@ -97,14 +97,22 @@ def load_encyclopedia(filename: str) -> List[Dict]:
                 return fallback_nist
 
         return []
-    except Exception as e:
+    except Exception:
         return []
 
 def _cocok_kata_kunci(keywords_list: List[str], terms_to_check: List[str]) -> bool:
     for kw in keywords_list:
-        kw_l = kw.lower()
+        kw_l = kw.lower().strip()
+        if not kw_l:
+            continue
+        pat_kw = r"\b" + re.escape(kw_l) + r"\b"
         for q in terms_to_check:
-            if kw_l == q or kw_l in q or q in kw_l:
+            q_l = q.lower().strip()
+            if not q_l:
+                continue
+            if kw_l == q_l:
+                return True
+            if re.search(pat_kw, q_l) or re.search(r"\b" + re.escape(q_l) + r"\b", kw_l):
                 return True
     return False
 
@@ -174,7 +182,7 @@ def search_encyclopedia_per_incident(nama_insiden: str, keywords_list: List[str]
     if rekomendasi['d3fend']:
         hasil.append(rekomendasi['d3fend'][0])
     else:
-        hasil.append("[D3-MFA] Wajibkan Multi-Factor Authentication (MFA) berbasis aplikasi authenticator/FIDO2 hardware token untuk seluruh akses administratif dan portal ASN, serta hindari SMS OTP konvensional.")
+        hasil.append("[D3-MFA] Wajibkan Multi-Factor Authentication (MFA) berbasis aplikasi authenticator/FIDO2 hardware token untuk seluruh akses administratif dan layanan aplikasi kritis, serta hindari SMS OTP konvensional.")
 
     # 2. Rekomendasi kedua: Standar NIST
     if rekomendasi['nist']:

@@ -204,23 +204,14 @@
     <div class="chart-card card-cyber p-5 sm:p-7" id="sitrep-main-card">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 border-b border-[#1a3a5c] pb-4">
         <div>
-          <h3 class="text-base sm:text-lg font-extrabold text-[#e0f0ff] font-['Sora'] tracking-tight">ANALISIS BERITA SIBER &amp; REKOMENDASI MITIGASI</h3>
+          <h3 class="text-base sm:text-lg font-extrabold text-[#e0f0ff] font-['Sora'] tracking-tight">ANALISIS BERITA SIBER MINGGUAN</h3>
           <p class="text-xs text-[#7d8ca6] mt-0.5">Analisis proyeksi ancaman, vektor serangan, dan mitigasi taktis terangkum otomatis oleh model AI CTI.</p>
-        </div>
-        <div class="flex items-center gap-2 self-start sm:self-auto">
-          <button id="btn-toggle-sitrep-view" onclick="window.toggleSitrepViewMode()" 
-            class="btn-chamfer btn-chamfer-secondary text-xs h-9 px-3.5"
-            title="Beralih antara Mode Pagination per Modul dan Mode Baca Seluruh Laporan"
-            aria-label="Ubah mode tampilan laporan">
-            <span class="material-symbols-outlined text-base text-[#00d4ff]" id="toggle-view-icon" aria-hidden="true">view_agenda</span>
-            <span id="toggle-view-text">[ MODE BACA PENUH ]</span>
-          </button>
         </div>
       </div>
 
       <!-- Stepper Tabs Nav (Aktif pada Mode Pagination) -->
       <div id="sitrep-stepper-nav-wrap" class="space-y-2 mb-5">
-        <div class="flex items-center justify-start gap-1.5 overflow-x-auto pb-1 custom-scrollbar" id="sitrep-stepper-tabs" role="tablist" aria-label="Navigasi Modul Analisis Siber">
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 custom-scrollbar w-full" id="sitrep-stepper-tabs" role="tablist" aria-label="Navigasi Modul Analisis Siber">
           <!-- Di-render dinamis oleh tren-ai-cards.js (5 Tab Segmen Taktis) -->
         </div>
         <!-- Micro Telemetry Progress Bar -->
@@ -364,37 +355,14 @@
       </div>
     </div>
 
-    <!-- DATA RANKING TABLE: Kata Kunci Lonjakan Tertinggi -->
-    <div class="chart-card card-cyber p-5 sm:p-6 flex flex-col justify-between">
-      <div class="mb-3.5 flex items-center justify-between gap-2">
-        <h4 class="text-base font-extrabold text-[#e0f0ff] font-['Sora'] tracking-tight">[ KATA KUNCI LONJAKAN TERTINGGI ]</h4>
-        <span class="text-[11px] font-mono font-bold text-[#00d4ff] bg-[#0d2137] px-2.5 py-0.5 rounded border border-[#1a3a5c]">TOP 10 TREN</span>
-      </div>
-      <div class="overflow-auto max-h-[330px] custom-scrollbar rounded-xl border border-[#1a3a5c] shadow-inner relative bg-[#070f1c]">
-        <table class="w-full text-left border-collapse text-xs">
-          <thead class="bg-[#0d2137] border-b border-[#1a3a5c] sticky top-0 z-10 shadow-sm">
-            <tr class="text-xs font-mono font-bold text-[#8892b0] uppercase tracking-wider">
-              <th class="py-2.5 px-3.5">Kata Kunci</th>
-              <th class="py-2.5 px-3.5 text-center">Kemunculan (7H)</th>
-              <th class="py-2.5 px-3.5 text-right">Growth</th>
-            </tr>
-          </thead>
-          <tbody id="tabel-kata-kunci-body" class="text-xs font-mono text-[#e0f0ff] divide-y divide-[#1a3a5c]/60"></tbody>
-        </table>
-      </div>
-    </div>
 
     <!-- RADAR KERENTANAN & CVE WATCHLIST (Active Exploitation In The Wild) -->
     <div class="chart-card card-cyber p-5 sm:p-6 space-y-4">
       <div class="border-b border-[#1a3a5c] pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <h4 class="text-base sm:text-lg font-extrabold text-[#e0f0ff] font-['Sora'] tracking-tight">[ RADAR KERENTANAN &amp; CVE WATCHLIST ]</h4>
-          <p class="text-xs text-[#7d8ca6] mt-0.5">Identifikasi celah keamanan (CVE), zero-day, dan kerentanan software yang dieksploitasi aktif di alam liar.</p>
+          <p class="text-xs text-[#7d8ca6] mt-0.5">Identifikasi celah keamanan (CVE), zero-day, dan kerentanan software yang dieksploitasi aktif.</p>
         </div>
-        <span class="text-[11px] font-mono font-bold text-[#ff3366] bg-[#0d2137] px-3 py-1 rounded border border-[#ff3366]/40 shrink-0 w-fit flex items-center gap-1.5 shadow-[0_0_12px_rgba(255,51,102,0.25)]">
-          <span class="material-symbols-outlined text-xs">radar</span>
-          <span>[ EKSPLOITASI AKTIF ]</span>
-        </span>
       </div>
 
       <div class="overflow-x-auto rounded-xl border border-[#1a3a5c] shadow-inner bg-[#070f1c]">
@@ -403,14 +371,12 @@
             <tr class="text-xs font-mono font-bold text-[#8892b0] uppercase tracking-wider">
               <th class="py-3 px-3.5">Identifikasi Celah / CVE</th>
               <th class="py-3 px-3.5">Aplikasi / Komponen Sasaran</th>
-              <th class="py-3 px-3.5 text-center">Status Eksploitasi</th>
-              <th class="py-3 px-3.5 text-center">Laporan (7H)</th>
-              <th class="py-3 px-3.5">Sumber Intelijen Terakhir</th>
+              <th class="py-3 px-3.5">Sumber Terakhir</th>
             </tr>
           </thead>
           <tbody id="tabel-cve-watchlist-body" class="divide-y divide-[#1a3a5c]/60 text-xs font-mono text-[#e0f0ff]">
             <tr>
-              <td colspan="5" class="py-6 text-center text-[#7d8ca6] font-mono">Memuat radar kerentanan...</td>
+              <td colspan="3" class="py-6 text-center text-[#7d8ca6] font-mono">Memuat radar kerentanan...</td>
             </tr>
           </tbody>
         </table>
@@ -431,38 +397,35 @@
       <span class="material-symbols-outlined text-xl" aria-hidden="true">close</span>
     </button>
 
-    <div class="flex items-center gap-2 mb-2 pr-10 flex-wrap" id="modal-ancaman-meta-header">
+    <div class="flex items-center gap-2 mb-2 pr-10 flex-wrap hidden" id="modal-ancaman-meta-header">
       <span class="text-xs text-[#8892b0] font-mono font-semibold break-words" id="modal-ancaman-sumber"></span>
     </div>
 
     <h3 class="text-lg sm:text-xl font-bold text-[#e0f0ff] mb-4 leading-snug tracking-tight pr-10 break-words" id="modal-ancaman-judul"></h3>
 
-    <!-- Section 1: Lanskap & Urgensi Ancaman Wilayah -->
-    <div class="bg-[#0d2137] p-5 rounded-xl border border-[#1a3a5c] mb-3.5">
-      <div class="font-bold text-[#00d4ff] font-mono flex items-center gap-1.5 text-xs mb-1.5 uppercase tracking-wider">
-        <span class="material-symbols-outlined text-[16px] text-[#00d4ff]">trending_up</span>
-        <span>[ LANSKAP &amp; URGENSI ANCAMAN WILAYAH ]</span>
-      </div>
-      <div class="text-[#e0f0ff] text-sm leading-relaxed font-sans" id="modal-ancaman-urgensi"></div>
-    </div>
+    <!-- Detail Analisis Kasus Teramai: Kasus Teramai, Kronologi, Dampak, Mitigasi -->
+    <div class="mb-3.5" id="modal-ancaman-urgensi"></div>
+    <div class="mb-3.5" id="modal-ancaman-potensi"></div>
 
-    <!-- Section 2: Proyeksi Risiko & Eskalasi Wilayah -->
-    <div class="bg-[#0d2137] p-5 rounded-xl border border-[#1a3a5c] mb-3.5">
-      <div class="font-bold text-[#ff8800] font-mono flex items-center gap-1.5 text-xs mb-1.5 uppercase tracking-wider">
-        <span class="material-symbols-outlined text-[16px] text-[#ff8800]">warning</span>
-        <span>[ PROYEKSI RISIKO &amp; ESKALASI WILAYAH ]</span>
-      </div>
-      <div class="text-[#e0f0ff] text-sm leading-relaxed font-sans" id="modal-ancaman-potensi"></div>
-    </div>
-
-    <!-- Section 3: Contoh Kejadian Relevan (Bukti Empiris) -->
-    <div class="bg-[#0d2137] p-5 rounded-xl border border-[#1a3a5c]" id="modal-ancaman-sampel-box">
+    <!-- Section 3: Studi Kasus Teratas & Daftar Insiden Teramai Lainnya -->
+    <div class="bg-[#0d2137] p-5 rounded-xl border border-[#1a3a5c] mb-3.5" id="modal-ancaman-sampel-box">
       <div class="font-bold text-[#00ff88] font-mono flex items-center gap-1.5 text-xs mb-2 uppercase tracking-wider">
         <span class="material-symbols-outlined text-[16px] text-[#00ff88]">feed</span>
-        <span>[ CONTOH STUDI KASUS RELEVAN ]</span>
+        <span>[ RUJUKAN KASUS TERATAS ]</span>
       </div>
       <div id="modal-ancaman-sampel-content" class="text-[#e0f0ff] text-sm leading-relaxed font-sans">
         <!-- Konten sampel dinamis -->
+      </div>
+    </div>
+
+    <!-- Section 4: Daftar Insiden Teramai Lainnya di Wilayah Ini -->
+    <div class="bg-[#0d2137] p-5 rounded-xl border border-[#1a3a5c]" id="modal-ancaman-lainnya-box">
+      <div class="font-bold text-[#a78bfa] font-mono flex items-center gap-1.5 text-xs mb-2 uppercase tracking-wider">
+        <span class="material-symbols-outlined text-[16px] text-[#a78bfa]">format_list_numbered</span>
+        <span>[ DAFTAR INSIDEN TERAMAI LAINNYA DI WILAYAH INI ]</span>
+      </div>
+      <div id="modal-ancaman-lainnya-content" class="text-[#e0f0ff] text-sm leading-relaxed font-sans">
+        <!-- Daftar insiden teramai #2, #3, dst. -->
       </div>
     </div>
 

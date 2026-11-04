@@ -1,9 +1,8 @@
 from collections import deque
 import os
-import re
 import threading
 import time
-from typing import Dict, List, Optional, Set, Tuple
+from typing import List, Optional, Set, Tuple
 
 import google.generativeai as genai
 from src.utils.logger import setup_logger
@@ -483,6 +482,35 @@ class GeminiLLMAdapter:
     def reload_config(cls) -> None:
         cls._configured = False
         cls._configured_key = None
+
+    @classmethod
+    def get_key_status(cls) -> dict:
+        """Mengembalikan jumlah key dan indeks key yang sedang aktif tanpa menulis log."""
+        cfg = SettingsManager.get_gemini_config()
+        raw_key = cfg.get("api_key", "")
+        if isinstance(raw_key, list):
+            keys = [str(k).strip() for k in raw_key if str(k).strip()]
+        elif isinstance(raw_key, str) and raw_key.strip():
+            keys = [
+                k.strip()
+                for k in raw_key.replace("\r\n", "\n").replace("\n", ",").split(",")
+                if k.strip()
+            ]
+        else:
+            keys = []
+
+        pool_keys = _key_pool.get_all_keys()
+        active_key = _key_pool.get_active_key() if pool_keys else (keys[0] if keys else None)
+        if active_key in keys:
+            active_index = keys.index(active_key)
+        else:
+            active_index = 0 if keys else -1
+
+        return {
+            "total_keys": len(keys),
+            "active_api_key_index": active_index,
+            "active_api_key": active_key,
+        }
 
     @classmethod
     def _get_embedding_chain(cls, requested_model: Optional[str] = None) -> List[str]:

@@ -4,7 +4,6 @@ Deteksi dan penghapusan duplikat:
 2. Duplikat dalam hari yang sama - dideteksi lewat kemiripan judul (rapidfuzz & batch semantic embedding).
 """
 from pathlib import Path
-from typing import List
 
 from src.utils.embedding_adapter import GeminiEmbeddingAdapter
 import pandas as pd

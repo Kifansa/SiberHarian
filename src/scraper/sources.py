@@ -74,7 +74,12 @@ def bangun_daftar_feed_google_news(config: dict) -> List[Tuple[str, str, bool, s
 def _kumpulkan_semua_kata_kunci(config: dict) -> Dict[str, List[str]]:
     kw = SettingsManager.get_keywords()
     cfg_kw = (config or {}).get("keywords", {})
+    spesifik = kw.get("spesifik") or (kw.get("english", []) + kw.get("indonesia_mandiri", [])) or cfg_kw.get("spesifik", []) or (cfg_kw.get("english", []) + cfg_kw.get("indonesia_mandiri", []))
+    general = kw.get("general") or (kw.get("objek_data_sensitif", []) + kw.get("objek_aset_digital", []) + kw.get("indikator_insiden", []) + kw.get("ambigu_butuh_konteks", [])) or cfg_kw.get("general", [])
+
     return {
+        "spesifik": list(dict.fromkeys(spesifik)),
+        "general": list(dict.fromkeys(general)),
         "english": kw.get("english") or cfg_kw.get("english", []),
         "mandiri": kw.get("indonesia_mandiri") or cfg_kw.get("indonesia_mandiri", []),
         "objek_data": kw.get("objek_data_sensitif") or cfg_kw.get("objek_data_sensitif", []),
@@ -104,12 +109,14 @@ class FilterKataKunci:
 
     def __init__(self, config: dict):
         kw = _kumpulkan_semua_kata_kunci(config)
-        self.pola_mandiri_en = _compile_regex(kw["english"] + kw["mandiri"])
+        self.pola_spesifik = _compile_regex(kw["spesifik"])
+        self.pola_general = _compile_regex(kw["general"])
+        self.pola_mandiri_en = _compile_regex(list(dict.fromkeys(kw["english"] + kw["mandiri"] + kw["spesifik"])))
         self.pola_objek_data = _compile_regex(kw["objek_data"])
         self.pola_objek_aset = _compile_regex(kw["objek_aset"])
         self.pola_indikator = _compile_regex(kw["indikator"])
         self.pola_ambigu = _compile_regex(kw["ambigu"])
-        semua_kata = kw["english"] + kw["mandiri"] + kw["objek_data"] + kw["objek_aset"] + kw["indikator"] + kw["ambigu"]
+        semua_kata = list(dict.fromkeys(kw["spesifik"] + kw["general"] + kw["english"] + kw["mandiri"] + kw["objek_data"] + kw["objek_aset"] + kw["indikator"] + kw["ambigu"]))
         self.pola_semua = _compile_regex(semua_kata)
 
     def relevan(self, teks: str) -> bool:
@@ -120,7 +127,7 @@ class FilterKataKunci:
         """
         if not teks:
             return False
-        if self.pola_mandiri_en.search(teks):
+        if self.pola_spesifik.search(teks) or self.pola_mandiri_en.search(teks):
             return True
         if self.pola_objek_data.search(teks) and self.pola_indikator.search(teks):
             return True
@@ -128,6 +135,10 @@ class FilterKataKunci:
             return True
         if self.pola_ambigu.search(teks) and (
             self.pola_objek_aset.search(teks) or self.pola_indikator.search(teks)
+        ):
+            return True
+        if self.pola_general.search(teks) and (
+            self.pola_indikator.search(teks) or self.pola_spesifik.search(teks)
         ):
             return True
         return False

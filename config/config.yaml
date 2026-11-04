@@ -1,4 +1,4 @@
-﻿# === Gemini API Configuration ===
+# === Google Gemini Modular LLM Configuration ===
 gemini:
   api_key: ""
   model_chain:
@@ -42,21 +42,19 @@ gemini:
     embedding: 50
 
 pipeline:
-  window_hours: 20
+  window_hours: 3
   request_delay_seconds: 1
   request_timeout: 15
   max_retry: 3
   backoff_factor: 1.5
 
 analytics:
-  cti_generation_mode: "modular_llm"  # "modular_llm" (Section-by-section Google Gemini Modular LLM) atau "instant_rag" (instan RAG <1s)
+  cti_generation_mode: "modular_llm" 
   timeout_per_section_detik: 45
 
 
 # SUMBER RSS FEED (Dikelola penuh secara dinamis di database state.db tabel 'pengaturan')
 # Untuk menambah/mengedit sumber, gunakan panel web /admin -> Sumber Berita & RSS.
-
-
 google_news:
   hl: "id"
   gl: "ID"
@@ -219,15 +217,15 @@ cti_analysis:
     model: "gemini-3.7-flash"
     temperature: 0.1
     num_predict:
-      section_makro: 350
-      section_mikro: 500
-      section_vektor: 450
-      section_emerging: 300
-      section_wilayah: 550
+      section_makro: 800
+      section_mikro: 1500
+      section_vektor: 1500
+      section_emerging: 800
+      section_wilayah: 1200
     truncation:
-      korpus_max: 1500
-      fakta_max: 400
-      uraian_ancaman_max: 1000
+      korpus_max: 2500
+      fakta_max: 600
+      uraian_ancaman_max: 1500
     validation:
       min_length_default: 50
       min_length_mikro: 60
